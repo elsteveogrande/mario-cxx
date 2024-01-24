@@ -1,2 +1,6 @@
 *.o
 mario++
+misc/chrrom.h
+misc/chrrom.cc
+misc/smb1-us.nes
+misc/smbdis.asm
