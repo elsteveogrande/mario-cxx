@@ -24,7 +24,7 @@ all: mario++
 mario++: $(OBJS)
 	$(CC) $(CFLAGS) -o mario++ $<
 
-.cc.o: $(HEADERS)
+.o: $(HEADERS)
 	$(CC) -o $@ -c $<
 
 misc/smbdis.asm:

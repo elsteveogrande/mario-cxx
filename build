@@ -1,0 +1,125 @@
+#!/usr/bin/env python3
+
+import os
+import stat
+import subprocess
+import sys
+from dataclasses import dataclass
+from typing import *
+
+
+@dataclass
+class Path:
+    path: str
+    def __hash__(self):         return hash(self.path)
+    def __eq__(self, them):     return self.path == them.path
+
+    def stat(self) -> Optional[os.stat_result]:
+        try:
+            return os.stat(self.path)
+        except:
+            return None
+
+    def mtime(self):
+        st = self.stat()
+        return st[stat.ST_MTIME] if st else 0
+
+
+@dataclass
+class Target(Path):
+    def __hash__(self):         return super().__hash__()
+    def __eq__(self, them):     return super().__eq__(them)
+
+    def deps(self) -> set["Target"]:    raise NotImplementedError("in class %s" % (type(self)))
+    def _do_build(self) -> "Target":    raise NotImplementedError("in class %s" % (type(self)))
+
+    def _need_build(self):
+        path_ts = self.mtime()
+        if not path_ts:  return True
+        input_ts = max(t.mtime() for t in self.deps())
+        return input_ts > path_ts
+
+    def build(self):
+        if self._need_build():
+            [d.build() for d in self.deps()]
+            print("... %s" % (self.path), file=sys.stderr)
+            self._do_build()
+        return self
+
+
+@dataclass
+class Source(Target):
+    def __hash__(self):         return super().__hash__()
+    def __eq__(self, them):     return super().__eq__(them)
+
+    def deps(self):         return {}
+    def _do_build(self):    pass
+    def _need_build(self):  return False
+
+
+@dataclass
+class CXXSingle(Target):
+    sources: set[Target]
+    headers: set[Target]
+
+    def __hash__(self):         return super().__hash__()
+    def __eq__(self, them):     return super().__eq__(them)
+
+    def deps(self) -> set["Target"]:
+        return self.sources | self.headers
+
+    def _do_build(self):
+        args = [
+            "/usr/bin/env",
+            "clang++",
+            "-Og",
+            "-std=c++20",
+            "-Wall",
+            "-Wextra",
+        ]
+        args += ["-o", self.path]
+        args += ["-c"]
+        args += [t.path for t in self.sources]
+        p = subprocess.Popen(args, stderr=sys.stderr)
+        p.communicate()
+        if p.returncode != 0:
+            raise Exception("target %s failed with %s" % (self.path, p.returncode))
+
+
+@dataclass
+class CXXBinary(Target):
+    objects: set[Target]
+
+    def __hash__(self):         return super().__hash__()
+    def __eq__(self, them):     return super().__eq__(them)
+
+    def deps(self): return self.objects
+
+    def _do_build(self):
+        args = [
+            "/usr/bin/env",
+            "clang++",
+            "-o",
+            self.path,
+        ]
+        args += [t.build().path for t in self.objects]
+        p = subprocess.Popen(args, stderr=sys.stderr)
+        p.communicate()
+        if p.returncode != 0:
+            raise Exception("target %s failed with %s" % (self.path, p.returncode))
+
+
+###########################
+
+def cxx_single(subdir, name):
+    return CXXSingle(
+        path = "out/%s.o" % (name,),
+        sources = set([Source("%s/%s.cc" % (subdir, name))]),
+        headers = set([Source("%s/%s.h" % (subdir, name))]))
+
+ui  = [cxx_single("ui", n) for n in ["audio", "inputs", "sdlenv", "video"]]
+emu = [cxx_single("emu", n) for n in ["apu", "bus", "cpu", "joy", "nmi", "ppu"]]
+base = [cxx_single("util", "base")]
+main_o = [cxx_single(".", "main")]
+bin = CXXBinary(path="mario++", objects=set(ui + emu + base + main_o))
+bin.build()
