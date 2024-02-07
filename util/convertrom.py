@@ -603,14 +603,8 @@ with open("main.cc", "w") as cc:
         p(d.render())
     p("};")
 
-
-# for d in data_blocks:
-#     print(d.render())
-
-# for c in code_blocks:
-#     print(c.render(proto=True))
-
-# for c in code_blocks:
-#     for comment in c.comments:
-#         print(c.render())
-#     print(c.render())
+    p()
+    for c in code_blocks:
+        for comment in c.comments:
+            p(c.render())
+        p(c.render())
