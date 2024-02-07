@@ -891,7 +891,7 @@ extern G g;
 #define                            GameModeValue                    1
 #define                         VictoryModeValue                    2
 #define                        GameOverModeValue                    3
-};
+
 int Start();
 int VBlank1();
 int VBlank2();

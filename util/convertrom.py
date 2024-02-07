@@ -165,7 +165,7 @@ while i < len(chunks):
             labels[target.name].is_call_target = True
     i += 1
 
-dump(chunks)
+# dump(chunks)
 
 # Drop "JumpEngine" routine
 i = 0
@@ -185,11 +185,11 @@ for c in chunks:
         if c.name in ("jmp", "bra", "bpl", "bmi", "bcs", "bcc", "beq", "bne"):
             (target,) = c.opds
             if isinstance(target, Ref):
-                labels[target.label.name].is_jump_target = True
+                labels[target.of.name].is_jump_target = True
         elif c.name == "jsr":
             (target,) = c.opds
             assert isinstance(target, Ref)
-            labels[target.label.name].is_call_target = True
+            labels[target.of.name].is_call_target = True
 
 # Extract defines into a DefineBlock (only 1 will be produced)
 defs = DefsBlock()
@@ -314,43 +314,37 @@ for c in code_blocks:
 
 f = sys.stderr
 
-def p(*args):
-    print(*args, file=f)
+def p(c: Union[str, Chunk], proto=False):
+    if isinstance(c, Chunk):
+        s = c.render(labels, defines, proto=proto)
+    else:
+        s = c
+    print(s, file=f)
 
 with open("main.h", "w") as h:
     f = h
     p("#pragma once")
     p("#include \"util/base.h\"")
-    p()
+    p("")
 
-    p()
+    p("")
     p("struct G {")
     p("    byte space[32768];")
     for d in data_blocks:
-        p(d.render(proto=True))
+        p(d, proto=True)
     p("} __attribute__((__packed__));")
     p("extern G g;")
 
-    # p()
-    # p("struct K {")
-    # for d in defs_block.inner:
-    #     assert isinstance(d, Define)
-    #     if ((isinstance(d.expr, Lit) and d.expr.val >= 0x100) or
-    #         ("offsetof" in d.expr.render())):
-    #         p("    static constexpr word const %s = word(%s);" % (d.name, d.expr.render()))
-    #     else:
-    #         p("    static constexpr byte const %s = byte(%s);" % (d.name, d.expr.render()))
-    # p("};")
-    p()
+    p("")
     for d in defs_block.inner:
         assert isinstance(d, Define)
-        p(d.render())
-    p("};")
+        p(d)
 
+    p("")
     for c in code_blocks:
         for cm in c.comments:
-            p(cm.render())
-        p(c.render(proto=True))
+            p(cm)
+        p(c, proto=True)
 
 
 with open("main.cc", "w") as cc:
@@ -358,17 +352,17 @@ with open("main.cc", "w") as cc:
     p("#include <cstddef>")
     p("#include \"main.h\"")
 
-    p()
+    p("")
     p("G g {")
     p("    .space={},")
     for d in data_blocks:
         for cm in d.comments:
-            p(cm.render())
-        p(d.render())
+            p(cm)
+        p(d)
     p("};")
 
-    p()
+    p("")
     for c in code_blocks:
         for cm in c.comments:
-            p(cm.render())
-        p(c.render())
+            p(cm)
+        p(c)
