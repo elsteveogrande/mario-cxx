@@ -369,6 +369,4 @@ with open("main.cc", "w") as cc:
 
     p("")
     for c in code_blocks:
-        for cm in c.comments:
-            p(cm)
         p(c)

@@ -356,19 +356,19 @@ G g {
 
 int Start() {
     sei();
-    // <conv.chunks.Comment object at 0x100b19370>
+    // pretty standard 6502 type init here
     cld();
     lda(0b10000);
-    // <conv.chunks.Comment object at 0x100b19430>
+    // init PPU control register 1
     sta(PPU_CTRL_REG1);
     ldx(0xff);
-    // <conv.chunks.Comment object at 0x100b195e0>
+    // reset stack pointer
     txs();
     JMP(VBlank1);
 }
 
 int VBlank1() {
-    // <conv.chunks.Comment object at 0x100b19730>
+    // wait two frames
     lda(PPU_STATUS);
     BPL(VBlank1);
     JMP(VBlank2);
@@ -383,52 +383,52 @@ int VBlank2() {
 }
 
 int WBootCheck() {
-    // <conv.chunks.Comment object at 0x100b19b80>
-    // <conv.chunks.Comment object at 0x100b19c70>
-    // <conv.chunks.Comment object at 0x100b19d00>
+    // load default cold boot pointer
+    // this is where we check for a warm boot
+    // check each score digit in the top score
     lda(TopScoreDisplay, x);
     cmp(10);
     BCS(ColdBoot);
-    // <conv.chunks.Comment object at 0x100b19ee0>
-    // <conv.chunks.Comment object at 0x100b19f70>
+    // to see if we have a valid digit
+    // if not, give up and proceed with cold boot
     dex();
     BPL(WBootCheck);
     lda(WarmBootValidation);
     cmp(0xa5);
-    // <conv.chunks.Comment object at 0x100b1a1b0>
-    // <conv.chunks.Comment object at 0x100b1a2a0>
+    // second checkpoint, check to see if
+    // another location has a specific value
     BNE(ColdBoot);
     ldy(WarmBootOffset);
     JMP(ColdBoot);
 }
 
 int ColdBoot() {
-    // <conv.chunks.Comment object at 0x100b1a450>
-    // <conv.chunks.Comment object at 0x100b1a540>
+    // if passed both, load warm boot pointer
+    // clear memory using pointer in Y
     JSR(InitializeMemory);
     sta(((SND_DELTA_REG) + (1)));
     sta(OperMode);
     lda(0xa5);
-    // <conv.chunks.Comment object at 0x100b1a660>
-    // <conv.chunks.Comment object at 0x100b1a7e0>
-    // <conv.chunks.Comment object at 0x100b1a8d0>
+    // reset delta counter load register
+    // reset primary mode of operation
+    // set warm boot flag
     sta(WarmBootValidation);
     sta(PseudoRandomBitReg);
-    // <conv.chunks.Comment object at 0x100b1aae0>
+    // set seed for pseudorandom register
     lda(0b1111);
     sta(SND_MASTERCTRL_REG);
-    // <conv.chunks.Comment object at 0x100b1acf0>
+    // enable all sound channels except dmc
     lda(0b110);
     sta(PPU_CTRL_REG2);
-    // <conv.chunks.Comment object at 0x100b1af00>
+    // turn off clipping for OAM and background
     JSR(MoveAllSpritesOffscreen);
     JSR(InitializeNameTables);
     inc(DisableScreenFlag);
-    // <conv.chunks.Comment object at 0x100b1b110>
-    // <conv.chunks.Comment object at 0x100b1b230>
+    // initialize both name tables
+    // set flag to disable screen output
     lda(Mirror_PPU_CTRL_REG1);
     ora(0b10000000);
-    // <conv.chunks.Comment object at 0x100b1b500>
+    // enable NMIs
     JSR(WritePPUReg1);
     return 0;
     JMP(NonMaskableInterrupt);
@@ -437,53 +437,53 @@ int ColdBoot() {
 int NonMaskableInterrupt() {
     lda(Mirror_PPU_CTRL_REG1);
     anda(0b1111111);
-    // <conv.chunks.Comment object at 0x100b216d0>
-    // <conv.chunks.Comment object at 0x100b21970>
+    // disable NMIs in mirror reg
+    // save all other bits
     sta(Mirror_PPU_CTRL_REG1);
     anda(0b1111110);
     sta(PPU_CTRL_REG1);
     lda(Mirror_PPU_CTRL_REG2);
-    // <conv.chunks.Comment object at 0x100b21b80>
-    // <conv.chunks.Comment object at 0x100b21ca0>
-    // <conv.chunks.Comment object at 0x100b21dc0>
+    // alter name table address to be $2800
+    // (essentially $2000) but save other bits
+    // disable OAM and background display by default
     anda(0b11100110);
     ldy(DisableScreenFlag);
     BNE(ScreenOff);
     lda(Mirror_PPU_CTRL_REG2);
-    // <conv.chunks.Comment object at 0x100b21fd0>
-    // <conv.chunks.Comment object at 0x100b220f0>
-    // <conv.chunks.Comment object at 0x100b22210>
+    // get screen disable flag
+    // if set, used bits as-is
+    // otherwise reenable bits and save them
     ora(0b11110);
     JMP(ScreenOff);
 }
 
 int ScreenOff() {
-    // <conv.chunks.Comment object at 0x100b22420>
+    // save bits for later but not in register at the moment
     sta(Mirror_PPU_CTRL_REG2);
     anda(0b11100111);
-    // <conv.chunks.Comment object at 0x100b22570>
+    // disable screen for now
     sta(PPU_CTRL_REG2);
     ldx(PPU_STATUS);
-    // <conv.chunks.Comment object at 0x100b22780>
+    // reset flip-flop and reset scroll registers to zero
     lda(0x0);
     JSR(InitScroll);
     sta(PPU_SPR_ADDR);
     lda(0x2);
-    // <conv.chunks.Comment object at 0x100b22a80>
-    // <conv.chunks.Comment object at 0x100b22ba0>
+    // reset spr-ram address register
+    // perform spr-ram DMA access on $0200-$02ff
     sta(SPR_DMA);
     ldx(VRAM_Buffer_AddrCtrl);
     lda(offsetof(G, VRAM_AddrTable_Low), x);
-    // <conv.chunks.Comment object at 0x100b22de0>
-    // <conv.chunks.Comment object at 0x100b22f00>
+    // load control for pointer to buffer contents
+    // set indirect at $00 to pointer
     sta(0x0);
     lda(offsetof(G, VRAM_AddrTable_High), x);
     sta(0x1);
     JSR(UpdateScreen);
-    // <conv.chunks.Comment object at 0x100b23260>
+    // update screen with buffer contents
     ldy(0x0);
     ldx(VRAM_Buffer_AddrCtrl);
-    // <conv.chunks.Comment object at 0x100b234d0>
+    // check for usage of $0341
     cpx(0x6);
     BNE(InitBuffer);
     iny();
@@ -493,41 +493,41 @@ int ScreenOff() {
 int InitBuffer() {
     ldx(offsetof(G, VRAM_Buffer_Offset), y);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x100b23a70>
+    // clear buffer header at last location
     sta(VRAM_Buffer1_Offset, x);
     sta(VRAM_Buffer1, x);
     sta(VRAM_Buffer_AddrCtrl);
     lda(Mirror_PPU_CTRL_REG2);
-    // <conv.chunks.Comment object at 0x100b23dd0>
-    // <conv.chunks.Comment object at 0x100b23ef0>
+    // reinit address control to $0301
+    // copy mirror of $2001 to register
     sta(PPU_CTRL_REG2);
     JSR(SoundEngine);
     JSR(ReadJoypads);
     JSR(PauseRoutine);
-    // <conv.chunks.Comment object at 0x100b34140>
-    // <conv.chunks.Comment object at 0x100b34260>
-    // <conv.chunks.Comment object at 0x100b34380>
+    // play sound
+    // read joypads
+    // handle pause
     JSR(UpdateTopScore);
     lda(GamePauseStatus);
-    // <conv.chunks.Comment object at 0x100b34590>
+    // check for pause status
     lsr();
     BCS(PauseSkip);
     lda(TimerControl);
     BEQ(DecTimers);
-    // <conv.chunks.Comment object at 0x100b34830>
-    // <conv.chunks.Comment object at 0x100b34950>
+    // if master timer control not set, decrement
+    // all frame and interval timers
     dec(TimerControl);
     BNE(NoDecTimers);
     JMP(DecTimers);
 }
 
 int DecTimers() {
-    // <conv.chunks.Comment object at 0x100b34c50>
+    // load end offset for end of frame timers
     ldx(0x14);
     dec(IntervalTimerControl);
     BPL(DecTimersLoop);
-    // <conv.chunks.Comment object at 0x100b34d10>
-    // <conv.chunks.Comment object at 0x100b34ec0>
+    // decrement interval timer control,
+    // if not expired, only frame timers will decrement
     lda(0x14);
     sta(IntervalTimerControl);
     ldx(0x23);
@@ -535,9 +535,9 @@ int DecTimers() {
 }
 
 int DecTimersLoop() {
-    // <conv.chunks.Comment object at 0x100b35040>
-    // <conv.chunks.Comment object at 0x100b351f0>
-    // <conv.chunks.Comment object at 0x100b35280>
+    // if control for interval timers expired,
+    // interval timers will decrement along with frame timers
+    // check current timer
     lda(Timers, x);
     BEQ(SkipExpTimer);
     dec(Timers, x);
@@ -545,17 +545,17 @@ int DecTimersLoop() {
 }
 
 int SkipExpTimer() {
-    // <conv.chunks.Comment object at 0x100b354c0>
-    // <conv.chunks.Comment object at 0x100b355e0>
-    // <conv.chunks.Comment object at 0x100b35760>
+    // if current timer expired, branch to skip,
+    // otherwise decrement the current timer
+    // move onto next timer
     dex();
     BPL(DecTimersLoop);
     JMP(NoDecTimers);
 }
 
 int NoDecTimers() {
-    // <conv.chunks.Comment object at 0x100b35850>
-    // <conv.chunks.Comment object at 0x100b35970>
+    // do this until all timers are dealt with
+    // increment frame counter
     inc(FrameCounter);
     JMP(PauseSkip);
 }
@@ -570,41 +570,41 @@ int PauseSkip() {
     anda(0b10);
     eor(0x0);
     clc();
-    // <conv.chunks.Comment object at 0x100b35c40>
-    // <conv.chunks.Comment object at 0x100b35df0>
-    // <conv.chunks.Comment object at 0x100b35f40>
-    // <conv.chunks.Comment object at 0x100b35fd0>
-    // <conv.chunks.Comment object at 0x100b361e0>
-    // <conv.chunks.Comment object at 0x100b36330>
-    // <conv.chunks.Comment object at 0x100b36300>
+    // get first memory location of LSFR bytes
+    // mask out all but d1
+    // save here
+    // get second memory location
+    // mask out all but d1
+    // perform exclusive-OR on d1 from first and second bytes
+    // if neither or both are set, carry will be clear
     BEQ(RotPRandomBit);
     sec();
     JMP(RotPRandomBit);
 }
 
 int RotPRandomBit() {
-    // <conv.chunks.Comment object at 0x100b36600>
-    // <conv.chunks.Comment object at 0x100b36690>
+    // if one or the other is set, carry will be set
+    // rotate carry into d7, and rotate last bit into carry
     ror(PseudoRandomBitReg, x);
     inx();
     dey();
-    // <conv.chunks.Comment object at 0x100b36840>
-    // <conv.chunks.Comment object at 0x100b36900>
+    // increment to next byte
+    // decrement for loop
     BNE(RotPRandomBit);
     lda(Sprite0HitDetectFlag);
-    // <conv.chunks.Comment object at 0x100b36a80>
+    // check for flag here
     BEQ(SkipSprite0);
     JMP(Sprite0Clr);
 }
 
 int Sprite0Clr() {
-    // <conv.chunks.Comment object at 0x100b36c90>
+    // wait for sprite 0 flag to clear, which will
     lda(PPU_STATUS);
     anda(0b1000000);
-    // <conv.chunks.Comment object at 0x100b36de0>
+    // not happen until vblank has ended
     BNE(Sprite0Clr);
     lda(GamePauseStatus);
-    // <conv.chunks.Comment object at 0x100b36ff0>
+    // if in pause mode, do not bother with sprites at all
     lsr();
     BCS(Sprite0Hit);
     JSR(MoveSpritesOffscreen);
@@ -613,7 +613,7 @@ int Sprite0Clr() {
 }
 
 int Sprite0Hit() {
-    // <conv.chunks.Comment object at 0x100b37470>
+    // do sprite #0 hit detection
     lda(PPU_STATUS);
     anda(0b1000000);
     BEQ(Sprite0Hit);
@@ -628,17 +628,17 @@ int HBlankDelay() {
 }
 
 int SkipSprite0() {
-    // <conv.chunks.Comment object at 0x100b37a70>
+    // set scroll registers from variables
     lda(HorizontalScroll);
     sta(PPU_SCROLL_REG);
     lda(VerticalScroll);
     sta(PPU_SCROLL_REG);
     lda(Mirror_PPU_CTRL_REG1);
-    // <conv.chunks.Comment object at 0x100b37e90>
+    // load saved mirror of $2000
     pha();
     sta(PPU_CTRL_REG1);
     lda(GamePauseStatus);
-    // <conv.chunks.Comment object at 0x100b40170>
+    // if in pause mode, do not perform operation mode stuff
     lsr();
     BCS(SkipMainOper);
     JSR(OperModeExecutionTree);
@@ -646,12 +646,12 @@ int SkipSprite0() {
 }
 
 int SkipMainOper() {
-    // <conv.chunks.Comment object at 0x100b40410>
-    // <conv.chunks.Comment object at 0x100b40530>
+    // otherwise do one of many, many possible subroutines
+    // reset flip-flop
     lda(PPU_STATUS);
     pla();
     ora(0b10000000);
-    // <conv.chunks.Comment object at 0x100b40710>
+    // reactivate NMIs
     sta(PPU_CTRL_REG1);
     return 0;
     JMP(PauseRoutine);
@@ -660,61 +660,61 @@ int SkipMainOper() {
 int PauseRoutine() {
     lda(OperMode);
     cmp(VictoryModeValue);
-    // <conv.chunks.Comment object at 0x100b40a40>
-    // <conv.chunks.Comment object at 0x100b40b60>
+    // are we in victory mode?
+    // if so, go ahead
     BEQ(ChkPauseTimer);
     cmp(GameModeValue);
     BNE(ExitPause);
     lda(OperMode_Task);
-    // <conv.chunks.Comment object at 0x100b40d70>
-    // <conv.chunks.Comment object at 0x100b40e90>
-    // <conv.chunks.Comment object at 0x100b40fb0>
+    // are we in game mode?
+    // if not, leave
+    // if we are in game mode, are we running game engine?
     cmp(0x3);
     BNE(ExitPause);
     JMP(ChkPauseTimer);
 }
 
 int ChkPauseTimer() {
-    // <conv.chunks.Comment object at 0x100b41130>
-    // <conv.chunks.Comment object at 0x100b412e0>
+    // if not, leave
+    // check if pause timer is still counting down
     lda(GamePauseTimer);
     BEQ(ChkStart);
     dec(GamePauseTimer);
-    // <conv.chunks.Comment object at 0x100b41520>
+    // if so, decrement and leave
     return 0;
     JMP(ChkStart);
 }
 
 int ChkStart() {
-    // <conv.chunks.Comment object at 0x100b416d0>
+    // check to see if start is pressed
     lda(SavedJoypad1Bits);
     anda(Start_Button);
-    // <conv.chunks.Comment object at 0x100b41820>
+    // on controller 1
     BEQ(ClrPauseTimer);
     lda(GamePauseStatus);
     anda(0b10000000);
     BNE(ExitPause);
     lda(0x2b);
-    // <conv.chunks.Comment object at 0x100b41a30>
-    // <conv.chunks.Comment object at 0x100b41b50>
-    // <conv.chunks.Comment object at 0x100b41c70>
-    // <conv.chunks.Comment object at 0x100b41d90>
+    // check to see if timer flag is set
+    // and if so, do not reset timer (residual,
+    // joypad reading routine makes this unnecessary)
+    // set pause timer
     sta(GamePauseTimer);
     lda(GamePauseStatus);
     tay();
     iny();
-    // <conv.chunks.Comment object at 0x100b42150>
+    // set pause sfx queue for next pause mode
     sty(PauseSoundQueue);
     eor(0b1);
-    // <conv.chunks.Comment object at 0x100b422d0>
+    // invert d0 and set d7
     ora(0b10000000);
     BNE(SetPause);
     JMP(ClrPauseTimer);
 }
 
 int ClrPauseTimer() {
-    // <conv.chunks.Comment object at 0x100b424e0>
-    // <conv.chunks.Comment object at 0x100b42600>
+    // unconditional branch
+    // clear timer flag if timer is at zero and start button
     lda(GamePauseStatus);
     anda(0b1111111);
     JMP(SetPause);
@@ -739,42 +739,42 @@ int SpriteShuffler() {
 }
 
 int ShuffleLoop() {
-    // <conv.chunks.Comment object at 0x100b42a80>
-    // <conv.chunks.Comment object at 0x100b42ae0>
-    // <conv.chunks.Comment object at 0x100b42c00>
-    // <conv.chunks.Comment object at 0x100b42d50>
-    // <conv.chunks.Comment object at 0x100b42de0>
-    // <conv.chunks.Comment object at 0x100b42ed0>
+    // $00 - used for preset value
+    // load level type, likely residual code
+    // load preset value which will put it at
+    // sprite #10
+    // start at the end of OAM data offsets
+    // check for offset value against
     lda(SprDataOffset, x);
     cmp(0x0);
     BCC(NextSprOffset);
     ldy(SprShuffleAmtOffset);
-    // <conv.chunks.Comment object at 0x100b43110>
-    // <conv.chunks.Comment object at 0x100b431a0>
-    // <conv.chunks.Comment object at 0x100b43320>
+    // the preset value
+    // if less, skip this part
+    // get current offset to preset value we want to add
     clc();
     adc(SprShuffleAmt, y);
     BCC(StrSprOffset);
-    // <conv.chunks.Comment object at 0x100b434d0>
-    // <conv.chunks.Comment object at 0x100b43620>
+    // get shuffle amount, add to current sprite offset
+    // if not exceeded $ff, skip second add
     clc();
     adc(0x0);
     JMP(StrSprOffset);
 }
 
 int StrSprOffset() {
-    // <conv.chunks.Comment object at 0x100b43800>
-    // <conv.chunks.Comment object at 0x100b43890>
+    // otherwise add preset value $28 to offset
+    // store new offset here or old one if branched to here
     sta(SprDataOffset, x);
     JMP(NextSprOffset);
 }
 
 int NextSprOffset() {
-    // <conv.chunks.Comment object at 0x100b43a70>
+    // move backwards to next one
     dex();
     BPL(ShuffleLoop);
     ldx(SprShuffleAmtOffset);
-    // <conv.chunks.Comment object at 0x100b43c50>
+    // load offset
     inx();
     cpx(0x3);
     BNE(SetAmtOffset);
@@ -785,24 +785,24 @@ int NextSprOffset() {
 int SetAmtOffset() {
     stx(SprShuffleAmtOffset);
     ldx(0x8);
-    // <conv.chunks.Comment object at 0x100b482c0>
+    // load offsets for values and storage
     ldy(0x2);
     JMP(SetMiscOffset);
 }
 
 int SetMiscOffset() {
-    // <conv.chunks.Comment object at 0x100b48440>
+    // load one of three OAM data offsets
     lda(((SprDataOffset) + (5)), y);
     sta(((Misc_SprDataOffset) - (2)), x);
     clc();
     adc(0x8);
     sta(((Misc_SprDataOffset) - (1)), x);
     clc();
-    // <conv.chunks.Comment object at 0x100b486e0>
-    // <conv.chunks.Comment object at 0x100b488f0>
-    // <conv.chunks.Comment object at 0x100b48980>
-    // <conv.chunks.Comment object at 0x100b48a10>
-    // <conv.chunks.Comment object at 0x100b48cb0>
+    // store first one unmodified, but
+    // add eight to the second and eight
+    // more to the third one
+    // note that due to the way X is set up,
+    // this code loads into the misc sprite offsets
     adc(0x8);
     sta(Misc_SprDataOffset, x);
     dex();
@@ -810,7 +810,7 @@ int SetMiscOffset() {
     dex();
     dey();
     BPL(SetMiscOffset);
-    // <conv.chunks.Comment object at 0x100b49190>
+    // do this until all misc spr offsets are loaded
     return 0;
     JMP(OperModeExecutionTree);
 }
@@ -832,12 +832,12 @@ int MoveSpritesOffscreen() {
 }
 
 int SprInitLoop() {
-    // <conv.chunks.Comment object at 0x100b49a30>
-    // <conv.chunks.Comment object at 0x100b49b20>
-    // <conv.chunks.Comment object at 0x100b49c40>
+    // this routine moves all but sprite 0
+    // off the screen
+    // write 248 into OAM data's Y coordinate
     sta(Sprite_Y_Position, y);
     iny();
-    // <conv.chunks.Comment object at 0x100b49e80>
+    // which will move it off the screen
     iny();
     iny();
     iny();
@@ -855,8 +855,8 @@ int GameMenuRoutine() {
     ldy(0x0);
     lda(SavedJoypad1Bits);
     ora(SavedJoypad2Bits);
-    // <conv.chunks.Comment object at 0x100b4a7e0>
-    // <conv.chunks.Comment object at 0x100b4acc0>
+    // check to see if either player pressed
+    // only the start button (either joypad)
     cmp(Start_Button);
     BEQ(StartGame);
     cmp(((A_Button) + (Start_Button)));
@@ -865,15 +865,15 @@ int GameMenuRoutine() {
 }
 
 int StartGame() {
-    // <conv.chunks.Comment object at 0x100b4afc0>
-    // <conv.chunks.Comment object at 0x100b4b170>
-    // <conv.chunks.Comment object at 0x100b4b290>
+    // check to see if A + start was pressed
+    // if not, branch to check select button
+    // if either start or A + start, execute here
     JMP(ChkContinue);
     JMP(ChkSelect);
 }
 
 int ChkSelect() {
-    // <conv.chunks.Comment object at 0x100b4b3e0>
+    // check to see if the select button was pressed
     cmp(Select_Button);
     BEQ(SelectBLogic);
     ldx(DemoTimer);
@@ -886,47 +886,47 @@ int ChkSelect() {
 }
 
 int ChkWorldSel() {
-    // <conv.chunks.Comment object at 0x100b4b530>
-    // <conv.chunks.Comment object at 0x100b4b650>
-    // <conv.chunks.Comment object at 0x100b4b770>
-    // <conv.chunks.Comment object at 0x100b4b890>
-    // <conv.chunks.Comment object at 0x100b4b9b0>
-    // <conv.chunks.Comment object at 0x100b4bad0>
-    // <conv.chunks.Comment object at 0x100b4bbf0>
-    // <conv.chunks.Comment object at 0x100b4bd40>
+    // if so, branch reset demo timer
+    // otherwise check demo timer
+    // if demo timer not expired, branch to check world selection
+    // set controller bits here if running demo
+    // run through the demo actions
+    // if carry flag set, demo over, thus branch
+    // otherwise, run game engine for demo
+    // check to see if world selection has been enabled
     ldx(WorldSelectEnableFlag);
     BEQ(NullJoypad);
     cmp(B_Button);
-    // <conv.chunks.Comment object at 0x100b4bf80>
+    // if so, check to see if the B button was pressed
     BNE(NullJoypad);
     iny();
     JMP(SelectBLogic);
 }
 
 int SelectBLogic() {
-    // <conv.chunks.Comment object at 0x100b50200>
-    // <conv.chunks.Comment object at 0x100b50290>
+    // if so, increment Y and execute same code as select
+    // if select or B pressed, check demo timer one last time
     lda(DemoTimer);
     BEQ(ResetTitle);
     lda(0x18);
-    // <conv.chunks.Comment object at 0x100b503e0>
-    // <conv.chunks.Comment object at 0x100b50500>
+    // if demo timer expired, branch to reset title screen mode
+    // otherwise reset demo timer
     sta(DemoTimer);
     lda(SelectTimer);
     BNE(NullJoypad);
     lda(0x10);
-    // <conv.chunks.Comment object at 0x100b50710>
-    // <conv.chunks.Comment object at 0x100b50830>
-    // <conv.chunks.Comment object at 0x100b50950>
+    // check select/B button timer
+    // if not expired, branch
+    // otherwise reset select button timer
     sta(SelectTimer);
     cpy(0x1);
     BEQ(IncWorldSel);
     lda(NumberOfPlayers);
     eor(0b1);
-    // <conv.chunks.Comment object at 0x100b50b60>
-    // <conv.chunks.Comment object at 0x100b50bf0>
-    // <conv.chunks.Comment object at 0x100b50da0>
-    // <conv.chunks.Comment object at 0x100b50ec0>
+    // was the B button pressed earlier?  if so, branch
+    // note this will not be run if world selection is disabled
+    // if no, must have been the select button, therefore
+    // change number of players and draw icon accordingly
     sta(NumberOfPlayers);
     JSR(DrawMushroomIcon);
     JMP(NullJoypad);
@@ -934,23 +934,23 @@ int SelectBLogic() {
 }
 
 int IncWorldSel() {
-    // <conv.chunks.Comment object at 0x100b512b0>
+    // increment world select number
     ldx(WorldSelectNumber);
     inx();
     txa();
     anda(0b111);
     sta(WorldSelectNumber);
-    // <conv.chunks.Comment object at 0x100b51520>
-    // <conv.chunks.Comment object at 0x100b51640>
+    // mask out higher bits
+    // store as current world select number
     JSR(GoContinue);
     JMP(UpdateShroom);
 }
 
 int UpdateShroom() {
-    // <conv.chunks.Comment object at 0x100b51850>
+    // write template for world select in vram buffer
     lda(offsetof(G, WSelectBufferTemplate), x);
     sta(((VRAM_Buffer1) - (1)), x);
-    // <conv.chunks.Comment object at 0x100b519d0>
+    // do this until all bytes are written
     inx();
     cpx(0x6);
     BMI(UpdateShroom);
@@ -961,33 +961,33 @@ int UpdateShroom() {
 }
 
 int NullJoypad() {
-    // <conv.chunks.Comment object at 0x100b51e20>
-    // <conv.chunks.Comment object at 0x100b51f70>
-    // <conv.chunks.Comment object at 0x100b52000>
-    // <conv.chunks.Comment object at 0x100b521b0>
+    // get world number from variable and increment for
+    // proper display, and put in blank byte before
+    // null terminator
+    // clear joypad bits for player 1
     lda(0x0);
     sta(SavedJoypad1Bits);
     JMP(RunDemo);
 }
 
 int RunDemo() {
-    // <conv.chunks.Comment object at 0x100b523f0>
+    // run game engine
     JSR(GameCoreRoutine);
     lda(GameEngineSubroutine);
-    // <conv.chunks.Comment object at 0x100b52570>
+    // check to see if we're running lose life routine
     cmp(0x6);
     BNE(ExitMenu);
     JMP(ResetTitle);
 }
 
 int ResetTitle() {
-    // <conv.chunks.Comment object at 0x100b526f0>
-    // <conv.chunks.Comment object at 0x100b528a0>
+    // if not, do not do all the resetting below
+    // reset game modes, disable
     lda(0x0);
     sta(OperMode);
     sta(OperMode_Task);
-    // <conv.chunks.Comment object at 0x100b52960>
-    // <conv.chunks.Comment object at 0x100b52b10>
+    // sprite 0 check and disable
+    // screen output
     sta(Sprite0HitDetectFlag);
     inc(DisableScreenFlag);
     return 0;
@@ -995,7 +995,7 @@ int ResetTitle() {
 }
 
 int ChkContinue() {
-    // <conv.chunks.Comment object at 0x100b52ea0>
+    // if timer for demo has expired, reset modes
     ldy(DemoTimer);
     BEQ(ResetTitle);
     asl();
@@ -1008,19 +1008,19 @@ int ChkContinue() {
 int StartWorld1() {
     JSR(LoadAreaPointer);
     inc(Hidden1UpFlag);
-    // <conv.chunks.Comment object at 0x100b53620>
+    // set 1-up box flag for both players
     inc(OffScr_Hidden1UpFlag);
     inc(FetchNewGameTimerFlag);
     inc(OperMode);
     lda(WorldSelectEnableFlag);
     sta(PrimaryHardMode);
-    // <conv.chunks.Comment object at 0x100b53830>
-    // <conv.chunks.Comment object at 0x100b53950>
-    // <conv.chunks.Comment object at 0x100b53a70>
-    // <conv.chunks.Comment object at 0x100b53b90>
+    // set fetch new game timer flag
+    // set next game mode
+    // if world select flag is on, then primary
+    // hard mode must be on as well
     lda(0x0);
     sta(OperMode_Task);
-    // <conv.chunks.Comment object at 0x100b53d10>
+    // set game mode here, and clear demo timer
     sta(DemoTimer);
     ldx(0x17);
     lda(0x0);
@@ -1028,7 +1028,7 @@ int StartWorld1() {
 }
 
 int InitScores() {
-    // <conv.chunks.Comment object at 0x100b60140>
+    // clear player scores and coin displays
     sta(ScoreAndCoinDisplay, x);
     dex();
     BPL(InitScores);
@@ -1041,14 +1041,14 @@ int ExitMenu() {
 }
 
 int GoContinue() {
-    // <conv.chunks.Comment object at 0x100b60590>
+    // start both players at the first area
     sta(WorldNumber);
     sta(OffScr_WorldNumber);
     ldx(0x0);
     stx(AreaNumber);
-    // <conv.chunks.Comment object at 0x100b606e0>
-    // <conv.chunks.Comment object at 0x100b60800>
-    // <conv.chunks.Comment object at 0x100b60890>
+    // of the previously saved world number
+    // note that on power-up using this function
+    // will make no difference
     stx(OffScr_AreaNumber);
     return 0;
     JMP(DrawMushroomIcon);
@@ -1060,22 +1060,22 @@ int DrawMushroomIcon() {
 }
 
 int IconDataRead() {
-    // <conv.chunks.Comment object at 0x100b60c80>
-    // <conv.chunks.Comment object at 0x100b60d10>
+    // read eight bytes to be read by transfer routine
+    // note that the default position is set for a
     lda(offsetof(G, MushroomIconData), y);
     sta(((VRAM_Buffer1) - (1)), y);
-    // <conv.chunks.Comment object at 0x100b61370>
+    // 1-player game
     dey();
     BPL(IconDataRead);
     lda(NumberOfPlayers);
     BEQ(ExitIcon);
     lda(0x24);
-    // <conv.chunks.Comment object at 0x100b616d0>
-    // <conv.chunks.Comment object at 0x100b617f0>
-    // <conv.chunks.Comment object at 0x100b61910>
+    // check number of players
+    // if set to 1-player game, we're done
+    // otherwise, load blank tile in 1-player position
     sta(((VRAM_Buffer1) + (3)));
     lda(0xce);
-    // <conv.chunks.Comment object at 0x100b61bb0>
+    // then load shroom icon tile in 2-player position
     sta(((VRAM_Buffer1) + (5)));
     JMP(ExitIcon);
 }
@@ -1089,9 +1089,9 @@ int DemoEngine() {
     ldx(DemoAction);
     lda(DemoActionTimer);
     BNE(DoAction);
-    // <conv.chunks.Comment object at 0x100b61f70>
-    // <conv.chunks.Comment object at 0x100b62090>
-    // <conv.chunks.Comment object at 0x100b63a40>
+    // load current demo action
+    // load current action timer
+    // if timer still counting down, skip
     inx();
     inc(DemoAction);
     sec();
@@ -1102,12 +1102,12 @@ int DemoEngine() {
 }
 
 int DoAction() {
-    // <conv.chunks.Comment object at 0x100b63bf0>
-    // <conv.chunks.Comment object at 0x100b63d40>
-    // <conv.chunks.Comment object at 0x100b63dd0>
-    // <conv.chunks.Comment object at 0x100b63fb0>
-    // <conv.chunks.Comment object at 0x100b68110>
-    // <conv.chunks.Comment object at 0x100b68230>
+    // if expired, increment action, X, and
+    // set carry by default for demo over
+    // get next timer
+    // store as current timer
+    // if timer already at zero, skip
+    // get and perform action (current or next)
     lda(((offsetof(G, DemoActionData)) - (1)), x);
     sta(SavedJoypad1Bits);
     dec(DemoActionTimer);
@@ -1124,9 +1124,9 @@ int VictoryMode() {
     JSR(VictoryModeSubroutines);
     lda(OperMode_Task);
     BEQ(AutoPlayer);
-    // <conv.chunks.Comment object at 0x100b68830>
-    // <conv.chunks.Comment object at 0x100b68950>
-    // <conv.chunks.Comment object at 0x100b68a70>
+    // run victory mode subroutines
+    // get current task of victory mode
+    // if on bridge collapse, skip enemy processing
     ldx(0x0);
     stx(ObjectOffset);
     JSR(EnemiesAndLoopsCore);
@@ -1134,9 +1134,9 @@ int VictoryMode() {
 }
 
 int AutoPlayer() {
-    // <conv.chunks.Comment object at 0x100b68bf0>
-    // <conv.chunks.Comment object at 0x100b68da0>
-    // <conv.chunks.Comment object at 0x100b68ec0>
+    // otherwise reset enemy object offset
+    // and run enemy code
+    // get player's relative coordinates
     JSR(RelativePlayerPosition);
     JMP(PlayerGfxHandler);
     JMP(VictoryModeSubroutines);
@@ -1151,9 +1151,9 @@ int SetupVictoryMode() {
     ldx(ScreenRight_PageLoc);
     inx();
     stx(DestinationPageLoc);
-    // <conv.chunks.Comment object at 0x100b69670>
-    // <conv.chunks.Comment object at 0x100b697c0>
-    // <conv.chunks.Comment object at 0x100b69850>
+    // get page location of right side of screen
+    // increment to next page
+    // store here
     lda(EndOfCastleMusic);
     sta(EventMusicQueue);
     JMP(IncModeTask_B);
@@ -1162,7 +1162,7 @@ int SetupVictoryMode() {
 
 int PlayerVictoryWalk() {
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x100b69d00>
+    // set value here to not walk player by default
     sty(VictoryWalkControl);
     lda(Player_PageLoc);
     cmp(DestinationPageLoc);
@@ -1174,33 +1174,33 @@ int PlayerVictoryWalk() {
 }
 
 int PerformWalk() {
-    // <conv.chunks.Comment object at 0x100b69f10>
-    // <conv.chunks.Comment object at 0x100b6a030>
-    // <conv.chunks.Comment object at 0x100b6a150>
-    // <conv.chunks.Comment object at 0x100b6a270>
-    // <conv.chunks.Comment object at 0x100b6a390>
-    // <conv.chunks.Comment object at 0x100b6a420>
-    // <conv.chunks.Comment object at 0x100b6a5d0>
+    // get player's page location
+    // compare with destination page location
+    // if page locations don't match, branch
+    // otherwise get player's horizontal position
+    // compare with preset horizontal position
+    // if still on other page, branch ahead
+    // otherwise increment value and Y
     inc(VictoryWalkControl);
     iny();
     JMP(DontWalk);
 }
 
 int DontWalk() {
-    // <conv.chunks.Comment object at 0x100b6a750>
-    // <conv.chunks.Comment object at 0x100b6a7e0>
+    // note Y will be used to walk the player
+    // put contents of Y in A and
     tya();
     JSR(AutoControlPlayer);
     lda(ScreenLeft_PageLoc);
     cmp(DestinationPageLoc);
     BEQ(ExitVWalk);
-    // <conv.chunks.Comment object at 0x100b6a8d0>
-    // <conv.chunks.Comment object at 0x100b6a9f0>
-    // <conv.chunks.Comment object at 0x100b6ab10>
-    // <conv.chunks.Comment object at 0x100b6ac30>
+    // use A to move player to the right or not
+    // check page location of left side of screen
+    // against set value here
+    // branch if equal to change modes if necessary
     lda(ScrollFractional);
     clc();
-    // <conv.chunks.Comment object at 0x100b6ae70>
+    // do fixed point math on fractional part of scroll
     adc(0x80);
     sta(ScrollFractional);
     lda(0x1);
@@ -1213,14 +1213,14 @@ int DontWalk() {
 }
 
 int ExitVWalk() {
-    // <conv.chunks.Comment object at 0x100b6af60>
-    // <conv.chunks.Comment object at 0x100b6b110>
-    // <conv.chunks.Comment object at 0x100b6b1a0>
-    // <conv.chunks.Comment object at 0x100b6b380>
-    // <conv.chunks.Comment object at 0x100b6b410>
-    // <conv.chunks.Comment object at 0x100b6b530>
-    // <conv.chunks.Comment object at 0x100b6b650>
-    // <conv.chunks.Comment object at 0x100b6b770>
+    // save fractional movement amount
+    // set 1 pixel per frame
+    // add carry from previous addition
+    // use as scroll amount
+    // do sub to scroll the screen
+    // do another sub to update screen and scroll variables
+    // increment value to stay in this routine
+    // load value set here
     lda(VictoryWalkControl);
     BEQ(IncModeTask_A);
     return 0;
@@ -1235,13 +1235,13 @@ int PrintVictoryMessages() {
     cmp(0x9);
     BCS(IncMsgCounter);
     ldy(WorldNumber);
-    // <conv.chunks.Comment object at 0x100b6bb00>
-    // <conv.chunks.Comment object at 0x100b6bc20>
-    // <conv.chunks.Comment object at 0x100b6bd40>
-    // <conv.chunks.Comment object at 0x100b6be60>
-    // <conv.chunks.Comment object at 0x100b6bf80>
-    // <conv.chunks.Comment object at 0x100b70050>
-    // <conv.chunks.Comment object at 0x100b70200>
+    // load secondary message counter
+    // if set, branch to increment message counters
+    // otherwise load primary message counter
+    // if set to zero, branch to print first message
+    // if at 9 or above, branch elsewhere (this comparison
+    // is residual code, counter never reaches 9)
+    // check world number
     cpy(World8);
     BNE(MRetainerMsg);
     cmp(0x3);
@@ -1252,20 +1252,20 @@ int PrintVictoryMessages() {
 }
 
 int MRetainerMsg() {
-    // <conv.chunks.Comment object at 0x100b70350>
-    // <conv.chunks.Comment object at 0x100b70560>
-    // <conv.chunks.Comment object at 0x100b705f0>
-    // <conv.chunks.Comment object at 0x100b707a0>
-    // <conv.chunks.Comment object at 0x100b70830>
-    // <conv.chunks.Comment object at 0x100b709e0>
+    // if not at world 8, skip to next part
+    // check primary message counter again
+    // if not at 3 yet (world 8 only), branch to increment
+    // otherwise subtract one
+    // and skip to next part
+    // check primary message counter
     cmp(0x2);
     BCC(IncMsgCounter);
     JMP(ThankPlayer);
 }
 
 int ThankPlayer() {
-    // <conv.chunks.Comment object at 0x100b70aa0>
-    // <conv.chunks.Comment object at 0x100b70c50>
+    // if not at 2 yet (world 1-7 only), branch
+    // put primary message counter into Y
     tay();
     BNE(SecondPartMsg);
     lda(CurrentPlayer);
@@ -1276,12 +1276,12 @@ int ThankPlayer() {
 }
 
 int SecondPartMsg() {
-    // <conv.chunks.Comment object at 0x100b70d40>
-    // <conv.chunks.Comment object at 0x100b70e60>
-    // <conv.chunks.Comment object at 0x100b70f80>
-    // <conv.chunks.Comment object at 0x100b710d0>
-    // <conv.chunks.Comment object at 0x100b71160>
-    // <conv.chunks.Comment object at 0x100b71280>
+    // if counter nonzero, skip this part, do not print first message
+    // otherwise get player currently on the screen
+    // if mario, branch
+    // otherwise increment Y once for luigi and
+    // do an unconditional branch to the same place
+    // increment Y to do world 8's message
     iny();
     lda(WorldNumber);
     cmp(World8);
@@ -1295,14 +1295,14 @@ int SecondPartMsg() {
 }
 
 int EvalForMusic() {
-    // <conv.chunks.Comment object at 0x100b71460>
-    // <conv.chunks.Comment object at 0x100b714c0>
-    // <conv.chunks.Comment object at 0x100b71700>
-    // <conv.chunks.Comment object at 0x100b71790>
-    // <conv.chunks.Comment object at 0x100b71820>
-    // <conv.chunks.Comment object at 0x100b719d0>
-    // <conv.chunks.Comment object at 0x100b71a60>
-    // <conv.chunks.Comment object at 0x100b71c10>
+    // check world number
+    // if at world 8, branch to next part
+    // otherwise decrement Y for world 1-7's message
+    // if counter at 4 (world 1-7 only)
+    // branch to set victory end timer
+    // if counter at 3 (world 1-7 only)
+    // branch to keep counting
+    // if counter not yet at 3 (world 8 only), branch
     cpy(0x3);
     BNE(PrintMsg);
     lda(VictoryMusic);
@@ -1311,10 +1311,10 @@ int EvalForMusic() {
 }
 
 int PrintMsg() {
-    // <conv.chunks.Comment object at 0x100b71cd0>
-    // <conv.chunks.Comment object at 0x100b71e80>
-    // <conv.chunks.Comment object at 0x100b71fa0>
-    // <conv.chunks.Comment object at 0x100b720c0>
+    // to print message only (note world 1-7 will only
+    // reach this code if counter = 0, and will always branch)
+    // otherwise load victory music first (world 8 only)
+    // put primary message counter in A
     tya();
     clc();
     adc(0xc);
@@ -1326,19 +1326,19 @@ int IncMsgCounter() {
     lda(SecondaryMsgCounter);
     clc();
     adc(0x4);
-    // <conv.chunks.Comment object at 0x100b72660>
+    // add four to secondary message counter
     sta(SecondaryMsgCounter);
     lda(PrimaryMsgCounter);
     adc(0x0);
-    // <conv.chunks.Comment object at 0x100b72960>
+    // add carry to primary message counter
     sta(PrimaryMsgCounter);
     cmp(0x7);
     JMP(SetEndTimer);
 }
 
 int SetEndTimer() {
-    // <conv.chunks.Comment object at 0x100b72b70>
-    // <conv.chunks.Comment object at 0x100b72c00>
+    // check primary counter one more time
+    // if not reached value yet, branch to leave
     BCC(ExitMsgs);
     lda(0x6);
     sta(WorldEndTimer);
@@ -1346,14 +1346,14 @@ int SetEndTimer() {
 }
 
 int IncModeTask_A() {
-    // <conv.chunks.Comment object at 0x100b72e40>
-    // <conv.chunks.Comment object at 0x100b72ff0>
+    // otherwise set world end timer
+    // move onto next task in mode
     inc(OperMode_Task);
     JMP(ExitMsgs);
 }
 
 int ExitMsgs() {
-    // <conv.chunks.Comment object at 0x100b73170>
+    // leave
     return 0;
     JMP(PlayerEndWorld);
 }
@@ -1364,11 +1364,11 @@ int PlayerEndWorld() {
     ldy(WorldNumber);
     cpy(World8);
     BCS(EndChkBButton);
-    // <conv.chunks.Comment object at 0x100b732c0>
-    // <conv.chunks.Comment object at 0x100b733e0>
-    // <conv.chunks.Comment object at 0x100b73500>
-    // <conv.chunks.Comment object at 0x100b73620>
-    // <conv.chunks.Comment object at 0x100b73680>
+    // check to see if world end timer expired
+    // branch to leave if not
+    // check world number
+    // if on world 8, player is done with game,
+    // thus branch to read controller
     lda(0x0);
     sta(AreaNumber);
     sta(LevelNumber);
@@ -1376,20 +1376,20 @@ int PlayerEndWorld() {
     inc(WorldNumber);
     JSR(LoadAreaPointer);
     inc(FetchNewGameTimerFlag);
-    // <conv.chunks.Comment object at 0x100b738f0>
-    // <conv.chunks.Comment object at 0x100b73aa0>
-    // <conv.chunks.Comment object at 0x100b73bc0>
-    // <conv.chunks.Comment object at 0x100b73ce0>
-    // <conv.chunks.Comment object at 0x100b73e00>
-    // <conv.chunks.Comment object at 0x100b73f20>
+    // otherwise initialize area number used as offset
+    // and level number control to start at area 1
+    // initialize secondary mode of operation
+    // increment world number to move onto the next world
+    // get area address offset for the next area
+    // set flag to load game timer from header
     lda(GameModeValue);
     sta(OperMode);
     JMP(EndExitOne);
 }
 
 int EndExitOne() {
-    // <conv.chunks.Comment object at 0x100b7c170>
-    // <conv.chunks.Comment object at 0x100b7c290>
+    // set mode of operation to game mode
+    // and leave
     return 0;
     JMP(EndChkBButton);
 }
@@ -1400,21 +1400,21 @@ int EndChkBButton() {
     anda(B_Button);
     BEQ(EndExitTwo);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x100b7c4a0>
-    // <conv.chunks.Comment object at 0x100b7c5c0>
-    // <conv.chunks.Comment object at 0x100b7c6e0>
-    // <conv.chunks.Comment object at 0x100b7c800>
+    // check to see if B button was pressed on
+    // either controller
+    // branch to leave if not
+    // otherwise set world selection flag
     sta(WorldSelectEnableFlag);
     lda(0xff);
-    // <conv.chunks.Comment object at 0x100b7ca10>
+    // remove onscreen player's lives
     sta(NumberofLives);
     JSR(TerminateGame);
     JMP(EndExitTwo);
 }
 
 int EndExitTwo() {
-    // <conv.chunks.Comment object at 0x100b7cc20>
-    // <conv.chunks.Comment object at 0x100b7cd70>
+    // do sub to continue other player or end game
+    // leave
     return 0;
     JMP(FloateyNumbersRoutine);
 }
@@ -1423,9 +1423,9 @@ int FloateyNumbersRoutine() {
     lda(FloateyNum_Control, x);
     BEQ(EndExitOne);
     cmp(0xb);
-    // <conv.chunks.Comment object at 0x100b7e2d0>
-    // <conv.chunks.Comment object at 0x100b7ea80>
-    // <conv.chunks.Comment object at 0x100b7eba0>
+    // load control for floatey number
+    // if zero, branch to leave
+    // if less than $0b, branch
     BCC(ChkNumTimer);
     lda(0xb);
     sta(FloateyNum_Control, x);
@@ -1433,43 +1433,43 @@ int FloateyNumbersRoutine() {
 }
 
 int ChkNumTimer() {
-    // <conv.chunks.Comment object at 0x100b7edb0>
-    // <conv.chunks.Comment object at 0x100b7ee40>
-    // <conv.chunks.Comment object at 0x100b7f050>
+    // otherwise set to $0b, thus keeping
+    // it in range
+    // use as Y
     tay();
     lda(FloateyNum_Timer, x);
     BNE(DecNumTimer);
     sta(FloateyNum_Control, x);
-    // <conv.chunks.Comment object at 0x100b7f140>
-    // <conv.chunks.Comment object at 0x100b7f290>
-    // <conv.chunks.Comment object at 0x100b7f3b0>
+    // check value here
+    // if nonzero, branch ahead
+    // initialize floatey number control and leave
     return 0;
     JMP(DecNumTimer);
 }
 
 int DecNumTimer() {
-    // <conv.chunks.Comment object at 0x100b7f590>
+    // decrement value here
     dec(FloateyNum_Timer, x);
     cmp(0x2b);
-    // <conv.chunks.Comment object at 0x100b7f710>
+    // if not reached a certain point, branch
     BNE(ChkTallEnemy);
     cpy(0xb);
     BNE(LoadNumTiles);
     inc(NumberofLives);
-    // <conv.chunks.Comment object at 0x100b7f920>
-    // <conv.chunks.Comment object at 0x100b7f9b0>
-    // <conv.chunks.Comment object at 0x100b7fb60>
+    // check offset for $0b
+    // branch ahead if not found
+    // give player one extra life (1-up)
     lda(Sfx_ExtraLife);
     sta(Square2SoundQueue);
     JMP(LoadNumTiles);
 }
 
 int LoadNumTiles() {
-    // <conv.chunks.Comment object at 0x100b7fd70>
-    // <conv.chunks.Comment object at 0x100b7fe90>
+    // and play the 1-up sound
+    // load point value here
     lda(offsetof(G, ScoreUpdateData), y);
     lsr();
-    // <conv.chunks.Comment object at 0x100d18080>
+    // move high nybble to low
     lsr();
     lsr();
     lsr();
@@ -1482,32 +1482,32 @@ int LoadNumTiles() {
 }
 
 int ChkTallEnemy() {
-    // <conv.chunks.Comment object at 0x100d182f0>
-    // <conv.chunks.Comment object at 0x100d18380>
-    // <conv.chunks.Comment object at 0x100d184d0>
-    // <conv.chunks.Comment object at 0x100d185f0>
-    // <conv.chunks.Comment object at 0x100d18740>
-    // <conv.chunks.Comment object at 0x100d18860>
+    // use as X offset, essentially the digit
+    // load again and this time
+    // mask out the high nybble
+    // store as amount to add to the digit
+    // update the score accordingly
+    // get OAM data offset for enemy object
     ldy(Enemy_SprDataOffset, x);
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x100d189e0>
+    // get enemy object identifier
     cmp(Spiny);
     BEQ(FloateyPart);
-    // <conv.chunks.Comment object at 0x100d18b90>
+    // branch if spiny
     cmp(PiranhaPlant);
     BEQ(FloateyPart);
-    // <conv.chunks.Comment object at 0x100d18e60>
+    // branch if piranha plant
     cmp(HammerBro);
     BEQ(GetAltOffset);
-    // <conv.chunks.Comment object at 0x100d19070>
+    // branch elsewhere if hammer bro
     cmp(GreyCheepCheep);
     BEQ(FloateyPart);
-    // <conv.chunks.Comment object at 0x100d19280>
+    // branch if cheep-cheep of either color
     cmp(RedCheepCheep);
     BEQ(FloateyPart);
     cmp(TallEnemy);
     BCS(GetAltOffset);
-    // <conv.chunks.Comment object at 0x100d19670>
+    // branch elsewhere if enemy object => $09
     lda(Enemy_State, x);
     cmp(0x2);
     BCS(FloateyPart);
@@ -1515,9 +1515,9 @@ int ChkTallEnemy() {
 }
 
 int GetAltOffset() {
-    // <conv.chunks.Comment object at 0x100d198b0>
-    // <conv.chunks.Comment object at 0x100d19940>
-    // <conv.chunks.Comment object at 0x100d19af0>
+    // if enemy state defeated or otherwise
+    // $02 or greater, branch beyond this part
+    // load some kind of control bit
     ldx(SprDataOffset_Ctrl);
     ldy(Alt_SprDataOffset, x);
     ldx(ObjectOffset);
@@ -1525,54 +1525,54 @@ int GetAltOffset() {
 }
 
 int FloateyPart() {
-    // <conv.chunks.Comment object at 0x100d19c40>
-    // <conv.chunks.Comment object at 0x100d19d90>
-    // <conv.chunks.Comment object at 0x100d19eb0>
+    // get alternate OAM data offset
+    // get enemy object offset again
+    // get vertical coordinate for
     lda(FloateyNum_Y_Pos, x);
     cmp(0x18);
     BCC(SetupNumSpr);
-    // <conv.chunks.Comment object at 0x100d1a030>
-    // <conv.chunks.Comment object at 0x100d1a0c0>
+    // floatey number, if coordinate in the
+    // status bar, branch
     sbc(0x1);
     sta(FloateyNum_Y_Pos, x);
     JMP(SetupNumSpr);
 }
 
 int SetupNumSpr() {
-    // <conv.chunks.Comment object at 0x100d1a2d0>
-    // <conv.chunks.Comment object at 0x100d1a4b0>
+    // otherwise subtract one and store as new
+    // get vertical coordinate
     lda(FloateyNum_Y_Pos, x);
     sbc(0x8);
     JSR(DumpTwoSpr);
     lda(FloateyNum_X_Pos, x);
     sta(Sprite_X_Position, y);
-    // <conv.chunks.Comment object at 0x100d1a630>
-    // <conv.chunks.Comment object at 0x100d1a6c0>
-    // <conv.chunks.Comment object at 0x100d1a870>
-    // <conv.chunks.Comment object at 0x100d1a9c0>
+    // subtract eight and dump into the
+    // left and right sprite's Y coordinates
+    // get horizontal coordinate
+    // store into X coordinate of left sprite
     clc();
     adc(0x8);
     sta(((Sprite_X_Position) + (4)), y);
-    // <conv.chunks.Comment object at 0x100d1aba0>
-    // <conv.chunks.Comment object at 0x100d1ac30>
+    // add eight pixels and store into X
+    // coordinate of right sprite
     lda(0x2);
     sta(Sprite_Attributes, y);
     sta(((Sprite_Attributes) + (4)), y);
-    // <conv.chunks.Comment object at 0x100d1af00>
-    // <conv.chunks.Comment object at 0x100d1b0e0>
+    // set palette control in attribute bytes
+    // of left and right sprites
     lda(FloateyNum_Control, x);
     asl();
     tax();
-    // <conv.chunks.Comment object at 0x100d1b410>
-    // <conv.chunks.Comment object at 0x100d1b4d0>
+    // multiply our floatey number control by 2
+    // and use as offset for look-up table
     lda(offsetof(G, FloateyNumTileData), x);
     sta(Sprite_Tilenumber, y);
-    // <conv.chunks.Comment object at 0x100d1b680>
+    // display first half of number of points
     lda(((offsetof(G, FloateyNumTileData)) + (1)), x);
     sta(((Sprite_Tilenumber) + (4)), y);
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x100d1b980>
-    // <conv.chunks.Comment object at 0x100d1bb60>
+    // display the second half
+    // get enemy object offset and leave
     return 0;
     JMP(ScreenRoutines);
 }
@@ -1585,13 +1585,13 @@ int ScreenRoutines() {
 int InitScreen() {
     JSR(MoveAllSpritesOffscreen);
     JSR(InitializeNameTables);
-    // <conv.chunks.Comment object at 0x100d208f0>
-    // <conv.chunks.Comment object at 0x100d20a10>
+    // initialize all sprites including sprite #0
+    // and erase both name and attribute tables
     lda(OperMode);
     BEQ(NextSubtask);
     ldx(0x3);
-    // <conv.chunks.Comment object at 0x100d20c20>
-    // <conv.chunks.Comment object at 0x100d20d40>
+    // if mode still 0, do not load
+    // into buffer pointer
     JMP(SetVRAMAddr_A);
     JMP(SetupIntermediate);
 }
@@ -1599,18 +1599,18 @@ int InitScreen() {
 int SetupIntermediate() {
     lda(BackgroundColorCtrl);
     pha();
-    // <conv.chunks.Comment object at 0x100d20fb0>
-    // <conv.chunks.Comment object at 0x100d21100>
+    // save current background color control
+    // and player status to stack
     lda(PlayerStatus);
     pha();
     lda(0x0);
     sta(PlayerStatus);
     lda(0x2);
     sta(BackgroundColorCtrl);
-    // <conv.chunks.Comment object at 0x100d21310>
-    // <conv.chunks.Comment object at 0x100d213a0>
-    // <conv.chunks.Comment object at 0x100d21550>
-    // <conv.chunks.Comment object at 0x100d215e0>
+    // set background color to black
+    // and player status to not fiery
+    // this is the ONLY time background color control
+    // is set to less than 4
     JSR(GetPlayerColors);
     pla();
     sta(PlayerStatus);
@@ -1627,15 +1627,15 @@ int GetAreaPalette() {
 }
 
 int SetVRAMAddr_A() {
-    // <conv.chunks.Comment object at 0x100d21e20>
-    // <conv.chunks.Comment object at 0x100d22150>
-    // <conv.chunks.Comment object at 0x100d222a0>
+    // select appropriate palette to load
+    // based on area type
+    // store offset into buffer control
     stx(VRAM_Buffer_AddrCtrl);
     JMP(NextSubtask);
 }
 
 int NextSubtask() {
-    // <conv.chunks.Comment object at 0x100d223f0>
+    // move onto next task
     JMP(IncSubtask);
     JMP(GetBackgroundColor);
 }
@@ -1649,49 +1649,49 @@ int GetBackgroundColor() {
 }
 
 int NoBGColor() {
-    // <conv.chunks.Comment object at 0x100d22e70>
-    // <conv.chunks.Comment object at 0x100d235f0>
-    // <conv.chunks.Comment object at 0x100d23710>
-    // <conv.chunks.Comment object at 0x100d238f0>
-    // <conv.chunks.Comment object at 0x100d23a10>
+    // check background color control
+    // if not set, increment task and fetch palette
+    // put appropriate palette into vram
+    // note that if set to 5-7, $0301 will not be read
+    // increment to next subtask and plod on through
     inc(ScreenRoutineTask);
     JMP(GetPlayerColors);
 }
 
 int GetPlayerColors() {
     ldx(VRAM_Buffer1_Offset);
-    // <conv.chunks.Comment object at 0x100d23b90>
+    // get current buffer offset
     ldy(0x0);
     lda(CurrentPlayer);
-    // <conv.chunks.Comment object at 0x100d23d10>
+    // check which player is on the screen
     BEQ(ChkFiery);
     ldy(0x4);
     JMP(ChkFiery);
 }
 
 int ChkFiery() {
-    // <conv.chunks.Comment object at 0x100d23fb0>
-    // <conv.chunks.Comment object at 0x100d2c080>
+    // load offset for luigi
+    // check player status
     lda(PlayerStatus);
     cmp(0x2);
     BNE(StartClrGet);
-    // <conv.chunks.Comment object at 0x100d2c2c0>
+    // if fiery, load alternate offset for fiery player
     ldy(0x8);
     JMP(StartClrGet);
 }
 
 int StartClrGet() {
-    // <conv.chunks.Comment object at 0x100d2c4d0>
+    // do four colors
     lda(0x3);
     sta(0x0);
     JMP(ClrGetLoop);
 }
 
 int ClrGetLoop() {
-    // <conv.chunks.Comment object at 0x100d2c620>
+    // fetch player colors and store them
     lda(offsetof(G, PlayerColors), y);
     sta(((VRAM_Buffer1) + (3)), x);
-    // <conv.chunks.Comment object at 0x100d2c920>
+    // in the buffer
     iny();
     inx();
     dec(0x0);
@@ -1704,35 +1704,35 @@ int ClrGetLoop() {
 }
 
 int SetBGColor() {
-    // <conv.chunks.Comment object at 0x100d2ce00>
-    // <conv.chunks.Comment object at 0x100d2cf20>
-    // <conv.chunks.Comment object at 0x100d2d040>
-    // <conv.chunks.Comment object at 0x100d2d160>
-    // <conv.chunks.Comment object at 0x100d2d280>
+    // load original offset from before
+    // if this value is four or greater, it will be set
+    // therefore use it as offset to background color
+    // otherwise use area type bits from area offset as offset
+    // to background color instead
     lda(offsetof(G, BackgroundColors), y);
     sta(((VRAM_Buffer1) + (3)), x);
     lda(0x3f);
     sta(VRAM_Buffer1, x);
-    // <conv.chunks.Comment object at 0x100d2d5b0>
-    // <conv.chunks.Comment object at 0x100d2d640>
+    // set for sprite palette address
+    // save to buffer
     lda(0x10);
     sta(((VRAM_Buffer1) + (1)), x);
     lda(0x4);
-    // <conv.chunks.Comment object at 0x100d2dac0>
+    // write length byte to buffer
     sta(((VRAM_Buffer1) + (2)), x);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x100d2dd90>
+    // now the null terminator
     sta(((VRAM_Buffer1) + (7)), x);
     txa();
     clc();
-    // <conv.chunks.Comment object at 0x100d2e090>
-    // <conv.chunks.Comment object at 0x100d2e150>
+    // move the buffer pointer ahead 7 bytes
+    // in case we want to write anything else later
     adc(0x7);
     JMP(SetVRAMOffset);
 }
 
 int SetVRAMOffset() {
-    // <conv.chunks.Comment object at 0x100d2e240>
+    // store as new vram buffer offset
     sta(VRAM_Buffer1_Offset);
     return 0;
     JMP(GetAlternatePalette1);
@@ -1740,7 +1740,7 @@ int SetVRAMOffset() {
 
 int GetAlternatePalette1() {
     lda(AreaStyle);
-    // <conv.chunks.Comment object at 0x100d2e540>
+    // check for mushroom level style
     cmp(0x1);
     BNE(NoAltPal);
     lda(0xb);
@@ -1753,7 +1753,7 @@ int SetVRAMAddr_B() {
 }
 
 int NoAltPal() {
-    // <conv.chunks.Comment object at 0x100d2ea80>
+    // now onto the next task
     JMP(IncSubtask);
     JMP(WriteTopStatusLine);
 }
@@ -1767,35 +1767,35 @@ int WriteTopStatusLine() {
 
 int WriteBottomStatusLine() {
     JSR(GetSBNybbles);
-    // <conv.chunks.Comment object at 0x100d2f020>
+    // write player's score and coin tally to screen
     ldx(VRAM_Buffer1_Offset);
     lda(0x20);
-    // <conv.chunks.Comment object at 0x100d2f230>
+    // write address for world-area number on screen
     sta(VRAM_Buffer1, x);
     lda(0x73);
     sta(((VRAM_Buffer1) + (1)), x);
     lda(0x3);
-    // <conv.chunks.Comment object at 0x100d2f710>
+    // write length for it
     sta(((VRAM_Buffer1) + (2)), x);
     ldy(WorldNumber);
-    // <conv.chunks.Comment object at 0x100d2f9e0>
+    // first the world number
     iny();
     tya();
     sta(((VRAM_Buffer1) + (3)), x);
     lda(0x28);
-    // <conv.chunks.Comment object at 0x100d2fdd0>
+    // next the dash
     sta(((VRAM_Buffer1) + (4)), x);
     ldy(LevelNumber);
     iny();
-    // <conv.chunks.Comment object at 0x100d340e0>
-    // <conv.chunks.Comment object at 0x100d34230>
+    // next the level number
+    // increment for proper number display
     tya();
     sta(((VRAM_Buffer1) + (5)), x);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x100d34500>
+    // put null terminator on
     sta(((VRAM_Buffer1) + (6)), x);
     txa();
-    // <conv.chunks.Comment object at 0x100d34800>
+    // move the buffer offset up by 6 bytes
     clc();
     adc(0x6);
     sta(VRAM_Buffer1_Offset);
@@ -1806,19 +1806,19 @@ int WriteBottomStatusLine() {
 int DisplayTimeUp() {
     lda(GameTimerExpiredFlag);
     BEQ(NoTimeUp);
-    // <conv.chunks.Comment object at 0x100d34c50>
-    // <conv.chunks.Comment object at 0x100d34d70>
+    // if game timer not expired, increment task
+    // control 2 tasks forward, otherwise, stay here
     lda(0x0);
     sta(GameTimerExpiredFlag);
     lda(0x2);
-    // <conv.chunks.Comment object at 0x100d34ef0>
-    // <conv.chunks.Comment object at 0x100d350a0>
+    // reset timer expiration flag
+    // output time-up screen to buffer
     JMP(OutputInter);
     JMP(NoTimeUp);
 }
 
 int NoTimeUp() {
-    // <conv.chunks.Comment object at 0x100d352b0>
+    // increment control task 2 tasks forward
     inc(ScreenRoutineTask);
     JMP(IncSubtask);
     JMP(DisplayIntermediate);
@@ -1833,14 +1833,14 @@ int DisplayIntermediate() {
     BNE(NoInter);
     ldy(AreaType);
     cpy(0x3);
-    // <conv.chunks.Comment object at 0x100d35550>
-    // <conv.chunks.Comment object at 0x100d35670>
-    // <conv.chunks.Comment object at 0x100d357c0>
-    // <conv.chunks.Comment object at 0x100d358e0>
-    // <conv.chunks.Comment object at 0x100d35a00>
-    // <conv.chunks.Comment object at 0x100d35b20>
-    // <conv.chunks.Comment object at 0x100d35c70>
-    // <conv.chunks.Comment object at 0x100d35d90>
+    // check primary mode of operation
+    // if in title screen mode, skip this
+    // are we in game over mode?
+    // if so, proceed to display game over screen
+    // otherwise check for mode of alternate entry
+    // and branch if found
+    // check if we are on castle level
+    // and if so, branch (possibly residual)
     BEQ(PlayerInter);
     lda(DisableIntermediate);
     BNE(NoInter);
@@ -1848,9 +1848,9 @@ int DisplayIntermediate() {
 }
 
 int PlayerInter() {
-    // <conv.chunks.Comment object at 0x100d35fa0>
-    // <conv.chunks.Comment object at 0x100d360c0>
-    // <conv.chunks.Comment object at 0x100d36210>
+    // if this flag is set, skip intermediate lives display
+    // and jump to specific task, otherwise
+    // put player in appropriate place for
     JSR(DrawPlayer_Intermediate);
     lda(0x1);
     JMP(OutputInter);
@@ -1861,24 +1861,24 @@ int OutputInter() {
     JSR(ResetScreenTimer);
     lda(0x0);
     sta(DisableScreenFlag);
-    // <conv.chunks.Comment object at 0x100d366f0>
+    // reenable screen output
     return 0;
     JMP(GameOverInter);
 }
 
 int GameOverInter() {
-    // <conv.chunks.Comment object at 0x100d36930>
+    // set screen timer
     lda(0x12);
     sta(ScreenTimer);
     lda(0x3);
-    // <conv.chunks.Comment object at 0x100d36b70>
+    // output game over screen to buffer
     JSR(WriteGameText);
     JMP(IncModeTask_B);
     JMP(NoInter);
 }
 
 int NoInter() {
-    // <conv.chunks.Comment object at 0x100d36e70>
+    // set for specific task and leave
     lda(0x8);
     sta(ScreenRoutineTask);
     return 0;
@@ -1891,26 +1891,26 @@ int AreaParserTaskControl() {
 }
 
 int TaskLoop() {
-    // <conv.chunks.Comment object at 0x100d371d0>
-    // <conv.chunks.Comment object at 0x100d372f0>
+    // turn off screen
+    // render column set of current area
     JSR(AreaParserTaskHandler);
     lda(AreaParserTaskNum);
     BNE(TaskLoop);
     dec(ColumnSets);
-    // <conv.chunks.Comment object at 0x100d37440>
-    // <conv.chunks.Comment object at 0x100d37560>
-    // <conv.chunks.Comment object at 0x100d37680>
+    // check number of tasks
+    // if tasks still not all done, do another one
+    // do we need to render more column sets?
     BPL(OutputCol);
     inc(ScreenRoutineTask);
     JMP(OutputCol);
 }
 
 int OutputCol() {
-    // <conv.chunks.Comment object at 0x100d37890>
-    // <conv.chunks.Comment object at 0x100d379b0>
+    // if not, move on to the next task
+    // set vram buffer to output rendered column set
     lda(0x6);
     sta(VRAM_Buffer_AddrCtrl);
-    // <conv.chunks.Comment object at 0x100d37a70>
+    // on next NMI
     return 0;
     JMP(DrawTitleScreen);
 }
@@ -1920,16 +1920,16 @@ int DrawTitleScreen() {
     BNE(IncModeTask_B);
     lda(HI8(TitleScreenDataOffset));
     sta(PPU_ADDRESS);
-    // <conv.chunks.Comment object at 0x100d37d70>
-    // <conv.chunks.Comment object at 0x100d37e90>
-    // <conv.chunks.Comment object at 0x100d37fb0>
-    // <conv.chunks.Comment object at 0x100d44140>
+    // are we in title screen mode?
+    // if not, exit
+    // load address $1ec0 into
+    // the vram address register
     lda(LO8(TitleScreenDataOffset));
     sta(PPU_ADDRESS);
     lda(0x3);
     sta(0x1);
-    // <conv.chunks.Comment object at 0x100d44470>
-    // <conv.chunks.Comment object at 0x100d445c0>
+    // put address $0300 into
+    // the indirect at $00
     ldy(0x0);
     sty(0x0);
     lda(PPU_DATA);
@@ -1937,11 +1937,11 @@ int DrawTitleScreen() {
 }
 
 int OutputTScr() {
-    // <conv.chunks.Comment object at 0x100d44710>
-    // <conv.chunks.Comment object at 0x100d449b0>
+    // do one garbage read
+    // get title screen from chr-rom
     lda(PPU_DATA);
     sta((0x0), y);
-    // <conv.chunks.Comment object at 0x100d44b00>
+    // store 256 bytes into buffer
     iny();
     BNE(ChkHiByte);
     inc(0x1);
@@ -1949,9 +1949,9 @@ int OutputTScr() {
 }
 
 int ChkHiByte() {
-    // <conv.chunks.Comment object at 0x100d44d10>
-    // <conv.chunks.Comment object at 0x100d44e60>
-    // <conv.chunks.Comment object at 0x100d44ef0>
+    // if not past 256 bytes, do not increment
+    // otherwise increment high byte of indirect
+    // check high byte?
     lda(0x1);
     cmp(0x4);
     BNE(OutputTScr);
@@ -1979,8 +1979,8 @@ int TScrClear() {
 }
 
 int IncSubtask() {
-    // <conv.chunks.Comment object at 0x100d460c0>
-    // <conv.chunks.Comment object at 0x100d461e0>
+    // draw player select icon
+    // move onto next task
     inc(ScreenRoutineTask);
     return 0;
     JMP(WriteTopScore);
@@ -1988,13 +1988,13 @@ int IncSubtask() {
 
 int WriteTopScore() {
     lda(0xfa);
-    // <conv.chunks.Comment object at 0x100d46420>
+    // run display routine to display top score on title
     JSR(UpdateNumber);
     JMP(IncModeTask_B);
 }
 
 int IncModeTask_B() {
-    // <conv.chunks.Comment object at 0x100d46630>
+    // move onto next mode
     inc(OperMode_Task);
     return 0;
     JMP(WriteGameText);
@@ -2002,7 +2002,7 @@ int IncModeTask_B() {
 
 int WriteGameText() {
     pha();
-    // <conv.chunks.Comment object at 0x100d59c40>
+    // save text number to stack
     asl();
     tay();
     cpy(0x4);
@@ -2014,13 +2014,13 @@ int WriteGameText() {
 }
 
 int Chk2Players() {
-    // <conv.chunks.Comment object at 0x100d59d90>
-    // <conv.chunks.Comment object at 0x100d59e20>
-    // <conv.chunks.Comment object at 0x100d59eb0>
-    // <conv.chunks.Comment object at 0x100d5a060>
-    // <conv.chunks.Comment object at 0x100d5a0f0>
-    // <conv.chunks.Comment object at 0x100d5a2a0>
-    // <conv.chunks.Comment object at 0x100d5a330>
+    // multiply by 2 and use as offset
+    // if set to do top status bar or world/lives display,
+    // branch to use current offset as-is
+    // if set to do time-up or game over,
+    // branch to check players
+    // otherwise warp zone, therefore set offset
+    // check for number of players
     lda(NumberOfPlayers);
     BNE(LdGameText);
     iny();
@@ -2028,52 +2028,52 @@ int Chk2Players() {
 }
 
 int LdGameText() {
-    // <conv.chunks.Comment object at 0x100d5a510>
-    // <conv.chunks.Comment object at 0x100d5a660>
-    // <conv.chunks.Comment object at 0x100d5a6f0>
+    // if there are two, use current offset to also print name
+    // otherwise increment offset by one to not print name
+    // get offset to message we want to print
     ldx(offsetof(G, GameTextOffsets), y);
     ldy(0x0);
     JMP(GameTextLoop);
 }
 
 int GameTextLoop() {
-    // <conv.chunks.Comment object at 0x100d5a8d0>
+    // load message data
     lda(offsetof(G, GameText), x);
     cmp(0xff);
     BEQ(EndGameText);
     sta(VRAM_Buffer1, y);
     inx();
-    // <conv.chunks.Comment object at 0x100d5aae0>
-    // <conv.chunks.Comment object at 0x100d5ab70>
-    // <conv.chunks.Comment object at 0x100d5ad20>
-    // <conv.chunks.Comment object at 0x100d5aea0>
+    // check for terminator
+    // branch to end text if found
+    // otherwise write data to buffer
+    // and increment increment
     iny();
     BNE(GameTextLoop);
     JMP(EndGameText);
 }
 
 int EndGameText() {
-    // <conv.chunks.Comment object at 0x100d5afc0>
-    // <conv.chunks.Comment object at 0x100d5b0e0>
+    // do this for 256 bytes if no terminator found
+    // put null terminator at end
     lda(0x0);
     sta(VRAM_Buffer1, y);
     pla();
-    // <conv.chunks.Comment object at 0x100d5b380>
+    // pull original text number from stack
     tax();
     cmp(0x4);
-    // <conv.chunks.Comment object at 0x100d5b4a0>
+    // are we printing warp zone?
     BCS(PrintWarpZoneNumbers);
     dex();
     BNE(CheckPlayerName);
     lda(NumberofLives);
     clc();
-    // <conv.chunks.Comment object at 0x100d5b6e0>
-    // <conv.chunks.Comment object at 0x100d5b770>
-    // <conv.chunks.Comment object at 0x100d5b890>
-    // <conv.chunks.Comment object at 0x100d5b9e0>
+    // are we printing the world/lives display?
+    // if not, branch to check player's name
+    // otherwise, check number of lives
+    // and increment by one for display
     adc(0x1);
     cmp(10);
-    // <conv.chunks.Comment object at 0x100d5bb90>
+    // more than 9 lives?
     BCC(PutLives);
     sbc(10);
     ldy(0x9f);
@@ -2085,13 +2085,13 @@ int PutLives() {
     sta(((VRAM_Buffer1) + (8)));
     ldy(WorldNumber);
     iny();
-    // <conv.chunks.Comment object at 0x100d603b0>
-    // <conv.chunks.Comment object at 0x100d60500>
+    // write world and level numbers (incremented for display)
+    // to the buffer in the spaces surrounding the dash
     sty(((VRAM_Buffer1) + (19)));
     ldy(LevelNumber);
     iny();
     sty(((VRAM_Buffer1) + (21)));
-    // <conv.chunks.Comment object at 0x100d608c0>
+    // we're done here
     return 0;
     JMP(CheckPlayerName);
 }
@@ -2101,13 +2101,13 @@ int CheckPlayerName() {
     BEQ(ExitChkName);
     lda(CurrentPlayer);
     dex();
-    // <conv.chunks.Comment object at 0x100d60b60>
-    // <conv.chunks.Comment object at 0x100d60c80>
-    // <conv.chunks.Comment object at 0x100d60da0>
-    // <conv.chunks.Comment object at 0x100d60ef0>
+    // check number of players
+    // if only 1 player, leave
+    // load current player
+    // check to see if current message number is for time up
     BNE(ChkLuigi);
     ldy(OperMode);
-    // <conv.chunks.Comment object at 0x100d61070>
+    // check for game over mode
     cpy(GameOverModeValue);
     BEQ(ChkLuigi);
     eor(0b1);
@@ -2117,13 +2117,13 @@ int CheckPlayerName() {
 int ChkLuigi() {
     lsr();
     BCC(ExitChkName);
-    // <conv.chunks.Comment object at 0x100d61550>
+    // if mario is current player, do not change the name
     ldy(0x4);
     JMP(NameLoop);
 }
 
 int NameLoop() {
-    // <conv.chunks.Comment object at 0x100d616d0>
+    // otherwise, replace "MARIO" with "LUIGI"
     lda(offsetof(G, LuigiName), y);
     sta(((VRAM_Buffer1) + (3)), y);
     dey();
@@ -2140,29 +2140,29 @@ int PrintWarpZoneNumbers() {
     sbc(0x4);
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x100d61d60>
-    // <conv.chunks.Comment object at 0x100d61eb0>
-    // <conv.chunks.Comment object at 0x100d61fa0>
+    // subtract 4 and then shift to the left
+    // twice to get proper warp zone number
+    // offset
     tax();
     ldy(0x0);
     JMP(WarpNumLoop);
 }
 
 int WarpNumLoop() {
-    // <conv.chunks.Comment object at 0x100d62120>
+    // print warp zone numbers into the
     lda(offsetof(G, WarpZoneNumbers), x);
     sta(((VRAM_Buffer1) + (27)), y);
-    // <conv.chunks.Comment object at 0x100d62330>
+    // placeholders from earlier
     inx();
     iny();
-    // <conv.chunks.Comment object at 0x100d62600>
+    // put a number in every fourth space
     iny();
     iny();
     iny();
     cpy(0xc);
     BCC(WarpNumLoop);
     lda(0x2c);
-    // <conv.chunks.Comment object at 0x100d62a20>
+    // load new buffer pointer at end of message
     JMP(SetVRAMOffset);
     JMP(ResetSpritesAndScreenTimer);
 }
@@ -2176,7 +2176,7 @@ int ResetSpritesAndScreenTimer() {
 
 int ResetScreenTimer() {
     lda(0x7);
-    // <conv.chunks.Comment object at 0x100d63050>
+    // reset timer again
     sta(ScreenTimer);
     inc(ScreenRoutineTask);
     JMP(NoReset);
@@ -2189,33 +2189,33 @@ int NoReset() {
 
 int RenderAreaGraphics() {
     lda(CurrentColumnPos);
-    // <conv.chunks.Comment object at 0x100d63650>
+    // store LSB of where we're at
     anda(0x1);
     sta(0x5);
     ldy(VRAM_Buffer2_Offset);
-    // <conv.chunks.Comment object at 0x100d637d0>
+    // store vram buffer offset
     sty(0x0);
     lda(CurrentNTAddr_Low);
-    // <conv.chunks.Comment object at 0x100d63a70>
+    // get current name table address we're supposed to render
     sta(((VRAM_Buffer2) + (1)), y);
     lda(CurrentNTAddr_High);
     sta(VRAM_Buffer2, y);
     lda(0x9a);
     sta(((VRAM_Buffer2) + (2)), y);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x100d6c0b0>
-    // <conv.chunks.Comment object at 0x100d6c140>
-    // <conv.chunks.Comment object at 0x100d6c3e0>
+    // store length byte of 26 here with d7 set
+    // to increment by 32 (in columns)
+    // init attribute row
     sta(0x4);
     tax();
     JMP(DrawMTLoop);
 }
 
 int DrawMTLoop() {
-    // <conv.chunks.Comment object at 0x100d6c680>
+    // store init value of 0 or incremented offset for buffer
     stx(0x1);
     lda(MetatileBuffer, x);
-    // <conv.chunks.Comment object at 0x100d6c770>
+    // get first metatile number, and mask out all but 2 MSB
     anda(0b11000000);
     sta(0x3);
     asl();
@@ -2223,19 +2223,19 @@ int DrawMTLoop() {
     rol();
     tay();
     lda(offsetof(G, MetatileGraphics_Low), y);
-    // <conv.chunks.Comment object at 0x100d6ca40>
-    // <conv.chunks.Comment object at 0x100d6ca10>
-    // <conv.chunks.Comment object at 0x100d6cc20>
-    // <conv.chunks.Comment object at 0x100d6cce0>
-    // <conv.chunks.Comment object at 0x100d6cda0>
-    // <conv.chunks.Comment object at 0x100d6ce30>
+    // store attribute table bits here
+    // note that metatile format is:
+    // %xx000000 - attribute table bits,
+    // %00xxxxxx - metatile number
+    // rotate bits to d1-d0 and use as offset here
+    // get address to graphics table from here
     sta(0x6);
     lda(offsetof(G, MetatileGraphics_High), y);
     sta(0x7);
     lda(MetatileBuffer, x);
     asl();
-    // <conv.chunks.Comment object at 0x100d6d190>
-    // <conv.chunks.Comment object at 0x100d6d400>
+    // get metatile number again
+    // multiply by 4 and use as tile offset
     asl();
     sta(0x2);
     lda(AreaParserTaskNum);
@@ -2243,51 +2243,51 @@ int DrawMTLoop() {
     eor(0b1);
     asl();
     adc(0x2);
-    // <conv.chunks.Comment object at 0x100d6d520>
-    // <conv.chunks.Comment object at 0x100d6d730>
-    // <conv.chunks.Comment object at 0x100d6d850>
-    // <conv.chunks.Comment object at 0x100d6d9a0>
-    // <conv.chunks.Comment object at 0x100d6da60>
+    // get current task number for level processing and
+    // mask out all but LSB, then invert LSB, multiply by 2
+    // to get the correct column position in the metatile,
+    // then add to the tile offset so we can draw either side
+    // of the metatiles
     tay();
     ldx(0x0);
-    // <conv.chunks.Comment object at 0x100d6dc10>
+    // use vram buffer offset from before as X
     lda((0x6), y);
     sta(((VRAM_Buffer2) + (3)), x);
-    // <conv.chunks.Comment object at 0x100d6dbe0>
+    // get first tile number (top left or top right) and store
     iny();
     lda((0x6), y);
-    // <conv.chunks.Comment object at 0x100d6e0f0>
+    // now get the second (bottom left or bottom right) and store
     sta(((VRAM_Buffer2) + (4)), x);
     ldy(0x4);
     lda(0x5);
     BNE(RightCheck);
     lda(0x1);
     lsr();
-    // <conv.chunks.Comment object at 0x100d6e480>
-    // <conv.chunks.Comment object at 0x100d6e450>
-    // <conv.chunks.Comment object at 0x100d6e630>
-    // <conv.chunks.Comment object at 0x100d6e7e0>
-    // <conv.chunks.Comment object at 0x100d6e7b0>
+    // get current attribute row
+    // get LSB of current column where we're at, and
+    // branch if set (clear = left attrib, set = right)
+    // get current row we're rendering
+    // branch if LSB set (clear = top left, set = bottom left)
     BCS(LLeft);
     rol(0x3);
     rol(0x3);
-    // <conv.chunks.Comment object at 0x100d6eae0>
-    // <conv.chunks.Comment object at 0x100d6eab0>
+    // rotate attribute bits 3 to the left
+    // thus in d1-d0, for upper left square
     rol(0x3);
     JMP(SetAttrib);
     JMP(RightCheck);
 }
 
 int RightCheck() {
-    // <conv.chunks.Comment object at 0x100d6eed0>
+    // get LSB of current row we're rendering
     lda(0x1);
     lsr();
-    // <conv.chunks.Comment object at 0x100d6ef00>
+    // branch if set (clear = top right, set = bottom right)
     BCS(NextMTRow);
     lsr(0x3);
     lsr(0x3);
-    // <conv.chunks.Comment object at 0x100d6f200>
-    // <conv.chunks.Comment object at 0x100d6f1d0>
+    // shift attribute bits 4 to the right
+    // thus in d3-d2, for upper right square
     lsr(0x3);
     lsr(0x3);
     JMP(SetAttrib);
@@ -2295,40 +2295,40 @@ int RightCheck() {
 }
 
 int LLeft() {
-    // <conv.chunks.Comment object at 0x100d6f6e0>
+    // shift attribute bits 2 to the right
     lsr(0x3);
     lsr(0x3);
     JMP(NextMTRow);
 }
 
 int NextMTRow() {
-    // <conv.chunks.Comment object at 0x100d6f740>
-    // <conv.chunks.Comment object at 0x100d6f920>
+    // thus in d5-d4 for lower left square
+    // move onto next attribute row
     inc(0x4);
     JMP(SetAttrib);
 }
 
 int SetAttrib() {
-    // <conv.chunks.Comment object at 0x100d6fa70>
+    // get previously saved bits from before
     lda(AttributeBuffer, y);
     ora(0x3);
     sta(AttributeBuffer, y);
     inc(0x0);
-    // <conv.chunks.Comment object at 0x100d6fc80>
-    // <conv.chunks.Comment object at 0x100d6fd10>
-    // <conv.chunks.Comment object at 0x100d6fef0>
+    // if any, and put new bits, if any, onto
+    // the old, and store
+    // increment vram buffer offset by 2
     inc(0x0);
     ldx(0x1);
     inx();
-    // <conv.chunks.Comment object at 0x100d780b0>
-    // <conv.chunks.Comment object at 0x100d781d0>
+    // get current gfx buffer row, and check for
+    // the bottom of the screen
     cpx(0xd);
     BCC(DrawMTLoop);
     ldy(0x0);
     iny();
-    // <conv.chunks.Comment object at 0x100d78350>
-    // <conv.chunks.Comment object at 0x100d78530>
-    // <conv.chunks.Comment object at 0x100d78500>
+    // if not there yet, loop back
+    // get current vram buffer offset, increment by 3
+    // (for name table address and length bytes)
     iny();
     iny();
     lda(0x0);
@@ -2337,26 +2337,26 @@ int SetAttrib() {
     inc(CurrentNTAddr_Low);
     lda(CurrentNTAddr_Low);
     anda(0b11111);
-    // <conv.chunks.Comment object at 0x100d78860>
-    // <conv.chunks.Comment object at 0x100d78a40>
-    // <conv.chunks.Comment object at 0x100d78b60>
-    // <conv.chunks.Comment object at 0x100d78c80>
-    // <conv.chunks.Comment object at 0x100d78da0>
+    // put null terminator at end of data for name table
+    // store new buffer offset
+    // increment name table address low
+    // check current low byte
+    // if no wraparound, just skip this part
     BNE(ExitDrawM);
     lda(0x80);
     sta(CurrentNTAddr_Low);
     lda(CurrentNTAddr_High);
     eor(0b100);
-    // <conv.chunks.Comment object at 0x100d78fb0>
-    // <conv.chunks.Comment object at 0x100d79040>
-    // <conv.chunks.Comment object at 0x100d791f0>
-    // <conv.chunks.Comment object at 0x100d79310>
+    // if wraparound occurs, make sure low byte stays
+    // just under the status bar
+    // and then invert d2 of the name table address high
+    // to move onto the next appropriate name table
     sta(CurrentNTAddr_High);
     JMP(ExitDrawM);
 }
 
 int ExitDrawM() {
-    // <conv.chunks.Comment object at 0x100d79520>
+    // jump to set buffer to $0341 and leave
     JMP(SetVRAMCtrl);
     JMP(RenderAttributeTables);
 }
@@ -2365,36 +2365,36 @@ int RenderAttributeTables() {
     lda(CurrentNTAddr_Low);
     anda(0b11111);
     sec();
-    // <conv.chunks.Comment object at 0x100d79730>
-    // <conv.chunks.Comment object at 0x100d79850>
-    // <conv.chunks.Comment object at 0x100d799a0>
+    // get low byte of next name table address
+    // to be written to, mask out all but 5 LSB,
+    // subtract four
     sbc(0x4);
     anda(0b11111);
-    // <conv.chunks.Comment object at 0x100d79a90>
+    // mask out bits again and store
     sta(0x1);
     lda(CurrentNTAddr_High);
-    // <conv.chunks.Comment object at 0x100d79c40>
+    // get high byte and branch if borrow not set
     BCS(SetATHigh);
     eor(0b100);
     JMP(SetATHigh);
 }
 
 int SetATHigh() {
-    // <conv.chunks.Comment object at 0x100d79f40>
-    // <conv.chunks.Comment object at 0x100d7a060>
+    // otherwise invert d2
+    // mask out all other bits
     anda(0b100);
     ora(0x23);
-    // <conv.chunks.Comment object at 0x100d7a1b0>
+    // add $2300 to the high byte and store
     sta(0x0);
     lda(0x1);
     lsr();
-    // <conv.chunks.Comment object at 0x100d7a360>
-    // <conv.chunks.Comment object at 0x100d7a240>
+    // get low byte - 4, divide by 4, add offset for
+    // attribute table and store
     lsr();
     adc(0xc0);
     sta(0x1);
-    // <conv.chunks.Comment object at 0x100d7a630>
-    // <conv.chunks.Comment object at 0x100d7a780>
+    // we should now have the appropriate block of
+    // attribute table in our temp address
     ldx(0x0);
     ldy(VRAM_Buffer2_Offset);
     JMP(AttribLoop);
@@ -2403,34 +2403,34 @@ int SetATHigh() {
 int AttribLoop() {
     lda(0x0);
     sta(VRAM_Buffer2, y);
-    // <conv.chunks.Comment object at 0x100d7ab40>
+    // store high byte of attribute table address
     lda(0x1);
     clc();
     adc(0x8);
-    // <conv.chunks.Comment object at 0x100d7ad80>
-    // <conv.chunks.Comment object at 0x100d7aea0>
+    // get low byte, add 8 because we want to start
+    // below the status bar, and store
     sta(((VRAM_Buffer2) + (1)), y);
     sta(0x1);
     lda(AttributeBuffer, x);
     sta(((VRAM_Buffer2) + (3)), y);
-    // <conv.chunks.Comment object at 0x100d7b1d0>
-    // <conv.chunks.Comment object at 0x100d7b260>
-    // <conv.chunks.Comment object at 0x100d7b410>
+    // also store in temp again
+    // fetch current attribute table byte and store
+    // in the buffer
     lda(0x1);
     sta(((VRAM_Buffer2) + (2)), y);
-    // <conv.chunks.Comment object at 0x100d7b680>
+    // store length of 1 in buffer
     lsr();
     sta(AttributeBuffer, x);
     iny();
-    // <conv.chunks.Comment object at 0x100d7b9b0>
-    // <conv.chunks.Comment object at 0x100d7bb30>
+    // clear current byte in attribute buffer
+    // increment buffer offset by 4 bytes
     iny();
     iny();
     iny();
     inx();
     cpx(0x7);
-    // <conv.chunks.Comment object at 0x100d7bda0>
-    // <conv.chunks.Comment object at 0x100d7be30>
+    // increment attribute offset and check to see
+    // if we're at the end yet
     BCC(AttribLoop);
     sta(VRAM_Buffer2, y);
     sty(VRAM_Buffer2_Offset);
@@ -2440,7 +2440,7 @@ int AttribLoop() {
 int SetVRAMCtrl() {
     lda(0x6);
     sta(VRAM_Buffer_AddrCtrl);
-    // <conv.chunks.Comment object at 0x100d84380>
+    // set buffer to $0341 and leave
     return 0;
     JMP(ColorRotation);
 }
@@ -2450,10 +2450,10 @@ int ColorRotation() {
     anda(0x7);
     BNE(ExitColorRot);
     ldx(VRAM_Buffer1_Offset);
-    // <conv.chunks.Comment object at 0x100d84740>
-    // <conv.chunks.Comment object at 0x100d85910>
-    // <conv.chunks.Comment object at 0x100d859a0>
-    // <conv.chunks.Comment object at 0x100d85b50>
+    // get frame counter
+    // mask out all but three LSB
+    // branch if not set to zero to do this every eighth frame
+    // check vram buffer offset
     cpx(0x31);
     BCS(ExitColorRot);
     tay();
@@ -2461,71 +2461,71 @@ int ColorRotation() {
 }
 
 int GetBlankPal() {
-    // <conv.chunks.Comment object at 0x100d85cd0>
-    // <conv.chunks.Comment object at 0x100d85eb0>
-    // <conv.chunks.Comment object at 0x100d85f40>
+    // if offset over 48 bytes, branch to leave
+    // otherwise use frame counter's 3 LSB as offset here
+    // get blank palette for palette 3
     lda(offsetof(G, BlankPalette), y);
     sta(VRAM_Buffer1, x);
     inx();
-    // <conv.chunks.Comment object at 0x100d860c0>
-    // <conv.chunks.Comment object at 0x100d86240>
+    // store it in the vram buffer
+    // increment offsets
     iny();
     cpy(0x8);
     BCC(GetBlankPal);
     ldx(VRAM_Buffer1_Offset);
-    // <conv.chunks.Comment object at 0x100d863c0>
-    // <conv.chunks.Comment object at 0x100d86570>
+    // do this until all bytes are copied
+    // get current vram buffer offset
     lda(0x3);
     sta(0x0);
     lda(AreaType);
     asl();
-    // <conv.chunks.Comment object at 0x100d867b0>
-    // <conv.chunks.Comment object at 0x100d86840>
-    // <conv.chunks.Comment object at 0x100d869f0>
+    // set counter here
+    // get area type
+    // multiply by 4 to get proper offset
     asl();
     tay();
     JMP(GetAreaPal);
 }
 
 int GetAreaPal() {
-    // <conv.chunks.Comment object at 0x100d86b40>
-    // <conv.chunks.Comment object at 0x100d86bd0>
+    // save as offset here
+    // fetch palette to be written based on area type
     lda(offsetof(G, Palette3Data), y);
     sta(((VRAM_Buffer1) + (3)), x);
-    // <conv.chunks.Comment object at 0x100d86d50>
+    // store it to overwrite blank palette in vram buffer
     iny();
     inx();
     dec(0x0);
     BPL(GetAreaPal);
     ldx(VRAM_Buffer1_Offset);
     ldy(ColorRotateOffset);
-    // <conv.chunks.Comment object at 0x100d870b0>
-    // <conv.chunks.Comment object at 0x100d87140>
-    // <conv.chunks.Comment object at 0x100d872c0>
-    // <conv.chunks.Comment object at 0x100d873e0>
+    // decrement counter
+    // do this until the palette is all copied
+    // get current vram buffer offset
+    // get color cycling offset
     lda(offsetof(G, ColorRotatePalette), y);
     sta(((VRAM_Buffer1) + (4)), x);
-    // <conv.chunks.Comment object at 0x100d87620>
+    // get and store current color in second slot of palette
     lda(VRAM_Buffer1_Offset);
     clc();
-    // <conv.chunks.Comment object at 0x100d87950>
+    // add seven bytes to vram buffer offset
     adc(0x7);
     sta(VRAM_Buffer1_Offset);
     inc(ColorRotateOffset);
-    // <conv.chunks.Comment object at 0x100d87bc0>
+    // increment color cycling offset
     lda(ColorRotateOffset);
     cmp(0x6);
     BCC(ExitColorRot);
-    // <conv.chunks.Comment object at 0x100d87dd0>
-    // <conv.chunks.Comment object at 0x100d87e60>
+    // check to see if it's still in range
+    // if so, branch to leave
     lda(0x0);
     sta(ColorRotateOffset);
     JMP(ExitColorRot);
 }
 
 int ExitColorRot() {
-    // <conv.chunks.Comment object at 0x100d8c0b0>
-    // <conv.chunks.Comment object at 0x100d8c290>
+    // otherwise, init to keep it in range
+    // leave
     return 0;
     JMP(RemoveCoin_Axe);
 }
@@ -2540,16 +2540,16 @@ int RemoveCoin_Axe() {
 }
 
 int WriteBlankMT() {
-    // <conv.chunks.Comment object at 0x100d8c530>
-    // <conv.chunks.Comment object at 0x100d8c5c0>
-    // <conv.chunks.Comment object at 0x100d8d220>
-    // <conv.chunks.Comment object at 0x100d8d3d0>
-    // <conv.chunks.Comment object at 0x100d8d4f0>
-    // <conv.chunks.Comment object at 0x100d8d580>
+    // set low byte so offset points to $0341
+    // load offset for default blank metatile
+    // check area type
+    // if not water type, use offset
+    // otherwise load offset for blank metatile used in water
+    // do a sub to write blank metatile to vram buffer
     JSR(PutBlockMetatile);
     lda(0x6);
     sta(VRAM_Buffer_AddrCtrl);
-    // <conv.chunks.Comment object at 0x100d8d7c0>
+    // set vram address controller to $0341 and leave
     return 0;
     JMP(ReplaceBlockMetatile);
 }
@@ -2572,21 +2572,21 @@ int WriteBlockMetatile() {
     cmp(0x0);
     BEQ(UseBOffset);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x100d8e030>
-    // <conv.chunks.Comment object at 0x100d8e0c0>
-    // <conv.chunks.Comment object at 0x100d8e1e0>
-    // <conv.chunks.Comment object at 0x100d8e390>
+    // load offset for blank metatile
+    // check contents of A for blank metatile
+    // branch if found (unconditional if branched from 8a6b)
+    // load offset for brick metatile w/ line
     cmp(0x58);
     BEQ(UseBOffset);
-    // <conv.chunks.Comment object at 0x100d8e510>
+    // use offset if metatile is brick with coins (w/ line)
     cmp(0x51);
     BEQ(UseBOffset);
     iny();
-    // <conv.chunks.Comment object at 0x100d8e720>
-    // <conv.chunks.Comment object at 0x100d8e900>
+    // use offset if metatile is breakable brick w/ line
+    // increment offset for brick metatile w/o line
     cmp(0x5d);
     BEQ(UseBOffset);
-    // <conv.chunks.Comment object at 0x100d8e9f0>
+    // use offset if metatile is brick with coins (w/o line)
     cmp(0x52);
     BEQ(UseBOffset);
     iny();
@@ -2594,9 +2594,9 @@ int WriteBlockMetatile() {
 }
 
 int UseBOffset() {
-    // <conv.chunks.Comment object at 0x100d8ec00>
-    // <conv.chunks.Comment object at 0x100d8ede0>
-    // <conv.chunks.Comment object at 0x100d8ee70>
+    // use offset if metatile is breakable brick w/o line
+    // if any other metatile, increment offset for empty block
+    // put Y in A
     tya();
     ldy(VRAM_Buffer1_Offset);
     iny();
@@ -2605,13 +2605,13 @@ int UseBOffset() {
 }
 
 int MoveVOffset() {
-    // <conv.chunks.Comment object at 0x100d8ef60>
-    // <conv.chunks.Comment object at 0x100d8f0b0>
-    // <conv.chunks.Comment object at 0x100d8f140>
-    // <conv.chunks.Comment object at 0x100d8f260>
+    // get vram buffer offset
+    // move onto next byte
+    // get appropriate block data and write to vram buffer
+    // decrement vram buffer offset
     dey();
     tya();
-    // <conv.chunks.Comment object at 0x100d8f380>
+    // add 10 bytes to it
     clc();
     adc(10);
     JMP(SetVRAMOffset);
@@ -2621,11 +2621,11 @@ int MoveVOffset() {
 int PutBlockMetatile() {
     stx(0x0);
     sty(0x1);
-    // <conv.chunks.Comment object at 0x100d8f710>
-    // <conv.chunks.Comment object at 0x100d8f6e0>
+    // store control bit from SprDataOffset_Ctrl
+    // store vram buffer offset for next byte
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x100d8f9e0>
+    // multiply A by four and use as X
     tax();
     ldy(0x20);
     lda(0x6);
@@ -2636,41 +2636,41 @@ int PutBlockMetatile() {
 }
 
 int SaveHAdder() {
-    // <conv.chunks.Comment object at 0x100d8fb00>
-    // <conv.chunks.Comment object at 0x100d8fc50>
-    // <conv.chunks.Comment object at 0x100d8fce0>
-    // <conv.chunks.Comment object at 0x100d8fdd0>
-    // <conv.chunks.Comment object at 0x100d8ff80>
-    // <conv.chunks.Comment object at 0x100d98050>
+    // load high byte for name table 0
+    // get low byte of block buffer pointer
+    // check to see if we're on odd-page block buffer
+    // if not, use current high byte
+    // otherwise load high byte for name table 1
+    // save high byte here
     sty(0x3);
     anda(0xf);
     asl();
     sta(0x4);
-    // <conv.chunks.Comment object at 0x100d981d0>
-    // <conv.chunks.Comment object at 0x100d98380>
-    // <conv.chunks.Comment object at 0x100d98440>
+    // mask out high nybble of block buffer pointer
+    // multiply by 2 to get appropriate name table low byte
+    // and then store it here
     lda(0x0);
     sta(0x5);
     lda(0x2);
-    // <conv.chunks.Comment object at 0x100d98650>
-    // <conv.chunks.Comment object at 0x100d98590>
+    // initialize temp high byte
+    // get vertical high nybble offset used in block buffer routine
     clc();
     adc(0x20);
-    // <conv.chunks.Comment object at 0x100d988f0>
+    // add 32 pixels for the status bar
     asl();
     rol(0x5);
-    // <conv.chunks.Comment object at 0x100d98ad0>
+    // shift and rotate d7 onto d0 and d6 into carry
     asl();
     rol(0x5);
     adc(0x4);
     sta(0x4);
     lda(0x5);
     adc(0x0);
-    // <conv.chunks.Comment object at 0x100d98c80>
-    // <conv.chunks.Comment object at 0x100d98c50>
-    // <conv.chunks.Comment object at 0x100d98d10>
-    // <conv.chunks.Comment object at 0x100d98e30>
-    // <conv.chunks.Comment object at 0x100d99070>
+    // shift and rotate d6 onto d0 and d5 into carry
+    // add low byte of name table and carry to vertical high nybble
+    // and store here
+    // get whatever was in d7 and d6 of vertical high nybble
+    // add carry
     clc();
     adc(0x3);
     sta(0x5);
@@ -2679,21 +2679,21 @@ int SaveHAdder() {
 }
 
 int RemBridge() {
-    // <conv.chunks.Comment object at 0x100d992b0>
-    // <conv.chunks.Comment object at 0x100d99280>
-    // <conv.chunks.Comment object at 0x100d99340>
-    // <conv.chunks.Comment object at 0x100d99580>
+    // then add high byte of name table
+    // store here
+    // get vram buffer offset to be used
+    // write top left and top right
     lda(offsetof(G, BlockGfxData), x);
     sta(((VRAM_Buffer1) + (2)), y);
-    // <conv.chunks.Comment object at 0x100d99760>
+    // tile numbers into first spot
     lda(((offsetof(G, BlockGfxData)) + (1)), x);
     sta(((VRAM_Buffer1) + (3)), y);
     lda(((offsetof(G, BlockGfxData)) + (2)), x);
     sta(((VRAM_Buffer1) + (7)), y);
     lda(((offsetof(G, BlockGfxData)) + (3)), x);
-    // <conv.chunks.Comment object at 0x100d99d30>
-    // <conv.chunks.Comment object at 0x100d99f40>
-    // <conv.chunks.Comment object at 0x100d9a150>
+    // write bottom left and bottom
+    // right tiles numbers into
+    // second spot
     sta(((VRAM_Buffer1) + (8)), y);
     lda(0x4);
     sta(VRAM_Buffer1, y);
@@ -2703,18 +2703,18 @@ int RemBridge() {
     lda(0x5);
     sta(((VRAM_Buffer1) - (1)), y);
     sta(((VRAM_Buffer1) + (4)), y);
-    // <conv.chunks.Comment object at 0x100d9a540>
-    // <conv.chunks.Comment object at 0x100d9a7b0>
-    // <conv.chunks.Comment object at 0x100d9a840>
-    // <conv.chunks.Comment object at 0x100d9a8d0>
-    // <conv.chunks.Comment object at 0x100d9aba0>
-    // <conv.chunks.Comment object at 0x100d9ac30>
-    // <conv.chunks.Comment object at 0x100d9ae70>
+    // write low byte of name table
+    // into first slot as read
+    // add 32 bytes to value
+    // write low byte of name table
+    // plus 32 bytes into second slot
+    // write high byte of name
+    // table address to both slots
     lda(0x2);
     sta(((VRAM_Buffer1) + (1)), y);
     sta(((VRAM_Buffer1) + (6)), y);
-    // <conv.chunks.Comment object at 0x100d9b0e0>
-    // <conv.chunks.Comment object at 0x100d9b380>
+    // put length of 2 in
+    // both slots
     lda(0x0);
     sta(((VRAM_Buffer1) + (9)), y);
     ldx(0x0);
@@ -2727,13 +2727,13 @@ int InitializeNameTables() {
     lda(Mirror_PPU_CTRL_REG1);
     ora(0b10000);
     anda(0b11110000);
-    // <conv.chunks.Comment object at 0x100de1430>
-    // <conv.chunks.Comment object at 0x100de1550>
-    // <conv.chunks.Comment object at 0x100de1670>
-    // <conv.chunks.Comment object at 0x100de1790>
+    // reset flip-flop
+    // load mirror of ppu reg $2000
+    // set sprites for first 4k and background for second 4k
+    // clear rest of lower nybble, leave higher alone
     JSR(WritePPUReg1);
     lda(0x24);
-    // <conv.chunks.Comment object at 0x100de19a0>
+    // set vram address to start of name table 1
     JSR(WriteNTAddr);
     lda(0x20);
     JMP(WriteNTAddr);
@@ -2744,21 +2744,21 @@ int WriteNTAddr() {
     lda(0x0);
     sta(PPU_ADDRESS);
     ldx(0x4);
-    // <conv.chunks.Comment object at 0x100de1fd0>
+    // clear name table with blank tile #24
     ldy(0xc0);
     lda(0x24);
     JMP(InitNTLoop);
 }
 
 int InitNTLoop() {
-    // <conv.chunks.Comment object at 0x100de2240>
+    // count out exactly 768 tiles
     sta(PPU_DATA);
     dey();
     BNE(InitNTLoop);
     dex();
     BNE(InitNTLoop);
     ldy(64);
-    // <conv.chunks.Comment object at 0x100de2750>
+    // now to clear the attribute table (with zero this time)
     txa();
     sta(VRAM_Buffer1_Offset);
     sta(VRAM_Buffer1);
@@ -2770,7 +2770,7 @@ int InitATLoop() {
     dey();
     BNE(InitATLoop);
     sta(HorizontalScroll);
-    // <conv.chunks.Comment object at 0x100de2db0>
+    // reset scroll variables
     sta(VerticalScroll);
     JMP(InitScroll);
     JMP(ReadJoypads);
@@ -2778,13 +2778,13 @@ int InitATLoop() {
 
 int ReadJoypads() {
     lda(0x1);
-    // <conv.chunks.Comment object at 0x100de2fc0>
-    // <conv.chunks.Comment object at 0x100de3110>
-    // <conv.chunks.Comment object at 0x100de3170>
+    // initialize scroll registers to zero
+    // $00 - temp joypad bit
+    // reset and clear strobe of joypad ports
     sta(JOYPAD_PORT);
     lsr();
     tax();
-    // <conv.chunks.Comment object at 0x100de3440>
+    // start with joypad 1's port
     sta(JOYPAD_PORT);
     JSR(ReadPortBits);
     inx();
@@ -2797,38 +2797,38 @@ int ReadPortBits() {
 }
 
 int PortLoop() {
-    // <conv.chunks.Comment object at 0x100de3800>
+    // push previous bit onto stack
     pha();
     lda(JOYPAD_PORT, x);
     sta(0x0);
     lsr();
     ora(0x0);
-    // <conv.chunks.Comment object at 0x100de3980>
-    // <conv.chunks.Comment object at 0x100de3b00>
-    // <conv.chunks.Comment object at 0x100de3ad0>
-    // <conv.chunks.Comment object at 0x100de3ce0>
+    // read current bit on joypad port
+    // check d1 and d0 of port output
+    // this is necessary on the old
+    // famicom systems in japan
     lsr();
     pla();
     rol();
-    // <conv.chunks.Comment object at 0x100de3e90>
-    // <conv.chunks.Comment object at 0x100de3f50>
+    // read bits from stack
+    // rotate bit from carry flag
     dey();
     BNE(PortLoop);
     sta(SavedJoypadBits, x);
-    // <conv.chunks.Comment object at 0x100de80b0>
-    // <conv.chunks.Comment object at 0x100de81d0>
+    // count down bits left
+    // save controller status here always
     pha();
     anda(0b110000);
     anda(JoypadBitMask, x);
     BEQ(Save8Bits);
-    // <conv.chunks.Comment object at 0x100de83b0>
-    // <conv.chunks.Comment object at 0x100de84d0>
-    // <conv.chunks.Comment object at 0x100de8620>
+    // check for select or start
+    // if neither saved state nor current state
+    // have any of these two set, branch
     pla();
     anda(0b11001111);
     sta(SavedJoypadBits, x);
-    // <conv.chunks.Comment object at 0x100de87d0>
-    // <conv.chunks.Comment object at 0x100de88f0>
+    // otherwise store without select
+    // or start bits and leave
     return 0;
     JMP(Save8Bits);
 }
@@ -2836,24 +2836,24 @@ int PortLoop() {
 int Save8Bits() {
     pla();
     sta(JoypadBitMask, x);
-    // <conv.chunks.Comment object at 0x100de8b90>
+    // save with all bits in another place and leave
     return 0;
     JMP(WriteBufferToScreen);
 }
 
 int WriteBufferToScreen() {
     sta(PPU_ADDRESS);
-    // <conv.chunks.Comment object at 0x100de8e30>
+    // store high byte of vram address
     iny();
     lda((0x0), y);
     sta(PPU_ADDRESS);
-    // <conv.chunks.Comment object at 0x100de8fe0>
-    // <conv.chunks.Comment object at 0x100de9040>
+    // load next byte (second)
+    // store low byte of vram address
     iny();
     lda((0x0), y);
     asl();
-    // <conv.chunks.Comment object at 0x100de9310>
-    // <conv.chunks.Comment object at 0x100de94c0>
+    // load next byte (third)
+    // shift to left and save in stack
     pha();
     lda(Mirror_PPU_CTRL_REG1);
     ora(0b100);
@@ -2863,83 +2863,83 @@ int WriteBufferToScreen() {
 }
 
 int SetupWrites() {
-    // <conv.chunks.Comment object at 0x100de95e0>
-    // <conv.chunks.Comment object at 0x100de9700>
-    // <conv.chunks.Comment object at 0x100de9820>
-    // <conv.chunks.Comment object at 0x100de9940>
-    // <conv.chunks.Comment object at 0x100de9a60>
+    // load mirror of $2000,
+    // set ppu to increment by 32 by default
+    // if d7 of third byte was clear, ppu will
+    // only increment by 1
+    // write to register
     JSR(WritePPUReg1);
     pla();
-    // <conv.chunks.Comment object at 0x100de9be0>
+    // pull from stack and shift to left again
     asl();
     BCC(GetLength);
     ora(0b10);
-    // <conv.chunks.Comment object at 0x100de9d00>
-    // <conv.chunks.Comment object at 0x100de9e20>
+    // if d6 of third byte was clear, do not repeat byte
+    // otherwise set d1 and increment Y
     iny();
     JMP(GetLength);
 }
 
 int GetLength() {
-    // <conv.chunks.Comment object at 0x100de9fd0>
+    // shift back to the right to get proper length
     lsr();
     lsr();
-    // <conv.chunks.Comment object at 0x100dea0f0>
+    // note that d1 will now be in carry
     tax();
     JMP(OutputToVRAM);
 }
 
 int OutputToVRAM() {
-    // <conv.chunks.Comment object at 0x100dea210>
+    // if carry set, repeat loading the same byte
     BCS(RepeatByte);
     iny();
     JMP(RepeatByte);
 }
 
 int RepeatByte() {
-    // <conv.chunks.Comment object at 0x100dea390>
-    // <conv.chunks.Comment object at 0x100dea420>
+    // otherwise increment Y to load next byte
+    // load more data from buffer and write to vram
     lda((0x0), y);
     sta(PPU_DATA);
     dex();
-    // <conv.chunks.Comment object at 0x100dea6f0>
+    // done writing?
     BNE(OutputToVRAM);
     sec();
     tya();
     adc(0x0);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x100dea9c0>
-    // <conv.chunks.Comment object at 0x100dea990>
+    // add end length plus one to the indirect at $00
+    // to allow this routine to read another set of updates
     lda(0x0);
     adc(0x1);
     sta(0x1);
     lda(0x3f);
-    // <conv.chunks.Comment object at 0x100deac30>
+    // sets vram address to $3f00
     sta(PPU_ADDRESS);
     lda(0x0);
     sta(PPU_ADDRESS);
     sta(PPU_ADDRESS);
-    // <conv.chunks.Comment object at 0x100deb290>
+    // then reinitializes it for some reason
     sta(PPU_ADDRESS);
     JMP(UpdateScreen);
 }
 
 int UpdateScreen() {
-    // <conv.chunks.Comment object at 0x100deb4a0>
+    // reset flip-flop
     ldx(PPU_STATUS);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x100deb5f0>
+    // load first byte from indirect as a pointer
     lda((0x0), y);
     BNE(WriteBufferToScreen);
     JMP(InitScroll);
 }
 
 int InitScroll() {
-    // <conv.chunks.Comment object at 0x100deb740>
-    // <conv.chunks.Comment object at 0x100deb980>
+    // if byte is zero we have no further updates to make here
+    // store contents of A into scroll registers
     sta(PPU_SCROLL_REG);
     sta(PPU_SCROLL_REG);
-    // <conv.chunks.Comment object at 0x100debad0>
+    // and end whatever subroutine led us here
     return 0;
     JMP(WritePPUReg1);
 }
@@ -2947,8 +2947,8 @@ int InitScroll() {
 int WritePPUReg1() {
     sta(PPU_CTRL_REG1);
     sta(Mirror_PPU_CTRL_REG1);
-    // <conv.chunks.Comment object at 0x100debce0>
-    // <conv.chunks.Comment object at 0x100debe00>
+    // write contents of A to PPU register 1
+    // and its mirror
     return 0;
     JMP(PrintStatusBarNumbers);
 }
@@ -2958,10 +2958,10 @@ int PrintStatusBarNumbers() {
     JSR(OutputNumbers);
     lda(0x0);
     lsr();
-    // <conv.chunks.Comment object at 0x100df4950>
-    // <conv.chunks.Comment object at 0x100df49e0>
-    // <conv.chunks.Comment object at 0x100df4ec0>
-    // <conv.chunks.Comment object at 0x100df4e90>
+    // store player-specific offset
+    // use first nybble to print the coin display
+    // move high nybble to low
+    // and print to score display
     lsr();
     lsr();
     lsr();
@@ -2970,23 +2970,23 @@ int PrintStatusBarNumbers() {
 
 int OutputNumbers() {
     clc();
-    // <conv.chunks.Comment object at 0x100df5280>
+    // add 1 to low nybble
     adc(0x1);
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x100df5370>
+    // mask out high nybble
     cmp(0x6);
     BCS(ExitOutputN);
     pha();
     asl();
-    // <conv.chunks.Comment object at 0x100df5730>
-    // <conv.chunks.Comment object at 0x100df57f0>
+    // save incremented value to stack for now and
+    // shift to left and use as offset
     tay();
     ldx(VRAM_Buffer1_Offset);
     lda(0x20);
     cpy(0x0);
-    // <conv.chunks.Comment object at 0x100df5910>
-    // <conv.chunks.Comment object at 0x100df5a30>
-    // <conv.chunks.Comment object at 0x100df5ac0>
+    // get current buffer pointer
+    // put at top of screen by default
+    // are we writing top score on title screen?
     BNE(SetupNums);
     lda(0x22);
     JMP(SetupNums);
@@ -2996,42 +2996,42 @@ int SetupNums() {
     sta(VRAM_Buffer1, x);
     lda(offsetof(G, StatusBarData), y);
     sta(((VRAM_Buffer1) + (1)), x);
-    // <conv.chunks.Comment object at 0x100df5fd0>
-    // <conv.chunks.Comment object at 0x100df6120>
+    // write low vram address and length of thing
+    // we're printing to the buffer
     lda(((offsetof(G, StatusBarData)) + (1)), y);
     sta(((VRAM_Buffer1) + (2)), x);
     sta(0x3);
     stx(0x2);
     pla();
-    // <conv.chunks.Comment object at 0x100df6720>
-    // <conv.chunks.Comment object at 0x100df66f0>
-    // <conv.chunks.Comment object at 0x100df67b0>
+    // save length byte in counter
+    // and buffer pointer elsewhere for now
+    // pull original incremented value from stack
     tax();
     lda(offsetof(G, StatusBarOffset), x);
-    // <conv.chunks.Comment object at 0x100df6a80>
+    // load offset to value we want to write
     sec();
     sbc(((offsetof(G, StatusBarData)) + (1)), y);
     tay();
-    // <conv.chunks.Comment object at 0x100df6c60>
-    // <conv.chunks.Comment object at 0x100df6ea0>
+    // subtract from length byte we read before
+    // use value as offset to display digits
     ldx(0x2);
     JMP(DigitPLoop);
 }
 
 int DigitPLoop() {
-    // <conv.chunks.Comment object at 0x100df6f30>
+    // write digits to the buffer
     lda(DisplayDigits, y);
     sta(((VRAM_Buffer1) + (3)), x);
     inx();
     iny();
     dec(0x3);
-    // <conv.chunks.Comment object at 0x100df74d0>
+    // do this until all the digits are written
     BNE(DigitPLoop);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x100df76b0>
+    // put null terminator at end
     sta(((VRAM_Buffer1) + (3)), x);
     inx();
-    // <conv.chunks.Comment object at 0x100df79e0>
+    // increment buffer pointer by 3
     inx();
     inx();
     stx(VRAM_Buffer1_Offset);
@@ -3045,30 +3045,30 @@ int ExitOutputN() {
 
 int DigitsMathRoutine() {
     lda(OperMode);
-    // <conv.chunks.Comment object at 0x100df7dd0>
+    // check mode of operation
     cmp(TitleScreenModeValue);
     BEQ(EraseDMods);
-    // <conv.chunks.Comment object at 0x100df7fe0>
+    // if in title screen mode, branch to lock score
     ldx(0x5);
     JMP(AddModLoop);
 }
 
 int AddModLoop() {
-    // <conv.chunks.Comment object at 0x100dfc1a0>
+    // load digit amount to increment
     lda(DigitModifier, x);
     clc();
     adc(DisplayDigits, y);
     BMI(BorrowOne);
-    // <conv.chunks.Comment object at 0x100dfc440>
-    // <conv.chunks.Comment object at 0x100dfc590>
+    // add to current digit
+    // if result is a negative number, branch to subtract
     cmp(10);
     BCS(CarryOne);
     JMP(StoreNewD);
 }
 
 int StoreNewD() {
-    // <conv.chunks.Comment object at 0x100dfc6b0>
-    // <conv.chunks.Comment object at 0x100dfc8c0>
+    // if digit greater than $09, branch to add
+    // store as new score or game timer digit
     sta(DisplayDigits, y);
     dey();
     dex();
@@ -3077,28 +3077,28 @@ int StoreNewD() {
 }
 
 int EraseDMods() {
-    // <conv.chunks.Comment object at 0x100dfca70>
-    // <conv.chunks.Comment object at 0x100dfcb30>
-    // <conv.chunks.Comment object at 0x100dfcbc0>
-    // <conv.chunks.Comment object at 0x100dfcce0>
+    // move onto next digits in score or game timer
+    // and digit amounts to increment
+    // loop back if we're not done yet
+    // store zero here
     lda(0x0);
     ldx(0x6);
     JMP(EraseMLoop);
 }
 
 int EraseMLoop() {
-    // <conv.chunks.Comment object at 0x100dfcda0>
-    // <conv.chunks.Comment object at 0x100dfcec0>
+    // start with the last digit
+    // initialize the digit amounts to increment
     sta(((DigitModifier) - (1)), x);
     dex();
     BPL(EraseMLoop);
-    // <conv.chunks.Comment object at 0x100dfd1f0>
+    // do this until they're all reset, then leave
     return 0;
     JMP(BorrowOne);
 }
 
 int BorrowOne() {
-    // <conv.chunks.Comment object at 0x100dfd3a0>
+    // decrement the previous digit, then put $09 in
     dec(((DigitModifier) - (1)), x);
     lda(0x9);
     BNE(StoreNewD);
@@ -3106,9 +3106,9 @@ int BorrowOne() {
 }
 
 int CarryOne() {
-    // <conv.chunks.Comment object at 0x100dfd5b0>
-    // <conv.chunks.Comment object at 0x100dfd640>
-    // <conv.chunks.Comment object at 0x100dfd7f0>
+    // the game timer digit we're currently on to "borrow
+    // the one", then do an unconditional branch back
+    // subtract ten from our digit to make it a
     sec();
     sbc(10);
     inc(((DigitModifier) - (1)), x);
@@ -3118,7 +3118,7 @@ int CarryOne() {
 
 int UpdateTopScore() {
     ldx(0x5);
-    // <conv.chunks.Comment object at 0x100dfdd60>
+    // start with mario's score
     JSR(TopScoreCheck);
     ldx(0xb);
     JMP(TopScoreCheck);
@@ -3126,37 +3126,37 @@ int UpdateTopScore() {
 
 int TopScoreCheck() {
     ldy(0x5);
-    // <conv.chunks.Comment object at 0x100dfe0c0>
+    // start with the lowest digit
     sec();
     JMP(GetScoreDiff);
 }
 
 int GetScoreDiff() {
-    // <conv.chunks.Comment object at 0x100dfe270>
+    // subtract each player digit from each high score digit
     lda(PlayerScoreDisplay, x);
     sbc(TopScoreDisplay, y);
     dex();
     dey();
-    // <conv.chunks.Comment object at 0x100dfe3f0>
-    // <conv.chunks.Comment object at 0x100dfe570>
-    // <conv.chunks.Comment object at 0x100dfe630>
+    // from lowest to highest, if any top score digit exceeds
+    // any player digit, borrow will be set until a subsequent
+    // subtraction clears it (player digit is higher than top)
     BPL(GetScoreDiff);
     BCC(NoTopSc);
     inx();
-    // <conv.chunks.Comment object at 0x100dfe7b0>
-    // <conv.chunks.Comment object at 0x100dfe930>
+    // check to see if borrow is still set, if so, no new high score
+    // increment X and Y once to the start of the score
     iny();
     JMP(CopyScore);
 }
 
 int CopyScore() {
-    // <conv.chunks.Comment object at 0x100dfea50>
+    // store player's score digits into high score memory area
     lda(PlayerScoreDisplay, x);
     sta(TopScoreDisplay, y);
     inx();
     iny();
     cpy(0x6);
-    // <conv.chunks.Comment object at 0x100dfee10>
+    // do this until we have stored them all
     BCC(CopyScore);
     JMP(NoTopSc);
 }
@@ -3169,20 +3169,20 @@ int NoTopSc() {
 int InitializeGame() {
     ldy(0x6f);
     JSR(InitializeMemory);
-    // <conv.chunks.Comment object at 0x100dff290>
-    // <conv.chunks.Comment object at 0x100dff2f0>
+    // clear all memory as in initialization procedure,
+    // but this time, clear only as far as $076f
     ldy(0x1f);
     JMP(ClrSndLoop);
 }
 
 int ClrSndLoop() {
-    // <conv.chunks.Comment object at 0x100dfff50>
+    // clear out memory used
     sta(SoundMemory, y);
     dey();
-    // <conv.chunks.Comment object at 0x100e0c1d0>
+    // by the sound engines
     BPL(ClrSndLoop);
     lda(0x18);
-    // <conv.chunks.Comment object at 0x100e0c350>
+    // set demo timer
     sta(DemoTimer);
     JSR(LoadAreaPointer);
     JMP(InitializeArea);
@@ -3191,30 +3191,30 @@ int ClrSndLoop() {
 int InitializeArea() {
     ldy(0x4b);
     JSR(InitializeMemory);
-    // <conv.chunks.Comment object at 0x100e0c680>
-    // <conv.chunks.Comment object at 0x100e0c710>
+    // clear all memory again, only as far as $074b
+    // this is only necessary if branching from
     ldx(0x21);
     lda(0x0);
     JMP(ClrTimersLoop);
 }
 
 int ClrTimersLoop() {
-    // <conv.chunks.Comment object at 0x100e0ca10>
+    // clear out memory between
     sta(Timers, x);
     dex();
-    // <conv.chunks.Comment object at 0x100e0cc80>
+    // $0780 and $07a1
     BPL(ClrTimersLoop);
     lda(HalfwayPage);
     ldy(AltEntranceControl);
-    // <conv.chunks.Comment object at 0x100e0cef0>
+    // if AltEntranceControl not set, use halfway page, if any found
     BEQ(StartPage);
     lda(EntrancePage);
     JMP(StartPage);
 }
 
 int StartPage() {
-    // <conv.chunks.Comment object at 0x100e0d100>
-    // <conv.chunks.Comment object at 0x100e0d220>
+    // otherwise use saved entry page number here
+    // set as value here
     sta(ScreenLeft_PageLoc);
     sta(CurrentPageLoc);
     sta(BackloadingFlag);
@@ -3222,30 +3222,30 @@ int StartPage() {
     ldy(0x20);
     anda(0b1);
     BEQ(SetInitNTHigh);
-    // <conv.chunks.Comment object at 0x100e0d370>
-    // <conv.chunks.Comment object at 0x100e0d490>
-    // <conv.chunks.Comment object at 0x100e0d5b0>
-    // <conv.chunks.Comment object at 0x100e0d6d0>
-    // <conv.chunks.Comment object at 0x100e0d760>
-    // <conv.chunks.Comment object at 0x100e0d910>
+    // also set as current page
+    // set flag here if halfway page or saved entry page number found
+    // get pixel coordinates for screen borders
+    // if on odd numbered page, use $2480 as start of rendering
+    // otherwise use $2080, this address used later as name table
+    // address for rendering of game area
     ldy(0x24);
     JMP(SetInitNTHigh);
 }
 
 int SetInitNTHigh() {
-    // <conv.chunks.Comment object at 0x100e0da90>
+    // store name table address
     sty(CurrentNTAddr_High);
     ldy(0x80);
     sty(CurrentNTAddr_Low);
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x100e0de80>
-    // <conv.chunks.Comment object at 0x100e0df40>
+    // store LSB of page number in high nybble
+    // of block buffer column position
     asl();
     asl();
     sta(BlockBufferColumnPos);
     dec(AreaObjectLength);
-    // <conv.chunks.Comment object at 0x100e0e1e0>
+    // set area object lengths for all empty
     dec(((AreaObjectLength) + (1)));
     dec(((AreaObjectLength) + (2)));
     lda(0xb);
@@ -3255,26 +3255,26 @@ int SetInitNTHigh() {
     BNE(SetSecHard);
     lda(WorldNumber);
     cmp(World5);
-    // <conv.chunks.Comment object at 0x100e0e660>
-    // <conv.chunks.Comment object at 0x100e0e6f0>
-    // <conv.chunks.Comment object at 0x100e0e8a0>
-    // <conv.chunks.Comment object at 0x100e0e9c0>
-    // <conv.chunks.Comment object at 0x100e0eae0>
-    // <conv.chunks.Comment object at 0x100e0ec00>
-    // <conv.chunks.Comment object at 0x100e0ed20>
+    // set value for renderer to update 12 column sets
+    // 12 column sets = 24 metatile columns = 1 1/2 screens
+    // get enemy and level addresses and load header
+    // check to see if primary hard mode has been activated
+    // if so, activate the secondary no matter where we're at
+    // otherwise check world number
+    // if less than 5, do not activate secondary
     BCC(CheckHalfway);
     BNE(SetSecHard);
     lda(LevelNumber);
     cmp(Level3);
-    // <conv.chunks.Comment object at 0x100e0ef60>
-    // <conv.chunks.Comment object at 0x100e0f080>
-    // <conv.chunks.Comment object at 0x100e0f1a0>
+    // if not equal to, then world > 5, thus activate
+    // otherwise, world 5, so check level number
+    // if 1 or 2, do not set secondary hard mode flag
     BCC(CheckHalfway);
     JMP(SetSecHard);
 }
 
 int SetSecHard() {
-    // <conv.chunks.Comment object at 0x100e0f3e0>
+    // set secondary hard mode flag for areas 5-3 and beyond
     inc(SecondaryHardMode);
     JMP(CheckHalfway);
 }
@@ -3283,20 +3283,20 @@ int CheckHalfway() {
     lda(HalfwayPage);
     BEQ(DoneInitArea);
     lda(0x2);
-    // <conv.chunks.Comment object at 0x100e0f740>
+    // if halfway page set, overwrite start position from header
     sta(PlayerEntranceCtrl);
     JMP(DoneInitArea);
 }
 
 int DoneInitArea() {
-    // <conv.chunks.Comment object at 0x100e0f950>
+    // silence music
     lda(Silence);
     sta(AreaMusicQueue);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x100e0fbc0>
+    // disable screen output
     sta(DisableScreenFlag);
     inc(OperMode_Task);
-    // <conv.chunks.Comment object at 0x100e0fdd0>
+    // increment one of the modes
     return 0;
     JMP(PrimaryGameSetup);
 }
@@ -3305,11 +3305,11 @@ int PrimaryGameSetup() {
     lda(0x1);
     sta(FetchNewGameTimerFlag);
     sta(PlayerSize);
-    // <conv.chunks.Comment object at 0x100e14080>
-    // <conv.chunks.Comment object at 0x100e14230>
+    // set flag to load game timer from header
+    // set player's size to small
     lda(0x2);
     sta(NumberofLives);
-    // <conv.chunks.Comment object at 0x100e143b0>
+    // give each player three lives
     sta(OffScr_NumberofLives);
     JMP(SecondaryGameSetup);
 }
@@ -3317,22 +3317,22 @@ int PrimaryGameSetup() {
 int SecondaryGameSetup() {
     lda(0x0);
     sta(DisableScreenFlag);
-    // <conv.chunks.Comment object at 0x100e146e0>
+    // enable screen output
     tay();
     JMP(ClearVRLoop);
 }
 
 int ClearVRLoop() {
-    // <conv.chunks.Comment object at 0x100e14920>
+    // clear buffer at $0300-$03ff
     sta(((VRAM_Buffer1) - (1)), y);
     iny();
     BNE(ClearVRLoop);
     sta(GameTimerExpiredFlag);
     sta(DisableIntermediate);
     sta(BackloadingFlag);
-    // <conv.chunks.Comment object at 0x100e14ce0>
-    // <conv.chunks.Comment object at 0x100e14e00>
-    // <conv.chunks.Comment object at 0x100e14f20>
+    // clear game timer exp flag
+    // clear skip lives display flag
+    // clear value here
     lda(0xff);
     sta(BalPlatformAlignment);
     lda(ScreenLeft_PageLoc);
@@ -3342,14 +3342,14 @@ int ClearVRLoop() {
     rol(Mirror_PPU_CTRL_REG1);
     JSR(GetAreaMusic);
     lda(0x38);
-    // <conv.chunks.Comment object at 0x100e150a0>
-    // <conv.chunks.Comment object at 0x100e15250>
-    // <conv.chunks.Comment object at 0x100e15370>
-    // <conv.chunks.Comment object at 0x100e15490>
-    // <conv.chunks.Comment object at 0x100e155e0>
-    // <conv.chunks.Comment object at 0x100e15670>
-    // <conv.chunks.Comment object at 0x100e15790>
-    // <conv.chunks.Comment object at 0x100e158b0>
+    // initialize balance platform assignment flag
+    // get left side page location
+    // shift LSB of ppu register #1 mirror out
+    // mask out all but LSB of page location
+    // rotate LSB of page location into carry then onto mirror
+    // this is to set the proper PPU name table
+    // load proper music into queue
+    // load sprite shuffle amounts to be used later
     sta(((SprShuffleAmt) + (2)));
     lda(0x48);
     sta(((SprShuffleAmt) + (1)));
@@ -3363,7 +3363,7 @@ int ShufAmtLoop() {
     lda(offsetof(G, DefaultSprOffsets), x);
     sta(SprDataOffset, x);
     dex();
-    // <conv.chunks.Comment object at 0x100e163c0>
+    // do this until they're all set
     BPL(ShufAmtLoop);
     ldy(0x3);
     JMP(ISpr0Loop);
@@ -3375,12 +3375,12 @@ int ISpr0Loop() {
     dey();
     BPL(ISpr0Loop);
     JSR(DoNothing2);
-    // <conv.chunks.Comment object at 0x100e16a50>
+    // these jsrs doesn't do anything useful
     JSR(DoNothing1);
     inc(Sprite0HitDetectFlag);
     inc(OperMode_Task);
-    // <conv.chunks.Comment object at 0x100e16c60>
-    // <conv.chunks.Comment object at 0x100e16d80>
+    // set sprite #0 check flag
+    // increment to next task
     return 0;
     JMP(InitializeMemory);
 }
@@ -3388,8 +3388,8 @@ int ISpr0Loop() {
 int InitializeMemory() {
     ldx(0x7);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x100e16ff0>
-    // <conv.chunks.Comment object at 0x100e17080>
+    // set initial high byte to $0700-$07ff
+    // set initial low byte to start of page (at $00 of page)
     sta(0x6);
     JMP(InitPageLoop);
 }
@@ -3400,7 +3400,7 @@ int InitPageLoop() {
 }
 
 int InitByteLoop() {
-    // <conv.chunks.Comment object at 0x100e173e0>
+    // check to see if we're on the stack ($0100-$01ff)
     cpx(0x1);
     BNE(InitByte);
     cpy(0x60);
@@ -3409,10 +3409,10 @@ int InitByteLoop() {
 }
 
 int InitByte() {
-    // <conv.chunks.Comment object at 0x100e17500>
-    // <conv.chunks.Comment object at 0x100e176b0>
-    // <conv.chunks.Comment object at 0x100e17740>
-    // <conv.chunks.Comment object at 0x100e178f0>
+    // if not, go ahead anyway
+    // otherwise, check to see if we're at $0160-$01ff
+    // if so, skip write
+    // otherwise, initialize byte with current low byte in Y
     sta((0x6), y);
     JMP(SkipByte);
 }
@@ -3420,41 +3420,41 @@ int InitByte() {
 int SkipByte() {
     dey();
     cpy(0xff);
-    // <conv.chunks.Comment object at 0x100e17b60>
+    // do this until all bytes in page have been erased
     BNE(InitByteLoop);
     dex();
     BPL(InitPageLoop);
-    // <conv.chunks.Comment object at 0x100e17da0>
-    // <conv.chunks.Comment object at 0x100e17e30>
+    // go onto the next page
+    // do this until all pages of memory have been erased
     return 0;
     JMP(GetAreaMusic);
 }
 
 int GetAreaMusic() {
     lda(OperMode);
-    // <conv.chunks.Comment object at 0x100e1c0b0>
+    // if in title screen mode, leave
     BEQ(ExitGetM);
     lda(AltEntranceControl);
     cmp(0x2);
     BEQ(ChkAreaType);
     ldy(0x5);
     lda(PlayerEntranceCtrl);
-    // <conv.chunks.Comment object at 0x100e1c620>
-    // <conv.chunks.Comment object at 0x100e1c740>
-    // <conv.chunks.Comment object at 0x100e1c7d0>
-    // <conv.chunks.Comment object at 0x100e1c980>
-    // <conv.chunks.Comment object at 0x100e1ca10>
+    // check for specific alternate mode of entry
+    // if found, branch without checking starting position
+    // from area object data header
+    // select music for pipe intro scene by default
+    // check value from level header for certain values
     cmp(0x6);
     BEQ(StoreMusic);
     cmp(0x7);
-    // <conv.chunks.Comment object at 0x100e1cc20>
-    // <conv.chunks.Comment object at 0x100e1cdd0>
+    // load music for pipe intro scene if header
+    // start position either value $06 or $07
     BEQ(StoreMusic);
     JMP(ChkAreaType);
 }
 
 int ChkAreaType() {
-    // <conv.chunks.Comment object at 0x100e1cfe0>
+    // load area type as offset for music bit
     ldy(AreaType);
     lda(CloudTypeOverride);
     BEQ(StoreMusic);
@@ -3463,9 +3463,9 @@ int ChkAreaType() {
 }
 
 int StoreMusic() {
-    // <conv.chunks.Comment object at 0x100e1d220>
-    // <conv.chunks.Comment object at 0x100e1d340>
-    // <conv.chunks.Comment object at 0x100e1d3d0>
+    // check for cloud type override
+    // select music for cloud type level if found
+    // otherwise select appropriate music for level type
     lda(offsetof(G, MusicSelectData), y);
     sta(AreaMusicQueue);
     JMP(ExitGetM);
@@ -3483,25 +3483,25 @@ int Entrance_GameTimerSetup() {
     sta(VerticalForceDown);
     lda(0x1);
     sta(PlayerFacingDir);
-    // <conv.chunks.Comment object at 0x100e1dcd0>
-    // <conv.chunks.Comment object at 0x100e1e990>
-    // <conv.chunks.Comment object at 0x100e1eab0>
-    // <conv.chunks.Comment object at 0x100e1eb40>
-    // <conv.chunks.Comment object at 0x100e1ecf0>
-    // <conv.chunks.Comment object at 0x100e1ed80>
+    // set current page for area objects
+    // as page location for player
+    // store value here
+    // for fractional movement downwards if necessary
+    // set high byte of player position and
+    // set facing direction so that player faces right
     sta(Player_Y_HighPos);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x100e1f020>
+    // set player state to on the ground by default
     sta(Player_State);
     dec(Player_CollisionBits);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x100e1f230>
-    // <conv.chunks.Comment object at 0x100e1f350>
+    // initialize player's collision bits
+    // initialize halfway page
     sty(HalfwayPage);
     lda(AreaType);
     BNE(ChkStPos);
-    // <conv.chunks.Comment object at 0x100e1f560>
-    // <conv.chunks.Comment object at 0x100e1f680>
+    // check area type
+    // if water type, set swimming flag, otherwise do not set
     iny();
     JMP(ChkStPos);
 }
@@ -3510,8 +3510,8 @@ int ChkStPos() {
     sty(SwimmingFlag);
     ldx(PlayerEntranceCtrl);
     ldy(AltEntranceControl);
-    // <conv.chunks.Comment object at 0x100e1f950>
-    // <conv.chunks.Comment object at 0x100e1fa70>
+    // get starting position loaded from header
+    // check alternate mode of entry flag for 0 or 1
     BEQ(SetStPos);
     cpy(0x1);
     BEQ(SetStPos);
@@ -3520,15 +3520,15 @@ int ChkStPos() {
 }
 
 int SetStPos() {
-    // <conv.chunks.Comment object at 0x100e1fe60>
-    // <conv.chunks.Comment object at 0x100e280b0>
+    // if not 0 or 1, override $0710 with new offset in X
+    // load appropriate horizontal position
     lda(offsetof(G, PlayerStarting_X_Pos), y);
     sta(Player_X_Position);
     lda(offsetof(G, PlayerStarting_Y_Pos), x);
     sta(Player_Y_Position);
-    // <conv.chunks.Comment object at 0x100e28230>
-    // <conv.chunks.Comment object at 0x100e28350>
-    // <conv.chunks.Comment object at 0x100e284a0>
+    // and vertical positions for the player, using
+    // AltEntranceControl as offset for horizontal and either $0710
+    // or value that overwrote $0710 as offset for vertical
     lda(offsetof(G, PlayerBGPriorityData), x);
     sta(Player_SprAttrib);
     JSR(GetPlayerColors);
@@ -3538,17 +3538,17 @@ int SetStPos() {
     BEQ(ChkOverR);
     lda(offsetof(G, GameTimerData), y);
     sta(GameTimerDisplay);
-    // <conv.chunks.Comment object at 0x100e286e0>
-    // <conv.chunks.Comment object at 0x100e28800>
-    // <conv.chunks.Comment object at 0x100e28920>
-    // <conv.chunks.Comment object at 0x100e28a40>
-    // <conv.chunks.Comment object at 0x100e28b60>
-    // <conv.chunks.Comment object at 0x100e28c80>
-    // <conv.chunks.Comment object at 0x100e28da0>
-    // <conv.chunks.Comment object at 0x100e28ef0>
+    // set player sprite attributes using offset in X
+    // get appropriate player palette
+    // get timer control value from header
+    // if set to zero, branch (do not use dummy byte for this)
+    // do we need to set the game timer? if not, use
+    // old game timer setting
+    // if game timer is set and game timer flag is also set,
+    // use value of game timer control for first digit of game timer
     lda(0x1);
     sta(((GameTimerDisplay) + (2)));
-    // <conv.chunks.Comment object at 0x100e29070>
+    // set last digit of game timer to 1
     lsr();
     sta(((GameTimerDisplay) + (1)));
     sta(FetchNewGameTimerFlag);
@@ -3557,20 +3557,20 @@ int SetStPos() {
 }
 
 int ChkOverR() {
-    // <conv.chunks.Comment object at 0x100e29370>
-    // <conv.chunks.Comment object at 0x100e29550>
-    // <conv.chunks.Comment object at 0x100e29670>
-    // <conv.chunks.Comment object at 0x100e29790>
+    // set second digit of game timer
+    // clear flag for game timer reset
+    // clear star mario timer
+    // if controller bits not set, branch to skip this part
     ldy(JoypadOverride);
     BEQ(ChkSwimE);
     lda(0x3);
-    // <conv.chunks.Comment object at 0x100e299d0>
+    // set player state to climbing
     sta(Player_State);
     ldx(0x0);
-    // <conv.chunks.Comment object at 0x100e29be0>
+    // set offset for first slot, for block object
     JSR(InitBlock_XY_Pos);
     lda(0xf0);
-    // <conv.chunks.Comment object at 0x100e29df0>
+    // set vertical coordinate for block object
     sta(Block_Y_Position);
     ldx(0x5);
     ldy(0x0);
@@ -3579,10 +3579,10 @@ int ChkOverR() {
 }
 
 int ChkSwimE() {
-    // <conv.chunks.Comment object at 0x100e2a000>
-    // <conv.chunks.Comment object at 0x100e2a090>
-    // <conv.chunks.Comment object at 0x100e2a1b0>
-    // <conv.chunks.Comment object at 0x100e2a360>
+    // set offset in X for last enemy object buffer slot
+    // set offset in Y for object coordinates used earlier
+    // do a sub to grow vine
+    // if level not water-type,
     ldy(AreaType);
     BNE(SetPESub);
     JSR(SetupBubble);
@@ -3590,75 +3590,75 @@ int ChkSwimE() {
 }
 
 int SetPESub() {
-    // <conv.chunks.Comment object at 0x100e2a4b0>
-    // <conv.chunks.Comment object at 0x100e2a5d0>
-    // <conv.chunks.Comment object at 0x100e2a6f0>
+    // skip this subroutine
+    // otherwise, execute sub to set up air bubbles
+    // set to run player entrance subroutine
     lda(0x7);
     sta(GameEngineSubroutine);
-    // <conv.chunks.Comment object at 0x100e2a7b0>
+    // on the next frame of game engine
     return 0;
     JMP(PlayerLoseLife);
 }
 
 int PlayerLoseLife() {
     inc(DisableScreenFlag);
-    // <conv.chunks.Comment object at 0x100e2aa80>
+    // disable screen and sprite 0 check
     lda(0x0);
     sta(Sprite0HitDetectFlag);
     lda(Silence);
-    // <conv.chunks.Comment object at 0x100e2b6b0>
+    // silence music
     sta(EventMusicQueue);
     dec(NumberofLives);
     BPL(StillInGame);
-    // <conv.chunks.Comment object at 0x100e2b8f0>
-    // <conv.chunks.Comment object at 0x100e2ba10>
+    // take one life from player
+    // if player still has lives, branch
     lda(0x0);
     sta(OperMode_Task);
     lda(GameOverModeValue);
     sta(OperMode);
-    // <conv.chunks.Comment object at 0x100e2bb90>
-    // <conv.chunks.Comment object at 0x100e2bd40>
-    // <conv.chunks.Comment object at 0x100e2be60>
+    // initialize mode task,
+    // switch to game over mode
+    // and leave
     return 0;
     JMP(StillInGame);
 }
 
 int StillInGame() {
-    // <conv.chunks.Comment object at 0x100e34050>
+    // multiply world number by 2 and use
     lda(WorldNumber);
     asl();
-    // <conv.chunks.Comment object at 0x100e341d0>
+    // as offset
     tax();
     lda(LevelNumber);
     anda(0x2);
     BEQ(GetHalfway);
-    // <conv.chunks.Comment object at 0x100e342f0>
-    // <conv.chunks.Comment object at 0x100e34410>
-    // <conv.chunks.Comment object at 0x100e344a0>
+    // if in area -3 or -4, increment
+    // offset by one byte, otherwise
+    // leave offset alone
     inx();
     JMP(GetHalfway);
 }
 
 int GetHalfway() {
-    // <conv.chunks.Comment object at 0x100e346e0>
+    // get halfway page number with offset
     ldy(offsetof(G, HalfwayPageNybbles), x);
     lda(LevelNumber);
-    // <conv.chunks.Comment object at 0x100e34860>
+    // check area number's LSB
     lsr();
     tya();
-    // <conv.chunks.Comment object at 0x100e34a40>
+    // if in area -2 or -4, use lower nybble
     BCS(MaskHPNyb);
     lsr();
     lsr();
-    // <conv.chunks.Comment object at 0x100e34bf0>
-    // <conv.chunks.Comment object at 0x100e34cb0>
+    // move higher nybble to lower if area
+    // number is -1 or -3
     lsr();
     lsr();
     JMP(MaskHPNyb);
 }
 
 int MaskHPNyb() {
-    // <conv.chunks.Comment object at 0x100e34e60>
+    // mask out all but lower nybble
     anda(0b1111);
     cmp(ScreenLeft_PageLoc);
     BEQ(SetHalfway);
@@ -3668,10 +3668,10 @@ int MaskHPNyb() {
 }
 
 int SetHalfway() {
-    // <conv.chunks.Comment object at 0x100e350a0>
-    // <conv.chunks.Comment object at 0x100e351c0>
-    // <conv.chunks.Comment object at 0x100e352e0>
-    // <conv.chunks.Comment object at 0x100e35370>
+    // left side of screen must be at the halfway page,
+    // otherwise player must start at the
+    // beginning of the level
+    // store as halfway page for player
     sta(HalfwayPage);
     JSR(TransposePlayers);
     JMP(ContinueGame);
@@ -3687,26 +3687,26 @@ int SetupGameOver() {
     lda(0x0);
     sta(ScreenRoutineTask);
     sta(Sprite0HitDetectFlag);
-    // <conv.chunks.Comment object at 0x100e35be0>
-    // <conv.chunks.Comment object at 0x100e35c70>
-    // <conv.chunks.Comment object at 0x100e35e20>
+    // reset screen routine task control for title screen, game,
+    // and game over modes
+    // disable sprite 0 check
     lda(GameOverMusic);
     sta(EventMusicQueue);
     inc(DisableScreenFlag);
     inc(OperMode_Task);
-    // <conv.chunks.Comment object at 0x100e36030>
-    // <conv.chunks.Comment object at 0x100e36150>
-    // <conv.chunks.Comment object at 0x100e36270>
+    // put game over music in secondary queue
+    // disable screen output
+    // set secondary mode to 1
     return 0;
     JMP(RunGameOver);
 }
 
 int RunGameOver() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x100e36480>
+    // reenable screen
     sta(DisableScreenFlag);
     lda(SavedJoypad1Bits);
-    // <conv.chunks.Comment object at 0x100e36690>
+    // check controller for start pressed
     anda(Start_Button);
     BNE(TerminateGame);
     lda(ScreenTimer);
@@ -3716,23 +3716,23 @@ int RunGameOver() {
 
 int TerminateGame() {
     lda(Silence);
-    // <conv.chunks.Comment object at 0x100e36c00>
+    // silence music
     sta(EventMusicQueue);
     JSR(TransposePlayers);
     BCC(ContinueGame);
     lda(WorldNumber);
     sta(ContinueWorld);
-    // <conv.chunks.Comment object at 0x100e36e40>
-    // <conv.chunks.Comment object at 0x100e36f60>
-    // <conv.chunks.Comment object at 0x100e37080>
-    // <conv.chunks.Comment object at 0x100e371a0>
+    // check if other player can keep
+    // going, and do so if possible
+    // otherwise put world number of current
+    // player into secret continue function variable
     lda(0x0);
     asl();
     sta(OperMode_Task);
     sta(ScreenTimer);
-    // <conv.chunks.Comment object at 0x100e373e0>
-    // <conv.chunks.Comment object at 0x100e37470>
-    // <conv.chunks.Comment object at 0x100e375c0>
+    // residual ASL instruction
+    // reset all modes to title screen and
+    // leave
     sta(OperMode);
     return 0;
     JMP(ContinueGame);
@@ -3745,12 +3745,12 @@ int ContinueGame() {
     inc(FetchNewGameTimerFlag);
     lda(0x0);
     sta(TimerControl);
-    // <conv.chunks.Comment object at 0x100e37890>
-    // <conv.chunks.Comment object at 0x100e379b0>
-    // <conv.chunks.Comment object at 0x100e37a40>
-    // <conv.chunks.Comment object at 0x100e37bf0>
-    // <conv.chunks.Comment object at 0x100e37d10>
-    // <conv.chunks.Comment object at 0x100e37da0>
+    // update level pointer with
+    // actual world and area numbers, then
+    // reset player's size, status, and
+    // set game timer flag to reload
+    // game timer from header
+    // also set flag for timers to count again
     sta(PlayerStatus);
     sta(GameEngineSubroutine);
     sta(OperMode_Task);
@@ -3767,29 +3767,29 @@ int GameIsOn() {
 int TransposePlayers() {
     sec();
     lda(NumberOfPlayers);
-    // <conv.chunks.Comment object at 0x100e3c620>
-    // <conv.chunks.Comment object at 0x100e3c6b0>
+    // set carry flag by default to end game
+    // if only a 1 player game, leave
     BEQ(ExTrans);
     lda(OffScr_NumberofLives);
     BMI(ExTrans);
     lda(CurrentPlayer);
     eor(0b1);
-    // <conv.chunks.Comment object at 0x100e3c8f0>
-    // <conv.chunks.Comment object at 0x100e3ca10>
-    // <conv.chunks.Comment object at 0x100e3cb60>
-    // <conv.chunks.Comment object at 0x100e3cc80>
+    // does offscreen player have any lives left?
+    // branch if not
+    // invert bit to update
+    // which player is on the screen
     sta(CurrentPlayer);
     ldx(0x6);
     JMP(TransLoop);
 }
 
 int TransLoop() {
-    // <conv.chunks.Comment object at 0x100e3cef0>
+    // transpose the information
     lda(OnscreenPlayerInfo, x);
     pha();
     lda(OffscreenPlayerInfo, x);
-    // <conv.chunks.Comment object at 0x100e3d130>
-    // <conv.chunks.Comment object at 0x100e3d1c0>
+    // of the onscreen player
+    // with that of the offscreen player
     sta(OnscreenPlayerInfo, x);
     pla();
     sta(OffscreenPlayerInfo, x);
@@ -3818,8 +3818,8 @@ int DoNothing2() {
 int AreaParserTaskHandler() {
     ldy(AreaParserTaskNum);
     BNE(DoAPTasks);
-    // <conv.chunks.Comment object at 0x100e3dcd0>
-    // <conv.chunks.Comment object at 0x100e3ddf0>
+    // check number of tasks here
+    // if already set, go ahead
     ldy(0x8);
     sty(AreaParserTaskNum);
     JMP(DoAPTasks);
@@ -3831,8 +3831,8 @@ int DoAPTasks() {
     JSR(AreaParserTasks);
     dec(AreaParserTaskNum);
     BNE(SkipATRender);
-    // <conv.chunks.Comment object at 0x100e3e360>
-    // <conv.chunks.Comment object at 0x100e3e480>
+    // if all tasks not complete do not
+    // render attribute table yet
     JSR(RenderAttributeTables);
     JMP(SkipATRender);
 }
@@ -3848,10 +3848,10 @@ int AreaParserTasks() {
 
 int IncrementColumnPos() {
     inc(CurrentColumnPos);
-    // <conv.chunks.Comment object at 0x100e3ed50>
+    // increment column where we're at
     lda(CurrentColumnPos);
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x100e3ef60>
+    // mask out higher nybble
     BNE(NoColWrap);
     sta(CurrentColumnPos);
     inc(CurrentPageLoc);
@@ -3859,15 +3859,15 @@ int IncrementColumnPos() {
 }
 
 int NoColWrap() {
-    // <conv.chunks.Comment object at 0x100e3f170>
-    // <conv.chunks.Comment object at 0x100e3f290>
-    // <conv.chunks.Comment object at 0x100e3f3b0>
+    // if no bits left set, wrap back to zero (0-f)
+    // and increment page number where we're at
+    // increment column offset where we're at
     inc(BlockBufferColumnPos);
     lda(BlockBufferColumnPos);
     anda(0b11111);
     sta(BlockBufferColumnPos);
-    // <conv.chunks.Comment object at 0x100e3f5f0>
-    // <conv.chunks.Comment object at 0x100e3f710>
+    // mask out all but 5 LSB (0-1f)
+    // and save
     return 0;
     JMP(AreaParserCore);
 }
@@ -3886,7 +3886,7 @@ int RenderSceneryTerrain() {
 }
 
 int ClrMTBuf() {
-    // <conv.chunks.Comment object at 0x100e59a90>
+    // clear out metatile buffer
     sta(MetatileBuffer, x);
     dex();
     BPL(ClrMTBuf);
@@ -3899,7 +3899,7 @@ int ClrMTBuf() {
 int ThirdP() {
     cmp(0x3);
     BMI(RendBack);
-    // <conv.chunks.Comment object at 0x100e5a240>
+    // if less than three we're there
     sec();
     sbc(0x3);
     BPL(ThirdP);
@@ -3907,25 +3907,25 @@ int ThirdP() {
 }
 
 int RendBack() {
-    // <conv.chunks.Comment object at 0x100e5a480>
-    // <conv.chunks.Comment object at 0x100e5a510>
-    // <conv.chunks.Comment object at 0x100e5a6f0>
+    // if 3 or more, subtract 3 and
+    // do an unconditional branch
+    // move results to higher nybble
     asl();
     asl();
     asl();
     asl();
     adc(((offsetof(G, BSceneDataOffsets)) - (1)), y);
     adc(CurrentColumnPos);
-    // <conv.chunks.Comment object at 0x100e5a990>
-    // <conv.chunks.Comment object at 0x100e5aba0>
+    // add to it offset loaded from here
+    // add to the result our current column position
     tax();
     lda(offsetof(G, BackSceneryData), x);
     BEQ(RendFore);
-    // <conv.chunks.Comment object at 0x100e5ad50>
-    // <conv.chunks.Comment object at 0x100e5aea0>
+    // load data from sum of offsets
+    // if zero, no scenery for that part
     pha();
     anda(0xf);
-    // <conv.chunks.Comment object at 0x100e5b050>
+    // save to stack and clear high nybble
     sec();
     sbc(0x1);
     sta(0x0);
@@ -3933,42 +3933,42 @@ int RendBack() {
     adc(0x0);
     tax();
     pla();
-    // <conv.chunks.Comment object at 0x100e5b200>
-    // <conv.chunks.Comment object at 0x100e5b350>
-    // <conv.chunks.Comment object at 0x100e5b290>
-    // <conv.chunks.Comment object at 0x100e5b530>
-    // <conv.chunks.Comment object at 0x100e5b500>
-    // <conv.chunks.Comment object at 0x100e5b710>
+    // subtract one (because low nybble is $01-$0c)
+    // save low nybble
+    // multiply by three (shift to left and add result to old one)
+    // note that since d7 was nulled, the carry flag is always clear
+    // save as offset for background scenery metatile data
+    // get high nybble from stack, move low
     lsr();
     lsr();
     lsr();
     lsr();
     tay();
     lda(0x3);
-    // <conv.chunks.Comment object at 0x100e5ba10>
-    // <conv.chunks.Comment object at 0x100e5baa0>
+    // use as second offset (used to determine height)
+    // use previously saved memory location for counter
     sta(0x0);
     JMP(SceLoop1);
 }
 
 int SceLoop1() {
-    // <conv.chunks.Comment object at 0x100e5bb30>
+    // load metatile data from offset of (lsb - 1) * 3
     lda(offsetof(G, BackSceneryMetatiles), x);
     sta(MetatileBuffer, y);
-    // <conv.chunks.Comment object at 0x100e5be30>
+    // store into buffer from offset of (msb / 16)
     inx();
     iny();
     cpy(0xb);
-    // <conv.chunks.Comment object at 0x100e640e0>
+    // if at this location, leave loop
     BEQ(RendFore);
     dec(0x0);
-    // <conv.chunks.Comment object at 0x100e64320>
+    // decrement until counter expires, barring exception
     BNE(SceLoop1);
     JMP(RendFore);
 }
 
 int RendFore() {
-    // <conv.chunks.Comment object at 0x100e64500>
+    // check for foreground data needed or not
     ldx(ForegroundScenery);
     BEQ(RendTerr);
     ldy(((offsetof(G, FSceneDataOffsets)) - (1)), x);
@@ -3977,13 +3977,13 @@ int RendFore() {
 }
 
 int SceLoop2() {
-    // <conv.chunks.Comment object at 0x100e64650>
-    // <conv.chunks.Comment object at 0x100e64770>
-    // <conv.chunks.Comment object at 0x100e64980>
-    // <conv.chunks.Comment object at 0x100e64a10>
+    // if not, skip this part
+    // load offset from location offset by header value, then
+    // reinit X
+    // load data until counter expires
     lda(offsetof(G, ForeSceneryData), y);
     BEQ(NoFore);
-    // <conv.chunks.Comment object at 0x100e64c20>
+    // do not store if zero found
     sta(MetatileBuffer, x);
     JMP(NoFore);
 }
@@ -3992,20 +3992,20 @@ int NoFore() {
     iny();
     inx();
     cpx(0xd);
-    // <conv.chunks.Comment object at 0x100e65010>
+    // store up to end of metatile buffer
     BNE(SceLoop2);
     JMP(RendTerr);
 }
 
 int RendTerr() {
-    // <conv.chunks.Comment object at 0x100e65220>
+    // check world type for water level
     ldy(AreaType);
     BNE(TerMTile);
     lda(WorldNumber);
     cmp(World8);
-    // <conv.chunks.Comment object at 0x100e65370>
-    // <conv.chunks.Comment object at 0x100e65490>
-    // <conv.chunks.Comment object at 0x100e655b0>
+    // if not water level, skip this part
+    // check world number, if not world number eight
+    // then skip this part
     BNE(TerMTile);
     lda(0x62);
     JMP(StoreMT);
@@ -4013,9 +4013,9 @@ int RendTerr() {
 }
 
 int TerMTile() {
-    // <conv.chunks.Comment object at 0x100e657f0>
-    // <conv.chunks.Comment object at 0x100e65880>
-    // <conv.chunks.Comment object at 0x100e65a60>
+    // if set as water level and world number eight,
+    // use castle wall metatile as terrain type
+    // otherwise get appropriate metatile for area type
     lda(offsetof(G, TerrainMetatiles), y);
     ldy(CloudTypeOverride);
     BEQ(StoreMT);
@@ -4024,97 +4024,97 @@ int TerMTile() {
 }
 
 int StoreMT() {
-    // <conv.chunks.Comment object at 0x100e65be0>
-    // <conv.chunks.Comment object at 0x100e65d00>
-    // <conv.chunks.Comment object at 0x100e65e50>
-    // <conv.chunks.Comment object at 0x100e65ee0>
+    // check for cloud type override
+    // if not set, keep value otherwise
+    // use cloud block terrain
+    // store value here
     sta(0x7);
     ldx(0x0);
     lda(TerrainControl);
     asl();
-    // <conv.chunks.Comment object at 0x100e66090>
-    // <conv.chunks.Comment object at 0x100e66180>
-    // <conv.chunks.Comment object at 0x100e66360>
+    // initialize X, use as metatile buffer offset
+    // use yet another value from the header
+    // multiply by 2 and use as yet another offset
     tay();
     JMP(TerrLoop);
 }
 
 int TerrLoop() {
-    // <conv.chunks.Comment object at 0x100e66480>
+    // get one of the terrain rendering bit data
     lda(offsetof(G, TerrainRenderBits), y);
     sta(0x0);
     iny();
-    // <conv.chunks.Comment object at 0x100e66690>
+    // increment Y and use as offset next time around
     sty(0x1);
     lda(CloudTypeOverride);
-    // <conv.chunks.Comment object at 0x100e667b0>
+    // skip if value here is zero
     BEQ(NoCloud2);
     cpx(0x0);
-    // <conv.chunks.Comment object at 0x100e66ab0>
+    // otherwise, check if we're doing the ceiling byte
     BEQ(NoCloud2);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x100e66cf0>
+    // if not, mask out all but d3
     anda(0b1000);
     sta(0x0);
     JMP(NoCloud2);
 }
 
 int NoCloud2() {
-    // <conv.chunks.Comment object at 0x100e66ed0>
+    // start at beginning of bitmasks
     ldy(0x0);
     JMP(TerrBChk);
 }
 
 int TerrBChk() {
-    // <conv.chunks.Comment object at 0x100e67080>
+    // load bitmask, then perform AND on contents of first byte
     lda(offsetof(G, Bitmasks), y);
     bit(0x0);
     BEQ(NextTBit);
-    // <conv.chunks.Comment object at 0x100e67290>
+    // if not set, skip this part (do not write terrain to buffer)
     lda(0x7);
     sta(MetatileBuffer, x);
     JMP(NextTBit);
 }
 
 int NextTBit() {
-    // <conv.chunks.Comment object at 0x100e674a0>
-    // <conv.chunks.Comment object at 0x100e676e0>
+    // load terrain type metatile number and store into buffer here
+    // continue until end of buffer
     inx();
     cpx(0xd);
     BEQ(RendBBuf);
     lda(AreaType);
-    // <conv.chunks.Comment object at 0x100e67830>
-    // <conv.chunks.Comment object at 0x100e679e0>
+    // if we're at the end, break out of this loop
+    // check world type for underground area
     cmp(0x2);
     BNE(EndUChk);
-    // <conv.chunks.Comment object at 0x100e67b60>
+    // if not underground, skip this part
     cpx(0xb);
     BNE(EndUChk);
     lda(0x54);
-    // <conv.chunks.Comment object at 0x100e67da0>
-    // <conv.chunks.Comment object at 0x100e67f80>
+    // if we're at the bottom of the screen, override
+    // old terrain type with ground level terrain type
     sta(0x7);
     JMP(EndUChk);
 }
 
 int EndUChk() {
-    // <conv.chunks.Comment object at 0x100e70050>
+    // increment bitmasks offset in Y
     iny();
     cpy(0x8);
     BNE(TerrBChk);
-    // <conv.chunks.Comment object at 0x100e70350>
+    // if not all bits checked, loop back
     ldy(0x1);
     BNE(TerrLoop);
     JMP(RendBBuf);
 }
 
 int RendBBuf() {
-    // <conv.chunks.Comment object at 0x100e70500>
-    // <conv.chunks.Comment object at 0x100e70710>
+    // unconditional branch, use Y to load next byte
+    // do the area data loading routine now
     JSR(ProcessAreaData);
     lda(BlockBufferColumnPos);
     JSR(GetBlockBufferAddr);
-    // <conv.chunks.Comment object at 0x100e70950>
+    // get block buffer address from where we're at
     ldx(0x0);
     ldy(0x0);
     JMP(ChkMTLow);
@@ -4124,11 +4124,11 @@ int ChkMTLow() {
     sty(0x0);
     lda(MetatileBuffer, x);
     anda(0b11000000);
-    // <conv.chunks.Comment object at 0x100e70d40>
-    // <conv.chunks.Comment object at 0x100e70ef0>
+    // load stored metatile number
+    // mask out all but 2 MSB
     asl();
     rol();
-    // <conv.chunks.Comment object at 0x100e710d0>
+    // make %xx000000 into %000000xx
     rol();
     tay();
     lda(MetatileBuffer, x);
@@ -4139,25 +4139,25 @@ int ChkMTLow() {
 }
 
 int StrBlock() {
-    // <conv.chunks.Comment object at 0x100e71220>
-    // <conv.chunks.Comment object at 0x100e712b0>
-    // <conv.chunks.Comment object at 0x100e71400>
-    // <conv.chunks.Comment object at 0x100e71550>
-    // <conv.chunks.Comment object at 0x100e71670>
-    // <conv.chunks.Comment object at 0x100e71700>
+    // use as offset in Y
+    // reload original unmasked value here
+    // check for certain values depending on bits set
+    // if equal or greater, branch
+    // if less, init value before storing
+    // get offset for block buffer
     ldy(0x0);
     sta((0x6), y);
-    // <conv.chunks.Comment object at 0x100e71880>
+    // store value into block buffer
     tya();
     clc();
-    // <conv.chunks.Comment object at 0x100e71b20>
+    // add 16 (move down one row) to offset
     adc(0x10);
     tay();
     inx();
-    // <conv.chunks.Comment object at 0x100e71d60>
+    // increment column value
     cpx(0xd);
     BCC(ChkMTLow);
-    // <conv.chunks.Comment object at 0x100e71e50>
+    // continue until we pass last row, then leave
     return 0;
     JMP(ProcessAreaData);
 }
@@ -4170,27 +4170,27 @@ int ProcessAreaData() {
 int ProcADLoop() {
     stx(ObjectOffset);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x100e72660>
+    // reset flag
     sta(BehindAreaParserFlag);
     ldy(AreaDataOffset);
     lda((AreaData), y);
     cmp(0xfd);
-    // <conv.chunks.Comment object at 0x100e72870>
-    // <conv.chunks.Comment object at 0x100e72990>
-    // <conv.chunks.Comment object at 0x100e72b10>
+    // get offset of area data pointer
+    // get first byte of area object
+    // if end-of-area, skip all this crap
     BEQ(RdyDecode);
     lda(AreaObjectLength, x);
     BPL(RdyDecode);
-    // <conv.chunks.Comment object at 0x100e72d20>
-    // <conv.chunks.Comment object at 0x100e72e70>
+    // check area object buffer flag
+    // if buffer not negative, branch, otherwise
     iny();
     lda((AreaData), y);
     asl();
-    // <conv.chunks.Comment object at 0x100e73020>
-    // <conv.chunks.Comment object at 0x100e731d0>
+    // get second byte of area object
+    // check for page select bit (d7), branch if not set
     BCC(Chk1Row13);
     lda(AreaObjectPageSel);
-    // <conv.chunks.Comment object at 0x100e73350>
+    // check page select
     BNE(Chk1Row13);
     inc(AreaObjectPageSel);
     inc(AreaObjectPageLoc);
@@ -4202,35 +4202,35 @@ int Chk1Row13() {
     lda((AreaData), y);
     anda(0xf);
     cmp(0xd);
-    // <conv.chunks.Comment object at 0x100e73860>
-    // <conv.chunks.Comment object at 0x100e739e0>
-    // <conv.chunks.Comment object at 0x100e73b30>
+    // reread first byte of level object
+    // mask out high nybble
+    // row 13?
     BNE(Chk1Row14);
     iny();
-    // <conv.chunks.Comment object at 0x100e73d70>
+    // if so, reread second byte of level object
     lda((AreaData), y);
     dey();
     anda(0b1000000);
-    // <conv.chunks.Comment object at 0x100e73f80>
-    // <conv.chunks.Comment object at 0x100e7c050>
+    // decrement to get ready to read first byte
+    // check for d6 set (if not, object is page control)
     BNE(CheckRear);
     lda(AreaObjectPageSel);
-    // <conv.chunks.Comment object at 0x100e7c260>
+    // if page select is set, do not reread
     BNE(CheckRear);
     iny();
-    // <conv.chunks.Comment object at 0x100e7c4a0>
+    // if d6 not set, reread second byte
     lda((AreaData), y);
     anda(0b11111);
-    // <conv.chunks.Comment object at 0x100e7c680>
+    // mask out all but 5 LSB and store in page control
     sta(AreaObjectPageLoc);
     inc(AreaObjectPageSel);
-    // <conv.chunks.Comment object at 0x100e7c890>
+    // increment page select
     JMP(NextAObj);
     JMP(Chk1Row14);
 }
 
 int Chk1Row14() {
-    // <conv.chunks.Comment object at 0x100e7cad0>
+    // row 14?
     cmp(0xe);
     BNE(CheckRear);
     lda(BackloadingFlag);
@@ -4239,9 +4239,9 @@ int Chk1Row14() {
 }
 
 int CheckRear() {
-    // <conv.chunks.Comment object at 0x100e7cd10>
-    // <conv.chunks.Comment object at 0x100e7ce30>
-    // <conv.chunks.Comment object at 0x100e7cf50>
+    // check flag for saved page number and branch if set
+    // to render the object (otherwise bg might not look right)
+    // check to see if current page of level object is
     lda(AreaObjectPageLoc);
     cmp(CurrentPageLoc);
     BCC(SetBehind);
@@ -4249,28 +4249,28 @@ int CheckRear() {
 }
 
 int RdyDecode() {
-    // <conv.chunks.Comment object at 0x100e7d0a0>
-    // <conv.chunks.Comment object at 0x100e7d1c0>
-    // <conv.chunks.Comment object at 0x100e7d2e0>
+    // behind current page of renderer
+    // if so branch
+    // do sub and do not turn on flag
     JSR(DecodeAreaData);
     JMP(ChkLength);
     JMP(SetBehind);
 }
 
 int SetBehind() {
-    // <conv.chunks.Comment object at 0x100e7d520>
+    // turn on flag if object is behind renderer
     inc(BehindAreaParserFlag);
     JMP(NextAObj);
 }
 
 int NextAObj() {
-    // <conv.chunks.Comment object at 0x100e7d670>
+    // increment buffer offset and move on
     JSR(IncAreaObjOffset);
     JMP(ChkLength);
 }
 
 int ChkLength() {
-    // <conv.chunks.Comment object at 0x100e7d7c0>
+    // get buffer offset
     ldx(ObjectOffset);
     lda(AreaObjectLength, x);
     BMI(ProcLoopb);
@@ -4279,10 +4279,10 @@ int ChkLength() {
 }
 
 int ProcLoopb() {
-    // <conv.chunks.Comment object at 0x100e7d910>
-    // <conv.chunks.Comment object at 0x100e7da60>
-    // <conv.chunks.Comment object at 0x100e7db80>
-    // <conv.chunks.Comment object at 0x100e7dcd0>
+    // check object length for anything stored here
+    // if not, branch to handle loopback
+    // otherwise decrement length or get rid of it
+    // decrement buffer offset
     dex();
     BPL(ProcADLoop);
     lda(BehindAreaParserFlag);
@@ -4299,10 +4299,10 @@ int EndAParse() {
 
 int IncAreaObjOffset() {
     inc(AreaDataOffset);
-    // <conv.chunks.Comment object at 0x100e7e450>
+    // increment offset of level pointer
     inc(AreaDataOffset);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x100e7e660>
+    // reset page select
     sta(AreaObjectPageSel);
     return 0;
     JMP(DecodeAreaData);
@@ -4310,18 +4310,18 @@ int IncAreaObjOffset() {
 
 int DecodeAreaData() {
     lda(AreaObjectLength, x);
-    // <conv.chunks.Comment object at 0x100e7e930>
+    // check current buffer flag
     BMI(Chk1stB);
     ldy(AreaObjOffsetBuffer, x);
     JMP(Chk1stB);
 }
 
 int Chk1stB() {
-    // <conv.chunks.Comment object at 0x100e7eba0>
-    // <conv.chunks.Comment object at 0x100e7ecf0>
+    // if not, get offset from buffer
+    // load offset of 16 for special row 15
     ldx(0x10);
     lda((AreaData), y);
-    // <conv.chunks.Comment object at 0x100e7ede0>
+    // get first byte of level object again
     cmp(0xfd);
     BEQ(EndAParse);
     anda(0xf);
@@ -4335,23 +4335,23 @@ int Chk1stB() {
 }
 
 int ChkRow14() {
-    // <conv.chunks.Comment object at 0x100e7f050>
-    // <conv.chunks.Comment object at 0x100e7f200>
-    // <conv.chunks.Comment object at 0x100e7f350>
-    // <conv.chunks.Comment object at 0x100e7f3e0>
-    // <conv.chunks.Comment object at 0x100e7f590>
-    // <conv.chunks.Comment object at 0x100e7f6e0>
-    // <conv.chunks.Comment object at 0x100e7f770>
-    // <conv.chunks.Comment object at 0x100e7f920>
-    // <conv.chunks.Comment object at 0x100e7f9b0>
+    // if end of level, leave this routine
+    // otherwise, mask out low nybble
+    // row 15?
+    // if so, keep the offset of 16
+    // otherwise load offset of 8 for special row 12
+    // row 12?
+    // if so, keep the offset value of 8
+    // otherwise nullify value by default
+    // store whatever value we just loaded here
     stx(0x7);
     ldx(ObjectOffset);
     cmp(0xe);
-    // <conv.chunks.Comment object at 0x100e7fb30>
-    // <conv.chunks.Comment object at 0x100e7fce0>
+    // get object offset again
+    // row 14?
     BNE(ChkRow13);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x100e7fef0>
+    // if so, load offset with $00
     sta(0x7);
     lda(0x2e);
     BNE(NormObj);
@@ -4359,16 +4359,16 @@ int ChkRow14() {
 }
 
 int ChkRow13() {
-    // <conv.chunks.Comment object at 0x100e7ff80>
-    // <conv.chunks.Comment object at 0x100e841d0>
-    // <conv.chunks.Comment object at 0x100e843e0>
+    // and load A with another value
+    // unconditional branch
+    // row 13?
     cmp(0xd);
     BNE(ChkSRows);
     lda(0x22);
-    // <conv.chunks.Comment object at 0x100e84620>
+    // if so, load offset with 34
     sta(0x7);
     iny();
-    // <conv.chunks.Comment object at 0x100e847d0>
+    // get next byte
     lda((AreaData), y);
     anda(0b1000000);
     BEQ(LeavePar);
@@ -4381,69 +4381,69 @@ int ChkRow13() {
 }
 
 int Mask2MSB() {
-    // <conv.chunks.Comment object at 0x100e84a40>
-    // <conv.chunks.Comment object at 0x100e84b60>
-    // <conv.chunks.Comment object at 0x100e84c80>
-    // <conv.chunks.Comment object at 0x100e84e00>
-    // <conv.chunks.Comment object at 0x100e84f20>
-    // <conv.chunks.Comment object at 0x100e84fb0>
-    // <conv.chunks.Comment object at 0x100e85160>
-    // <conv.chunks.Comment object at 0x100e85280>
+    // mask out all but d6 (page control obj bit)
+    // if d6 clear, branch to leave (we handled this earlier)
+    // otherwise, get byte again
+    // mask out d7
+    // check for loop command in low nybble
+    // (plus d6 set for object other than page control)
+    // if loop command, set loop command flag
+    // mask out d7 and d6
     anda(0b111111);
     JMP(NormObj);
     JMP(ChkSRows);
 }
 
 int ChkSRows() {
-    // <conv.chunks.Comment object at 0x100e853d0>
-    // <conv.chunks.Comment object at 0x100e85520>
+    // and jump
+    // row 12-15?
     cmp(0xc);
     BCS(SpecObj);
     iny();
-    // <conv.chunks.Comment object at 0x100e857c0>
+    // if not, get second byte of level object
     lda((AreaData), y);
     anda(0b1110000);
     BNE(LrgObj);
-    // <conv.chunks.Comment object at 0x100e859a0>
-    // <conv.chunks.Comment object at 0x100e85ac0>
+    // mask out all but d6-d4
+    // if any bits set, branch to handle large object
     lda(0x16);
     sta(0x7);
     lda((AreaData), y);
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x100e85d30>
-    // <conv.chunks.Comment object at 0x100e85dc0>
-    // <conv.chunks.Comment object at 0x100e85fa0>
+    // otherwise set offset of 24 for small object
+    // reload second byte of level object
+    // mask out higher nybble and jump
     JMP(NormObj);
     JMP(LrgObj);
 }
 
 int LrgObj() {
-    // <conv.chunks.Comment object at 0x100e861e0>
+    // store value here (branch for large objects)
     sta(0x0);
     cmp(0x70);
-    // <conv.chunks.Comment object at 0x100e86300>
+    // check for vertical pipe object
     BNE(NotWPipe);
     lda((AreaData), y);
     anda(0b1000);
     BEQ(NotWPipe);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x100e86570>
-    // <conv.chunks.Comment object at 0x100e866f0>
-    // <conv.chunks.Comment object at 0x100e86810>
-    // <conv.chunks.Comment object at 0x100e86930>
+    // if not, reload second byte
+    // mask out all but d3 (usage control bit)
+    // if d3 clear, branch to get original value
+    // otherwise, nullify value for warp pipe
     sta(0x0);
     JMP(NotWPipe);
 }
 
 int NotWPipe() {
-    // <conv.chunks.Comment object at 0x100e869c0>
+    // get value and jump ahead
     lda(0x0);
     JMP(MoveAOId);
     JMP(SpecObj);
 }
 
 int SpecObj() {
-    // <conv.chunks.Comment object at 0x100e86d80>
+    // branch here for rows 12-15
     iny();
     lda((AreaData), y);
     anda(0b1110000);
@@ -4451,8 +4451,8 @@ int SpecObj() {
 }
 
 int MoveAOId() {
-    // <conv.chunks.Comment object at 0x100e86ff0>
-    // <conv.chunks.Comment object at 0x100e87110>
+    // get next byte and mask out all but d6-d4
+    // move d6-d4 to lower nybble
     lsr();
     lsr();
     lsr();
@@ -4461,24 +4461,24 @@ int MoveAOId() {
 }
 
 int NormObj() {
-    // <conv.chunks.Comment object at 0x100e873b0>
+    // store value here (branch for small objects and rows 13 and 14)
     sta(0x0);
     lda(AreaObjectLength, x);
     BPL(RunAObj);
     lda(AreaObjectPageLoc);
     cmp(CurrentPageLoc);
-    // <conv.chunks.Comment object at 0x100e874d0>
-    // <conv.chunks.Comment object at 0x100e87680>
-    // <conv.chunks.Comment object at 0x100e877d0>
-    // <conv.chunks.Comment object at 0x100e878f0>
+    // is there something stored here already?
+    // if so, branch to do its particular sub
+    // otherwise check to see if the object we've loaded is on the
+    // same page as the renderer, and if so, branch
     BEQ(InitRear);
     ldy(AreaDataOffset);
     lda((AreaData), y);
-    // <conv.chunks.Comment object at 0x100e87b00>
-    // <conv.chunks.Comment object at 0x100e87c20>
+    // if not, get old offset of level pointer
+    // and reload first byte
     anda(0b1111);
     cmp(0xe);
-    // <conv.chunks.Comment object at 0x100e87ef0>
+    // row 14?
     BNE(LeavePar);
     lda(BackloadingFlag);
     BNE(StrAObj);
@@ -4491,14 +4491,14 @@ int LeavePar() {
 }
 
 int InitRear() {
-    // <conv.chunks.Comment object at 0x100e94470>
+    // check backloading flag to see if it's been initialized
     lda(BackloadingFlag);
     BEQ(BackColC);
     lda(0x0);
     sta(BackloadingFlag);
-    // <conv.chunks.Comment object at 0x100e945c0>
-    // <conv.chunks.Comment object at 0x100e946e0>
-    // <conv.chunks.Comment object at 0x100e94770>
+    // branch to column-wise check
+    // if not, initialize both backloading and
+    // behind-renderer flags and leave
     sta(BehindAreaParserFlag);
     sta(ObjectOffset);
     JMP(LoopCmdE);
@@ -4510,11 +4510,11 @@ int LoopCmdE() {
 }
 
 int BackColC() {
-    // <conv.chunks.Comment object at 0x100e94bc0>
+    // get first byte again
     ldy(AreaDataOffset);
     lda((AreaData), y);
     anda(0b11110000);
-    // <conv.chunks.Comment object at 0x100e94e90>
+    // mask out low nybble and move high to low
     lsr();
     lsr();
     lsr();
@@ -4525,9 +4525,9 @@ int BackColC() {
 }
 
 int StrAObj() {
-    // <conv.chunks.Comment object at 0x100e951f0>
-    // <conv.chunks.Comment object at 0x100e95310>
-    // <conv.chunks.Comment object at 0x100e95430>
+    // is this where we're at?
+    // if not, branch to leave
+    // if so, load area obj offset and store in buffer
     lda(AreaDataOffset);
     sta(AreaObjOffsetBuffer, x);
     JSR(IncAreaObjOffset);
@@ -4535,11 +4535,11 @@ int StrAObj() {
 }
 
 int RunAObj() {
-    // <conv.chunks.Comment object at 0x100e956d0>
-    // <conv.chunks.Comment object at 0x100e957f0>
+    // do sub to increment to next object data
+    // get stored value and add offset to it
     lda(0x0);
     clc();
-    // <conv.chunks.Comment object at 0x100e95850>
+    // then use the jump engine with current contents of A
     adc(0x7);
     JMP(AlterAreaAttributes);
 }
@@ -4547,35 +4547,35 @@ int RunAObj() {
 int AlterAreaAttributes() {
     ldy(AreaObjOffsetBuffer, x);
     iny();
-    // <conv.chunks.Comment object at 0x100e97830>
-    // <conv.chunks.Comment object at 0x100e97a40>
-    // <conv.chunks.Comment object at 0x100e97b30>
-    // <conv.chunks.Comment object at 0x100e97b90>
-    // <conv.chunks.Comment object at 0x100e97d10>
+    // object for special row $0e or 14
+    // (these apply to all area object subroutines in this section unless otherwise stated)
+    // $07 - starts with adder from area parser, used to store row offset
+    // load offset for level object data saved in buffer
+    // load second byte
     lda((AreaData), y);
     pha();
-    // <conv.chunks.Comment object at 0x100e97f20>
+    // save in stack for now
     anda(0b1000000);
     BNE(Alter2);
-    // <conv.chunks.Comment object at 0x100ea00e0>
+    // branch if d6 is set
     pla();
     pha();
     anda(0b1111);
     sta(TerrainControl);
-    // <conv.chunks.Comment object at 0x100ea02f0>
-    // <conv.chunks.Comment object at 0x100ea0380>
-    // <conv.chunks.Comment object at 0x100ea04a0>
+    // pull and push offset to copy to A
+    // mask out high nybble and store as
+    // new terrain height type bits
     pla();
     anda(0b110000);
     lsr();
     lsr();
-    // <conv.chunks.Comment object at 0x100ea0650>
-    // <conv.chunks.Comment object at 0x100ea07a0>
-    // <conv.chunks.Comment object at 0x100ea0860>
+    // pull and mask out all but d5 and d4
+    // move bits to lower nybble and store
+    // as new background scenery bits
     lsr();
     lsr();
     sta(BackgroundScenery);
-    // <conv.chunks.Comment object at 0x100ea0a10>
+    // then leave
     return 0;
     JMP(Alter2);
 }
@@ -4585,16 +4585,16 @@ int Alter2() {
     anda(0b111);
     cmp(0x4);
     BCC(SetFore);
-    // <conv.chunks.Comment object at 0x100ea0cb0>
-    // <conv.chunks.Comment object at 0x100ea0dd0>
-    // <conv.chunks.Comment object at 0x100ea0e60>
+    // mask out all but 3 LSB
+    // if four or greater, set color control bits
+    // and nullify foreground scenery bits
     sta(BackgroundColorCtrl);
     lda(0x0);
     JMP(SetFore);
 }
 
 int SetFore() {
-    // <conv.chunks.Comment object at 0x100ea1190>
+    // otherwise set new foreground scenery bits
     sta(ForegroundScenery);
     return 0;
     JMP(ScrollLockObject_Warp);
@@ -4603,13 +4603,13 @@ int SetFore() {
 int ScrollLockObject_Warp() {
     ldx(0x4);
     lda(WorldNumber);
-    // <conv.chunks.Comment object at 0x100ea1490>
-    // <conv.chunks.Comment object at 0x100ea1520>
+    // load value of 4 for game text routine as default
+    // warp zone (4-3-2), then check world number
     BEQ(WarpNum);
     inx();
     ldy(AreaType);
-    // <conv.chunks.Comment object at 0x100ea1820>
-    // <conv.chunks.Comment object at 0x100ea18b0>
+    // if world number > 1, increment for next warp zone (5)
+    // check area type
     dey();
     BNE(WarpNum);
     inx();
@@ -4620,8 +4620,8 @@ int WarpNum() {
     txa();
     sta(WarpZoneControl);
     JSR(WriteGameText);
-    // <conv.chunks.Comment object at 0x100ea1d60>
-    // <conv.chunks.Comment object at 0x100ea1e80>
+    // store number here to be used by warp zone routine
+    // print text and warp zone numbers
     lda(PiranhaPlant);
     JSR(KillEnemies);
     JMP(ScrollLockObject);
@@ -4629,7 +4629,7 @@ int WarpNum() {
 
 int ScrollLockObject() {
     lda(ScrollLock);
-    // <conv.chunks.Comment object at 0x100ea21e0>
+    // invert scroll lock to turn it on
     eor(0b1);
     sta(ScrollLock);
     return 0;
@@ -4638,8 +4638,8 @@ int ScrollLockObject() {
 
 int KillEnemies() {
     sta(0x0);
-    // <conv.chunks.Comment object at 0x100ea25a0>
-    // <conv.chunks.Comment object at 0x100ea2630>
+    // $00 - used to store enemy identifier in KillEnemies
+    // store identifier here
     lda(0x0);
     ldx(0x4);
     JMP(KillELoop);
@@ -4648,15 +4648,15 @@ int KillEnemies() {
 int KillELoop() {
     ldy(Enemy_ID, x);
     cpy(0x0);
-    // <conv.chunks.Comment object at 0x100ea2ab0>
+    // if not found, branch
     BNE(NoKillE);
     sta(Enemy_Flag, x);
     JMP(NoKillE);
 }
 
 int NoKillE() {
-    // <conv.chunks.Comment object at 0x100ea2cc0>
-    // <conv.chunks.Comment object at 0x100ea2e10>
+    // if found, deactivate enemy object flag
+    // do this until all slots are checked
     dex();
     BPL(KillELoop);
     return 0;
@@ -4664,29 +4664,29 @@ int NoKillE() {
 }
 
 int AreaFrenzy() {
-    // <conv.chunks.Comment object at 0x100ea3110>
+    // use area object identifier bit as offset
     ldx(0x0);
     lda(((offsetof(G, FrenzyIDData)) - (8)), x);
-    // <conv.chunks.Comment object at 0x100ea33b0>
+    // note that it starts at 8, thus weird address here
     ldy(0x5);
     JMP(FreCompLoop);
 }
 
 int FreCompLoop() {
-    // <conv.chunks.Comment object at 0x100ea3680>
+    // check regular slots of enemy object buffer
     dey();
     BMI(ExitAFrenzy);
     cmp(Enemy_ID, y);
-    // <conv.chunks.Comment object at 0x100ea3800>
-    // <conv.chunks.Comment object at 0x100ea3920>
+    // if all slots checked and enemy object not found, branch to store
+    // check for enemy object in buffer versus frenzy object
     BNE(FreCompLoop);
     lda(0x0);
     JMP(ExitAFrenzy);
 }
 
 int ExitAFrenzy() {
-    // <conv.chunks.Comment object at 0x100ea3b60>
-    // <conv.chunks.Comment object at 0x100ea3bf0>
+    // if enemy object already present, nullify queue and leave
+    // store enemy into frenzy queue
     sta(EnemyFrenzyQueue);
     return 0;
     JMP(AreaStyleObject);
@@ -4700,19 +4700,19 @@ int AreaStyleObject() {
 int TreeLedge() {
     JSR(GetLrgObjAttrib);
     lda(AreaObjectLength, x);
-    // <conv.chunks.Comment object at 0x100ea81a0>
-    // <conv.chunks.Comment object at 0x100ea8470>
+    // get row and length of green ledge
+    // check length counter for expiration
     BEQ(EndTreeL);
     BPL(MidTreeL);
     tya();
     sta(AreaObjectLength, x);
-    // <conv.chunks.Comment object at 0x100ea8830>
+    // store lower nybble into buffer flag as length of ledge
     lda(CurrentPageLoc);
     ora(CurrentColumnPos);
-    // <conv.chunks.Comment object at 0x100ea8a70>
+    // are we at the start of the level?
     BEQ(MidTreeL);
     lda(0x16);
-    // <conv.chunks.Comment object at 0x100ea8c80>
+    // render start of tree ledge
     JMP(NoUnder);
     JMP(MidTreeL);
 }
@@ -4727,11 +4727,11 @@ int MidTreeL() {
 }
 
 int EndTreeL() {
-    // <conv.chunks.Comment object at 0x100ea8f80>
-    // <conv.chunks.Comment object at 0x100ea9070>
-    // <conv.chunks.Comment object at 0x100ea9250>
-    // <conv.chunks.Comment object at 0x100ea92e0>
-    // <conv.chunks.Comment object at 0x100ea9490>
+    // render middle of tree ledge
+    // note that this is also used if ledge position is
+    // at the start of level for continuous effect
+    // now render the part underneath
+    // render end of tree ledge
     lda(0x18);
     JMP(NoUnder);
     JMP(MushroomLedge);
@@ -4740,40 +4740,40 @@ int EndTreeL() {
 int MushroomLedge() {
     JSR(ChkLrgObjLength);
     sty(0x6);
-    // <conv.chunks.Comment object at 0x100ea9730>
-    // <conv.chunks.Comment object at 0x100ea9880>
+    // get shroom dimensions
+    // store length here for now
     BCC(EndMushL);
     lda(AreaObjectLength, x);
-    // <conv.chunks.Comment object at 0x100ea9a60>
+    // divide length by 2 and store elsewhere
     lsr();
     sta(MushroomLedgeHalfLen, x);
     lda(0x19);
-    // <conv.chunks.Comment object at 0x100ea9d60>
+    // render start of mushroom
     JMP(NoUnder);
     JMP(EndMushL);
 }
 
 int EndMushL() {
-    // <conv.chunks.Comment object at 0x100ea9fa0>
+    // if at the end, render end of mushroom
     lda(0x1b);
     ldy(AreaObjectLength, x);
     BEQ(NoUnder);
     lda(MushroomLedgeHalfLen, x);
     sta(0x6);
-    // <conv.chunks.Comment object at 0x100eaa330>
-    // <conv.chunks.Comment object at 0x100eaa4b0>
+    // get divided length and store where length
+    // was stored originally
     ldx(0x7);
     lda(0x1a);
     sta(MetatileBuffer, x);
     cpy(0x6);
     BNE(MushLExit);
-    // <conv.chunks.Comment object at 0x100eaa6f0>
-    // <conv.chunks.Comment object at 0x100eaa900>
-    // <conv.chunks.Comment object at 0x100eaa990>
+    // render middle of mushroom
+    // are we smack dab in the center?
+    // if not, branch to leave
     inx();
     lda(0x4f);
     sta(MetatileBuffer, x);
-    // <conv.chunks.Comment object at 0x100eaac00>
+    // render stem top of mushroom underneath the middle
     lda(0x50);
     JMP(AllUnder);
 }
@@ -4786,12 +4786,12 @@ int AllUnder() {
 }
 
 int NoUnder() {
-    // <conv.chunks.Comment object at 0x100eaaf90>
-    // <conv.chunks.Comment object at 0x100eab020>
-    // <conv.chunks.Comment object at 0x100eab1d0>
+    // set $0f to render all way down
+    // now render the stem of mushroom
+    // load row of ledge
     ldx(0x7);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x100eab2f0>
+    // set 0 for no bottom on this part
     JMP(RenderUnderPart);
     JMP(PulleyRopeObject);
 }
@@ -4800,12 +4800,12 @@ int PulleyRopeObject() {
     JSR(ChkLrgObjLength);
     ldy(0x0);
     BCS(RenderPul);
-    // <conv.chunks.Comment object at 0x100eab650>
-    // <conv.chunks.Comment object at 0x100eab8f0>
-    // <conv.chunks.Comment object at 0x100eab980>
+    // get length of pulley/rope object
+    // initialize metatile offset
+    // if starting, render left pulley
     iny();
     lda(AreaObjectLength, x);
-    // <conv.chunks.Comment object at 0x100eabbc0>
+    // if not at the end, render rope
     BNE(RenderPul);
     iny();
     JMP(RenderPul);
@@ -4818,8 +4818,8 @@ int RenderPul() {
 }
 
 int MushLExit() {
-    // <conv.chunks.Comment object at 0x100eb4050>
-    // <conv.chunks.Comment object at 0x100eb4170>
+    // render at the top of the screen
+    // and leave
     return 0;
     JMP(CastleObject);
 }
@@ -4827,37 +4827,37 @@ int MushLExit() {
 int CastleObject() {
     JSR(GetLrgObjAttrib);
     sty(0x7);
-    // <conv.chunks.Comment object at 0x100eb42f0>
-    // <conv.chunks.Comment object at 0x100eb6360>
+    // save lower nybble as starting row
+    // if starting row is above $0a, game will crash!!!
     ldy(0x4);
     JSR(ChkLrgObjFixedLength);
-    // <conv.chunks.Comment object at 0x100eb64b0>
+    // load length of castle if not already loaded
     txa();
     pha();
     ldy(AreaObjectLength, x);
     ldx(0x7);
-    // <conv.chunks.Comment object at 0x100eb6720>
-    // <conv.chunks.Comment object at 0x100eb67b0>
-    // <conv.chunks.Comment object at 0x100eb6930>
+    // save obj buffer offset to stack
+    // use current length as offset for castle data
+    // begin at starting row
     lda(0xb);
     sta(0x6);
     JMP(CRendLoop);
 }
 
 int CRendLoop() {
-    // <conv.chunks.Comment object at 0x100eb6b40>
-    // <conv.chunks.Comment object at 0x100eb6bd0>
+    // load upper limit of number of rows to print
+    // load current byte using offset
     lda(offsetof(G, CastleMetatiles), y);
     sta(MetatileBuffer, x);
     inx();
-    // <conv.chunks.Comment object at 0x100eb6f00>
+    // store in buffer and increment buffer offset
     lda(0x6);
     BEQ(ChkCFloor);
     iny();
     iny();
-    // <conv.chunks.Comment object at 0x100eb6f90>
-    // <conv.chunks.Comment object at 0x100eb71d0>
-    // <conv.chunks.Comment object at 0x100eb7290>
+    // have we reached upper limit yet?
+    // if not, increment column-wise
+    // to byte in next row
     iny();
     iny();
     iny();
@@ -4866,64 +4866,64 @@ int CRendLoop() {
 }
 
 int ChkCFloor() {
-    // <conv.chunks.Comment object at 0x100eb7500>
-    // <conv.chunks.Comment object at 0x100eb7590>
+    // move closer to upper limit
+    // have we reached the row just before floor?
     cpx(0xb);
     BNE(CRendLoop);
-    // <conv.chunks.Comment object at 0x100eb76b0>
+    // if not, go back and do another row
     pla();
     tax();
-    // <conv.chunks.Comment object at 0x100eb7920>
+    // get obj buffer offset from before
     lda(CurrentPageLoc);
     BEQ(ExitCastle);
     lda(AreaObjectLength, x);
     cmp(0x1);
-    // <conv.chunks.Comment object at 0x100eb7aa0>
-    // <conv.chunks.Comment object at 0x100eb7bc0>
-    // <conv.chunks.Comment object at 0x100eb7d10>
+    // if we're at page 0, we do not need to do anything else
+    // check length
+    // if length almost about to expire, put brick at floor
     BEQ(PlayerStop);
     ldy(0x7);
-    // <conv.chunks.Comment object at 0x100eb7f50>
+    // check starting row for tall castle ($00)
     BNE(NotTall);
     cmp(0x3);
-    // <conv.chunks.Comment object at 0x100ebc1a0>
+    // if found, then check to see if we're at the second column
     BEQ(PlayerStop);
     JMP(NotTall);
 }
 
 int NotTall() {
-    // <conv.chunks.Comment object at 0x100ebc3b0>
+    // if not tall castle, check to see if we're at the third column
     cmp(0x2);
     BNE(ExitCastle);
     JSR(GetAreaObjXPosition);
-    // <conv.chunks.Comment object at 0x100ebc4a0>
-    // <conv.chunks.Comment object at 0x100ebc650>
+    // if we aren't and the castle is tall, don't create flag yet
+    // otherwise, obtain and save horizontal pixel coordinate
     pha();
     JSR(FindEmptyEnemySlot);
-    // <conv.chunks.Comment object at 0x100ebc800>
+    // find an empty place on the enemy object buffer
     pla();
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x100ebc9b0>
+    // then write horizontal coordinate for star flag
     lda(CurrentPageLoc);
     sta(Enemy_PageLoc, x);
-    // <conv.chunks.Comment object at 0x100ebcbf0>
+    // set page location for star flag
     lda(0x1);
     sta(Enemy_Y_HighPos, x);
     sta(Enemy_Flag, x);
-    // <conv.chunks.Comment object at 0x100ebcda0>
-    // <conv.chunks.Comment object at 0x100ebcf80>
+    // set vertical high byte
+    // set flag for buffer
     lda(0x90);
     sta(Enemy_Y_Position, x);
     lda(StarFlagObject);
-    // <conv.chunks.Comment object at 0x100ebd130>
-    // <conv.chunks.Comment object at 0x100ebd310>
+    // set vertical coordinate
+    // set star flag value in buffer itself
     sta(Enemy_ID, x);
     return 0;
     JMP(PlayerStop);
 }
 
 int PlayerStop() {
-    // <conv.chunks.Comment object at 0x100ebd5e0>
+    // put brick at floor to stop player at end of level
     ldy(0x52);
     sty(((MetatileBuffer) + (10)));
     JMP(ExitCastle);
@@ -4938,12 +4938,12 @@ int WaterPipe() {
     JSR(GetLrgObjAttrib);
     ldy(AreaObjectLength, x);
     ldx(0x7);
-    // <conv.chunks.Comment object at 0x100ebda30>
-    // <conv.chunks.Comment object at 0x100ebdb50>
-    // <conv.chunks.Comment object at 0x100ebdd00>
+    // get row and lower nybble
+    // get length (residual code, water pipe is 1 col thick)
+    // get row
     lda(0x6b);
     sta(MetatileBuffer, x);
-    // <conv.chunks.Comment object at 0x100ebde50>
+    // draw something here and below it
     lda(0x6c);
     sta(((MetatileBuffer) + (1)), x);
     return 0;
@@ -4952,12 +4952,12 @@ int WaterPipe() {
 
 int IntroPipe() {
     ldy(0x3);
-    // <conv.chunks.Comment object at 0x100ebe3c0>
-    // <conv.chunks.Comment object at 0x100ebe420>
-    // <conv.chunks.Comment object at 0x100ebe480>
+    // $05 - used to store length of vertical shaft in RenderSidewaysPipe
+    // and vertical length in VerticalPipe and GetPipeHeight
+    // check if length set, if not set, set it
     JSR(ChkLrgObjFixedLength);
     ldy(0xa);
-    // <conv.chunks.Comment object at 0x100ebe690>
+    // set fixed value and render the sideways part
     JSR(RenderSidewaysPipe);
     BCS(NoBlankP);
     ldx(0x6);
@@ -4965,16 +4965,16 @@ int IntroPipe() {
 }
 
 int VPipeSectLoop() {
-    // <conv.chunks.Comment object at 0x100ebe8a0>
-    // <conv.chunks.Comment object at 0x100ebe9c0>
-    // <conv.chunks.Comment object at 0x100ebea50>
+    // if carry flag set, not time to draw vertical pipe part
+    // blank everything above the vertical pipe part
+    // all the way to the top of the screen
     lda(0x0);
     sta(MetatileBuffer, x);
-    // <conv.chunks.Comment object at 0x100ebeba0>
+    // because otherwise it will look like exit pipe
     dex();
     BPL(VPipeSectLoop);
     lda(offsetof(G, VerticalPipeData), y);
-    // <conv.chunks.Comment object at 0x100ebef00>
+    // draw the end of the vertical pipe part
     sta(((MetatileBuffer) + (7)));
     JMP(NoBlankP);
 }
@@ -4986,7 +4986,7 @@ int NoBlankP() {
 
 int ExitPipe() {
     ldy(0x3);
-    // <conv.chunks.Comment object at 0x100ebf500>
+    // check if length set, if not set, set it
     JSR(ChkLrgObjFixedLength);
     JSR(GetLrgObjAttrib);
     JMP(RenderSidewaysPipe);
@@ -4995,20 +4995,20 @@ int ExitPipe() {
 int RenderSidewaysPipe() {
     dey();
     dey();
-    // <conv.chunks.Comment object at 0x100ebfe90>
-    // <conv.chunks.Comment object at 0x100ebff50>
+    // decrement twice to make room for shaft at bottom
+    // and store here for now as vertical length
     sty(0x5);
     ldy(AreaObjectLength, x);
-    // <conv.chunks.Comment object at 0x100ebffe0>
+    // get length left over and store here
     sty(0x6);
     ldx(0x5);
-    // <conv.chunks.Comment object at 0x100ec42f0>
+    // get vertical length plus one, use as buffer offset
     inx();
     lda(offsetof(G, SidePipeShaftData), y);
-    // <conv.chunks.Comment object at 0x100ec4500>
+    // check for value $00 based on horizontal offset
     cmp(0x0);
     BEQ(DrawSidePart);
-    // <conv.chunks.Comment object at 0x100ec46b0>
+    // if found, do not draw the vertical pipe shaft
     ldx(0x0);
     ldy(0x5);
     JSR(RenderUnderPart);
@@ -5017,16 +5017,16 @@ int RenderSidewaysPipe() {
 }
 
 int DrawSidePart() {
-    // <conv.chunks.Comment object at 0x100ec4980>
-    // <conv.chunks.Comment object at 0x100ec4a10>
-    // <conv.chunks.Comment object at 0x100ec4bc0>
-    // <conv.chunks.Comment object at 0x100ec4c50>
+    // init buffer offset and get vertical length
+    // and render vertical shaft using tile number in A
+    // clear carry flag to be used by IntroPipe
+    // render side pipe part at the bottom
     ldy(0x6);
     lda(offsetof(G, SidePipeTopPart), y);
     sta(MetatileBuffer, x);
     lda(offsetof(G, SidePipeBottomPart), y);
-    // <conv.chunks.Comment object at 0x100ec4ec0>
-    // <conv.chunks.Comment object at 0x100ec5010>
+    // note that the pipe parts are stored
+    // backwards horizontally
     sta(((MetatileBuffer) + (1)), x);
     return 0;
     JMP(VerticalPipe);
@@ -5036,8 +5036,8 @@ int VerticalPipe() {
     JSR(GetPipeHeight);
     lda(0x0);
     BEQ(WarpPipe);
-    // <conv.chunks.Comment object at 0x100ec5a30>
-    // <conv.chunks.Comment object at 0x100ec5ac0>
+    // check to see if value was nullified earlier
+    // (if d3, the usage control bit of second byte, was set)
     iny();
     iny();
     iny();
@@ -5046,63 +5046,63 @@ int VerticalPipe() {
 }
 
 int WarpPipe() {
-    // <conv.chunks.Comment object at 0x100ec5e20>
-    // <conv.chunks.Comment object at 0x100ec5eb0>
+    // add four if usage control bit was not set
+    // save value in stack
     tya();
     pha();
     lda(AreaNumber);
     ora(WorldNumber);
-    // <conv.chunks.Comment object at 0x100ec6120>
+    // if at world 1-1, do not add piranha plant ever
     BEQ(DrawPipe);
     ldy(AreaObjectLength, x);
     BEQ(DrawPipe);
     JSR(FindEmptyEnemySlot);
     BCS(DrawPipe);
     JSR(GetAreaObjXPosition);
-    // <conv.chunks.Comment object at 0x100ec6330>
-    // <conv.chunks.Comment object at 0x100ec6480>
-    // <conv.chunks.Comment object at 0x100ec65a0>
-    // <conv.chunks.Comment object at 0x100ec66c0>
-    // <conv.chunks.Comment object at 0x100ec67e0>
+    // if on second column of pipe, branch
+    // (because we only need to do this once)
+    // check for an empty moving data buffer space
+    // if not found, too many enemies, thus skip
+    // get horizontal pixel coordinate
     clc();
     adc(0x8);
     sta(Enemy_X_Position, x);
     lda(CurrentPageLoc);
-    // <conv.chunks.Comment object at 0x100ec6990>
-    // <conv.chunks.Comment object at 0x100ec6a20>
-    // <conv.chunks.Comment object at 0x100ec6c00>
+    // add eight to put the piranha plant in the center
+    // store as enemy's horizontal coordinate
+    // add carry to current page number
     adc(0x0);
     sta(Enemy_PageLoc, x);
-    // <conv.chunks.Comment object at 0x100ec6d80>
+    // store as enemy's page coordinate
     lda(0x1);
     sta(Enemy_Y_HighPos, x);
     sta(Enemy_Flag, x);
     JSR(GetAreaObjYPosition);
-    // <conv.chunks.Comment object at 0x100ec7170>
-    // <conv.chunks.Comment object at 0x100ec72c0>
+    // activate enemy flag
+    // get piranha plant's vertical coordinate and store here
     sta(Enemy_Y_Position, x);
     lda(PiranhaPlant);
-    // <conv.chunks.Comment object at 0x100ec7500>
+    // write piranha plant's value into buffer
     sta(Enemy_ID, x);
     JSR(InitPiranhaPlant);
     JMP(DrawPipe);
 }
 
 int DrawPipe() {
-    // <conv.chunks.Comment object at 0x100ec7830>
+    // get value saved earlier and use as Y
     pla();
     tay();
     ldx(0x7);
     lda(offsetof(G, VerticalPipeData), y);
     sta(MetatileBuffer, x);
-    // <conv.chunks.Comment object at 0x100ec79e0>
-    // <conv.chunks.Comment object at 0x100ec7a70>
-    // <conv.chunks.Comment object at 0x100ec7c20>
+    // get buffer offset
+    // draw the appropriate pipe with the Y we loaded earlier
+    // render the top of the pipe
     inx();
     lda(((offsetof(G, VerticalPipeData)) + (2)), y);
     ldy(0x6);
-    // <conv.chunks.Comment object at 0x100ec7e00>
-    // <conv.chunks.Comment object at 0x100ed4080>
+    // render the rest of the pipe
+    // subtract one from length and render the part underneath
     dey();
     JMP(RenderUnderPart);
     JMP(GetPipeHeight);
@@ -5111,17 +5111,17 @@ int DrawPipe() {
 int GetPipeHeight() {
     ldy(0x1);
     JSR(ChkLrgObjFixedLength);
-    // <conv.chunks.Comment object at 0x100ed4320>
-    // <conv.chunks.Comment object at 0x100ed43b0>
+    // check for length loaded, if not, load
+    // pipe length of 2 (horizontal)
     JSR(GetLrgObjAttrib);
     tya();
     anda(0x7);
     sta(0x6);
     ldy(AreaObjectLength, x);
-    // <conv.chunks.Comment object at 0x100ed4680>
-    // <conv.chunks.Comment object at 0x100ed4710>
-    // <conv.chunks.Comment object at 0x100ed4860>
-    // <conv.chunks.Comment object at 0x100ed48f0>
+    // get saved lower nybble as height
+    // save only the three lower bits as
+    // vertical length, then load Y with
+    // length left over
     return 0;
     JMP(FindEmptyEnemySlot);
 }
@@ -5132,22 +5132,22 @@ int FindEmptyEnemySlot() {
 }
 
 int EmptyChkLoop() {
-    // <conv.chunks.Comment object at 0x100ed4b60>
-    // <conv.chunks.Comment object at 0x100ed4bf0>
+    // start at first enemy slot
+    // clear carry flag by default
     clc();
     lda(Enemy_Flag, x);
     BEQ(ExitEmptyChk);
-    // <conv.chunks.Comment object at 0x100ed4d70>
-    // <conv.chunks.Comment object at 0x100ed4ec0>
+    // check enemy buffer for nonzero
+    // if zero, leave
     inx();
     cpx(0x5);
-    // <conv.chunks.Comment object at 0x100ed5070>
+    // if nonzero, check next value
     BNE(EmptyChkLoop);
     JMP(ExitEmptyChk);
 }
 
 int ExitEmptyChk() {
-    // <conv.chunks.Comment object at 0x100ed5280>
+    // if all values nonzero, carry flag is set
     return 0;
     JMP(Hole_Water);
 }
@@ -5155,12 +5155,12 @@ int ExitEmptyChk() {
 int Hole_Water() {
     JSR(ChkLrgObjLength);
     lda(0x86);
-    // <conv.chunks.Comment object at 0x100ed53d0>
-    // <conv.chunks.Comment object at 0x100ed54f0>
+    // get low nybble and save as length
+    // render waves
     sta(((MetatileBuffer) + (10)));
     ldx(0xb);
     ldy(0x1);
-    // <conv.chunks.Comment object at 0x100ed5820>
+    // now render the water underneath
     lda(0x87);
     JMP(RenderUnderPart);
     JMP(QuestionBlockRow_High);
@@ -5175,12 +5175,12 @@ int QuestionBlockRow_Low() {
     lda(0x7);
     pha();
     JSR(ChkLrgObjLength);
-    // <conv.chunks.Comment object at 0x100ed5dc0>
-    // <conv.chunks.Comment object at 0x100ed5f70>
-    // <conv.chunks.Comment object at 0x100ed6000>
+    // start on the eighth row
+    // save whatever row to the stack for now
+    // get low nybble and save as length
     pla();
     tax();
-    // <conv.chunks.Comment object at 0x100ed61e0>
+    // render question boxes with coins
     lda(0xc0);
     sta(MetatileBuffer, x);
     return 0;
@@ -5201,17 +5201,17 @@ int Bridge_Low() {
     lda(0x9);
     pha();
     JSR(ChkLrgObjLength);
-    // <conv.chunks.Comment object at 0x100ed6930>
-    // <conv.chunks.Comment object at 0x100ed6ae0>
-    // <conv.chunks.Comment object at 0x100ed6b70>
+    // start on the tenth row
+    // save whatever row to the stack for now
+    // get low nybble and save as length
     pla();
     tax();
-    // <conv.chunks.Comment object at 0x100ed6d50>
+    // render bridge railing
     lda(0xb);
     sta(MetatileBuffer, x);
     inx();
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x100ed7080>
+    // now render the bridge itself
     lda(0x63);
     JMP(RenderUnderPart);
     JMP(FlagBalls_Residual);
@@ -5221,55 +5221,55 @@ int FlagBalls_Residual() {
     JSR(GetLrgObjAttrib);
     ldx(0x2);
     lda(0x6d);
-    // <conv.chunks.Comment object at 0x100ed73e0>
-    // <conv.chunks.Comment object at 0x100ed7500>
-    // <conv.chunks.Comment object at 0x100ed7590>
+    // get low nybble from object byte
+    // render flag balls on third row from top
+    // of screen downwards based on low nybble
     JMP(RenderUnderPart);
     JMP(FlagpoleObject);
 }
 
 int FlagpoleObject() {
     lda(0x24);
-    // <conv.chunks.Comment object at 0x100ed7890>
+    // render flagpole ball on top
     sta(MetatileBuffer);
     ldx(0x1);
-    // <conv.chunks.Comment object at 0x100ed7aa0>
+    // now render the flagpole shaft
     ldy(0x8);
     lda(0x25);
     JSR(RenderUnderPart);
     lda(0x61);
-    // <conv.chunks.Comment object at 0x100ed7e90>
+    // render solid block at the bottom
     sta(((MetatileBuffer) + (10)));
     JSR(GetAreaObjXPosition);
     sec();
     sbc(0x8);
     sta(((Enemy_X_Position) + (5)));
-    // <conv.chunks.Comment object at 0x100edc2c0>
-    // <conv.chunks.Comment object at 0x100edc350>
-    // <conv.chunks.Comment object at 0x100edc3e0>
+    // get pixel coordinate of where the flagpole is,
+    // subtract eight pixels and use as horizontal
+    // coordinate for the flag
     lda(CurrentPageLoc);
     sbc(0x0);
     sta(((Enemy_PageLoc) + (5)));
-    // <conv.chunks.Comment object at 0x100edc740>
-    // <conv.chunks.Comment object at 0x100edc7d0>
+    // subtract borrow from page location and use as
+    // page location for the flag
     lda(0x30);
     sta(((Enemy_Y_Position) + (5)));
-    // <conv.chunks.Comment object at 0x100edcaa0>
+    // set vertical coordinate for flag
     lda(0xb0);
     sta(FlagpoleFNum_Y_Pos);
-    // <conv.chunks.Comment object at 0x100edcd70>
+    // set initial vertical coordinate for flagpole's floatey number
     lda(FlagpoleFlagObject);
     sta(((Enemy_ID) + (5)));
     inc(((Enemy_Flag) + (5)));
-    // <conv.chunks.Comment object at 0x100edd010>
-    // <conv.chunks.Comment object at 0x100edd1f0>
+    // set flag identifier, note that identifier and coordinates
+    // use last space in enemy object buffer
     return 0;
     JMP(EndlessRope);
 }
 
 int EndlessRope() {
     ldx(0x0);
-    // <conv.chunks.Comment object at 0x100edd4c0>
+    // render rope from the top to the bottom of screen
     ldy(0xf);
     JMP(DrawRope);
     JMP(BalancePlatRope);
@@ -5277,25 +5277,25 @@ int EndlessRope() {
 
 int BalancePlatRope() {
     txa();
-    // <conv.chunks.Comment object at 0x100edd820>
+    // save object buffer offset for now
     pha();
     ldx(0x1);
     ldy(0xf);
-    // <conv.chunks.Comment object at 0x100edd940>
-    // <conv.chunks.Comment object at 0x100edd9d0>
+    // blank out all from second row to the bottom
+    // with blank used for balance platform rope
     lda(0x44);
     JSR(RenderUnderPart);
     pla();
-    // <conv.chunks.Comment object at 0x100eddd90>
+    // get back object buffer offset
     tax();
     JSR(GetLrgObjAttrib);
-    // <conv.chunks.Comment object at 0x100eddeb0>
+    // get vertical length from lower nybble
     ldx(0x1);
     JMP(DrawRope);
 }
 
 int DrawRope() {
-    // <conv.chunks.Comment object at 0x100ede030>
+    // render the actual rope
     lda(0x40);
     JMP(RenderUnderPart);
     JMP(RowOfCoins);
@@ -5304,15 +5304,15 @@ int DrawRope() {
 int RowOfCoins() {
     ldy(AreaType);
     lda(offsetof(G, CoinMetatileData), y);
-    // <conv.chunks.Comment object at 0x100ede3c0>
-    // <conv.chunks.Comment object at 0x100ede6f0>
+    // get area type
+    // load appropriate coin metatile
     JMP(GetRow);
     JMP(CastleBridgeObj);
 }
 
 int CastleBridgeObj() {
     ldy(0xc);
-    // <conv.chunks.Comment object at 0x100ede9c0>
+    // load length of 13 columns
     JSR(ChkLrgObjFixedLength);
     JMP(ChainObj);
     JMP(AxeObj);
@@ -5320,7 +5320,7 @@ int CastleBridgeObj() {
 
 int AxeObj() {
     lda(0x8);
-    // <conv.chunks.Comment object at 0x100edf080>
+    // load bowser's palette into sprite portion of palette
     sta(VRAM_Buffer_AddrCtrl);
     JMP(ChainObj);
 }
@@ -5328,8 +5328,8 @@ int AxeObj() {
 int ChainObj() {
     ldy(0x0);
     ldx(((offsetof(G, C_ObjectRow)) - (2)), y);
-    // <conv.chunks.Comment object at 0x100edf350>
-    // <conv.chunks.Comment object at 0x100edf3e0>
+    // get value loaded earlier from decoder
+    // get appropriate row and metatile for object
     lda(((offsetof(G, C_ObjectMetatile)) - (2)), y);
     JMP(ColObj);
     JMP(EmptyBlock);
@@ -5337,14 +5337,14 @@ int ChainObj() {
 
 int EmptyBlock() {
     JSR(GetLrgObjAttrib);
-    // <conv.chunks.Comment object at 0x100edf980>
+    // get row location
     ldx(0x7);
     lda(0xc4);
     JMP(ColObj);
 }
 
 int ColObj() {
-    // <conv.chunks.Comment object at 0x100edfbf0>
+    // column length of 1
     ldy(0x0);
     JMP(RenderUnderPart);
     JMP(RowOfBricks);
@@ -5353,16 +5353,16 @@ int ColObj() {
 int RowOfBricks() {
     ldy(AreaType);
     lda(CloudTypeOverride);
-    // <conv.chunks.Comment object at 0x100edffb0>
-    // <conv.chunks.Comment object at 0x100ee4650>
+    // load area type obtained from area offset pointer
+    // check for cloud type override
     BEQ(DrawBricks);
     ldy(0x4);
     JMP(DrawBricks);
 }
 
 int DrawBricks() {
-    // <conv.chunks.Comment object at 0x100ee4860>
-    // <conv.chunks.Comment object at 0x100ee48f0>
+    // if cloud type, override area type
+    // get appropriate metatile
     lda(offsetof(G, BrickMetatiles), y);
     JMP(GetRow);
     JMP(RowOfSolidBlocks);
@@ -5375,9 +5375,9 @@ int RowOfSolidBlocks() {
 }
 
 int GetRow() {
-    // <conv.chunks.Comment object at 0x100ee4c80>
-    // <conv.chunks.Comment object at 0x100ee4da0>
-    // <conv.chunks.Comment object at 0x100ee4ef0>
+    // load area type obtained from area offset pointer
+    // get metatile
+    // store metatile here
     pha();
     JSR(ChkLrgObjLength);
     JMP(DrawRow);
@@ -5386,7 +5386,7 @@ int GetRow() {
 int DrawRow() {
     ldx(0x7);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x100ee5220>
+    // set vertical height of 1
     pla();
     JMP(RenderUnderPart);
     JMP(ColumnOfBricks);
@@ -5395,8 +5395,8 @@ int DrawRow() {
 int ColumnOfBricks() {
     ldy(AreaType);
     lda(offsetof(G, BrickMetatiles), y);
-    // <conv.chunks.Comment object at 0x100ee5580>
-    // <conv.chunks.Comment object at 0x100ee56a0>
+    // load area type obtained from area offset
+    // get metatile (no cloud override as for row)
     JMP(GetRow2);
     JMP(ColumnOfSolidBlocks);
 }
@@ -5408,9 +5408,9 @@ int ColumnOfSolidBlocks() {
 }
 
 int GetRow2() {
-    // <conv.chunks.Comment object at 0x100ee5940>
-    // <conv.chunks.Comment object at 0x100ee5a60>
-    // <conv.chunks.Comment object at 0x100ee5bb0>
+    // load area type obtained from area offset
+    // get metatile
+    // save metatile to stack for now
     pha();
     JSR(GetLrgObjAttrib);
     pla();
@@ -5423,41 +5423,41 @@ int BulletBillCannon() {
     JSR(GetLrgObjAttrib);
     ldx(0x7);
     lda(0x64);
-    // <conv.chunks.Comment object at 0x100ee6150>
-    // <conv.chunks.Comment object at 0x100ee62a0>
-    // <conv.chunks.Comment object at 0x100ee6330>
+    // get row and length of bullet bill cannon
+    // start at first row
+    // render bullet bill cannon
     sta(MetatileBuffer, x);
     inx();
     dey();
-    // <conv.chunks.Comment object at 0x100ee6690>
+    // done yet?
     BMI(SetupCannon);
     lda(0x65);
-    // <conv.chunks.Comment object at 0x100ee6810>
+    // if not, render middle part
     sta(MetatileBuffer, x);
     inx();
     dey();
-    // <conv.chunks.Comment object at 0x100ee6b10>
+    // done yet?
     BMI(SetupCannon);
     lda(0x66);
-    // <conv.chunks.Comment object at 0x100ee6c90>
+    // if not, render bottom until length expires
     JSR(RenderUnderPart);
     JMP(SetupCannon);
 }
 
 int SetupCannon() {
-    // <conv.chunks.Comment object at 0x100ee6ea0>
+    // get offset for data used by cannons and whirlpools
     ldx(Cannon_Offset);
     JSR(GetAreaObjYPosition);
     sta(Cannon_Y_Position, x);
-    // <conv.chunks.Comment object at 0x100ee6ff0>
-    // <conv.chunks.Comment object at 0x100ee7110>
+    // get proper vertical coordinate for cannon
+    // and store it here
     lda(CurrentPageLoc);
     sta(Cannon_PageLoc, x);
     JSR(GetAreaObjXPosition);
     sta(Cannon_X_Position, x);
-    // <conv.chunks.Comment object at 0x100ee7350>
-    // <conv.chunks.Comment object at 0x100ee74a0>
-    // <conv.chunks.Comment object at 0x100ee75c0>
+    // store page number for cannon here
+    // get proper horizontal coordinate for cannon
+    // and store it here
     inx();
     cpx(0x6);
     BCC(StrCOffset);
@@ -5466,10 +5466,10 @@ int SetupCannon() {
 }
 
 int StrCOffset() {
-    // <conv.chunks.Comment object at 0x100ee77a0>
-    // <conv.chunks.Comment object at 0x100ee7830>
-    // <conv.chunks.Comment object at 0x100ee79e0>
-    // <conv.chunks.Comment object at 0x100ee7a70>
+    // increment and check offset
+    // if not yet reached sixth cannon, branch to save offset
+    // otherwise initialize it
+    // save new offset and leave
     stx(Cannon_Offset);
     return 0;
     JMP(StaircaseObject);
@@ -5484,19 +5484,19 @@ int StaircaseObject() {
 }
 
 int NextStair() {
-    // <conv.chunks.Comment object at 0x100ee7e00>
-    // <conv.chunks.Comment object at 0x100ee7d40>
-    // <conv.chunks.Comment object at 0x100eeca40>
-    // <conv.chunks.Comment object at 0x100eecad0>
-    // <conv.chunks.Comment object at 0x100eecc80>
+    // check and load length
+    // if length already loaded, skip init part
+    // start past the end for the bottom
+    // of the staircase
+    // move onto next step (or first if starting)
     dec(StaircaseControl);
     ldy(StaircaseControl);
     ldx(offsetof(G, StaircaseRowData), y);
-    // <conv.chunks.Comment object at 0x100eecec0>
+    // get starting row and height to render
     lda(offsetof(G, StaircaseHeightData), y);
     tay();
     lda(0x61);
-    // <conv.chunks.Comment object at 0x100eed1c0>
+    // now render solid block staircase
     JMP(RenderUnderPart);
     JMP(Jumpspring);
 }
@@ -5507,28 +5507,28 @@ int Jumpspring() {
     JSR(GetAreaObjXPosition);
     sta(Enemy_X_Position, x);
     lda(CurrentPageLoc);
-    // <conv.chunks.Comment object at 0x100eed520>
-    // <conv.chunks.Comment object at 0x100eed640>
-    // <conv.chunks.Comment object at 0x100eed760>
-    // <conv.chunks.Comment object at 0x100eed8b0>
+    // find empty space in enemy object buffer
+    // get horizontal coordinate for jumpspring
+    // and store
+    // store page location of jumpspring
     sta(Enemy_PageLoc, x);
     JSR(GetAreaObjYPosition);
     sta(Enemy_Y_Position, x);
     sta(Jumpspring_FixedYPos, x);
-    // <conv.chunks.Comment object at 0x100eedaf0>
-    // <conv.chunks.Comment object at 0x100eedc10>
-    // <conv.chunks.Comment object at 0x100eedd60>
+    // get vertical coordinate for jumpspring
+    // and store
+    // store as permanent coordinate here
     lda(JumpspringObject);
     sta(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x100eedfa0>
+    // write jumpspring object to enemy object buffer
     ldy(0x1);
     sty(Enemy_Y_HighPos, x);
     inc(Enemy_Flag, x);
-    // <conv.chunks.Comment object at 0x100eee150>
-    // <conv.chunks.Comment object at 0x100eee330>
+    // store vertical high byte
+    // set flag for enemy object buffer
     ldx(0x7);
     lda(0x67);
-    // <conv.chunks.Comment object at 0x100eee480>
+    // draw metatiles in two rows where jumpspring is
     sta(MetatileBuffer, x);
     lda(0x68);
     sta(((MetatileBuffer) + (1)), x);
@@ -5538,11 +5538,11 @@ int Jumpspring() {
 
 int Hidden1UpBlock() {
     lda(Hidden1UpFlag);
-    // <conv.chunks.Comment object at 0x100eeeb40>
-    // <conv.chunks.Comment object at 0x100eeeba0>
+    // $07 - used to save ID of brick object
+    // if flag not set, do not render object
     BEQ(ExitDecBlock);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x100eeedb0>
+    // if set, init for the next one
     sta(Hidden1UpFlag);
     JMP(BrickWithItem);
     JMP(QuestionBlock);
@@ -5556,19 +5556,19 @@ int QuestionBlock() {
 
 int BrickWithCoins() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x100eef380>
+    // initialize multi-coin timer flag
     sta(BrickCoinTimerFlag);
     JMP(BrickWithItem);
 }
 
 int BrickWithItem() {
     JSR(GetAreaObjectID);
-    // <conv.chunks.Comment object at 0x100eef5c0>
+    // save area object ID
     sty(0x7);
     lda(0x0);
     ldy(AreaType);
-    // <conv.chunks.Comment object at 0x100eef6e0>
-    // <conv.chunks.Comment object at 0x100eef860>
+    // load default adder for bricks with lines
+    // check level type for ground level
     dey();
     BEQ(BWithL);
     lda(0x5);
@@ -5576,9 +5576,9 @@ int BrickWithItem() {
 }
 
 int BWithL() {
-    // <conv.chunks.Comment object at 0x100eefaa0>
-    // <conv.chunks.Comment object at 0x100eefbf0>
-    // <conv.chunks.Comment object at 0x100eefc80>
+    // if ground type, do not start with 5
+    // otherwise use adder for bricks without lines
+    // add object ID to adder
     clc();
     adc(0x7);
     tay();
@@ -5586,8 +5586,8 @@ int BWithL() {
 }
 
 int DrawQBlk() {
-    // <conv.chunks.Comment object at 0x100eefec0>
-    // <conv.chunks.Comment object at 0x100eeffe0>
+    // use as offset for metatile
+    // get appropriate metatile for brick (question block
     lda(offsetof(G, BrickQBlockMetatiles), y);
     pha();
     JSR(GetLrgObjAttrib);
@@ -5597,7 +5597,7 @@ int DrawQBlk() {
 
 int GetAreaObjectID() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x100ef8530>
+    // get value saved from area parser routine
     sec();
     sbc(0x0);
     tay();
@@ -5616,37 +5616,37 @@ int Hole_Empty() {
     BNE(NoWhirlP);
     ldx(Whirlpool_Offset);
     JSR(GetAreaObjXPosition);
-    // <conv.chunks.Comment object at 0x100ef8a10>
-    // <conv.chunks.Comment object at 0x100ef8d40>
-    // <conv.chunks.Comment object at 0x100ef8e60>
-    // <conv.chunks.Comment object at 0x100ef8f80>
-    // <conv.chunks.Comment object at 0x100ef90a0>
-    // <conv.chunks.Comment object at 0x100ef91c0>
+    // get lower nybble and save as length
+    // skip this part if length already loaded
+    // check for water type level
+    // if not water type, skip this part
+    // get offset for data used by cannons and whirlpools
+    // get proper vertical coordinate of where we're at
     sec();
     sbc(0x10);
     sta(Whirlpool_LeftExtent, x);
     lda(CurrentPageLoc);
     sbc(0x0);
     sta(Whirlpool_PageLoc, x);
-    // <conv.chunks.Comment object at 0x100ef9370>
-    // <conv.chunks.Comment object at 0x100ef9400>
-    // <conv.chunks.Comment object at 0x100ef95e0>
-    // <conv.chunks.Comment object at 0x100ef9700>
-    // <conv.chunks.Comment object at 0x100ef9790>
+    // subtract 16 pixels
+    // store as left extent of whirlpool
+    // get page location of where we're at
+    // subtract borrow
+    // save as page location of whirlpool
     iny();
     iny();
-    // <conv.chunks.Comment object at 0x100ef9a30>
+    // increment length by 2
     tya();
     asl();
     asl();
     asl();
     asl();
     sta(Whirlpool_Length, x);
-    // <conv.chunks.Comment object at 0x100ef9b80>
-    // <conv.chunks.Comment object at 0x100ef9c40>
-    // <conv.chunks.Comment object at 0x100ef9d00>
-    // <conv.chunks.Comment object at 0x100ef9dc0>
-    // <conv.chunks.Comment object at 0x100ef9e50>
+    // multiply by 16 to get size of whirlpool
+    // note that whirlpool will always be
+    // two blocks bigger than actual size of hole
+    // and extend one block beyond each edge
+    // save size of whirlpool here
     inx();
     cpx(0x5);
     BCC(StrWOffset);
@@ -5655,19 +5655,19 @@ int Hole_Empty() {
 }
 
 int StrWOffset() {
-    // <conv.chunks.Comment object at 0x100efa030>
-    // <conv.chunks.Comment object at 0x100efa0c0>
-    // <conv.chunks.Comment object at 0x100efa270>
-    // <conv.chunks.Comment object at 0x100efa300>
+    // increment and check offset
+    // if not yet reached fifth whirlpool, branch to save offset
+    // otherwise initialize it
+    // save new offset here
     stx(Whirlpool_Offset);
     JMP(NoWhirlP);
 }
 
 int NoWhirlP() {
-    // <conv.chunks.Comment object at 0x100efa4e0>
+    // get appropriate metatile, then
     ldx(AreaType);
     lda(offsetof(G, HoleMetatiles), x);
-    // <conv.chunks.Comment object at 0x100efa630>
+    // render the hole proper
     ldx(0x8);
     ldy(0xf);
     JMP(RenderUnderPart);
@@ -5677,32 +5677,32 @@ int RenderUnderPart() {
     sty(AreaObjectHeight);
     ldy(MetatileBuffer, x);
     BEQ(DrawThisRow);
-    // <conv.chunks.Comment object at 0x100efa9f0>
-    // <conv.chunks.Comment object at 0x100efab10>
-    // <conv.chunks.Comment object at 0x100efac60>
+    // store vertical length to render
+    // check current spot to see if there's something
+    // we need to keep, if nothing, go ahead
     cpy(0x17);
     BEQ(WaitOneRow);
-    // <conv.chunks.Comment object at 0x100efade0>
+    // if middle part (tree ledge), wait until next row
     cpy(0x1a);
     BEQ(WaitOneRow);
-    // <conv.chunks.Comment object at 0x100efaff0>
+    // if middle part (mushroom ledge), wait until next row
     cpy(0xc0);
     BEQ(DrawThisRow);
-    // <conv.chunks.Comment object at 0x100efb200>
+    // if question block w/ coin, overwrite
     cpy(0xc0);
     BCS(WaitOneRow);
-    // <conv.chunks.Comment object at 0x100efb410>
+    // if any other metatile with palette 3, wait until next row
     cpy(0x54);
     BNE(DrawThisRow);
-    // <conv.chunks.Comment object at 0x100efb620>
+    // if cracked rock terrain, overwrite
     cmp(0x50);
     BEQ(WaitOneRow);
     JMP(DrawThisRow);
 }
 
 int DrawThisRow() {
-    // <conv.chunks.Comment object at 0x100efb830>
-    // <conv.chunks.Comment object at 0x100efb9e0>
+    // if stem top of mushroom, wait until next row
+    // render contents of A from routine that called this
     sta(MetatileBuffer, x);
     JMP(WaitOneRow);
 }
@@ -5710,10 +5710,10 @@ int DrawThisRow() {
 int WaitOneRow() {
     inx();
     cpx(0xd);
-    // <conv.chunks.Comment object at 0x100efbc20>
+    // stop rendering if we're at the bottom of the screen
     BCS(ExitUPartR);
     ldy(AreaObjectHeight);
-    // <conv.chunks.Comment object at 0x100efbe30>
+    // decrement, and stop rendering if there is no more length
     dey();
     BPL(RenderUnderPart);
     JMP(ExitUPartR);
@@ -5734,10 +5734,10 @@ int ChkLrgObjFixedLength() {
     clc();
     BPL(LenSet);
     tya();
-    // <conv.chunks.Comment object at 0x100f04380>
-    // <conv.chunks.Comment object at 0x100f04500>
-    // <conv.chunks.Comment object at 0x100f04590>
-    // <conv.chunks.Comment object at 0x100f04710>
+    // check for set length counter
+    // clear carry flag for not just starting
+    // if counter not set, load it, otherwise leave alone
+    // save length into length counter
     sta(AreaObjectLength, x);
     sec();
     JMP(LenSet);
@@ -5751,16 +5751,16 @@ int LenSet() {
 int GetLrgObjAttrib() {
     ldy(AreaObjOffsetBuffer, x);
     lda((AreaData), y);
-    // <conv.chunks.Comment object at 0x100f04aa0>
-    // <conv.chunks.Comment object at 0x100f04bf0>
+    // get offset saved from area obj decoding routine
+    // get first byte of level object
     anda(0b1111);
     sta(0x7);
-    // <conv.chunks.Comment object at 0x100f04e90>
+    // save row location
     iny();
     lda((AreaData), y);
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x100f05010>
-    // <conv.chunks.Comment object at 0x100f05190>
+    // get next byte, save lower nybble (length or height)
+    // as Y, then leave
     tay();
     return 0;
     JMP(GetAreaObjXPosition);
@@ -5769,8 +5769,8 @@ int GetLrgObjAttrib() {
 int GetAreaObjXPosition() {
     lda(CurrentColumnPos);
     asl();
-    // <conv.chunks.Comment object at 0x100f05430>
-    // <conv.chunks.Comment object at 0x100f05580>
+    // multiply current offset where we're at by 16
+    // to obtain horizontal pixel coordinate
     asl();
     asl();
     asl();
@@ -5780,15 +5780,15 @@ int GetAreaObjXPosition() {
 
 int GetAreaObjYPosition() {
     lda(0x7);
-    // <conv.chunks.Comment object at 0x100f058e0>
+    // multiply value by 16
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x100f05a90>
+    // this will give us the proper vertical pixel coordinate
     asl();
     asl();
     clc();
     adc(32);
-    // <conv.chunks.Comment object at 0x100f05d00>
+    // add 32 pixels for the status bar
     return 0;
     JMP(GetBlockBufferAddr);
 }
@@ -5796,170 +5796,170 @@ int GetAreaObjYPosition() {
 int GetBlockBufferAddr() {
     pha();
     lsr();
-    // <conv.chunks.Comment object at 0x100f062d0>
-    // <conv.chunks.Comment object at 0x100f06390>
+    // take value of A, save
+    // move high nybble to low
     lsr();
     lsr();
     lsr();
     tay();
     lda(((offsetof(G, BlockBufferAddr)) + (2)), y);
-    // <conv.chunks.Comment object at 0x100f06600>
-    // <conv.chunks.Comment object at 0x100f06690>
+    // use nybble as pointer to high byte
+    // of indirect here
     sta(0x7);
     pla();
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x100f06a20>
+    // pull from stack, mask out high nybble
     clc();
     adc(offsetof(G, BlockBufferAddr), y);
     sta(0x6);
-    // <conv.chunks.Comment object at 0x100f06bd0>
-    // <conv.chunks.Comment object at 0x100f06d50>
+    // add to low byte
+    // store here and leave
     return 0;
     JMP(LoadAreaPointer);
 }
 
 int LoadAreaPointer() {
     JSR(FindAreaPointer);
-    // <conv.chunks.Comment object at 0x100f07140>
+    // find it and store it here
     sta(AreaPointer);
     JMP(GetAreaType);
 }
 
 int GetAreaType() {
-    // <conv.chunks.Comment object at 0x100f07950>
+    // mask out all but d6 and d5
     anda(0b1100000);
     asl();
     rol();
     rol();
     rol();
     sta(AreaType);
-    // <conv.chunks.Comment object at 0x100f07c80>
-    // <conv.chunks.Comment object at 0x100f07d10>
+    // make %0xx00000 into %000000xx
+    // save 2 MSB as area type
     return 0;
     JMP(FindAreaPointer);
 }
 
 int FindAreaPointer() {
     ldy(WorldNumber);
-    // <conv.chunks.Comment object at 0x100f07ef0>
+    // load offset from world variable
     lda(offsetof(G, WorldAddrOffsets), y);
     clc();
-    // <conv.chunks.Comment object at 0x100f101a0>
+    // add area number used to find data
     adc(AreaNumber);
     tay();
     lda(offsetof(G, AreaAddrOffsets), y);
-    // <conv.chunks.Comment object at 0x100f103b0>
+    // from there we have our area pointer
     return 0;
     JMP(GetAreaDataAddrs);
 }
 
 int GetAreaDataAddrs() {
     lda(AreaPointer);
-    // <conv.chunks.Comment object at 0x100f105c0>
+    // use 2 MSB for Y
     JSR(GetAreaType);
     tay();
     lda(AreaPointer);
-    // <conv.chunks.Comment object at 0x100f10860>
+    // mask out all but 5 LSB
     anda(0b11111);
     sta(AreaAddrsLOffset);
     lda(offsetof(G, EnemyAddrHOffsets), y);
     clc();
     adc(AreaAddrsLOffset);
-    // <conv.chunks.Comment object at 0x100f10a70>
-    // <conv.chunks.Comment object at 0x100f10b90>
-    // <conv.chunks.Comment object at 0x100f10d10>
-    // <conv.chunks.Comment object at 0x100f10da0>
+    // save as low offset
+    // load base value with 2 altered MSB,
+    // then add base value to 5 LSB, result
+    // becomes offset for level data
     tay();
     lda(offsetof(G, EnemyDataAddrLow), y);
-    // <conv.chunks.Comment object at 0x100f10f50>
+    // use offset to load pointer
     sta(EnemyDataLow);
     lda(offsetof(G, EnemyDataAddrHigh), y);
     sta(EnemyDataHigh);
     ldy(AreaType);
     lda(offsetof(G, AreaDataHOffsets), y);
-    // <conv.chunks.Comment object at 0x100f113a0>
-    // <conv.chunks.Comment object at 0x100f114c0>
+    // use area type as offset
+    // do the same thing but with different base value
     clc();
     adc(AreaAddrsLOffset);
     tay();
     lda(offsetof(G, AreaDataAddrLow), y);
-    // <conv.chunks.Comment object at 0x100f11820>
+    // use this offset to load another pointer
     sta(AreaDataLow);
     lda(offsetof(G, AreaDataAddrHigh), y);
     sta(AreaDataHigh);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x100f11c70>
+    // load first byte of header
     lda((AreaData), y);
     pha();
     anda(0b111);
-    // <conv.chunks.Comment object at 0x100f11f10>
-    // <conv.chunks.Comment object at 0x100f11fa0>
+    // save it to the stack for now
+    // save 3 LSB for foreground scenery or bg color control
     cmp(0x4);
     BCC(StoreFore);
     sta(BackgroundColorCtrl);
-    // <conv.chunks.Comment object at 0x100f122a0>
+    // if 4 or greater, save value here as bg color control
     lda(0x0);
     JMP(StoreFore);
 }
 
 int StoreFore() {
-    // <conv.chunks.Comment object at 0x100f12420>
+    // if less, save value here as foreground scenery
     sta(ForegroundScenery);
     pla();
-    // <conv.chunks.Comment object at 0x100f12630>
+    // pull byte from stack and push it back
     pha();
     anda(0b111000);
     lsr();
-    // <conv.chunks.Comment object at 0x100f12750>
-    // <conv.chunks.Comment object at 0x100f128a0>
+    // save player entrance control bits
+    // shift bits over to LSBs
     lsr();
     lsr();
     sta(PlayerEntranceCtrl);
     pla();
     anda(0b11000000);
-    // <conv.chunks.Comment object at 0x100f12a50>
-    // <conv.chunks.Comment object at 0x100f12ba0>
-    // <conv.chunks.Comment object at 0x100f12c30>
+    // save value here as player entrance control
+    // pull byte again but do not push it back
+    // save 2 MSB for game timer setting
     clc();
     rol();
-    // <conv.chunks.Comment object at 0x100f12e10>
+    // rotate bits over to LSBs
     rol();
     rol();
     sta(GameTimerSetting);
-    // <conv.chunks.Comment object at 0x100f12fc0>
+    // save value here as game timer setting
     iny();
     lda((AreaData), y);
     pha();
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x100f13170>
-    // <conv.chunks.Comment object at 0x100f13320>
-    // <conv.chunks.Comment object at 0x100f133b0>
+    // load second byte of header
+    // save to stack
+    // mask out all but lower nybble
     sta(TerrainControl);
     pla();
-    // <conv.chunks.Comment object at 0x100f135f0>
+    // pull and push byte to copy it to A
     pha();
     anda(0b110000);
-    // <conv.chunks.Comment object at 0x100f13710>
+    // save 2 MSB for background scenery type
     lsr();
     lsr();
-    // <conv.chunks.Comment object at 0x100f138f0>
+    // shift bits to LSBs
     lsr();
     lsr();
     sta(BackgroundScenery);
-    // <conv.chunks.Comment object at 0x100f13aa0>
+    // save as background scenery
     pla();
     anda(0b11000000);
     clc();
     rol();
-    // <conv.chunks.Comment object at 0x100f13e00>
+    // rotate bits over to LSBs
     rol();
     rol();
     cmp(0b11);
     BNE(StoreStyle);
     sta(CloudTypeOverride);
-    // <conv.chunks.Comment object at 0x100f13fb0>
-    // <conv.chunks.Comment object at 0x100f1c110>
-    // <conv.chunks.Comment object at 0x100f1c230>
+    // if set to 3, store here
+    // and nullify other value
+    // otherwise store value in other place
     lda(0x0);
     JMP(StoreStyle);
 }
@@ -5967,7 +5967,7 @@ int StoreFore() {
 int StoreStyle() {
     sta(AreaStyle);
     lda(AreaDataLow);
-    // <conv.chunks.Comment object at 0x100f1c560>
+    // increment area data address by 2 bytes
     clc();
     adc(0x2);
     sta(AreaDataLow);
@@ -5991,48 +5991,48 @@ int GameCoreRoutine() {
     lda(OperMode_Task);
     cmp(0x3);
     BCS(GameEngine);
-    // <conv.chunks.Comment object at 0x101091100>
-    // <conv.chunks.Comment object at 0x101091220>
-    // <conv.chunks.Comment object at 0x101091370>
-    // <conv.chunks.Comment object at 0x101091490>
-    // <conv.chunks.Comment object at 0x1010915b0>
-    // <conv.chunks.Comment object at 0x1010916d0>
-    // <conv.chunks.Comment object at 0x101091760>
+    // get which player is on the screen
+    // use appropriate player's controller bits
+    // as the master controller bits
+    // execute one of many possible subs
+    // check major task of operating mode
+    // if we are supposed to be here,
+    // branch to the game engine itself
     return 0;
     JMP(GameEngine);
 }
 
 int GameEngine() {
     JSR(ProcFireball_Bubble);
-    // <conv.chunks.Comment object at 0x1010919d0>
+    // process fireballs and air bubbles
     ldx(0x0);
     JMP(ProcELoop);
 }
 
 int ProcELoop() {
-    // <conv.chunks.Comment object at 0x101091b50>
+    // put incremented offset in X as enemy object offset
     stx(ObjectOffset);
     JSR(EnemiesAndLoopsCore);
     JSR(FloateyNumbersRoutine);
-    // <conv.chunks.Comment object at 0x101091d30>
-    // <conv.chunks.Comment object at 0x101091e50>
+    // process enemy objects
+    // process floatey numbers
     inx();
     cpx(0x6);
-    // <conv.chunks.Comment object at 0x101092000>
+    // do these two subroutines until the whole buffer is done
     BNE(ProcELoop);
     JSR(GetPlayerOffscreenBits);
     JSR(RelativePlayerPosition);
     JSR(PlayerGfxHandler);
     JSR(BlockObjMT_Updater);
-    // <conv.chunks.Comment object at 0x101092210>
-    // <conv.chunks.Comment object at 0x101092330>
-    // <conv.chunks.Comment object at 0x101092450>
-    // <conv.chunks.Comment object at 0x101092570>
+    // get offscreen bits for player object
+    // get relative coordinates for player object
+    // draw the player
+    // replace block objects with metatiles if necessary
     ldx(0x1);
     stx(ObjectOffset);
     JSR(BlockObjectsCore);
-    // <conv.chunks.Comment object at 0x1010926f0>
-    // <conv.chunks.Comment object at 0x1010928a0>
+    // set offset for second
+    // process second block object
     dex();
     stx(ObjectOffset);
     JSR(BlockObjectsCore);
@@ -6042,22 +6042,22 @@ int ProcELoop() {
     JSR(FlagpoleRoutine);
     JSR(RunGameTimer);
     JSR(ColorRotation);
-    // <conv.chunks.Comment object at 0x101092a50>
-    // <conv.chunks.Comment object at 0x101092b70>
-    // <conv.chunks.Comment object at 0x101092c90>
-    // <conv.chunks.Comment object at 0x101092db0>
-    // <conv.chunks.Comment object at 0x101092ed0>
-    // <conv.chunks.Comment object at 0x101092ff0>
-    // <conv.chunks.Comment object at 0x101093110>
-    // <conv.chunks.Comment object at 0x101093230>
+    // set offset for first
+    // process first block object
+    // process misc objects (hammer, jumping coins)
+    // process bullet bill cannons
+    // process whirlpools
+    // process the flagpole
+    // count down the game timer
+    // cycle one of the background colors
     lda(Player_Y_HighPos);
     cmp(0x2);
-    // <conv.chunks.Comment object at 0x101093440>
+    // if player is below the screen, don't bother with the music
     BPL(NoChgMus);
     lda(StarInvincibleTimer);
     BEQ(ClrPlrPal);
-    // <conv.chunks.Comment object at 0x101093650>
-    // <conv.chunks.Comment object at 0x101093770>
+    // if star mario invincibility timer at zero,
+    // skip this part
     cmp(0x4);
     BNE(NoChgMus);
     lda(IntervalTimerControl);
@@ -6067,26 +6067,26 @@ int ProcELoop() {
 }
 
 int NoChgMus() {
-    // <conv.chunks.Comment object at 0x1010938f0>
-    // <conv.chunks.Comment object at 0x101093aa0>
-    // <conv.chunks.Comment object at 0x101093bc0>
-    // <conv.chunks.Comment object at 0x101093ce0>
-    // <conv.chunks.Comment object at 0x101093e00>
+    // if not yet at a certain point, continue
+    // if interval timer not yet expired,
+    // branch ahead, don't bother with the music
+    // to re-attain appropriate level music
+    // get invincibility timer
     ldy(StarInvincibleTimer);
     lda(FrameCounter);
     cpy(0x8);
     BCS(CycleTwo);
     lsr();
-    // <conv.chunks.Comment object at 0x101093f50>
-    // <conv.chunks.Comment object at 0x1010980b0>
-    // <conv.chunks.Comment object at 0x101098140>
-    // <conv.chunks.Comment object at 0x101098320>
+    // get frame counter
+    // if timer still above certain point,
+    // branch to cycle player's palette quickly
+    // otherwise, divide by 8 to cycle every eighth frame
     lsr();
     JMP(CycleTwo);
 }
 
 int CycleTwo() {
-    // <conv.chunks.Comment object at 0x101098440>
+    // if branched here, divide by 2 to cycle every other frame
     lsr();
     JSR(CyclePlayerPalette);
     JMP(SaveAB);
@@ -6094,18 +6094,18 @@ int CycleTwo() {
 }
 
 int ClrPlrPal() {
-    // <conv.chunks.Comment object at 0x101098530>
-    // <conv.chunks.Comment object at 0x101098650>
-    // <conv.chunks.Comment object at 0x1010987a0>
+    // do sub to cycle the palette (note: shares fire flower code)
+    // then skip this sub to finish up the game engine
+    // do sub to clear player's palette bits in attributes
     JSR(ResetPalStar);
     JMP(SaveAB);
 }
 
 int SaveAB() {
-    // <conv.chunks.Comment object at 0x1010988f0>
+    // save current A and B button
     lda(A_B_Buttons);
     sta(PreviousA_B_Buttons);
-    // <conv.chunks.Comment object at 0x101098a70>
+    // into temp variable to be used on next frame
     lda(0x0);
     sta(Left_Right_Buttons);
     JMP(UpdScrollVar);
@@ -6116,16 +6116,16 @@ int UpdScrollVar() {
     cmp(0x6);
     BEQ(ExitEng);
     lda(AreaParserTaskNum);
-    // <conv.chunks.Comment object at 0x101098ec0>
-    // <conv.chunks.Comment object at 0x101098f50>
-    // <conv.chunks.Comment object at 0x101099130>
+    // if vram address controller set to 6 (one of two $0341s)
+    // then branch to leave
+    // otherwise check number of tasks
     BNE(RunParser);
     lda(ScrollThirtyTwo);
     cmp(0x20);
     BMI(ExitEng);
-    // <conv.chunks.Comment object at 0x101099340>
-    // <conv.chunks.Comment object at 0x101099460>
-    // <conv.chunks.Comment object at 0x1010994f0>
+    // get horizontal scroll in 0-31 or $00-$20 range
+    // check to see if exceeded $21
+    // branch to leave if not
     lda(ScrollThirtyTwo);
     sbc(0x20);
     sta(ScrollThirtyTwo);
@@ -6135,33 +6135,33 @@ int UpdScrollVar() {
 }
 
 int RunParser() {
-    // <conv.chunks.Comment object at 0x1010997c0>
-    // <conv.chunks.Comment object at 0x101099850>
-    // <conv.chunks.Comment object at 0x101099a00>
-    // <conv.chunks.Comment object at 0x101099a90>
-    // <conv.chunks.Comment object at 0x101099c40>
+    // otherwise subtract $20 to set appropriately
+    // and store
+    // reset vram buffer offset used in conjunction with
+    // level graphics buffer at $0341-$035f
+    // update the name table with more level graphics
     JSR(AreaParserTaskHandler);
     JMP(ExitEng);
 }
 
 int ExitEng() {
-    // <conv.chunks.Comment object at 0x101099d90>
+    // and after all that, we're finally done!
     return 0;
     JMP(ScrollHandler);
 }
 
 int ScrollHandler() {
     lda(Player_X_Scroll);
-    // <conv.chunks.Comment object at 0x101099f10>
+    // load value saved here
     clc();
     adc(Platform_X_Scroll);
     sta(Player_X_Scroll);
     lda(ScrollLock);
     BNE(InitScrlAmt);
-    // <conv.chunks.Comment object at 0x10109a0c0>
-    // <conv.chunks.Comment object at 0x10109a1e0>
-    // <conv.chunks.Comment object at 0x10109a300>
-    // <conv.chunks.Comment object at 0x10109a420>
+    // add value used by left/right platforms
+    // save as new value here to impose force on scroll
+    // check scroll lock flag
+    // skip a bunch of code here if set
     lda(Player_Pos_ForScroll);
     cmp(0x50);
     BCC(InitScrlAmt);
@@ -6170,16 +6170,16 @@ int ScrollHandler() {
     ldy(Player_X_Scroll);
     dey();
     BMI(InitScrlAmt);
-    // <conv.chunks.Comment object at 0x10109a630>
-    // <conv.chunks.Comment object at 0x10109a6c0>
-    // <conv.chunks.Comment object at 0x10109a870>
-    // <conv.chunks.Comment object at 0x10109a990>
-    // <conv.chunks.Comment object at 0x10109aab0>
-    // <conv.chunks.Comment object at 0x10109ac00>
-    // <conv.chunks.Comment object at 0x10109ac90>
+    // check player's horizontal screen position
+    // if less than 80 pixels to the right, branch
+    // if timer related to player's side collision
+    // not expired, branch
+    // get value and decrement by one
+    // if value originally set to zero or otherwise
+    // negative for left movement, branch
     iny();
     cpy(0x2);
-    // <conv.chunks.Comment object at 0x10109ae40>
+    // if value $01, branch and do not decrement
     BCC(ChkNearMid);
     dey();
     JMP(ChkNearMid);
@@ -6196,20 +6196,20 @@ int ChkNearMid() {
 int ScrollScreen() {
     tya();
     sta(ScrollAmount);
-    // <conv.chunks.Comment object at 0x10109b650>
+    // save value here
     clc();
     adc(ScrollThirtyTwo);
     sta(ScrollThirtyTwo);
-    // <conv.chunks.Comment object at 0x10109b800>
-    // <conv.chunks.Comment object at 0x10109b920>
+    // add to value already set here
+    // save as new value here
     tya();
     clc();
     adc(ScreenLeft_X_Pos);
     sta(ScreenLeft_X_Pos);
     sta(HorizontalScroll);
-    // <conv.chunks.Comment object at 0x10109bb60>
-    // <conv.chunks.Comment object at 0x10109bc80>
-    // <conv.chunks.Comment object at 0x10109bda0>
+    // add to left side coordinate
+    // save as new left side coordinate
+    // save here also
     lda(ScreenLeft_PageLoc);
     adc(0x0);
     sta(ScreenLeft_PageLoc);
@@ -6220,15 +6220,15 @@ int ScrollScreen() {
     ora(0x0);
     sta(Mirror_PPU_CTRL_REG1);
     JSR(GetScreenPosition);
-    // <conv.chunks.Comment object at 0x10109bfb0>
-    // <conv.chunks.Comment object at 0x1010a4080>
-    // <conv.chunks.Comment object at 0x1010a4230>
-    // <conv.chunks.Comment object at 0x1010a4380>
-    // <conv.chunks.Comment object at 0x1010a4410>
-    // <conv.chunks.Comment object at 0x1010a4590>
-    // <conv.chunks.Comment object at 0x1010a46e0>
-    // <conv.chunks.Comment object at 0x1010a4770>
-    // <conv.chunks.Comment object at 0x1010a48f0>
+    // add carry to page location for left
+    // side of the screen
+    // get LSB of page location
+    // save as temp variable for PPU register 1 mirror
+    // get PPU register 1 mirror
+    // save all bits except d0
+    // get saved bit here and save in PPU register 1
+    // mirror to be used to set name table later
+    // figure out where the right side is
     lda(0x8);
     sta(ScrollIntervalTimer);
     JMP(ChkPOffscr);
@@ -6242,8 +6242,8 @@ int InitScrlAmt() {
 }
 
 int ChkPOffscr() {
-    // <conv.chunks.Comment object at 0x1010a4dd0>
-    // <conv.chunks.Comment object at 0x1010a4f80>
+    // initialize value here
+    // set X for player offset
     ldx(0x0);
     JSR(GetXOffscreenBits);
     sta(0x0);
@@ -6251,12 +6251,12 @@ int ChkPOffscr() {
     asl();
     BCS(KeepOnscr);
     iny();
-    // <conv.chunks.Comment object at 0x1010a5040>
-    // <conv.chunks.Comment object at 0x1010a5220>
-    // <conv.chunks.Comment object at 0x1010a52b0>
-    // <conv.chunks.Comment object at 0x1010a5460>
-    // <conv.chunks.Comment object at 0x1010a54f0>
-    // <conv.chunks.Comment object at 0x1010a5640>
+    // get horizontal offscreen bits for player
+    // save them here
+    // load default offset (left side)
+    // if d7 of offscreen bits are set,
+    // branch with default offset
+    // otherwise use different offset (right side)
     lda(0x0);
     anda(0b100000);
     BEQ(InitPlatScrl);
@@ -6264,9 +6264,9 @@ int ChkPOffscr() {
 }
 
 int KeepOnscr() {
-    // <conv.chunks.Comment object at 0x1010a56d0>
-    // <conv.chunks.Comment object at 0x1010a58e0>
-    // <conv.chunks.Comment object at 0x1010a5a00>
+    // check offscreen bits for d5 set
+    // if not set, branch ahead of this part
+    // get left or right side coordinate based on offset
     lda(ScreenEdge_X_Pos, y);
     sec();
     sbc(offsetof(G, X_SubtracterData), y);
@@ -6277,22 +6277,22 @@ int KeepOnscr() {
     lda(Left_Right_Buttons);
     cmp(offsetof(G, OffscrJoypadBitsData), y);
     BEQ(InitPlatScrl);
-    // <conv.chunks.Comment object at 0x1010a5c10>
-    // <conv.chunks.Comment object at 0x1010a5d60>
-    // <conv.chunks.Comment object at 0x1010a5e80>
-    // <conv.chunks.Comment object at 0x1010a5fd0>
-    // <conv.chunks.Comment object at 0x1010a6060>
-    // <conv.chunks.Comment object at 0x1010a6210>
-    // <conv.chunks.Comment object at 0x1010a6330>
-    // <conv.chunks.Comment object at 0x1010a6480>
+    // subtract amount based on offset
+    // store as player position to prevent movement further
+    // get left or right page location based on offset
+    // subtract borrow
+    // save as player's page location
+    // check saved controller bits
+    // against bits based on offset
+    // if not equal, branch
     lda(0x0);
     sta(Player_X_Speed);
     JMP(InitPlatScrl);
 }
 
 int InitPlatScrl() {
-    // <conv.chunks.Comment object at 0x1010a6600>
-    // <conv.chunks.Comment object at 0x1010a67b0>
+    // otherwise nullify horizontal speed of player
+    // nullify platform force imposed on scroll
     lda(0x0);
     sta(Platform_X_Scroll);
     return 0;
@@ -6301,18 +6301,18 @@ int InitPlatScrl() {
 
 int GetScreenPosition() {
     lda(ScreenLeft_X_Pos);
-    // <conv.chunks.Comment object at 0x1010a6b10>
+    // get coordinate of screen's left boundary
     clc();
     adc(0xff);
     sta(ScreenRight_X_Pos);
     lda(ScreenLeft_PageLoc);
     adc(0x0);
     sta(ScreenRight_PageLoc);
-    // <conv.chunks.Comment object at 0x1010a6f30>
-    // <conv.chunks.Comment object at 0x1010a6fc0>
-    // <conv.chunks.Comment object at 0x1010a7170>
-    // <conv.chunks.Comment object at 0x1010a7290>
-    // <conv.chunks.Comment object at 0x1010a7320>
+    // add 255 pixels
+    // store as coordinate of screen's right boundary
+    // get page number where left boundary is
+    // add carry from before
+    // store as page number where right boundary is
     return 0;
     JMP(GameRoutines);
 }
@@ -6324,41 +6324,41 @@ int GameRoutines() {
 
 int PlayerEntrance() {
     lda(AltEntranceControl);
-    // <conv.chunks.Comment object at 0x1010a7fb0>
+    // check for mode of alternate entry
     cmp(0x2);
     BEQ(EntrMode2);
-    // <conv.chunks.Comment object at 0x1010b0170>
+    // if found, branch to enter from pipe or with vine
     lda(0x0);
     ldy(Player_Y_Position);
     cpy(0x30);
     BCC(AutoControlPlayer);
     lda(PlayerEntranceCtrl);
-    // <conv.chunks.Comment object at 0x1010b0380>
-    // <conv.chunks.Comment object at 0x1010b0530>
-    // <conv.chunks.Comment object at 0x1010b05c0>
-    // <conv.chunks.Comment object at 0x1010b0770>
+    // if vertical position above a certain
+    // point, nullify controller bits and continue
+    // with player movement code, do not return
+    // check player entry bits from header
     cmp(0x6);
     BEQ(ChkBehPipe);
     cmp(0x7);
-    // <conv.chunks.Comment object at 0x1010b08f0>
-    // <conv.chunks.Comment object at 0x1010b0aa0>
+    // if set to 6 or 7, execute pipe intro code
+    // otherwise branch to normal entry
     BNE(PlayerRdy);
     JMP(ChkBehPipe);
 }
 
 int ChkBehPipe() {
-    // <conv.chunks.Comment object at 0x1010b0cb0>
+    // check for sprite attributes
     lda(Player_SprAttrib);
     BNE(IntroEntr);
-    // <conv.chunks.Comment object at 0x1010b0e00>
+    // branch if found
     lda(0x1);
     JMP(AutoControlPlayer);
     JMP(IntroEntr);
 }
 
 int IntroEntr() {
-    // <conv.chunks.Comment object at 0x1010b0f80>
-    // <conv.chunks.Comment object at 0x1010b1130>
+    // force player to walk to the right
+    // execute sub to move player to the right
     JSR(EnterSidePipe);
     dec(ChangeAreaTimer);
     BNE(ExitEntr);
@@ -6368,11 +6368,11 @@ int IntroEntr() {
 }
 
 int EntrMode2() {
-    // <conv.chunks.Comment object at 0x1010b1280>
-    // <conv.chunks.Comment object at 0x1010b13a0>
-    // <conv.chunks.Comment object at 0x1010b14c0>
-    // <conv.chunks.Comment object at 0x1010b15e0>
-    // <conv.chunks.Comment object at 0x1010b1700>
+    // decrement timer for change of area
+    // branch to exit if not yet expired
+    // set flag to skip world and lives display
+    // jump to increment to next area and set modes
+    // if controller override bits set here,
     lda(JoypadOverride);
     BNE(VineEntr);
     lda(0xff);
@@ -6393,13 +6393,13 @@ int VineEntr() {
     ldy(0x0);
     lda(0x1);
     BCC(OffVine);
-    // <conv.chunks.Comment object at 0x1010b20f0>
-    // <conv.chunks.Comment object at 0x1010b2180>
-    // <conv.chunks.Comment object at 0x1010b2330>
-    // <conv.chunks.Comment object at 0x1010b2450>
-    // <conv.chunks.Comment object at 0x1010b24e0>
-    // <conv.chunks.Comment object at 0x1010b2600>
-    // <conv.chunks.Comment object at 0x1010b2720>
+    // check vine height
+    // if vine not yet reached maximum height, branch to leave
+    // get player's vertical coordinate
+    // check player's vertical coordinate against preset value
+    // load default values to be written to
+    // this value moves player to the right off the vine
+    // if vertical coordinate < preset value, use defaults
     lda(0x3);
     sta(Player_State);
     iny();
@@ -6409,14 +6409,14 @@ int VineEntr() {
 }
 
 int OffVine() {
-    // <conv.chunks.Comment object at 0x1010b2960>
-    // <conv.chunks.Comment object at 0x1010b2b40>
-    // <conv.chunks.Comment object at 0x1010b2bd0>
-    // <conv.chunks.Comment object at 0x1010b2c60>
-    // <conv.chunks.Comment object at 0x1010b2ed0>
+    // otherwise set player state to climbing
+    // increment value in Y
+    // set block in block buffer to cover hole, then
+    // use same value to force player to climb
+    // set collision detection disable flag
     sty(DisableCollisionDet);
     JSR(AutoControlPlayer);
-    // <conv.chunks.Comment object at 0x1010b3050>
+    // use contents of A to move player up or right, execute sub
     lda(Player_X_Position);
     cmp(0x48);
     BCC(ExitEntr);
@@ -6424,13 +6424,13 @@ int OffVine() {
 }
 
 int PlayerRdy() {
-    // <conv.chunks.Comment object at 0x1010b3260>
-    // <conv.chunks.Comment object at 0x1010b32f0>
-    // <conv.chunks.Comment object at 0x1010b34a0>
+    // check player's horizontal position
+    // if not far enough to the right, branch to leave
+    // set routine to be executed by game engine next frame
     lda(0x8);
     sta(GameEngineSubroutine);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x1010b36e0>
+    // set to face player to the right
     sta(PlayerFacingDir);
     lsr();
     sta(AltEntranceControl);
@@ -6440,11 +6440,11 @@ int PlayerRdy() {
 }
 
 int ExitEntr() {
-    // <conv.chunks.Comment object at 0x1010b3950>
-    // <conv.chunks.Comment object at 0x1010b39e0>
-    // <conv.chunks.Comment object at 0x1010b3b00>
-    // <conv.chunks.Comment object at 0x1010b3c20>
-    // <conv.chunks.Comment object at 0x1010b3d70>
+    // init A
+    // init mode of entry
+    // init collision detection disable flag
+    // nullify controller override bits
+    // leave!
     return 0;
     JMP(AutoControlPlayer);
 }
@@ -6457,18 +6457,18 @@ int AutoControlPlayer() {
 int PlayerCtrlRoutine() {
     lda(GameEngineSubroutine);
     cmp(0xb);
-    // <conv.chunks.Comment object at 0x1010b8080>
-    // <conv.chunks.Comment object at 0x1010b81a0>
+    // check task here
+    // if certain value is set, branch to skip controller bit loading
     BEQ(SizeChk);
     lda(AreaType);
     BNE(SaveJoyp);
-    // <conv.chunks.Comment object at 0x1010b83e0>
-    // <conv.chunks.Comment object at 0x1010b8500>
+    // are we in a water type area?
+    // if not, branch
     ldy(Player_Y_HighPos);
     dey();
     BNE(DisJoyp);
-    // <conv.chunks.Comment object at 0x1010b8740>
-    // <conv.chunks.Comment object at 0x1010b87d0>
+    // if not in vertical area between
+    // status bar and bottom, branch
     lda(Player_Y_Position);
     cmp(0xd0);
     BCC(SaveJoyp);
@@ -6476,25 +6476,25 @@ int PlayerCtrlRoutine() {
 }
 
 int DisJoyp() {
-    // <conv.chunks.Comment object at 0x1010b8a10>
-    // <conv.chunks.Comment object at 0x1010b8aa0>
-    // <conv.chunks.Comment object at 0x1010b8c50>
+    // if nearing the bottom of the screen or
+    // not in the vertical area between status bar or bottom,
+    // disable controller bits
     lda(0x0);
     sta(SavedJoypadBits);
     JMP(SaveJoyp);
 }
 
 int SaveJoyp() {
-    // <conv.chunks.Comment object at 0x1010b8ec0>
+    // otherwise store A and B buttons in $0a
     lda(SavedJoypadBits);
     anda(0b11000000);
     sta(A_B_Buttons);
     lda(SavedJoypadBits);
-    // <conv.chunks.Comment object at 0x1010b91f0>
+    // store left and right buttons in $0c
     anda(0b11);
     sta(Left_Right_Buttons);
     lda(SavedJoypadBits);
-    // <conv.chunks.Comment object at 0x1010b94f0>
+    // store up and down buttons in $0b
     anda(0b1100);
     sta(Up_Down_Buttons);
     anda(0b100);
@@ -6503,12 +6503,12 @@ int SaveJoyp() {
     BNE(SizeChk);
     ldy(Left_Right_Buttons);
     BEQ(SizeChk);
-    // <conv.chunks.Comment object at 0x1010b97f0>
-    // <conv.chunks.Comment object at 0x1010b9910>
-    // <conv.chunks.Comment object at 0x1010b9a60>
-    // <conv.chunks.Comment object at 0x1010b9b80>
-    // <conv.chunks.Comment object at 0x1010b9cd0>
-    // <conv.chunks.Comment object at 0x1010b9df0>
+    // check for pressing down
+    // if not, branch
+    // check player's state
+    // if not on the ground, branch
+    // check left and right
+    // if neither pressed, branch
     lda(0x0);
     sta(Left_Right_Buttons);
     sta(Up_Down_Buttons);
@@ -6516,16 +6516,16 @@ int SaveJoyp() {
 }
 
 int SizeChk() {
-    // <conv.chunks.Comment object at 0x1010b9fa0>
-    // <conv.chunks.Comment object at 0x1010ba150>
-    // <conv.chunks.Comment object at 0x1010ba270>
+    // if pressing down while on the ground,
+    // nullify directional bits
+    // run movement subroutines
     JSR(PlayerMovementSubs);
     ldy(0x1);
-    // <conv.chunks.Comment object at 0x1010ba3f0>
+    // is player small?
     lda(PlayerSize);
     BNE(ChkMoveDir);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x1010ba6f0>
+    // check for if crouching
     lda(CrouchingFlag);
     BEQ(ChkMoveDir);
     ldy(0x2);
@@ -6533,9 +6533,9 @@ int SizeChk() {
 }
 
 int ChkMoveDir() {
-    // <conv.chunks.Comment object at 0x1010ba900>
-    // <conv.chunks.Comment object at 0x1010baa20>
-    // <conv.chunks.Comment object at 0x1010baab0>
+    // if not, branch ahead
+    // if big and crouching, load y with 2
+    // set contents of Y as player's bounding box size control
     sty(Player_BoundBoxCtrl);
     lda(0x1);
     ldy(Player_X_Speed);
@@ -6546,43 +6546,43 @@ int ChkMoveDir() {
 }
 
 int SetMoveDir() {
-    // <conv.chunks.Comment object at 0x1010bac90>
-    // <conv.chunks.Comment object at 0x1010bad20>
-    // <conv.chunks.Comment object at 0x1010baed0>
-    // <conv.chunks.Comment object at 0x1010baff0>
-    // <conv.chunks.Comment object at 0x1010bb140>
-    // <conv.chunks.Comment object at 0x1010bb1d0>
+    // set moving direction to right by default
+    // check player's horizontal speed
+    // if not moving at all horizontally, skip this part
+    // if moving to the right, use default moving direction
+    // otherwise change to move to the left
+    // set moving direction
     sta(Player_MovingDir);
     JMP(PlayerSubs);
 }
 
 int PlayerSubs() {
-    // <conv.chunks.Comment object at 0x1010bb320>
+    // move the screen if necessary
     JSR(ScrollHandler);
     JSR(GetPlayerOffscreenBits);
     JSR(RelativePlayerPosition);
     ldx(0x0);
     JSR(BoundingBoxCore);
     JSR(PlayerBGCollision);
-    // <conv.chunks.Comment object at 0x1010bb470>
-    // <conv.chunks.Comment object at 0x1010bb590>
-    // <conv.chunks.Comment object at 0x1010bb6b0>
-    // <conv.chunks.Comment object at 0x1010bb740>
-    // <conv.chunks.Comment object at 0x1010bb8f0>
+    // get player's offscreen bits
+    // get coordinates relative to the screen
+    // set offset for player object
+    // get player's bounding box coordinates
+    // do collision detection and process
     lda(Player_Y_Position);
     cmp(0x40);
     BCC(PlayerHole);
-    // <conv.chunks.Comment object at 0x1010bbb00>
-    // <conv.chunks.Comment object at 0x1010bbb90>
+    // check to see if player is higher than 64th pixel
+    // if so, branch ahead
     lda(GameEngineSubroutine);
     cmp(0x5);
-    // <conv.chunks.Comment object at 0x1010bbe30>
+    // if running end-of-level routine, branch ahead
     BEQ(PlayerHole);
     cmp(0x7);
-    // <conv.chunks.Comment object at 0x1010c4080>
+    // if running player entrance routine, branch ahead
     BEQ(PlayerHole);
     cmp(0x4);
-    // <conv.chunks.Comment object at 0x1010c4290>
+    // if running routines $00-$03, branch ahead
     BCC(PlayerHole);
     lda(Player_SprAttrib);
     anda(0b11011111);
@@ -6591,17 +6591,17 @@ int PlayerSubs() {
 }
 
 int PlayerHole() {
-    // <conv.chunks.Comment object at 0x1010c4590>
-    // <conv.chunks.Comment object at 0x1010c46b0>
-    // <conv.chunks.Comment object at 0x1010c47d0>
+    // otherwise nullify player's
+    // background priority flag
+    // check player's vertical high byte
     lda(Player_Y_HighPos);
     cmp(0x2);
     BMI(ExitCtrl);
-    // <conv.chunks.Comment object at 0x1010c4920>
-    // <conv.chunks.Comment object at 0x1010c49b0>
+    // for below the screen
+    // branch to leave if not that far down
     ldx(0x1);
     stx(ScrollLock);
-    // <conv.chunks.Comment object at 0x1010c4bc0>
+    // set scroll lock
     ldy(0x4);
     sty(0x7);
     ldx(0x0);
@@ -6613,23 +6613,23 @@ int PlayerHole() {
 }
 
 int HoleDie() {
-    // <conv.chunks.Comment object at 0x1010c4e90>
-    // <conv.chunks.Comment object at 0x1010c4f20>
-    // <conv.chunks.Comment object at 0x1010c5010>
-    // <conv.chunks.Comment object at 0x1010c51c0>
-    // <conv.chunks.Comment object at 0x1010c5310>
-    // <conv.chunks.Comment object at 0x1010c5430>
-    // <conv.chunks.Comment object at 0x1010c5550>
+    // set value here
+    // use X as flag, and clear for cloud level
+    // check game timer expiration flag
+    // if set, branch
+    // check for cloud type override
+    // skip to last part if found
+    // set flag in X for player death
     inx();
     ldy(GameEngineSubroutine);
     cpy(0xb);
     BEQ(ChkHoleX);
     ldy(DeathMusicLoaded);
     BNE(HoleBottom);
-    // <conv.chunks.Comment object at 0x1010c5760>
-    // <conv.chunks.Comment object at 0x1010c57f0>
-    // <conv.chunks.Comment object at 0x1010c59a0>
-    // <conv.chunks.Comment object at 0x1010c5ac0>
+    // check for some other routine running
+    // if so, branch ahead
+    // check value here
+    // if already set, branch to next part
     iny();
     sty(EventMusicQueue);
     sty(DeathMusicLoaded);
@@ -6643,8 +6643,8 @@ int HoleBottom() {
 }
 
 int ChkHoleX() {
-    // <conv.chunks.Comment object at 0x1010c6000>
-    // <conv.chunks.Comment object at 0x1010c6090>
+    // change value here
+    // compare vertical high byte with value set here
     cmp(0x7);
     BMI(ExitCtrl);
     dex();
@@ -6657,14 +6657,14 @@ int ChkHoleX() {
 }
 
 int ExitCtrl() {
-    // <conv.chunks.Comment object at 0x1010c61e0>
-    // <conv.chunks.Comment object at 0x1010c6390>
-    // <conv.chunks.Comment object at 0x1010c6420>
-    // <conv.chunks.Comment object at 0x1010c6540>
-    // <conv.chunks.Comment object at 0x1010c6660>
-    // <conv.chunks.Comment object at 0x1010c6780>
-    // <conv.chunks.Comment object at 0x1010c6810>
-    // <conv.chunks.Comment object at 0x1010c69f0>
+    // if less, branch to leave
+    // otherwise decrement flag in X
+    // if flag was clear, branch to set modes and other values
+    // check to see if music is still playing
+    // branch to leave if so
+    // otherwise set to run lose life routine
+    // on next frame
+    // leave
     return 0;
     JMP(CloudExit);
 }
@@ -6674,9 +6674,9 @@ int CloudExit() {
     sta(JoypadOverride);
     JSR(SetEntr);
     inc(AltEntranceControl);
-    // <conv.chunks.Comment object at 0x1010c6b70>
-    // <conv.chunks.Comment object at 0x1010c6d20>
-    // <conv.chunks.Comment object at 0x1010c6e70>
+    // clear controller override bits if any are set
+    // do sub to set secondary mode
+    // set mode of entry to 3
     return 0;
     JMP(Vine_AutoClimb);
 }
@@ -6684,8 +6684,8 @@ int CloudExit() {
 int Vine_AutoClimb() {
     lda(Player_Y_HighPos);
     BNE(AutoClimb);
-    // <conv.chunks.Comment object at 0x1010c7080>
-    // <conv.chunks.Comment object at 0x1010c71a0>
+    // check to see whether player reached position
+    // above the status bar yet and if so, set modes
     lda(Player_Y_Position);
     cmp(0xe4);
     BCC(SetEntr);
@@ -6693,18 +6693,18 @@ int Vine_AutoClimb() {
 }
 
 int AutoClimb() {
-    // <conv.chunks.Comment object at 0x1010c75c0>
+    // set controller bits override to up
     lda(0b1000);
     sta(JoypadOverride);
     ldy(0x3);
-    // <conv.chunks.Comment object at 0x1010c7800>
+    // set player state to climbing
     sty(Player_State);
     JMP(AutoControlPlayer);
     JMP(SetEntr);
 }
 
 int SetEntr() {
-    // <conv.chunks.Comment object at 0x1010c7b00>
+    // set starting position to override
     lda(0x2);
     sta(AltEntranceControl);
     JMP(ChgAreaMode);
@@ -6718,18 +6718,18 @@ int VerticalPipeEntry() {
     ldy(0x0);
     lda(WarpZoneControl);
     BNE(ChgAreaPipe);
-    // <conv.chunks.Comment object at 0x1010c7ef0>
-    // <conv.chunks.Comment object at 0x1010c7f80>
-    // <conv.chunks.Comment object at 0x1010d0170>
-    // <conv.chunks.Comment object at 0x1010d0290>
-    // <conv.chunks.Comment object at 0x1010d0320>
-    // <conv.chunks.Comment object at 0x1010d04d0>
+    // set 1 as movement amount
+    // do sub to move player downwards
+    // do sub to scroll screen with saved force if necessary
+    // load default mode of entry
+    // check warp zone control variable/flag
+    // if set, branch to use mode 0
     iny();
     lda(AreaType);
-    // <conv.chunks.Comment object at 0x1010d0680>
+    // check for castle level type
     cmp(0x3);
     BNE(ChgAreaPipe);
-    // <conv.chunks.Comment object at 0x1010d0800>
+    // if not castle type level, use mode 1
     iny();
     JMP(ChgAreaPipe);
     JMP(MovePlayerYAxis);
@@ -6738,7 +6738,7 @@ int VerticalPipeEntry() {
 int MovePlayerYAxis() {
     clc();
     adc(Player_Y_Position);
-    // <conv.chunks.Comment object at 0x1010d0c20>
+    // add contents of A to player position
     sta(Player_Y_Position);
     return 0;
     JMP(SideExitPipeEntry);
@@ -6746,13 +6746,13 @@ int MovePlayerYAxis() {
 
 int SideExitPipeEntry() {
     JSR(EnterSidePipe);
-    // <conv.chunks.Comment object at 0x1010d0f20>
+    // execute sub to move player to the right
     ldy(0x2);
     JMP(ChgAreaPipe);
 }
 
 int ChgAreaPipe() {
-    // <conv.chunks.Comment object at 0x1010d10a0>
+    // decrement timer for change of area
     dec(ChangeAreaTimer);
     BNE(ExitCAPipe);
     sty(AltEntranceControl);
@@ -6760,8 +6760,8 @@ int ChgAreaPipe() {
 }
 
 int ChgAreaMode() {
-    // <conv.chunks.Comment object at 0x1010d1370>
-    // <conv.chunks.Comment object at 0x1010d1490>
+    // when timer expires set mode of alternate entry
+    // set flag to disable screen output
     inc(DisableScreenFlag);
     lda(0x0);
     sta(OperMode_Task);
@@ -6770,23 +6770,23 @@ int ChgAreaMode() {
 }
 
 int ExitCAPipe() {
-    // <conv.chunks.Comment object at 0x1010d1640>
-    // <conv.chunks.Comment object at 0x1010d17f0>
-    // <conv.chunks.Comment object at 0x1010d1940>
+    // set secondary mode of operation
+    // disable sprite 0 check
+    // leave
     return 0;
     JMP(EnterSidePipe);
 }
 
 int EnterSidePipe() {
     lda(0x8);
-    // <conv.chunks.Comment object at 0x1010d1a60>
+    // set player's horizontal speed
     sta(Player_X_Speed);
     ldy(0x1);
     lda(Player_X_Position);
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x1010d1c70>
-    // <conv.chunks.Comment object at 0x1010d1d00>
-    // <conv.chunks.Comment object at 0x1010d1eb0>
+    // set controller right button by default
+    // mask out higher nybble of player's
+    // horizontal position
     BNE(RightPipe);
     sta(Player_X_Speed);
     tay();
@@ -6794,12 +6794,12 @@ int EnterSidePipe() {
 }
 
 int RightPipe() {
-    // <conv.chunks.Comment object at 0x1010d20c0>
-    // <conv.chunks.Comment object at 0x1010d2210>
-    // <conv.chunks.Comment object at 0x1010d22a0>
+    // if lower nybble = 0, set as horizontal speed
+    // and nullify controller bit override here
+    // use contents of Y to
     tya();
     JSR(AutoControlPlayer);
-    // <conv.chunks.Comment object at 0x1010d2390>
+    // execute player control routine with ctrl bits nulled
     return 0;
     JMP(PlayerChangeSize);
 }
@@ -6813,11 +6813,11 @@ int PlayerChangeSize() {
 }
 
 int EndChgSize() {
-    // <conv.chunks.Comment object at 0x1010d25a0>
-    // <conv.chunks.Comment object at 0x1010d26c0>
-    // <conv.chunks.Comment object at 0x1010d2750>
-    // <conv.chunks.Comment object at 0x1010d2900>
-    // <conv.chunks.Comment object at 0x1010d2a20>
+    // check master timer control
+    // for specific moment in time
+    // branch if before or after that point
+    // otherwise run code to get growing/shrinking going
+    // check again for another specific moment
     cmp(0xc4);
     BNE(ExitChgSize);
     JSR(DonePlayerTask);
@@ -6825,9 +6825,9 @@ int EndChgSize() {
 }
 
 int ExitChgSize() {
-    // <conv.chunks.Comment object at 0x1010d2ae0>
-    // <conv.chunks.Comment object at 0x1010d2c90>
-    // <conv.chunks.Comment object at 0x1010d2db0>
+    // and branch to leave if before or after that point
+    // otherwise do sub to init timer control and set routine
+    // and then leave
     return 0;
     JMP(PlayerInjuryBlink);
 }
@@ -6843,13 +6843,13 @@ int PlayerInjuryBlink() {
 }
 
 int ExitBlink() {
-    // <conv.chunks.Comment object at 0x1010d2f00>
-    // <conv.chunks.Comment object at 0x1010d3020>
-    // <conv.chunks.Comment object at 0x1010d30b0>
-    // <conv.chunks.Comment object at 0x1010d3260>
-    // <conv.chunks.Comment object at 0x1010d32f0>
-    // <conv.chunks.Comment object at 0x1010d34a0>
-    // <conv.chunks.Comment object at 0x1010d35c0>
+    // check master timer control
+    // for specific moment in time
+    // branch if before that point
+    // check again for another specific point
+    // branch if at that point, and not before or after
+    // otherwise run player control routine
+    // do unconditional branch to leave
     BNE(ExitBoth);
     JMP(InitChangeSize);
 }
@@ -6859,19 +6859,19 @@ int InitChangeSize() {
     BNE(ExitBoth);
     sty(PlayerAnimCtrl);
     inc(PlayerChangeSizeFlag);
-    // <conv.chunks.Comment object at 0x1010d3740>
-    // <conv.chunks.Comment object at 0x1010d3860>
-    // <conv.chunks.Comment object at 0x1010d3980>
-    // <conv.chunks.Comment object at 0x1010d3aa0>
+    // if growing/shrinking flag already set
+    // then branch to leave
+    // otherwise initialize player's animation frame control
+    // set growing/shrinking flag
     lda(PlayerSize);
     eor(0x1);
-    // <conv.chunks.Comment object at 0x1010d3cb0>
+    // invert player's size
     sta(PlayerSize);
     JMP(ExitBoth);
 }
 
 int ExitBoth() {
-    // <conv.chunks.Comment object at 0x1010d3ef0>
+    // leave
     return 0;
     JMP(PlayerDeath);
 }
@@ -6887,7 +6887,7 @@ int PlayerDeath() {
 int DonePlayerTask() {
     lda(0x0);
     sta(TimerControl);
-    // <conv.chunks.Comment object at 0x1010d85c0>
+    // initialize master timer control to continue timers
     lda(0x8);
     sta(GameEngineSubroutine);
     return 0;
@@ -6899,10 +6899,10 @@ int PlayerFireFlower() {
     cmp(0xc0);
     BEQ(ResetPalFireFlower);
     lda(FrameCounter);
-    // <conv.chunks.Comment object at 0x1010d8aa0>
-    // <conv.chunks.Comment object at 0x1010d8bc0>
-    // <conv.chunks.Comment object at 0x1010d8c50>
-    // <conv.chunks.Comment object at 0x1010d8e00>
+    // check master timer control
+    // for specific moment in time
+    // branch if at moment, not before or after
+    // get frame counter
     lsr();
     lsr();
     JMP(CyclePlayerPalette);
@@ -6943,14 +6943,14 @@ int FlagpoleSlide() {
     BNE(NoFPObj);
     lda(FlagpoleSoundQueue);
     sta(Square1SoundQueue);
-    // <conv.chunks.Comment object at 0x1010d9f10>
-    // <conv.chunks.Comment object at 0x1010da0f0>
-    // <conv.chunks.Comment object at 0x1010da210>
-    // <conv.chunks.Comment object at 0x1010da360>
-    // <conv.chunks.Comment object at 0x1010da480>
+    // check special use enemy slot
+    // for flagpole flag object
+    // if not found, branch to something residual
+    // load flagpole sound
+    // into square 1's sfx queue
     lda(0x0);
     sta(FlagpoleSoundQueue);
-    // <conv.chunks.Comment object at 0x1010da600>
+    // init flagpole sound queue
     ldy(Player_Y_Position);
     cpy(0x9e);
     BCS(SlidePlayer);
@@ -6959,16 +6959,16 @@ int FlagpoleSlide() {
 }
 
 int SlidePlayer() {
-    // <conv.chunks.Comment object at 0x1010da8a0>
-    // <conv.chunks.Comment object at 0x1010da930>
-    // <conv.chunks.Comment object at 0x1010daae0>
-    // <conv.chunks.Comment object at 0x1010dab70>
+    // check to see if player has slid down
+    // far enough, and if so, branch with no controller bits set
+    // otherwise force player to climb down (to slide)
+    // jump to player control routine
     JMP(AutoControlPlayer);
     JMP(NoFPObj);
 }
 
 int NoFPObj() {
-    // <conv.chunks.Comment object at 0x1010dad50>
+    // increment to next routine (this may
     inc(GameEngineSubroutine);
     return 0;
     JMP(PlayerEndLevel);
@@ -6976,28 +6976,28 @@ int NoFPObj() {
 
 int PlayerEndLevel() {
     lda(0x1);
-    // <conv.chunks.Comment object at 0x1010db050>
+    // force player to walk to the right
     JSR(AutoControlPlayer);
     lda(Player_Y_Position);
-    // <conv.chunks.Comment object at 0x1010db6b0>
+    // check player's vertical position
     cmp(0xae);
     BCC(ChkStop);
     lda(ScrollLock);
     BEQ(ChkStop);
-    // <conv.chunks.Comment object at 0x1010db830>
-    // <conv.chunks.Comment object at 0x1010dba10>
-    // <conv.chunks.Comment object at 0x1010dbb30>
+    // if player is not yet off the flagpole, skip this part
+    // if scroll lock not set, branch ahead to next part
+    // because we only need to do this part once
     lda(EndOfLevelMusic);
     sta(EventMusicQueue);
-    // <conv.chunks.Comment object at 0x1010dbd70>
+    // load win level music in event music queue
     lda(0x0);
     sta(ScrollLock);
     JMP(ChkStop);
 }
 
 int ChkStop() {
-    // <conv.chunks.Comment object at 0x1010dbef0>
-    // <conv.chunks.Comment object at 0x1010e40e0>
+    // turn off scroll lock to skip this part later
+    // get player collision bits
     lda(Player_CollisionBits);
     lsr();
     BCS(RdyNextA);
@@ -7008,12 +7008,12 @@ int ChkStop() {
 }
 
 int InCastle() {
-    // <conv.chunks.Comment object at 0x1010e4290>
-    // <conv.chunks.Comment object at 0x1010e4320>
-    // <conv.chunks.Comment object at 0x1010e4440>
-    // <conv.chunks.Comment object at 0x1010e4560>
-    // <conv.chunks.Comment object at 0x1010e4680>
-    // <conv.chunks.Comment object at 0x1010e47a0>
+    // check for d0 set
+    // if d0 set, skip to next part
+    // if star flag task control already set,
+    // go ahead with the rest of the code
+    // otherwise set task control now (this gets ball rolling!)
+    // set player's background priority bit to
     lda(0b100000);
     sta(Player_SprAttrib);
     JMP(RdyNextA);
@@ -7024,9 +7024,9 @@ int RdyNextA() {
     cmp(0x5);
     BNE(ExitNA);
     inc(LevelNumber);
-    // <conv.chunks.Comment object at 0x1010e4b30>
-    // <conv.chunks.Comment object at 0x1010e4bc0>
-    // <conv.chunks.Comment object at 0x1010e4da0>
+    // if star flag task control not yet set
+    // beyond last valid task number, branch to leave
+    // increment level number used for game logic
     lda(LevelNumber);
     cmp(0x3);
     BNE(NextArea);
@@ -7039,23 +7039,23 @@ int RdyNextA() {
 }
 
 int NextArea() {
-    // <conv.chunks.Comment object at 0x1010e4fb0>
-    // <conv.chunks.Comment object at 0x1010e5040>
-    // <conv.chunks.Comment object at 0x1010e51f0>
-    // <conv.chunks.Comment object at 0x1010e5310>
-    // <conv.chunks.Comment object at 0x1010e5430>
-    // <conv.chunks.Comment object at 0x1010e5580>
-    // <conv.chunks.Comment object at 0x1010e56a0>
-    // <conv.chunks.Comment object at 0x1010e57c0>
+    // check to see if we have yet reached level -4
+    // and skip this last part here if not
+    // get world number as offset
+    // check third area coin tally for bonus 1-ups
+    // against minimum value, if player has not collected
+    // at least this number of coins, leave flag clear
+    // otherwise set hidden 1-up box control flag
+    // increment area number used for address loader
     inc(AreaNumber);
     JSR(LoadAreaPointer);
     inc(FetchNewGameTimerFlag);
     JSR(ChgAreaMode);
     sta(HalfwayPage);
-    // <conv.chunks.Comment object at 0x1010e5910>
-    // <conv.chunks.Comment object at 0x1010e5a30>
-    // <conv.chunks.Comment object at 0x1010e5b50>
-    // <conv.chunks.Comment object at 0x1010e5c70>
+    // get new level pointer
+    // set flag to load new game timer
+    // do sub to set secondary mode, disable screen and sprite 0
+    // reset halfway page to 0 (beginning)
     lda(Silence);
     sta(EventMusicQueue);
     JMP(ExitNA);
@@ -7078,30 +7078,30 @@ int PlayerMovementSubs() {
 }
 
 int SetCrouch() {
-    // <conv.chunks.Comment object at 0x1010e6120>
-    // <conv.chunks.Comment object at 0x1010e61b0>
-    // <conv.chunks.Comment object at 0x1010e6360>
-    // <conv.chunks.Comment object at 0x1010e6480>
-    // <conv.chunks.Comment object at 0x1010e65a0>
-    // <conv.chunks.Comment object at 0x1010e66c0>
-    // <conv.chunks.Comment object at 0x1010e67e0>
-    // <conv.chunks.Comment object at 0x1010e6900>
+    // set A to init crouch flag by default
+    // is player small?
+    // if so, branch
+    // check state of player
+    // if not on the ground, branch
+    // load controller bits for up and down
+    // single out bit for down button
+    // store value in crouch flag
     sta(CrouchingFlag);
     JMP(ProcMove);
 }
 
 int ProcMove() {
-    // <conv.chunks.Comment object at 0x1010e6a50>
+    // run sub related to jumping and swimming
     JSR(PlayerPhysicsSub);
     lda(PlayerChangeSizeFlag);
     BNE(NoMoveSub);
-    // <conv.chunks.Comment object at 0x1010e6ba0>
-    // <conv.chunks.Comment object at 0x1010e6cc0>
+    // if growing/shrinking flag set,
+    // branch to leave
     lda(Player_State);
     cmp(0x3);
     BEQ(MoveSubs);
-    // <conv.chunks.Comment object at 0x1010e6ed0>
-    // <conv.chunks.Comment object at 0x1010e6f60>
+    // get player state
+    // if climbing, branch ahead, leave timer unset
     ldy(0x18);
     sty(ClimbSideTimer);
     JMP(MoveSubs);
@@ -7118,8 +7118,8 @@ int NoMoveSub() {
 
 int OnGroundStateSub() {
     JSR(GetPlayerAnimSpeed);
-    // <conv.chunks.Comment object at 0x1010e7770>
-    // <conv.chunks.Comment object at 0x1010e77d0>
+    // $00 - used by ClimbingSub to store high vertical adder
+    // do a sub to set animation frame timing
     lda(Left_Right_Buttons);
     BEQ(GndMove);
     sta(PlayerFacingDir);
@@ -7127,14 +7127,14 @@ int OnGroundStateSub() {
 }
 
 int GndMove() {
-    // <conv.chunks.Comment object at 0x1010e79e0>
-    // <conv.chunks.Comment object at 0x1010e7b30>
-    // <conv.chunks.Comment object at 0x1010e7c50>
+    // if left/right controller bits not set, skip instruction
+    // otherwise set new facing direction
+    // do a sub to impose friction on player's walk/run
     JSR(ImposeFriction);
     JSR(MovePlayerHorizontally);
     sta(Player_X_Scroll);
-    // <conv.chunks.Comment object at 0x1010e7dd0>
-    // <conv.chunks.Comment object at 0x1010e7ef0>
+    // do another sub to move player horizontally
+    // set returned value as player's movement speed for scroll
     return 0;
     JMP(FallingSub);
 }
@@ -7149,17 +7149,17 @@ int FallingSub() {
 int JumpSwimSub() {
     ldy(Player_Y_Speed);
     BPL(DumpFall);
-    // <conv.chunks.Comment object at 0x1010ec500>
-    // <conv.chunks.Comment object at 0x1010ec620>
+    // if player's vertical speed zero
+    // or moving downwards, branch to falling
     lda(A_B_Buttons);
     anda(A_Button);
     anda(PreviousA_B_Buttons);
     BNE(ProcSwim);
     lda(JumpOrigin_Y_Position);
-    // <conv.chunks.Comment object at 0x1010ec830>
-    // <conv.chunks.Comment object at 0x1010ec950>
-    // <conv.chunks.Comment object at 0x1010eca70>
-    // <conv.chunks.Comment object at 0x1010ecb90>
+    // check to see if A button is being pressed
+    // and was pressed in previous frame
+    // if so, branch elsewhere
+    // get vertical position player jumped from
     sec();
     sbc(Player_Y_Position);
     cmp(DiffToHaltJump);
@@ -7168,35 +7168,35 @@ int JumpSwimSub() {
 }
 
 int DumpFall() {
-    // <conv.chunks.Comment object at 0x1010ecd40>
-    // <conv.chunks.Comment object at 0x1010ece60>
-    // <conv.chunks.Comment object at 0x1010ecf80>
-    // <conv.chunks.Comment object at 0x1010ed0a0>
+    // subtract current from original vertical coordinate
+    // compare to value set here to see if player is in mid-jump
+    // or just starting to jump, if just starting, skip ahead
+    // otherwise dump falling into main fractional
     lda(VerticalForceDown);
     sta(VerticalForce);
     JMP(ProcSwim);
 }
 
 int ProcSwim() {
-    // <conv.chunks.Comment object at 0x1010ed2e0>
+    // if swimming flag not set,
     lda(SwimmingFlag);
     BEQ(LRAir);
     JSR(GetPlayerAnimSpeed);
-    // <conv.chunks.Comment object at 0x1010ed430>
-    // <conv.chunks.Comment object at 0x1010ed580>
+    // branch ahead to last part
+    // do a sub to get animation frame timing
     lda(Player_Y_Position);
     cmp(0x14);
     BCS(LRWater);
-    // <conv.chunks.Comment object at 0x1010ed790>
-    // <conv.chunks.Comment object at 0x1010ed820>
+    // check vertical position against preset value
+    // if not yet reached a certain position, branch ahead
     lda(0x18);
     sta(VerticalForce);
     JMP(LRWater);
 }
 
 int LRWater() {
-    // <conv.chunks.Comment object at 0x1010eda60>
-    // <conv.chunks.Comment object at 0x1010edc10>
+    // otherwise set fractional
+    // check left/right controller bits (check for swimming)
     lda(Left_Right_Buttons);
     BEQ(LRAir);
     sta(PlayerFacingDir);
@@ -7204,9 +7204,9 @@ int LRWater() {
 }
 
 int LRAir() {
-    // <conv.chunks.Comment object at 0x1010edd90>
-    // <conv.chunks.Comment object at 0x1010edee0>
-    // <conv.chunks.Comment object at 0x1010ee000>
+    // if not pressing any, skip
+    // otherwise set facing direction accordingly
+    // check left/right controller bits (check for jumping/falling)
     lda(Left_Right_Buttons);
     BEQ(JSMove);
     JSR(ImposeFriction);
@@ -7214,25 +7214,25 @@ int LRAir() {
 }
 
 int JSMove() {
-    // <conv.chunks.Comment object at 0x1010ee180>
-    // <conv.chunks.Comment object at 0x1010ee2d0>
-    // <conv.chunks.Comment object at 0x1010ee3f0>
+    // if not pressing any, skip
+    // otherwise process horizontal movement
+    // do a sub to move player horizontally
     JSR(MovePlayerHorizontally);
     sta(Player_X_Scroll);
-    // <conv.chunks.Comment object at 0x1010ee570>
+    // set player's speed here, to be used for scroll later
     lda(GameEngineSubroutine);
     cmp(0xb);
     BNE(ExitMov1);
-    // <conv.chunks.Comment object at 0x1010ee780>
-    // <conv.chunks.Comment object at 0x1010ee810>
+    // check for specific routine selected
+    // branch if not set to run
     lda(0x28);
     sta(VerticalForce);
     JMP(ExitMov1);
 }
 
 int ExitMov1() {
-    // <conv.chunks.Comment object at 0x1010eea20>
-    // <conv.chunks.Comment object at 0x1010eebd0>
+    // otherwise set fractional
+    // jump to move player vertically, then leave
     JMP(MovePlayerVertically);
     JMP(ClimbingSub);
 }
@@ -7241,8 +7241,8 @@ int ClimbingSub() {
     lda(Player_YMF_Dummy);
     clc();
     adc(Player_Y_MoveForce);
-    // <conv.chunks.Comment object at 0x1010ef380>
-    // <conv.chunks.Comment object at 0x1010ef410>
+    // add movement force to dummy variable
+    // save with carry
     sta(Player_YMF_Dummy);
     ldy(0x0);
     lda(Player_Y_Speed);
@@ -7252,16 +7252,16 @@ int ClimbingSub() {
 }
 
 int MoveOnVine() {
-    // <conv.chunks.Comment object at 0x1010ef620>
-    // <conv.chunks.Comment object at 0x1010ef6b0>
-    // <conv.chunks.Comment object at 0x1010ef860>
-    // <conv.chunks.Comment object at 0x1010ef9b0>
-    // <conv.chunks.Comment object at 0x1010efa40>
+    // set default adder here
+    // get player's vertical speed
+    // if not moving upwards, branch
+    // otherwise set adder to $ff
+    // store adder here
     sty(0x0);
     adc(Player_Y_Position);
     sta(Player_Y_Position);
-    // <conv.chunks.Comment object at 0x1010efb30>
-    // <conv.chunks.Comment object at 0x1010efcb0>
+    // add carry to player's vertical position
+    // and store to move player up or down
     lda(Player_Y_HighPos);
     adc(0x0);
     sta(Player_Y_HighPos);
@@ -7270,32 +7270,32 @@ int MoveOnVine() {
     BEQ(InitCSTimer);
     ldy(ClimbSideTimer);
     BNE(ExitCSub);
-    // <conv.chunks.Comment object at 0x1010efef0>
-    // <conv.chunks.Comment object at 0x1010eff80>
-    // <conv.chunks.Comment object at 0x1010fc140>
-    // <conv.chunks.Comment object at 0x1010fc260>
-    // <conv.chunks.Comment object at 0x1010fc380>
-    // <conv.chunks.Comment object at 0x1010fc4a0>
-    // <conv.chunks.Comment object at 0x1010fc5c0>
+    // add carry to player's page location
+    // and store
+    // compare left/right controller bits
+    // to collision flag
+    // if not set, skip to end
+    // otherwise check timer
+    // if timer not expired, branch to leave
     ldy(0x18);
     sty(ClimbSideTimer);
     ldx(0x0);
     ldy(PlayerFacingDir);
     lsr();
     BCS(ClimbFD);
-    // <conv.chunks.Comment object at 0x1010fc740>
-    // <conv.chunks.Comment object at 0x1010fc8f0>
-    // <conv.chunks.Comment object at 0x1010fc980>
-    // <conv.chunks.Comment object at 0x1010fcb60>
-    // <conv.chunks.Comment object at 0x1010fcbf0>
+    // otherwise set timer now
+    // set default offset here
+    // get facing direction
+    // move right button controller bit to carry
+    // if controller right pressed, branch ahead
     inx();
     inx();
     JMP(ClimbFD);
 }
 
 int ClimbFD() {
-    // <conv.chunks.Comment object at 0x1010fce00>
-    // <conv.chunks.Comment object at 0x1010fce90>
+    // otherwise increment offset by 2 bytes
+    // check to see if facing right
     dey();
     BEQ(CSetFDir);
     inx();
@@ -7306,13 +7306,13 @@ int CSetFDir() {
     lda(Player_X_Position);
     clc();
     adc(offsetof(G, ClimbAdderLow), x);
-    // <conv.chunks.Comment object at 0x1010fd2e0>
-    // <conv.chunks.Comment object at 0x1010fd370>
+    // add or subtract from player's horizontal position
+    // using value here as adder and X as offset
     sta(Player_X_Position);
     lda(Player_PageLoc);
     adc(offsetof(G, ClimbAdderHigh), x);
-    // <conv.chunks.Comment object at 0x1010fd5b0>
-    // <conv.chunks.Comment object at 0x1010fd6d0>
+    // add or subtract carry or borrow using value here
+    // from the player's page location
     sta(Player_PageLoc);
     lda(Left_Right_Buttons);
     eor(0b11);
@@ -7321,16 +7321,16 @@ int CSetFDir() {
 }
 
 int ExitCSub() {
-    // <conv.chunks.Comment object at 0x1010fd910>
-    // <conv.chunks.Comment object at 0x1010fda30>
-    // <conv.chunks.Comment object at 0x1010fdb50>
-    // <conv.chunks.Comment object at 0x1010fdc70>
+    // get left/right controller bits again
+    // invert them and store them while player
+    // is on vine to face player in opposite direction
+    // then leave
     return 0;
     JMP(InitCSTimer);
 }
 
 int InitCSTimer() {
-    // <conv.chunks.Comment object at 0x1010fdd60>
+    // initialize timer here
     sta(ClimbSideTimer);
     return 0;
     JMP(PlayerPhysicsSub);
@@ -7338,27 +7338,27 @@ int InitCSTimer() {
 
 int PlayerPhysicsSub() {
     lda(Player_State);
-    // <conv.chunks.Comment object at 0x1010ff4d0>
+    // check player state
     cmp(0x3);
     BNE(CheckForJumping);
-    // <conv.chunks.Comment object at 0x1010ffbf0>
+    // if not climbing, branch
     ldy(0x0);
     lda(Up_Down_Buttons);
     anda(Player_CollisionBits);
     BEQ(ProcClimb);
-    // <conv.chunks.Comment object at 0x1010ffe00>
-    // <conv.chunks.Comment object at 0x1010fffb0>
-    // <conv.chunks.Comment object at 0x101108110>
+    // get controller bits for up/down
+    // check against player's collision detection bits
+    // if not pressing up or down, branch
     iny();
     anda(0b1000);
-    // <conv.chunks.Comment object at 0x1011082c0>
+    // check for pressing up
     BNE(ProcClimb);
     iny();
     JMP(ProcClimb);
 }
 
 int ProcClimb() {
-    // <conv.chunks.Comment object at 0x101108560>
+    // load value here
     ldx(offsetof(G, Climb_Y_MForceData), y);
     stx(Player_Y_MoveForce);
     lda(0x8);
@@ -7370,13 +7370,13 @@ int ProcClimb() {
 }
 
 int SetCAnim() {
-    // <conv.chunks.Comment object at 0x1011086e0>
-    // <conv.chunks.Comment object at 0x101108800>
-    // <conv.chunks.Comment object at 0x101108890>
-    // <conv.chunks.Comment object at 0x101108a70>
-    // <conv.chunks.Comment object at 0x101108b90>
-    // <conv.chunks.Comment object at 0x101108ce0>
-    // <conv.chunks.Comment object at 0x101108d70>
+    // store as vertical movement force
+    // load default animation timing
+    // load some other value here
+    // store as vertical speed
+    // if climbing down, use default animation timing value
+    // otherwise divide timer setting by 2
+    // store animation timer setting and leave
     sta(PlayerAnimTimerSet);
     return 0;
     JMP(CheckForJumping);
@@ -7386,20 +7386,20 @@ int CheckForJumping() {
     lda(JumpspringAnimCtrl);
     BNE(NoJump);
     lda(A_B_Buttons);
-    // <conv.chunks.Comment object at 0x101108f80>
-    // <conv.chunks.Comment object at 0x1011090a0>
-    // <conv.chunks.Comment object at 0x1011091f0>
+    // if jumpspring animating,
+    // skip ahead to something else
+    // check for A button press
     anda(A_Button);
     BEQ(NoJump);
     anda(PreviousA_B_Buttons);
-    // <conv.chunks.Comment object at 0x101109400>
-    // <conv.chunks.Comment object at 0x101109550>
+    // if not, branch to something else
+    // if button not pressed in previous frame, branch
     BEQ(ProcJumping);
     JMP(NoJump);
 }
 
 int NoJump() {
-    // <conv.chunks.Comment object at 0x101109760>
+    // otherwise, jump to something else
     JMP(X_Physics);
     JMP(ProcJumping);
 }
@@ -7410,11 +7410,11 @@ int ProcJumping() {
     lda(SwimmingFlag);
     BEQ(NoJump);
     lda(JumpSwimTimer);
-    // <conv.chunks.Comment object at 0x101109910>
-    // <conv.chunks.Comment object at 0x101109a30>
-    // <conv.chunks.Comment object at 0x101109b80>
-    // <conv.chunks.Comment object at 0x101109ca0>
-    // <conv.chunks.Comment object at 0x101109df0>
+    // check player state
+    // if on the ground, branch
+    // if swimming flag not set, jump to do something else
+    // to prevent midair jumping, otherwise continue
+    // if jump/swim timer nonzero, branch
     BNE(InitJS);
     lda(Player_Y_Speed);
     BPL(InitJS);
@@ -7423,32 +7423,32 @@ int ProcJumping() {
 }
 
 int InitJS() {
-    // <conv.chunks.Comment object at 0x10110a030>
-    // <conv.chunks.Comment object at 0x10110a150>
-    // <conv.chunks.Comment object at 0x10110a2a0>
-    // <conv.chunks.Comment object at 0x10110a3c0>
+    // check player's vertical speed
+    // if player's vertical speed motionless or down, branch
+    // if timer at zero and player still rising, do not swim
+    // set jump/swim timer
     lda(0x20);
     sta(JumpSwimTimer);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x10110a630>
+    // initialize vertical force and dummy variable
     sty(Player_YMF_Dummy);
     sty(Player_Y_MoveForce);
     lda(Player_Y_HighPos);
     sta(JumpOrigin_Y_HighPos);
-    // <conv.chunks.Comment object at 0x10110a930>
-    // <conv.chunks.Comment object at 0x10110aa50>
+    // get vertical high and low bytes of jump origin
+    // and store them next to each other here
     lda(Player_Y_Position);
     sta(JumpOrigin_Y_Position);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x10110ad50>
+    // set player state to jumping/swimming
     sta(Player_State);
     lda(Player_XSpeedAbsolute);
-    // <conv.chunks.Comment object at 0x10110af60>
+    // check value related to walking/running speed
     cmp(0x9);
     BCC(ChkWtr);
     iny();
-    // <conv.chunks.Comment object at 0x10110b0e0>
-    // <conv.chunks.Comment object at 0x10110b2f0>
+    // branch if below certain values, increment Y
+    // for each amount equal or exceeded
     cmp(0x10);
     BCC(ChkWtr);
     iny();
@@ -7457,33 +7457,33 @@ int InitJS() {
     iny();
     cmp(0x1c);
     BCC(ChkWtr);
-    // <conv.chunks.Comment object at 0x10110b920>
+    // note that for jumping, range is 0-4 for Y
     iny();
     JMP(ChkWtr);
 }
 
 int ChkWtr() {
-    // <conv.chunks.Comment object at 0x10110bb90>
+    // set value here (apparently always set to 1)
     lda(0x1);
     sta(DiffToHaltJump);
     lda(SwimmingFlag);
-    // <conv.chunks.Comment object at 0x10110be00>
+    // if swimming flag disabled, branch
     BEQ(GetYPhy);
     ldy(0x5);
     lda(Whirlpool_Flag);
-    // <conv.chunks.Comment object at 0x101110080>
-    // <conv.chunks.Comment object at 0x101110110>
+    // otherwise set Y to 5, range is 5-6
+    // if whirlpool flag not set, branch
     BEQ(GetYPhy);
     iny();
     JMP(GetYPhy);
 }
 
 int GetYPhy() {
-    // <conv.chunks.Comment object at 0x101110410>
-    // <conv.chunks.Comment object at 0x1011104a0>
+    // otherwise increment to 6
+    // store appropriate jump/swim
     lda(offsetof(G, JumpMForceData), y);
     sta(VerticalForce);
-    // <conv.chunks.Comment object at 0x101110650>
+    // data here
     lda(offsetof(G, FallMForceData), y);
     sta(VerticalForceDown);
     lda(offsetof(G, InitMForceData), y);
@@ -7491,12 +7491,12 @@ int GetYPhy() {
     lda(offsetof(G, PlayerYSpdData), y);
     sta(Player_Y_Speed);
     lda(SwimmingFlag);
-    // <conv.chunks.Comment object at 0x101110da0>
+    // if swimming flag disabled, branch
     BEQ(PJumpSnd);
     lda(Sfx_EnemyStomp);
     sta(Square1SoundQueue);
-    // <conv.chunks.Comment object at 0x101110fb0>
-    // <conv.chunks.Comment object at 0x1011110d0>
+    // load swim/goomba stomp sound into
+    // square 1's sfx queue
     lda(Player_Y_Position);
     cmp(0x14);
     BCS(X_Physics);
@@ -7507,23 +7507,23 @@ int GetYPhy() {
 }
 
 int PJumpSnd() {
-    // <conv.chunks.Comment object at 0x1011112e0>
-    // <conv.chunks.Comment object at 0x101111370>
-    // <conv.chunks.Comment object at 0x101111520>
-    // <conv.chunks.Comment object at 0x1011115b0>
-    // <conv.chunks.Comment object at 0x101111760>
-    // <conv.chunks.Comment object at 0x101111880>
+    // check vertical low byte of player position
+    // if below a certain point, branch
+    // otherwise reset player's vertical speed
+    // and jump to something else to keep player
+    // from swimming above water level
+    // load big mario's jump sound by default
     lda(Sfx_BigJump);
     ldy(PlayerSize);
-    // <conv.chunks.Comment object at 0x1011119d0>
+    // is mario big?
     BEQ(SJumpSnd);
     lda(Sfx_SmallJump);
     JMP(SJumpSnd);
 }
 
 int SJumpSnd() {
-    // <conv.chunks.Comment object at 0x101111be0>
-    // <conv.chunks.Comment object at 0x101111d00>
+    // if not, load small mario's jump sound
+    // store appropriate jump sound in square 1 sfx queue
     sta(Square1SoundQueue);
     JMP(X_Physics);
 }
@@ -7532,8 +7532,8 @@ int X_Physics() {
     ldy(0x0);
     sty(0x0);
     lda(Player_State);
-    // <conv.chunks.Comment object at 0x101111fa0>
-    // <conv.chunks.Comment object at 0x101112030>
+    // init value here
+    // if mario is on the ground, branch
     BEQ(ProcPRun);
     lda(Player_XSpeedAbsolute);
     cmp(0x19);
@@ -7543,11 +7543,11 @@ int X_Physics() {
 }
 
 int ProcPRun() {
-    // <conv.chunks.Comment object at 0x1011122a0>
-    // <conv.chunks.Comment object at 0x1011123c0>
-    // <conv.chunks.Comment object at 0x101112450>
-    // <conv.chunks.Comment object at 0x101112630>
-    // <conv.chunks.Comment object at 0x101112750>
+    // check something that seems to be related
+    // to mario's speed
+    // if =>$19 branch here
+    // if not branch elsewhere
+    // if mario on the ground, increment Y
     iny();
     lda(AreaType);
     BEQ(ChkRFast);
@@ -7556,13 +7556,13 @@ int ProcPRun() {
     cmp(Player_MovingDir);
     BNE(ChkRFast);
     lda(A_B_Buttons);
-    // <conv.chunks.Comment object at 0x101112840>
-    // <conv.chunks.Comment object at 0x101112960>
-    // <conv.chunks.Comment object at 0x101112ab0>
-    // <conv.chunks.Comment object at 0x101112b40>
-    // <conv.chunks.Comment object at 0x101112c60>
-    // <conv.chunks.Comment object at 0x101112d80>
-    // <conv.chunks.Comment object at 0x101112ea0>
+    // check area type
+    // if water type, branch
+    // decrement Y by default for non-water type area
+    // get left/right controller bits
+    // check against moving direction
+    // if controller bits <> moving direction, skip this part
+    // check for b button pressed
     anda(B_Button);
     BNE(SetRTmr);
     lda(RunningTimer);
@@ -7571,16 +7571,16 @@ int ProcPRun() {
 }
 
 int ChkRFast() {
-    // <conv.chunks.Comment object at 0x1011130b0>
-    // <conv.chunks.Comment object at 0x101113200>
-    // <conv.chunks.Comment object at 0x101113320>
-    // <conv.chunks.Comment object at 0x101113470>
+    // if pressed, skip ahead to set timer
+    // check for running timer set
+    // if set, branch
+    // if running timer not set or level type is water,
     iny();
     inc(0x0);
-    // <conv.chunks.Comment object at 0x101113590>
+    // increment Y again and temp variable in memory
     lda(RunningSpeed);
     BNE(FastXSp);
-    // <conv.chunks.Comment object at 0x101113770>
+    // if running speed set here, branch
     lda(Player_XSpeedAbsolute);
     cmp(0x21);
     BCC(GetXPhy);
@@ -7588,24 +7588,24 @@ int ChkRFast() {
 }
 
 int FastXSp() {
-    // <conv.chunks.Comment object at 0x1011139b0>
-    // <conv.chunks.Comment object at 0x101113a40>
-    // <conv.chunks.Comment object at 0x101113c20>
+    // otherwise check player's walking/running speed
+    // if less than a certain amount, branch ahead
+    // if running speed set or speed => $21 increment $00
     inc(0x0);
     JMP(GetXPhy);
     JMP(SetRTmr);
 }
 
 int SetRTmr() {
-    // <conv.chunks.Comment object at 0x101113d40>
-    // <conv.chunks.Comment object at 0x101113ef0>
+    // and jump ahead
+    // if b button pressed, set running timer
     lda(0xa);
     sta(RunningTimer);
     JMP(GetXPhy);
 }
 
 int GetXPhy() {
-    // <conv.chunks.Comment object at 0x1011181a0>
+    // get maximum speed to the left
     lda(offsetof(G, MaxLeftXSpdData), y);
     sta(MaximumLeftSpeed);
     lda(GameEngineSubroutine);
@@ -7616,21 +7616,21 @@ int GetXPhy() {
 }
 
 int GetXPhy2() {
-    // <conv.chunks.Comment object at 0x101118440>
-    // <conv.chunks.Comment object at 0x101118560>
-    // <conv.chunks.Comment object at 0x1011185f0>
-    // <conv.chunks.Comment object at 0x1011187a0>
-    // <conv.chunks.Comment object at 0x101118830>
+    // check for specific routine running
+    // (player entrance)
+    // if not running, skip and use old value of Y
+    // otherwise set Y to 3
+    // get maximum speed to the right
     lda(offsetof(G, MaxRightXSpdData), y);
     sta(MaximumRightSpeed);
     ldy(0x0);
     lda(offsetof(G, FrictionData), y);
-    // <conv.chunks.Comment object at 0x101118b60>
-    // <conv.chunks.Comment object at 0x101118bf0>
+    // get other value in memory
+    // get value using value in memory as offset
     sta(FrictionAdderLow);
     lda(0x0);
     sta(FrictionAdderHigh);
-    // <conv.chunks.Comment object at 0x101118ef0>
+    // init something here
     lda(PlayerFacingDir);
     cmp(Player_MovingDir);
     BEQ(ExitPhy);
@@ -7640,11 +7640,11 @@ int GetXPhy2() {
 }
 
 int ExitPhy() {
-    // <conv.chunks.Comment object at 0x101119190>
-    // <conv.chunks.Comment object at 0x1011192b0>
-    // <conv.chunks.Comment object at 0x101119400>
-    // <conv.chunks.Comment object at 0x101119520>
-    // <conv.chunks.Comment object at 0x101119640>
+    // check facing direction against moving direction
+    // if the same, branch to leave
+    // otherwise shift d7 of friction adder low into carry
+    // then rotate carry onto d0 of friction adder high
+    // and then leave
     return 0;
     JMP(GetPlayerAnimSpeed);
 }
@@ -7662,15 +7662,15 @@ int GetPlayerAnimSpeed() {
 }
 
 int ChkSkid() {
-    // <conv.chunks.Comment object at 0x101119820>
-    // <conv.chunks.Comment object at 0x101119880>
-    // <conv.chunks.Comment object at 0x101119be0>
-    // <conv.chunks.Comment object at 0x101119c70>
-    // <conv.chunks.Comment object at 0x101119e50>
-    // <conv.chunks.Comment object at 0x101119ee0>
-    // <conv.chunks.Comment object at 0x101119f70>
-    // <conv.chunks.Comment object at 0x10111a180>
-    // <conv.chunks.Comment object at 0x10111a210>
+    // initialize offset in Y
+    // check player's walking/running speed
+    // against preset amount
+    // if greater than a certain amount, branch ahead
+    // otherwise increment Y
+    // compare against lower amount
+    // if greater than this but not greater than first, skip increment
+    // otherwise increment Y again
+    // get controller bits
     lda(SavedJoypadBits);
     anda(0b1111111);
     BEQ(SetAnimSpd);
@@ -7682,28 +7682,28 @@ int ChkSkid() {
 }
 
 int SetRunSpd() {
-    // <conv.chunks.Comment object at 0x10111a390>
-    // <conv.chunks.Comment object at 0x10111a4b0>
-    // <conv.chunks.Comment object at 0x10111a5d0>
-    // <conv.chunks.Comment object at 0x10111a660>
-    // <conv.chunks.Comment object at 0x10111a810>
-    // <conv.chunks.Comment object at 0x10111a930>
-    // <conv.chunks.Comment object at 0x10111a9c0>
+    // mask out A button
+    // if no other buttons pressed, branch ahead of all this
+    // mask out all others except left and right
+    // check against moving direction
+    // if left/right controller bits <> moving direction, branch
+    // otherwise set zero value here
+    // store zero or running speed here
     sta(RunningSpeed);
     JMP(SetAnimSpd);
     JMP(ProcSkid);
 }
 
 int ProcSkid() {
-    // <conv.chunks.Comment object at 0x10111ac90>
+    // check player's walking/running speed
     lda(Player_XSpeedAbsolute);
     cmp(0xb);
     BCS(SetAnimSpd);
-    // <conv.chunks.Comment object at 0x10111ade0>
-    // <conv.chunks.Comment object at 0x10111ae70>
+    // against one last amount
+    // if greater than this amount, branch
     lda(PlayerFacingDir);
     sta(Player_MovingDir);
-    // <conv.chunks.Comment object at 0x10111b110>
+    // otherwise use facing direction to set moving direction
     lda(0x0);
     sta(Player_X_Speed);
     sta(Player_X_MoveForce);
@@ -7711,9 +7711,9 @@ int ProcSkid() {
 }
 
 int SetAnimSpd() {
-    // <conv.chunks.Comment object at 0x10111b290>
-    // <conv.chunks.Comment object at 0x10111b440>
-    // <conv.chunks.Comment object at 0x10111b560>
+    // nullify player's horizontal speed
+    // and dummy variable for player
+    // get animation timer setting using Y as offset
     lda(offsetof(G, PlayerAnimTmrData), y);
     sta(PlayerAnimTimerSet);
     return 0;
@@ -7724,9 +7724,9 @@ int ImposeFriction() {
     anda(Player_CollisionBits);
     cmp(0x0);
     BNE(JoypFrict);
-    // <conv.chunks.Comment object at 0x10111b8c0>
-    // <conv.chunks.Comment object at 0x10111b9e0>
-    // <conv.chunks.Comment object at 0x10111ba70>
+    // perform AND between left/right controller bits and collision flag
+    // then compare to zero (this instruction is redundant)
+    // if any bits set, branch to next part
     lda(Player_X_Speed);
     BEQ(SetAbsSpd);
     BPL(RghtFrict);
@@ -7735,24 +7735,24 @@ int ImposeFriction() {
 }
 
 int JoypFrict() {
-    // <conv.chunks.Comment object at 0x10111bd10>
-    // <conv.chunks.Comment object at 0x10111be30>
-    // <conv.chunks.Comment object at 0x10111bf50>
-    // <conv.chunks.Comment object at 0x10112c0b0>
+    // if player has no horizontal speed, branch ahead to last part
+    // if player moving to the right, branch to slow
+    // otherwise logic dictates player moving left, branch to slow
+    // put right controller bit into carry
     lsr();
     BCC(RghtFrict);
     JMP(LeftFrict);
 }
 
 int LeftFrict() {
-    // <conv.chunks.Comment object at 0x10112c1a0>
-    // <conv.chunks.Comment object at 0x10112c2c0>
+    // if left button pressed, carry = 0, thus branch
+    // load value set here
     lda(Player_X_MoveForce);
     clc();
     adc(FrictionAdderLow);
     sta(Player_X_MoveForce);
-    // <conv.chunks.Comment object at 0x10112c4a0>
-    // <conv.chunks.Comment object at 0x10112c5c0>
+    // add to it another value set here
+    // store here
     lda(Player_X_Speed);
     adc(FrictionAdderHigh);
     sta(Player_X_Speed);
@@ -7765,20 +7765,20 @@ int LeftFrict() {
 }
 
 int RghtFrict() {
-    // <conv.chunks.Comment object at 0x10112c7d0>
-    // <conv.chunks.Comment object at 0x10112c8f0>
-    // <conv.chunks.Comment object at 0x10112ca10>
-    // <conv.chunks.Comment object at 0x10112cb30>
-    // <conv.chunks.Comment object at 0x10112cc50>
-    // <conv.chunks.Comment object at 0x10112cd70>
-    // <conv.chunks.Comment object at 0x10112ce90>
-    // <conv.chunks.Comment object at 0x10112cfb0>
+    // add value plus carry to horizontal speed
+    // set as new horizontal speed
+    // compare against maximum value for right movement
+    // if horizontal speed greater negatively, branch
+    // otherwise set preset value as horizontal speed
+    // thus slowing the player's left movement down
+    // skip to the end
+    // load value set here
     lda(Player_X_MoveForce);
     sec();
     sbc(FrictionAdderLow);
     sta(Player_X_MoveForce);
-    // <conv.chunks.Comment object at 0x10112d190>
-    // <conv.chunks.Comment object at 0x10112d2b0>
+    // subtract from it another value set here
+    // store here
     lda(Player_X_Speed);
     sbc(FrictionAdderHigh);
     sta(Player_X_Speed);
@@ -7790,16 +7790,16 @@ int RghtFrict() {
 }
 
 int XSpdSign() {
-    // <conv.chunks.Comment object at 0x10112d4c0>
-    // <conv.chunks.Comment object at 0x10112d5e0>
-    // <conv.chunks.Comment object at 0x10112d700>
-    // <conv.chunks.Comment object at 0x10112d820>
-    // <conv.chunks.Comment object at 0x10112d940>
-    // <conv.chunks.Comment object at 0x10112da60>
-    // <conv.chunks.Comment object at 0x10112db80>
+    // subtract value plus borrow from horizontal speed
+    // set as new horizontal speed
+    // compare against maximum value for left movement
+    // if horizontal speed greater positively, branch
+    // otherwise set preset value as horizontal speed
+    // thus slowing the player's right movement down
+    // if player not moving or moving to the right,
     cmp(0x0);
     BPL(SetAbsSpd);
-    // <conv.chunks.Comment object at 0x10112dc40>
+    // branch and leave horizontal speed value unmodified
     eor(0xff);
     clc();
     adc(0x1);
@@ -7807,9 +7807,9 @@ int XSpdSign() {
 }
 
 int SetAbsSpd() {
-    // <conv.chunks.Comment object at 0x10112df10>
-    // <conv.chunks.Comment object at 0x10112dfa0>
-    // <conv.chunks.Comment object at 0x10112e030>
+    // otherwise get two's compliment to get absolute
+    // unsigned walking/running speed
+    // store walking/running speed here and leave
     sta(Player_XSpeedAbsolute);
     return 0;
     JMP(ProcFireball_Bubble);
@@ -7817,50 +7817,50 @@ int SetAbsSpd() {
 
 int ProcFireball_Bubble() {
     lda(PlayerStatus);
-    // <conv.chunks.Comment object at 0x10112e2d0>
-    // <conv.chunks.Comment object at 0x10112e330>
-    // <conv.chunks.Comment object at 0x10112e390>
+    // $00 - used to store downward movement force in FireballObjCore
+    // $07 - used to store pseudorandom bit in BubbleCheck
+    // check player's status
     cmp(0x2);
     BCC(ProcAirBubbles);
-    // <conv.chunks.Comment object at 0x10112e510>
+    // if not fiery, branch
     lda(A_B_Buttons);
     anda(B_Button);
     BEQ(ProcFireballs);
-    // <conv.chunks.Comment object at 0x10112e7b0>
-    // <conv.chunks.Comment object at 0x10112e8d0>
+    // check for b button pressed
+    // branch if not pressed
     anda(PreviousA_B_Buttons);
     BNE(ProcFireballs);
     lda(FireballCounter);
     anda(0b1);
-    // <conv.chunks.Comment object at 0x10112eae0>
-    // <conv.chunks.Comment object at 0x10112ec00>
-    // <conv.chunks.Comment object at 0x10112ed20>
+    // if button pressed in previous frame, branch
+    // load fireball counter
+    // get LSB and use as offset for buffer
     tax();
     lda(Fireball_State, x);
     BNE(ProcFireballs);
     ldy(Player_Y_HighPos);
-    // <conv.chunks.Comment object at 0x10112eed0>
-    // <conv.chunks.Comment object at 0x10112f020>
-    // <conv.chunks.Comment object at 0x10112f140>
+    // load fireball state
+    // if not inactive, branch
+    // if player too high or too low, branch
     dey();
     BNE(ProcFireballs);
     lda(CrouchingFlag);
-    // <conv.chunks.Comment object at 0x10112f3e0>
+    // if player crouching, branch
     BNE(ProcFireballs);
     lda(Player_State);
-    // <conv.chunks.Comment object at 0x10112f5f0>
+    // if player's state = climbing, branch
     cmp(0x3);
     BEQ(ProcFireballs);
     lda(Sfx_Fireball);
-    // <conv.chunks.Comment object at 0x10112f8f0>
+    // play fireball sound effect
     sta(Square1SoundQueue);
     lda(0x2);
-    // <conv.chunks.Comment object at 0x10112fb00>
+    // load state
     sta(Fireball_State, x);
     ldy(PlayerAnimTimerSet);
     sty(FireballThrowingTimer);
-    // <conv.chunks.Comment object at 0x10112fd40>
-    // <conv.chunks.Comment object at 0x10112fe60>
+    // copy animation frame timer setting
+    // into fireball throwing timer
     dey();
     sty(PlayerAnimTimer);
     inc(FireballCounter);
@@ -7870,7 +7870,7 @@ int ProcFireball_Bubble() {
 int ProcFireballs() {
     ldx(0x0);
     JSR(FireballObjCore);
-    // <conv.chunks.Comment object at 0x101134320>
+    // process first fireball object
     ldx(0x1);
     JSR(FireballObjCore);
     JMP(ProcAirBubbles);
@@ -7878,32 +7878,32 @@ int ProcFireballs() {
 
 int ProcAirBubbles() {
     lda(AreaType);
-    // <conv.chunks.Comment object at 0x101134710>
+    // if not water type level, skip the rest of this
     BNE(BublExit);
     ldx(0x2);
     JMP(BublLoop);
 }
 
 int BublLoop() {
-    // <conv.chunks.Comment object at 0x101134920>
-    // <conv.chunks.Comment object at 0x1011349b0>
+    // otherwise load counter and use as offset
+    // store offset
     stx(ObjectOffset);
     JSR(BubbleCheck);
     JSR(RelativeBubblePosition);
     JSR(GetBubbleOffscreenBits);
     JSR(DrawBubble);
-    // <conv.chunks.Comment object at 0x101134b90>
-    // <conv.chunks.Comment object at 0x101134cb0>
-    // <conv.chunks.Comment object at 0x101134dd0>
-    // <conv.chunks.Comment object at 0x101134ef0>
+    // check timers and coordinates, create air bubble
+    // get relative coordinates
+    // get offscreen information
+    // draw the air bubble
     dex();
     BPL(BublLoop);
     JMP(BublExit);
 }
 
 int BublExit() {
-    // <conv.chunks.Comment object at 0x1011350a0>
-    // <conv.chunks.Comment object at 0x1011351c0>
+    // do this until all three are handled
+    // then leave
     return 0;
     JMP(FireballObjCore);
 }
@@ -7911,42 +7911,42 @@ int BublExit() {
 int FireballObjCore() {
     stx(ObjectOffset);
     lda(Fireball_State, x);
-    // <conv.chunks.Comment object at 0x101135340>
-    // <conv.chunks.Comment object at 0x101135550>
+    // store offset as current object
+    // check for d7 = 1
     asl();
     BCS(FireballExplosion);
     ldy(Fireball_State, x);
-    // <conv.chunks.Comment object at 0x101135730>
-    // <conv.chunks.Comment object at 0x101135850>
+    // if so, branch to get relative coordinates and draw explosion
+    // if fireball inactive, branch to leave
     BEQ(NoFBall);
     dey();
-    // <conv.chunks.Comment object at 0x101135af0>
+    // if fireball state set to 1, skip this part and just run it
     BEQ(RunFB);
     lda(Player_X_Position);
     adc(0x4);
-    // <conv.chunks.Comment object at 0x101135ca0>
-    // <conv.chunks.Comment object at 0x101135dc0>
+    // get player's horizontal position
+    // add four pixels and store as fireball's horizontal position
     sta(Fireball_X_Position, x);
     lda(Player_PageLoc);
     adc(0x0);
-    // <conv.chunks.Comment object at 0x101136000>
-    // <conv.chunks.Comment object at 0x101136120>
+    // get player's page location
+    // add carry and store as fireball's page location
     sta(Fireball_PageLoc, x);
     lda(Player_Y_Position);
-    // <conv.chunks.Comment object at 0x101136360>
+    // get player's vertical position and store
     sta(Fireball_Y_Position, x);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x1011365a0>
+    // set high byte of vertical position
     sta(Fireball_Y_HighPos, x);
     ldy(PlayerFacingDir);
     dey();
     lda(offsetof(G, FireballXSpdData), y);
-    // <conv.chunks.Comment object at 0x1011367e0>
-    // <conv.chunks.Comment object at 0x101136930>
-    // <conv.chunks.Comment object at 0x1011369c0>
+    // get player's facing direction
+    // decrement to use as offset here
+    // set horizontal speed of fireball accordingly
     sta(Fireball_X_Speed, x);
     lda(0x4);
-    // <conv.chunks.Comment object at 0x101136c30>
+    // set vertical speed of fireball
     sta(Fireball_Y_Speed, x);
     lda(0x7);
     sta(Fireball_BoundBoxCtrl, x);
@@ -7955,19 +7955,19 @@ int FireballObjCore() {
 }
 
 int RunFB() {
-    // <conv.chunks.Comment object at 0x101136ed0>
-    // <conv.chunks.Comment object at 0x1011370b0>
-    // <conv.chunks.Comment object at 0x101137200>
+    // set bounding box size control for fireball
+    // decrement state to 1 to skip this part from now on
+    // add 7 to offset to use
     txa();
     clc();
-    // <conv.chunks.Comment object at 0x101137350>
+    // as fireball offset for next routines
     adc(0x7);
     tax();
     lda(0x50);
-    // <conv.chunks.Comment object at 0x101137560>
+    // set downward movement force here
     sta(0x0);
     lda(0x3);
-    // <conv.chunks.Comment object at 0x1011375f0>
+    // set maximum speed here
     sta(0x2);
     lda(0x0);
     JSR(ImposeGravity);
@@ -7986,26 +7986,26 @@ int RunFB() {
 }
 
 int EraseFB() {
-    // <conv.chunks.Comment object at 0x1011379e0>
-    // <conv.chunks.Comment object at 0x101137b90>
-    // <conv.chunks.Comment object at 0x101137cb0>
-    // <conv.chunks.Comment object at 0x101137dd0>
-    // <conv.chunks.Comment object at 0x101137ef0>
-    // <conv.chunks.Comment object at 0x10113c050>
-    // <conv.chunks.Comment object at 0x10113c170>
-    // <conv.chunks.Comment object at 0x10113c290>
-    // <conv.chunks.Comment object at 0x10113c3b0>
-    // <conv.chunks.Comment object at 0x10113c4d0>
-    // <conv.chunks.Comment object at 0x10113c620>
-    // <conv.chunks.Comment object at 0x10113c740>
-    // <conv.chunks.Comment object at 0x10113c860>
+    // do sub here to impose gravity on fireball and move vertically
+    // do another sub to move it horizontally
+    // return fireball offset to X
+    // get relative coordinates
+    // get offscreen information
+    // get bounding box coordinates
+    // do fireball to background collision detection
+    // get fireball offscreen bits
+    // mask out certain bits
+    // if any bits still set, branch to kill fireball
+    // do fireball to enemy collision detection and deal with collisions
+    // draw fireball appropriately and leave
+    // erase fireball state
     lda(0x0);
     sta(Fireball_State, x);
     JMP(NoFBall);
 }
 
 int NoFBall() {
-    // <conv.chunks.Comment object at 0x10113cb30>
+    // leave
     return 0;
     JMP(FireballExplosion);
 }
@@ -8018,7 +8018,7 @@ int FireballExplosion() {
 
 int BubbleCheck() {
     lda(((PseudoRandomBitReg) + (1)), x);
-    // <conv.chunks.Comment object at 0x10113ce90>
+    // get part of LSFR
     anda(0x1);
     sta(0x7);
     lda(Bubble_Y_Position, x);
@@ -8039,28 +8039,28 @@ int SetupBubble() {
 }
 
 int PosBubl() {
-    // <conv.chunks.Comment object at 0x10113d8b0>
-    // <conv.chunks.Comment object at 0x10113d940>
-    // <conv.chunks.Comment object at 0x10113db20>
-    // <conv.chunks.Comment object at 0x10113dbb0>
-    // <conv.chunks.Comment object at 0x10113dd00>
-    // <conv.chunks.Comment object at 0x10113dd90>
+    // load default value here
+    // get player's facing direction
+    // move d0 to carry
+    // branch to use default value if facing left
+    // otherwise load alternate value here
+    // use value loaded as adder
     tya();
     adc(Player_X_Position);
     sta(Bubble_X_Position, x);
-    // <conv.chunks.Comment object at 0x10113df40>
-    // <conv.chunks.Comment object at 0x10113e060>
+    // add to player's horizontal position
+    // save as horizontal position for airbubble
     lda(Player_PageLoc);
     adc(0x0);
     sta(Bubble_PageLoc, x);
-    // <conv.chunks.Comment object at 0x10113e2a0>
-    // <conv.chunks.Comment object at 0x10113e330>
+    // add carry to player's page location
+    // save as page location for airbubble
     lda(Player_Y_Position);
     clc();
-    // <conv.chunks.Comment object at 0x10113e630>
+    // add eight pixels to player's vertical position
     adc(0x8);
     sta(Bubble_Y_Position, x);
-    // <conv.chunks.Comment object at 0x10113e720>
+    // save as vertical position for air bubble
     lda(0x1);
     sta(Bubble_Y_HighPos, x);
     ldy(0x7);
@@ -8070,18 +8070,18 @@ int PosBubl() {
 }
 
 int MoveBubl() {
-    // <conv.chunks.Comment object at 0x10113e960>
-    // <conv.chunks.Comment object at 0x10113eb70>
-    // <conv.chunks.Comment object at 0x10113ec00>
-    // <conv.chunks.Comment object at 0x10113edb0>
-    // <conv.chunks.Comment object at 0x10113eed0>
+    // set vertical high byte for air bubble
+    // get pseudorandom bit, use as offset
+    // get data for air bubble timer
+    // set air bubble timer
+    // get pseudorandom bit again, use as offset
     ldy(0x7);
     lda(Bubble_YMF_Dummy, x);
     sec();
-    // <conv.chunks.Comment object at 0x10113f170>
+    // subtract pseudorandom amount from dummy variable
     sbc(offsetof(G, Bubble_MForceData), y);
     sta(Bubble_YMF_Dummy, x);
-    // <conv.chunks.Comment object at 0x10113f320>
+    // save dummy variable
     lda(Bubble_Y_Position, x);
     sbc(0x0);
     cmp(0x20);
@@ -8091,17 +8091,17 @@ int MoveBubl() {
 }
 
 int Y_Bubl() {
-    // <conv.chunks.Comment object at 0x10113f590>
-    // <conv.chunks.Comment object at 0x10113f620>
-    // <conv.chunks.Comment object at 0x10113f740>
-    // <conv.chunks.Comment object at 0x10113f920>
-    // <conv.chunks.Comment object at 0x10113f9b0>
+    // subtract borrow from airbubble's vertical coordinate
+    // if below the status bar,
+    // branch to go ahead and use to move air bubble upwards
+    // otherwise set offscreen coordinate
+    // store as new vertical coordinate for air bubble
     sta(Bubble_Y_Position, x);
     JMP(ExitBubl);
 }
 
 int ExitBubl() {
-    // <conv.chunks.Comment object at 0x10113fc20>
+    // leave
     return 0;
     JMP(RunGameTimer);
 }
@@ -8109,57 +8109,57 @@ int ExitBubl() {
 int RunGameTimer() {
     lda(OperMode);
     BEQ(ExGTimer);
-    // <conv.chunks.Comment object at 0x10113fda0>
-    // <conv.chunks.Comment object at 0x101148170>
+    // get primary mode of operation
+    // branch to leave if in title screen mode
     lda(GameEngineSubroutine);
     cmp(0x8);
     BCC(ExGTimer);
     cmp(0xb);
     BEQ(ExGTimer);
-    // <conv.chunks.Comment object at 0x101148380>
-    // <conv.chunks.Comment object at 0x101148410>
-    // <conv.chunks.Comment object at 0x1011485c0>
-    // <conv.chunks.Comment object at 0x101148650>
+    // if routine number less than eight running,
+    // branch to leave
+    // if running death routine,
+    // branch to leave
     lda(Player_Y_HighPos);
     cmp(0x2);
     BCS(ExGTimer);
     lda(GameTimerCtrlTimer);
     BNE(ExGTimer);
-    // <conv.chunks.Comment object at 0x1011488f0>
-    // <conv.chunks.Comment object at 0x101148980>
-    // <conv.chunks.Comment object at 0x101148b30>
-    // <conv.chunks.Comment object at 0x101148c50>
+    // if player below the screen,
+    // branch to leave regardless of level type
+    // if game timer control not yet expired,
+    // branch to leave
     lda(GameTimerDisplay);
     ora(((GameTimerDisplay) + (1)));
-    // <conv.chunks.Comment object at 0x101148e60>
+    // otherwise check game timer digits
     ora(((GameTimerDisplay) + (2)));
     BEQ(TimeUpOn);
     ldy(GameTimerDisplay);
     dey();
     BNE(ResGTCtrl);
     lda(((GameTimerDisplay) + (1)));
-    // <conv.chunks.Comment object at 0x1011491f0>
-    // <conv.chunks.Comment object at 0x101149310>
-    // <conv.chunks.Comment object at 0x101149460>
-    // <conv.chunks.Comment object at 0x1011494f0>
-    // <conv.chunks.Comment object at 0x101149610>
+    // if game timer digits at 000, branch to time-up code
+    // otherwise check first digit
+    // if first digit not on 1,
+    // branch to reset game timer control
+    // otherwise check second and third digits
     ora(((GameTimerDisplay) + (2)));
     BNE(ResGTCtrl);
-    // <conv.chunks.Comment object at 0x1011499a0>
+    // if timer not at 100, branch to reset game timer control
     lda(TimeRunningOutMusic);
     sta(EventMusicQueue);
     JMP(ResGTCtrl);
 }
 
 int ResGTCtrl() {
-    // <conv.chunks.Comment object at 0x101149bb0>
-    // <conv.chunks.Comment object at 0x101149cd0>
+    // otherwise load time running out music
+    // reset game timer control
     lda(0x18);
     sta(GameTimerCtrlTimer);
     ldy(0x23);
     lda(0xff);
-    // <conv.chunks.Comment object at 0x101149f10>
-    // <conv.chunks.Comment object at 0x101149fa0>
+    // set offset for last digit
+    // set value to decrement game timer digit
     sta(((DigitModifier) + (5)));
     JSR(DigitsMathRoutine);
     lda(0xa4);
@@ -8168,10 +8168,10 @@ int ResGTCtrl() {
 }
 
 int TimeUpOn() {
-    // <conv.chunks.Comment object at 0x10114a300>
-    // <conv.chunks.Comment object at 0x10114a420>
-    // <conv.chunks.Comment object at 0x10114a4b0>
-    // <conv.chunks.Comment object at 0x10114a660>
+    // do sub to decrement game timer slowly
+    // set status nybbles to update game timer display
+    // do sub to update the display
+    // init player status (note A will always be zero here)
     sta(PlayerStatus);
     JSR(ForceInjury);
     inc(GameTimerExpiredFlag);
@@ -8179,9 +8179,9 @@ int TimeUpOn() {
 }
 
 int ExGTimer() {
-    // <conv.chunks.Comment object at 0x10114a7b0>
-    // <conv.chunks.Comment object at 0x10114a8d0>
-    // <conv.chunks.Comment object at 0x10114aa20>
+    // do sub to kill the player (note player is small here)
+    // set game timer expiration flag
+    // leave
     return 0;
     JMP(WarpZoneObject);
 }
@@ -8209,13 +8209,13 @@ int ProcessWhirlpools() {
 }
 
 int WhLoop() {
-    // <conv.chunks.Comment object at 0x10114b5f0>
-    // <conv.chunks.Comment object at 0x10114b710>
-    // <conv.chunks.Comment object at 0x10114b860>
-    // <conv.chunks.Comment object at 0x10114b980>
-    // <conv.chunks.Comment object at 0x10114baa0>
-    // <conv.chunks.Comment object at 0x10114bbf0>
-    // <conv.chunks.Comment object at 0x10114bc80>
+    // check for water type level
+    // branch to leave if not found
+    // otherwise initialize whirlpool flag
+    // if master timer control set,
+    // branch to leave
+    // otherwise start with last whirlpool data
+    // get left extent of whirlpool
     lda(Whirlpool_LeftExtent, y);
     clc();
     adc(Whirlpool_Length, y);
@@ -8225,24 +8225,24 @@ int WhLoop() {
     adc(0x0);
     sta(0x1);
     lda(Player_X_Position);
-    // <conv.chunks.Comment object at 0x10114bf50>
-    // <conv.chunks.Comment object at 0x101154110>
-    // <conv.chunks.Comment object at 0x1011541a0>
-    // <conv.chunks.Comment object at 0x101154350>
-    // <conv.chunks.Comment object at 0x1011544a0>
-    // <conv.chunks.Comment object at 0x1011545f0>
-    // <conv.chunks.Comment object at 0x101154680>
+    // add length of whirlpool
+    // store result as right extent here
+    // get page location
+    // if none or page 0, branch to get next data
+    // add carry
+    // store result as page location of right extent here
+    // get player's horizontal position
     sec();
     sbc(Whirlpool_LeftExtent, y);
     lda(Player_PageLoc);
     sbc(Whirlpool_PageLoc, y);
     BMI(NextWh);
     lda(0x2);
-    // <conv.chunks.Comment object at 0x101154890>
-    // <conv.chunks.Comment object at 0x1011549e0>
-    // <conv.chunks.Comment object at 0x101154b00>
-    // <conv.chunks.Comment object at 0x101154c50>
-    // <conv.chunks.Comment object at 0x101154dd0>
+    // subtract left extent
+    // get player's page location
+    // subtract borrow
+    // if player too far left, branch to get next data
+    // otherwise get right extent
     sec();
     sbc(Player_X_Position);
     lda(0x1);
@@ -8252,19 +8252,19 @@ int WhLoop() {
 }
 
 int NextWh() {
-    // <conv.chunks.Comment object at 0x101154f50>
-    // <conv.chunks.Comment object at 0x1011550a0>
-    // <conv.chunks.Comment object at 0x101155130>
-    // <conv.chunks.Comment object at 0x1011552b0>
-    // <conv.chunks.Comment object at 0x1011553d0>
+    // subtract player's horizontal coordinate
+    // get right extent's page location
+    // subtract borrow
+    // if player within right extent, branch to whirlpool code
+    // move onto next whirlpool data
     dey();
     BPL(WhLoop);
     JMP(ExitWh);
 }
 
 int ExitWh() {
-    // <conv.chunks.Comment object at 0x1011554f0>
-    // <conv.chunks.Comment object at 0x101155670>
+    // do this until all whirlpools are checked
+    // leave
     return 0;
     JMP(WhirlpoolActivate);
 }
@@ -8274,10 +8274,10 @@ int WhirlpoolActivate() {
     lsr();
     sta(0x0);
     lda(Whirlpool_LeftExtent, y);
-    // <conv.chunks.Comment object at 0x1011557c0>
-    // <conv.chunks.Comment object at 0x101155940>
-    // <conv.chunks.Comment object at 0x101155a00>
-    // <conv.chunks.Comment object at 0x101155a90>
+    // get length of whirlpool
+    // divide by 2
+    // save here
+    // get left extent of whirlpool
     clc();
     adc(0x0);
     sta(0x1);
@@ -8288,31 +8288,31 @@ int WhirlpoolActivate() {
     lsr();
     BCC(WhPull);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x101155d00>
-    // <conv.chunks.Comment object at 0x101155cd0>
-    // <conv.chunks.Comment object at 0x101155eb0>
-    // <conv.chunks.Comment object at 0x101156060>
-    // <conv.chunks.Comment object at 0x1011561b0>
-    // <conv.chunks.Comment object at 0x101156240>
-    // <conv.chunks.Comment object at 0x1011563f0>
-    // <conv.chunks.Comment object at 0x101156480>
-    // <conv.chunks.Comment object at 0x101156600>
+    // add length divided by 2
+    // save as center of whirlpool
+    // get page location
+    // add carry
+    // save as page location of whirlpool center
+    // get frame counter
+    // shift d0 into carry (to run on every other frame)
+    // if d0 not set, branch to last part of code
+    // get center
     sec();
     sbc(Player_X_Position);
     lda(0x0);
     sbc(Player_PageLoc);
     BPL(LeftWh);
     lda(Player_X_Position);
-    // <conv.chunks.Comment object at 0x101156780>
-    // <conv.chunks.Comment object at 0x1011568d0>
-    // <conv.chunks.Comment object at 0x101156960>
-    // <conv.chunks.Comment object at 0x101156ae0>
-    // <conv.chunks.Comment object at 0x101156c30>
+    // subtract player's horizontal coordinate
+    // get page location of center
+    // subtract borrow
+    // if player to the left of center, branch
+    // otherwise slowly pull player left, towards the center
     sec();
     sbc(0x1);
     sta(Player_X_Position);
-    // <conv.chunks.Comment object at 0x101156de0>
-    // <conv.chunks.Comment object at 0x101156e70>
+    // subtract one pixel
+    // set player's new horizontal coordinate
     lda(Player_PageLoc);
     sbc(0x0);
     JMP(SetPWh);
@@ -8320,29 +8320,29 @@ int WhirlpoolActivate() {
 }
 
 int LeftWh() {
-    // <conv.chunks.Comment object at 0x101157110>
-    // <conv.chunks.Comment object at 0x1011571a0>
-    // <conv.chunks.Comment object at 0x101157380>
+    // subtract borrow
+    // jump to set player's new page location
+    // get player's collision bits
     lda(Player_CollisionBits);
     lsr();
     BCC(WhPull);
     lda(Player_X_Position);
-    // <conv.chunks.Comment object at 0x101157530>
-    // <conv.chunks.Comment object at 0x1011575c0>
-    // <conv.chunks.Comment object at 0x101157710>
+    // shift d0 into carry
+    // if d0 not set, branch
+    // otherwise slowly pull player right, towards the center
     clc();
     adc(0x1);
     sta(Player_X_Position);
-    // <conv.chunks.Comment object at 0x1011578c0>
-    // <conv.chunks.Comment object at 0x101157950>
+    // add one pixel
+    // set player's new horizontal coordinate
     lda(Player_PageLoc);
     adc(0x0);
     JMP(SetPWh);
 }
 
 int SetPWh() {
-    // <conv.chunks.Comment object at 0x101157bf0>
-    // <conv.chunks.Comment object at 0x101157c80>
+    // add carry
+    // set player's new page location
     sta(Player_PageLoc);
     JMP(WhPull);
 }
@@ -8350,12 +8350,12 @@ int SetPWh() {
 int WhPull() {
     lda(0x10);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x10115c050>
+    // set vertical movement force
     lda(0x1);
     sta(Whirlpool_Flag);
     sta(0x2);
-    // <conv.chunks.Comment object at 0x10115c1a0>
-    // <conv.chunks.Comment object at 0x10115c380>
+    // set whirlpool flag to be used later
+    // also set maximum vertical speed
     lsr();
     tax();
     JMP(ImposeGravity);
@@ -8365,18 +8365,18 @@ int WhPull() {
 int FlagpoleRoutine() {
     ldx(0x5);
     stx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x10115c800>
-    // <conv.chunks.Comment object at 0x10115c860>
+    // set enemy object offset
+    // to special use slot
     lda(Enemy_ID, x);
     cmp(FlagpoleFlagObject);
     BNE(ExitFlagP);
-    // <conv.chunks.Comment object at 0x10115d0a0>
-    // <conv.chunks.Comment object at 0x10115d1c0>
+    // if flagpole flag not found,
+    // branch to leave
     lda(GameEngineSubroutine);
     cmp(0x4);
     BNE(SkipScore);
-    // <conv.chunks.Comment object at 0x10115d3d0>
-    // <conv.chunks.Comment object at 0x10115d460>
+    // if flagpole slide routine not running,
+    // branch to near the end of code
     lda(Player_State);
     cmp(0x3);
     BNE(SkipScore);
@@ -8386,31 +8386,31 @@ int FlagpoleRoutine() {
     lda(Player_Y_Position);
     cmp(0xa2);
     BCS(GiveFPScr);
-    // <conv.chunks.Comment object at 0x10115d700>
-    // <conv.chunks.Comment object at 0x10115d790>
-    // <conv.chunks.Comment object at 0x10115d940>
-    // <conv.chunks.Comment object at 0x10115da90>
-    // <conv.chunks.Comment object at 0x10115db20>
-    // <conv.chunks.Comment object at 0x10115dcd0>
-    // <conv.chunks.Comment object at 0x10115ddf0>
-    // <conv.chunks.Comment object at 0x10115de80>
+    // if player state not climbing,
+    // branch to near the end of code
+    // check flagpole flag's vertical coordinate
+    // if flagpole flag down to a certain point,
+    // branch to end the level
+    // check player's vertical coordinate
+    // if player down to a certain point,
+    // branch to end the level
     lda(Enemy_YMF_Dummy, x);
     adc(0xff);
     sta(Enemy_YMF_Dummy, x);
     lda(Enemy_Y_Position, x);
     adc(0x1);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x10115e150>
-    // <conv.chunks.Comment object at 0x10115e1e0>
-    // <conv.chunks.Comment object at 0x10115e3c0>
-    // <conv.chunks.Comment object at 0x10115e510>
-    // <conv.chunks.Comment object at 0x10115e5a0>
+    // add movement amount to dummy variable
+    // save dummy variable
+    // get flag's vertical coordinate
+    // add 1 plus carry to move flag, and
+    // store vertical coordinate
     lda(FlagpoleFNum_YMFDummy);
     sec();
-    // <conv.chunks.Comment object at 0x10115e8a0>
+    // subtract movement amount from dummy variable
     sbc(0xff);
     sta(FlagpoleFNum_YMFDummy);
-    // <conv.chunks.Comment object at 0x10115e990>
+    // save dummy variable
     lda(FlagpoleFNum_Y_Pos);
     sbc(0x1);
     sta(FlagpoleFNum_Y_Pos);
@@ -8418,32 +8418,32 @@ int FlagpoleRoutine() {
 }
 
 int SkipScore() {
-    // <conv.chunks.Comment object at 0x10115ec30>
-    // <conv.chunks.Comment object at 0x10115ecc0>
-    // <conv.chunks.Comment object at 0x10115ee70>
+    // subtract one plus borrow to move floatey number,
+    // and store vertical coordinate here
+    // jump to skip ahead and draw flag and floatey number
     JMP(FPGfx);
     JMP(GiveFPScr);
 }
 
 int GiveFPScr() {
-    // <conv.chunks.Comment object at 0x10115eff0>
+    // get score offset from earlier (when player touched flagpole)
     ldy(FlagpoleScore);
     lda(offsetof(G, FlagpoleScoreMods), y);
     ldx(offsetof(G, FlagpoleScoreDigits), y);
     sta(DigitModifier, x);
     JSR(AddToScore);
-    // <conv.chunks.Comment object at 0x10115f140>
-    // <conv.chunks.Comment object at 0x10115f290>
-    // <conv.chunks.Comment object at 0x10115f3e0>
-    // <conv.chunks.Comment object at 0x10115f530>
+    // get amount to award player points
+    // get digit with which to award points
+    // store in digit modifier
+    // do sub to award player points depending on height of collision
     lda(0x5);
     sta(GameEngineSubroutine);
     JMP(FPGfx);
 }
 
 int FPGfx() {
-    // <conv.chunks.Comment object at 0x10115f6b0>
-    // <conv.chunks.Comment object at 0x10115f860>
+    // set to run end-of-level subroutine on next frame
+    // get offscreen information
     JSR(GetEnemyOffscreenBits);
     JSR(RelativeEnemyPosition);
     JSR(FlagpoleGfxHandler);
@@ -8461,20 +8461,20 @@ int JumpspringHandler() {
     BNE(DrawJSpr);
     lda(JumpspringAnimCtrl);
     BEQ(DrawJSpr);
-    // <conv.chunks.Comment object at 0x10115fda0>
-    // <conv.chunks.Comment object at 0x101168110>
-    // <conv.chunks.Comment object at 0x101168230>
-    // <conv.chunks.Comment object at 0x101168350>
-    // <conv.chunks.Comment object at 0x101168470>
+    // get offscreen information
+    // check master timer control
+    // branch to last section if set
+    // check jumpspring frame control
+    // branch to last section if not set
     tay();
     dey();
     tya();
     anda(0b10);
     BNE(DownJSpr);
-    // <conv.chunks.Comment object at 0x101168650>
-    // <conv.chunks.Comment object at 0x101168710>
-    // <conv.chunks.Comment object at 0x1011687a0>
-    // <conv.chunks.Comment object at 0x1011688c0>
+    // subtract one from frame control,
+    // the only way a poor nmos 6502 can
+    // mask out all but d1, original value still in Y
+    // if set, branch to move player up
     inc(Player_Y_Position);
     inc(Player_Y_Position);
     JMP(PosJSpr);
@@ -8482,69 +8482,69 @@ int JumpspringHandler() {
 }
 
 int DownJSpr() {
-    // <conv.chunks.Comment object at 0x101168ad0>
-    // <conv.chunks.Comment object at 0x101168bf0>
-    // <conv.chunks.Comment object at 0x101168d40>
+    // move player's vertical position down two pixels
+    // skip to next part
+    // move player's vertical position up two pixels
     dec(Player_Y_Position);
     dec(Player_Y_Position);
     JMP(PosJSpr);
 }
 
 int PosJSpr() {
-    // <conv.chunks.Comment object at 0x101168f80>
+    // get permanent vertical position
     lda(Jumpspring_FixedYPos, x);
     clc();
     adc(offsetof(G, Jumpspring_Y_PosData), y);
     sta(Enemy_Y_Position, x);
     cpy(0x1);
     BCC(BounceJS);
-    // <conv.chunks.Comment object at 0x1011691c0>
-    // <conv.chunks.Comment object at 0x101169310>
-    // <conv.chunks.Comment object at 0x101169460>
-    // <conv.chunks.Comment object at 0x1011694f0>
+    // add value using frame control as offset
+    // store as new vertical position
+    // check frame control offset (second frame is $00)
+    // if offset not yet at third frame ($01), skip to next part
     lda(A_B_Buttons);
     anda(A_Button);
     BEQ(BounceJS);
     anda(PreviousA_B_Buttons);
     BNE(BounceJS);
-    // <conv.chunks.Comment object at 0x101169790>
-    // <conv.chunks.Comment object at 0x1011698b0>
-    // <conv.chunks.Comment object at 0x1011699d0>
-    // <conv.chunks.Comment object at 0x101169af0>
+    // check saved controller bits for A button press
+    // skip to next part if A not pressed
+    // check for A button pressed in previous frame
+    // skip to next part if so
     lda(0xf4);
     sta(JumpspringForce);
     JMP(BounceJS);
 }
 
 int BounceJS() {
-    // <conv.chunks.Comment object at 0x101169c70>
-    // <conv.chunks.Comment object at 0x101169e20>
+    // otherwise write new jumpspring force here
+    // check frame control offset again
     cpy(0x3);
     BNE(DrawJSpr);
-    // <conv.chunks.Comment object at 0x101169ee0>
+    // skip to last part if not yet at fifth frame ($03)
     lda(JumpspringForce);
     sta(Player_Y_Speed);
-    // <conv.chunks.Comment object at 0x10116a180>
+    // store jumpspring force as player's new vertical speed
     lda(0x0);
     sta(JumpspringAnimCtrl);
     JMP(DrawJSpr);
 }
 
 int DrawJSpr() {
-    // <conv.chunks.Comment object at 0x10116a300>
-    // <conv.chunks.Comment object at 0x10116a4b0>
+    // initialize jumpspring frame control
+    // get jumpspring's relative coordinates
     JSR(RelativeEnemyPosition);
     JSR(EnemyGfxHandler);
     JSR(OffscreenBoundsCheck);
     lda(JumpspringAnimCtrl);
     BEQ(ExJSpring);
-    // <conv.chunks.Comment object at 0x10116a600>
-    // <conv.chunks.Comment object at 0x10116a720>
-    // <conv.chunks.Comment object at 0x10116a840>
-    // <conv.chunks.Comment object at 0x10116a960>
+    // draw jumpspring
+    // check to see if we need to kill it
+    // if frame control at zero, don't bother
+    // trying to animate it, just leave
     lda(JumpspringTimer);
     BNE(ExJSpring);
-    // <conv.chunks.Comment object at 0x10116ab70>
+    // if jumpspring timer not expired yet, leave
     lda(0x4);
     sta(JumpspringTimer);
     inc(JumpspringAnimCtrl);
@@ -8552,9 +8552,9 @@ int DrawJSpr() {
 }
 
 int ExJSpring() {
-    // <conv.chunks.Comment object at 0x10116acf0>
-    // <conv.chunks.Comment object at 0x10116aea0>
-    // <conv.chunks.Comment object at 0x10116aff0>
+    // otherwise initialize jumpspring timer
+    // increment frame control to animate jumpspring
+    // leave
     return 0;
     JMP(Setup_Vine);
 }
@@ -8562,17 +8562,17 @@ int ExJSpring() {
 int Setup_Vine() {
     lda(VineObject);
     sta(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x10116b140>
-    // <conv.chunks.Comment object at 0x10116b260>
+    // load identifier for vine object
+    // store in buffer
     lda(0x1);
     sta(Enemy_Flag, x);
-    // <conv.chunks.Comment object at 0x10116b410>
+    // set flag for enemy object buffer
     lda(Block_PageLoc, y);
     sta(Enemy_PageLoc, x);
-    // <conv.chunks.Comment object at 0x10116b710>
+    // copy page location from previous object
     lda(Block_X_Position, y);
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x10116b980>
+    // copy horizontal coordinate from previous object
     lda(Block_Y_Position, y);
     sta(Enemy_Y_Position, x);
     ldy(VineFlagOffset);
@@ -8582,19 +8582,19 @@ int Setup_Vine() {
 }
 
 int NextVO() {
-    // <conv.chunks.Comment object at 0x10116bbf0>
-    // <conv.chunks.Comment object at 0x10116bd40>
-    // <conv.chunks.Comment object at 0x10116be60>
-    // <conv.chunks.Comment object at 0x10116bfb0>
-    // <conv.chunks.Comment object at 0x101174110>
+    // copy vertical coordinate from previous object
+    // load vine flag/offset to next available vine slot
+    // if set at all, don't bother to store vertical
+    // otherwise store vertical coordinate here
+    // store object offset to next available vine slot
     txa();
     sta(VineObjOffset, y);
     inc(VineFlagOffset);
-    // <conv.chunks.Comment object at 0x101174230>
-    // <conv.chunks.Comment object at 0x101174380>
+    // using vine flag as offset
+    // increment vine flag offset
     lda(Sfx_GrowVine);
     sta(Square2SoundQueue);
-    // <conv.chunks.Comment object at 0x101174590>
+    // load vine grow sound
     return 0;
     JMP(VineObjectHandler);
 }
@@ -8602,23 +8602,23 @@ int NextVO() {
 int VineObjectHandler() {
     cpx(0x5);
     BNE(ExitVH);
-    // <conv.chunks.Comment object at 0x101174860>
-    // <conv.chunks.Comment object at 0x1011749e0>
+    // check enemy offset for special use slot
+    // if not in last slot, branch to leave
     ldy(VineFlagOffset);
     dey();
-    // <conv.chunks.Comment object at 0x101174ce0>
+    // decrement vine flag in Y, use as offset
     lda(VineHeight);
     cmp(offsetof(G, VineHeightData), y);
     BEQ(RunVSubs);
     lda(FrameCounter);
     lsr();
-    // <conv.chunks.Comment object at 0x101174e60>
-    // <conv.chunks.Comment object at 0x101174fb0>
-    // <conv.chunks.Comment object at 0x1011750d0>
-    // <conv.chunks.Comment object at 0x101175220>
+    // if vine has reached certain height,
+    // branch ahead to skip this part
+    // get frame counter
+    // shift d1 into carry
     lsr();
     BCC(RunVSubs);
-    // <conv.chunks.Comment object at 0x101175340>
+    // if d1 not set (2 frames every 4) skip this part
     lda(((Enemy_Y_Position) + (5)));
     sbc(0x1);
     sta(((Enemy_Y_Position) + (5)));
@@ -8627,13 +8627,13 @@ int VineObjectHandler() {
 }
 
 int RunVSubs() {
-    // <conv.chunks.Comment object at 0x101175610>
-    // <conv.chunks.Comment object at 0x1011756a0>
-    // <conv.chunks.Comment object at 0x101175910>
-    // <conv.chunks.Comment object at 0x101175a30>
+    // subtract vertical position of vine
+    // one pixel every frame it's time
+    // increment vine height
+    // if vine still very small,
     lda(VineHeight);
     cmp(0x8);
-    // <conv.chunks.Comment object at 0x101175b80>
+    // branch to leave
     BCC(ExitVH);
     JSR(RelativeEnemyPosition);
     JSR(GetEnemyOffscreenBits);
@@ -8642,17 +8642,17 @@ int RunVSubs() {
 }
 
 int VDrawLoop() {
-    // <conv.chunks.Comment object at 0x101175dc0>
-    // <conv.chunks.Comment object at 0x101175ee0>
-    // <conv.chunks.Comment object at 0x101176000>
-    // <conv.chunks.Comment object at 0x101176090>
+    // get relative coordinates of vine,
+    // and any offscreen bits
+    // initialize offset used in draw vine sub
+    // draw vine
     JSR(DrawVine);
     iny();
     cpy(VineFlagOffset);
     BNE(VDrawLoop);
-    // <conv.chunks.Comment object at 0x1011762a0>
-    // <conv.chunks.Comment object at 0x101176330>
-    // <conv.chunks.Comment object at 0x101176450>
+    // increment offset
+    // if offset in Y and offset here
+    // do not yet match, loop back to draw more vine
     lda(Enemy_OffscreenBits);
     anda(0b1100);
     BEQ(WrCMTile);
@@ -8661,10 +8661,10 @@ int VDrawLoop() {
 }
 
 int KillVine() {
-    // <conv.chunks.Comment object at 0x101176660>
-    // <conv.chunks.Comment object at 0x101176780>
-    // <conv.chunks.Comment object at 0x1011768d0>
-    // <conv.chunks.Comment object at 0x101176960>
+    // mask offscreen bits
+    // if none of the saved offscreen bits set, skip ahead
+    // otherwise decrement Y to get proper offset again
+    // get enemy object offset for this vine object
     ldx(VineObjOffset, y);
     JSR(EraseEnemyObject);
     dey();
@@ -8675,12 +8675,12 @@ int KillVine() {
 }
 
 int WrCMTile() {
-    // <conv.chunks.Comment object at 0x101176ae0>
-    // <conv.chunks.Comment object at 0x101176c30>
-    // <conv.chunks.Comment object at 0x101176cc0>
-    // <conv.chunks.Comment object at 0x101176de0>
-    // <conv.chunks.Comment object at 0x101176f00>
-    // <conv.chunks.Comment object at 0x101177020>
+    // kill this vine object
+    // decrement Y
+    // if any vine objects left, loop back to kill it
+    // initialize vine flag/offset
+    // initialize vine height
+    // check vine height
     lda(VineHeight);
     cmp(0x20);
     BCC(ExitVH);
@@ -8688,29 +8688,29 @@ int WrCMTile() {
     lda(0x1);
     ldy(0x1b);
     JSR(BlockBufferCollision);
-    // <conv.chunks.Comment object at 0x101177170>
-    // <conv.chunks.Comment object at 0x101177200>
-    // <conv.chunks.Comment object at 0x1011773e0>
-    // <conv.chunks.Comment object at 0x101177470>
-    // <conv.chunks.Comment object at 0x101177590>
-    // <conv.chunks.Comment object at 0x1011776b0>
+    // if vine small (less than 32 pixels tall)
+    // then branch ahead to leave
+    // set offset in X to last enemy slot
+    // set A to obtain horizontal in $04, but we don't care
+    // set Y to offset to get block at ($04, $10) of coordinates
+    // do a sub to get block buffer address set, return contents
     ldy(0x2);
     cpy(0xd0);
     BCS(ExitVH);
     lda((0x6), y);
     BNE(ExitVH);
-    // <conv.chunks.Comment object at 0x101177860>
-    // <conv.chunks.Comment object at 0x1011779e0>
-    // <conv.chunks.Comment object at 0x101177bc0>
-    // <conv.chunks.Comment object at 0x101177c20>
+    // if vertical high nybble offset beyond extent of
+    // current block buffer, branch to leave, do not write
+    // otherwise check contents of block buffer at
+    // current offset, if not empty, branch to leave
     lda(0x26);
     sta((0x6), y);
     JMP(ExitVH);
 }
 
 int ExitVH() {
-    // <conv.chunks.Comment object at 0x101177ef0>
-    // <conv.chunks.Comment object at 0x101177fe0>
+    // otherwise, write climbing metatile to block buffer
+    // get enemy object offset and leave
     ldx(ObjectOffset);
     return 0;
     JMP(ProcessCannons);
@@ -8719,14 +8719,14 @@ int ExitVH() {
 int ProcessCannons() {
     lda(AreaType);
     BEQ(ExCannon);
-    // <conv.chunks.Comment object at 0x1011803e0>
-    // <conv.chunks.Comment object at 0x101180620>
+    // get area type
+    // if water type area, branch to leave
     ldx(0x2);
     JMP(ThreeSChk);
 }
 
 int ThreeSChk() {
-    // <conv.chunks.Comment object at 0x1011807a0>
+    // start at third enemy slot
     stx(ObjectOffset);
     lda(Enemy_Flag, x);
     BNE(Chk_BB);
@@ -8756,32 +8756,32 @@ int FireCannon() {
     lda(Cannon_X_Position, y);
     sta(Enemy_X_Position, x);
     lda(Cannon_Y_Position, y);
-    // <conv.chunks.Comment object at 0x101181cd0>
-    // <conv.chunks.Comment object at 0x101181df0>
-    // <conv.chunks.Comment object at 0x101181f40>
-    // <conv.chunks.Comment object at 0x101181fd0>
-    // <conv.chunks.Comment object at 0x1011821b0>
-    // <conv.chunks.Comment object at 0x101182300>
-    // <conv.chunks.Comment object at 0x101182450>
-    // <conv.chunks.Comment object at 0x1011825a0>
-    // <conv.chunks.Comment object at 0x1011826f0>
+    // if master timer control set,
+    // branch to check enemy
+    // otherwise we start creating one
+    // first, reset cannon timer
+    // get page location of cannon
+    // save as page location of bullet bill
+    // get horizontal coordinate of cannon
+    // save as horizontal coordinate of bullet bill
+    // get vertical coordinate of cannon
     sec();
     sbc(0x8);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1011828d0>
-    // <conv.chunks.Comment object at 0x101182960>
+    // subtract eight pixels (because enemies are 24 pixels tall)
+    // save as vertical coordinate of bullet bill
     lda(0x1);
     sta(Enemy_Y_HighPos, x);
     sta(Enemy_Flag, x);
     lsr();
     sta(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x101182ba0>
-    // <conv.chunks.Comment object at 0x101182d80>
-    // <conv.chunks.Comment object at 0x101182f00>
-    // <conv.chunks.Comment object at 0x101182f90>
+    // set vertical high byte of bullet bill
+    // set buffer flag
+    // shift right once to init A
+    // then initialize enemy's state
     lda(0x9);
     sta(Enemy_BoundBoxCtrl, x);
-    // <conv.chunks.Comment object at 0x101183140>
+    // set bounding box size control for bullet bill
     lda(BulletBill_CannonVar);
     sta(Enemy_ID, x);
     JMP(Next3Slt);
@@ -8789,9 +8789,9 @@ int FireCannon() {
 }
 
 int Chk_BB() {
-    // <conv.chunks.Comment object at 0x101183410>
-    // <conv.chunks.Comment object at 0x101183560>
-    // <conv.chunks.Comment object at 0x101183680>
+    // load identifier for bullet bill (cannon variant)
+    // move onto next slot
+    // check enemy identifier for bullet bill (cannon variant)
     lda(Enemy_ID, x);
     cmp(BulletBill_CannonVar);
     BNE(Next3Slt);
@@ -8804,21 +8804,21 @@ int Chk_BB() {
 }
 
 int Next3Slt() {
-    // <conv.chunks.Comment object at 0x101183920>
-    // <conv.chunks.Comment object at 0x101183a40>
-    // <conv.chunks.Comment object at 0x101183b60>
-    // <conv.chunks.Comment object at 0x101183cb0>
-    // <conv.chunks.Comment object at 0x101183dd0>
-    // <conv.chunks.Comment object at 0x101183ef0>
-    // <conv.chunks.Comment object at 0x101190050>
+    // if not found, branch to get next slot
+    // otherwise, check to see if it went offscreen
+    // check enemy buffer flag
+    // if not set, branch to get next slot
+    // otherwise, get offscreen information
+    // then do sub to handle bullet bill
+    // move onto next slot
     dex();
     BPL(ThreeSChk);
     JMP(ExCannon);
 }
 
 int ExCannon() {
-    // <conv.chunks.Comment object at 0x101190140>
-    // <conv.chunks.Comment object at 0x101190260>
+    // do this until first three slots are checked
+    // then leave
     return 0;
     JMP(BulletBillHandler);
 }
@@ -8826,8 +8826,8 @@ int ExCannon() {
 int BulletBillHandler() {
     lda(TimerControl);
     BNE(RunBBSubs);
-    // <conv.chunks.Comment object at 0x101190410>
-    // <conv.chunks.Comment object at 0x101190620>
+    // if master timer control set,
+    // branch to run subroutines except movement sub
     lda(Enemy_State, x);
     BNE(ChkDSte);
     lda(Enemy_OffscreenBits);
@@ -8842,16 +8842,16 @@ int BulletBillHandler() {
 }
 
 int SetupBB() {
-    // <conv.chunks.Comment object at 0x101190860>
-    // <conv.chunks.Comment object at 0x1011909b0>
-    // <conv.chunks.Comment object at 0x101190ad0>
-    // <conv.chunks.Comment object at 0x101190bf0>
-    // <conv.chunks.Comment object at 0x101190d10>
-    // <conv.chunks.Comment object at 0x101190e60>
-    // <conv.chunks.Comment object at 0x101190ef0>
-    // <conv.chunks.Comment object at 0x1011910a0>
-    // <conv.chunks.Comment object at 0x101191220>
-    // <conv.chunks.Comment object at 0x1011912b0>
+    // if bullet bill's state set, branch to check defeated state
+    // otherwise load offscreen bits
+    // mask out bits
+    // check to see if all bits are set
+    // if so, branch to kill this object
+    // set to move right by default
+    // get horizontal difference between player and bullet bill
+    // if enemy to the left of player, branch
+    // otherwise increment to move left
+    // set bullet bill's moving direction
     sty(Enemy_MovingDir, x);
     dey();
     lda(offsetof(G, BulletBillXSpdData), y);
@@ -8860,27 +8860,27 @@ int SetupBB() {
     adc(0x28);
     cmp(0x50);
     BCC(KillBB);
-    // <conv.chunks.Comment object at 0x101191490>
-    // <conv.chunks.Comment object at 0x101191520>
-    // <conv.chunks.Comment object at 0x101191670>
-    // <conv.chunks.Comment object at 0x1011917f0>
-    // <conv.chunks.Comment object at 0x101191880>
-    // <conv.chunks.Comment object at 0x101191970>
-    // <conv.chunks.Comment object at 0x101191a90>
+    // decrement to use as offset
+    // get horizontal speed based on moving direction
+    // and store it
+    // get horizontal difference
+    // add 40 pixels
+    // if less than a certain amount, player is too close
+    // to cannon either on left or right side, thus branch
     lda(0x1);
     sta(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x101191cd0>
+    // otherwise set bullet bill's state
     lda(0xa);
     sta(EnemyFrameTimer, x);
-    // <conv.chunks.Comment object at 0x101191f10>
+    // set enemy frame timer
     lda(Sfx_Blast);
     sta(Square2SoundQueue);
     JMP(ChkDSte);
 }
 
 int ChkDSte() {
-    // <conv.chunks.Comment object at 0x1011921e0>
-    // <conv.chunks.Comment object at 0x101192300>
+    // play fireworks/gunfire sound
+    // check enemy state for d5 set
     lda(Enemy_State, x);
     anda(0b100000);
     BEQ(BBFly);
@@ -8889,15 +8889,15 @@ int ChkDSte() {
 }
 
 int BBFly() {
-    // <conv.chunks.Comment object at 0x1011925a0>
-    // <conv.chunks.Comment object at 0x1011926f0>
-    // <conv.chunks.Comment object at 0x101192810>
+    // if not set, skip to move horizontally
+    // otherwise do sub to move bullet bill vertically
+    // do sub to move bullet bill horizontally
     JSR(MoveEnemyHorizontally);
     JMP(RunBBSubs);
 }
 
 int RunBBSubs() {
-    // <conv.chunks.Comment object at 0x101192990>
+    // get offscreen information
     JSR(GetEnemyOffscreenBits);
     JSR(RelativeEnemyPosition);
     JSR(GetEnemyBoundBox);
@@ -8907,11 +8907,11 @@ int RunBBSubs() {
 }
 
 int KillBB() {
-    // <conv.chunks.Comment object at 0x101192ae0>
-    // <conv.chunks.Comment object at 0x101192c00>
-    // <conv.chunks.Comment object at 0x101192d20>
-    // <conv.chunks.Comment object at 0x101192e40>
-    // <conv.chunks.Comment object at 0x101192f60>
+    // get relative coordinates
+    // get bounding box coordinates
+    // handle player to enemy collisions
+    // draw the bullet bill and leave
+    // kill bullet bill and leave
     JSR(EraseEnemyObject);
     return 0;
     JMP(SpawnHammerObj);
@@ -8921,17 +8921,17 @@ int SpawnHammerObj() {
     lda(((PseudoRandomBitReg) + (1)));
     anda(0b111);
     BNE(SetMOfs);
-    // <conv.chunks.Comment object at 0x101193200>
-    // <conv.chunks.Comment object at 0x101193a40>
-    // <conv.chunks.Comment object at 0x101193b60>
+    // get pseudorandom bits from
+    // second part of LSFR
+    // if any bits are set, branch and use as offset
     lda(((PseudoRandomBitReg) + (1)));
     anda(0b1000);
     JMP(SetMOfs);
 }
 
 int SetMOfs() {
-    // <conv.chunks.Comment object at 0x101193e60>
-    // <conv.chunks.Comment object at 0x101193f80>
+    // get d3 from same part of LSFR
+    // use either d3 or d2-d0 for offset here
     tay();
     lda(Misc_State, y);
     BNE(NoHammer);
@@ -8939,32 +8939,32 @@ int SetMOfs() {
     lda(Enemy_Flag, x);
     BNE(NoHammer);
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x1011980e0>
-    // <conv.chunks.Comment object at 0x101198230>
-    // <conv.chunks.Comment object at 0x101198350>
-    // <conv.chunks.Comment object at 0x1011984a0>
-    // <conv.chunks.Comment object at 0x1011985f0>
-    // <conv.chunks.Comment object at 0x101198710>
+    // if any values loaded in
+    // $2a-$32 where offset is then leave with carry clear
+    // get offset of enemy slot to check using Y as offset
+    // check enemy buffer flag at offset
+    // if buffer flag set, branch to leave with carry clear
+    // get original enemy object offset
     txa();
     sta(HammerEnemyOffset, y);
-    // <conv.chunks.Comment object at 0x1011988c0>
+    // save here
     lda(0x90);
     sta(Misc_State, y);
-    // <conv.chunks.Comment object at 0x101198a70>
+    // save hammer's state here
     lda(0x7);
     sta(Misc_BoundBoxCtrl, y);
     sec();
-    // <conv.chunks.Comment object at 0x101198cb0>
-    // <conv.chunks.Comment object at 0x101198ec0>
+    // set something else entirely, here
+    // return with carry set
     return 0;
     JMP(NoHammer);
 }
 
 int NoHammer() {
-    // <conv.chunks.Comment object at 0x101198fe0>
+    // get original enemy object offset
     ldx(ObjectOffset);
     clc();
-    // <conv.chunks.Comment object at 0x101199160>
+    // return with carry clear
     return 0;
     JMP(ProcHammerObj);
 }
@@ -8978,29 +8978,29 @@ int ProcHammerObj() {
     cmp(0x2);
     BEQ(SetHSpd);
     BCS(SetHPos);
-    // <conv.chunks.Comment object at 0x1011992b0>
-    // <conv.chunks.Comment object at 0x101199310>
-    // <conv.chunks.Comment object at 0x101199370>
-    // <conv.chunks.Comment object at 0x101199490>
-    // <conv.chunks.Comment object at 0x1011995b0>
-    // <conv.chunks.Comment object at 0x101199700>
-    // <conv.chunks.Comment object at 0x101199820>
-    // <conv.chunks.Comment object at 0x101199970>
-    // <conv.chunks.Comment object at 0x101199a00>
-    // <conv.chunks.Comment object at 0x101199be0>
+    // $00 - used to set downward force
+    // $02 - used to set maximum speed
+    // if master timer control set
+    // skip all of this code and go to last subs at the end
+    // otherwise get hammer's state
+    // mask out d7
+    // get enemy object offset that spawned this hammer
+    // check hammer's state
+    // if currently at 2, branch
+    // if greater than 2, branch elsewhere
     txa();
     clc();
     adc(0xd);
     tax();
-    // <conv.chunks.Comment object at 0x101199df0>
-    // <conv.chunks.Comment object at 0x101199e80>
-    // <conv.chunks.Comment object at 0x101199fd0>
+    // add 13 bytes to use
+    // proper misc object
+    // return offset to X
     lda(0x10);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x10119a180>
+    // set downward movement force
     lda(0xf);
     sta(0x1);
-    // <conv.chunks.Comment object at 0x10119a390>
+    // set upward movement force (not used)
     lda(0x4);
     sta(0x2);
     lda(0x0);
@@ -9026,19 +9026,19 @@ int SetHSpd() {
 }
 
 int SetHPos() {
-    // <conv.chunks.Comment object at 0x10119ad20>
-    // <conv.chunks.Comment object at 0x10119af00>
-    // <conv.chunks.Comment object at 0x10119b050>
-    // <conv.chunks.Comment object at 0x10119b170>
-    // <conv.chunks.Comment object at 0x10119b2c0>
-    // <conv.chunks.Comment object at 0x10119b440>
-    // <conv.chunks.Comment object at 0x10119b4d0>
-    // <conv.chunks.Comment object at 0x10119b620>
-    // <conv.chunks.Comment object at 0x10119b740>
-    // <conv.chunks.Comment object at 0x10119b890>
+    // set hammer's vertical speed
+    // get enemy object state
+    // mask out d3
+    // store new state
+    // get enemy's moving direction
+    // decrement to use as offset
+    // get proper speed to use based on moving direction
+    // reobtain hammer's buffer offset
+    // set hammer's horizontal speed
+    // decrement hammer's state
     dec(Misc_State, x);
     lda(Enemy_X_Position, y);
-    // <conv.chunks.Comment object at 0x10119ba40>
+    // get enemy's horizontal position
     clc();
     adc(0x2);
     sta(Misc_X_Position, x);
@@ -9046,17 +9046,17 @@ int SetHPos() {
     adc(0x0);
     sta(Misc_PageLoc, x);
     lda(Enemy_Y_Position, y);
-    // <conv.chunks.Comment object at 0x10119bc20>
-    // <conv.chunks.Comment object at 0x10119bcb0>
-    // <conv.chunks.Comment object at 0x10119be90>
-    // <conv.chunks.Comment object at 0x10119bfe0>
-    // <conv.chunks.Comment object at 0x1011a00b0>
-    // <conv.chunks.Comment object at 0x1011a0290>
+    // set position 2 pixels to the right
+    // store as hammer's horizontal position
+    // get enemy's page location
+    // add carry
+    // store as hammer's page location
+    // get enemy's vertical position
     sec();
     sbc(0xa);
     sta(Misc_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1011a0470>
-    // <conv.chunks.Comment object at 0x1011a0500>
+    // move position 10 pixels upward
+    // store as hammer's vertical position
     lda(0x1);
     sta(Misc_Y_HighPos, x);
     BNE(RunHSubs);
@@ -9064,15 +9064,15 @@ int SetHPos() {
 }
 
 int RunAllH() {
-    // <conv.chunks.Comment object at 0x1011a0740>
-    // <conv.chunks.Comment object at 0x1011a0920>
-    // <conv.chunks.Comment object at 0x1011a0a40>
+    // set hammer's vertical high byte
+    // unconditional branch to skip first routine
+    // handle collisions
     JSR(PlayerHammerCollision);
     JMP(RunHSubs);
 }
 
 int RunHSubs() {
-    // <conv.chunks.Comment object at 0x1011a0bc0>
+    // get offscreen information
     JSR(GetMiscOffscreenBits);
     JSR(RelativeMiscPosition);
     JSR(GetMiscBoundBox);
@@ -9100,13 +9100,13 @@ int SetupJumpCoin() {
     lda(Block_PageLoc2, x);
     sta(Misc_PageLoc, y);
     lda(0x6);
-    // <conv.chunks.Comment object at 0x1011a1eb0>
-    // <conv.chunks.Comment object at 0x1011a1fd0>
-    // <conv.chunks.Comment object at 0x1011a2120>
-    // <conv.chunks.Comment object at 0x1011a22a0>
+    // set offset for empty or last misc object buffer slot
+    // get page location saved earlier
+    // and save as page location for misc object
+    // get low byte of block buffer offset
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x1011a2450>
+    // multiply by 16 to use lower nybble
     asl();
     asl();
     ora(0x5);
@@ -9120,7 +9120,7 @@ int SetupJumpCoin() {
 int JCoinC() {
     lda(0xfb);
     sta(Misc_Y_Speed, y);
-    // <conv.chunks.Comment object at 0x1011a2cc0>
+    // set vertical speed
     lda(0x1);
     sta(Misc_Y_HighPos, y);
     sta(Misc_State, y);
@@ -9128,12 +9128,12 @@ int JCoinC() {
     stx(ObjectOffset);
     JSR(GiveOneCoin);
     inc(CoinTallyFor1Ups);
-    // <conv.chunks.Comment object at 0x1011a2f00>
-    // <conv.chunks.Comment object at 0x1011a30e0>
-    // <conv.chunks.Comment object at 0x1011a3230>
-    // <conv.chunks.Comment object at 0x1011a3350>
-    // <conv.chunks.Comment object at 0x1011a3470>
-    // <conv.chunks.Comment object at 0x1011a3590>
+    // set vertical high byte
+    // set state for misc object
+    // load coin grab sound
+    // store current control bit as misc object offset
+    // update coin tally on the screen and coin amount variable
+    // increment coin tally used to activate 1-up block flag
     return 0;
     JMP(FindEmptyMiscSlot);
 }
@@ -9144,8 +9144,8 @@ int FindEmptyMiscSlot() {
 }
 
 int FMiscLoop() {
-    // <conv.chunks.Comment object at 0x1011a3770>
-    // <conv.chunks.Comment object at 0x1011a3800>
+    // start at end of misc objects buffer
+    // get misc object state
     lda(Misc_State, y);
     BEQ(UseMiscS);
     dey();
@@ -9156,12 +9156,12 @@ int FMiscLoop() {
 }
 
 int UseMiscS() {
-    // <conv.chunks.Comment object at 0x1011a3a10>
-    // <conv.chunks.Comment object at 0x1011a3b60>
-    // <conv.chunks.Comment object at 0x1011a3bf0>
-    // <conv.chunks.Comment object at 0x1011a3c80>
-    // <conv.chunks.Comment object at 0x1011a3e30>
-    // <conv.chunks.Comment object at 0x1011a3ec0>
+    // branch if none found to use current offset
+    // decrement offset
+    // do this for three slots
+    // do this until all slots are checked
+    // if no empty slots found, use last slot
+    // store offset of misc object buffer here (residual)
     sty(JumpCoinMiscOffset);
     return 0;
     JMP(MiscObjectsCore);
@@ -9173,8 +9173,8 @@ int MiscObjectsCore() {
 }
 
 int MiscLoop() {
-    // <conv.chunks.Comment object at 0x1011b01d0>
-    // <conv.chunks.Comment object at 0x1011b0260>
+    // set at end of misc object buffer
+    // store misc object offset here
     stx(ObjectOffset);
     lda(Misc_State, x);
     BEQ(MiscLoopBack);
@@ -9197,30 +9197,30 @@ int ProcJumpCoin() {
     lda(Misc_PageLoc, x);
     adc(0x0);
     sta(Misc_PageLoc, x);
-    // <conv.chunks.Comment object at 0x1011b0440>
-    // <conv.chunks.Comment object at 0x1011b0590>
-    // <conv.chunks.Comment object at 0x1011b06e0>
-    // <conv.chunks.Comment object at 0x1011b0770>
-    // <conv.chunks.Comment object at 0x1011b0890>
-    // <conv.chunks.Comment object at 0x1011b09b0>
-    // <conv.chunks.Comment object at 0x1011b0b00>
-    // <conv.chunks.Comment object at 0x1011b0b60>
-    // <conv.chunks.Comment object at 0x1011b0bc0>
-    // <conv.chunks.Comment object at 0x1011b0d40>
-    // <conv.chunks.Comment object at 0x1011b0dd0>
-    // <conv.chunks.Comment object at 0x1011b0ef0>
-    // <conv.chunks.Comment object at 0x1011b1040>
-    // <conv.chunks.Comment object at 0x1011b11c0>
-    // <conv.chunks.Comment object at 0x1011b1250>
-    // <conv.chunks.Comment object at 0x1011b1370>
-    // <conv.chunks.Comment object at 0x1011b14c0>
-    // <conv.chunks.Comment object at 0x1011b1610>
-    // <conv.chunks.Comment object at 0x1011b16a0>
+    // check misc object state
+    // branch to check next slot
+    // otherwise shift d7 into carry
+    // if d7 not set, jumping coin, thus skip to rest of code here
+    // otherwise go to process hammer,
+    // then check next slot
+    // $00 - used to set downward force
+    // $02 - used to set maximum speed
+    // check misc object state
+    // decrement to see if it's set to 1
+    // if so, branch to handle jumping coin
+    // otherwise increment state to either start off or as timer
+    // get horizontal coordinate for misc object
+    // whether its jumping coin (state 0 only) or floatey number
+    // add current scroll speed
+    // store as new horizontal coordinate
+    // get page location
+    // add carry
+    // store as new page location
     lda(Misc_State, x);
     cmp(0x30);
     BNE(RunJCSubs);
-    // <conv.chunks.Comment object at 0x1011b19a0>
-    // <conv.chunks.Comment object at 0x1011b1a30>
+    // check state of object for preset value
+    // if not yet reached, branch to subroutines
     lda(0x0);
     sta(Misc_State, x);
     JMP(MiscLoopBack);
@@ -9230,14 +9230,14 @@ int ProcJumpCoin() {
 int JCoinRun() {
     txa();
     clc();
-    // <conv.chunks.Comment object at 0x1011b2030>
+    // add 13 bytes to offset for next subroutine
     adc(0xd);
     tax();
     lda(0x50);
-    // <conv.chunks.Comment object at 0x1011b2240>
+    // set downward movement amount
     sta(0x0);
     lda(0x6);
-    // <conv.chunks.Comment object at 0x1011b22d0>
+    // set maximum vertical speed
     sta(0x2);
     lsr();
     sta(0x1);
@@ -9245,12 +9245,12 @@ int JCoinRun() {
     JSR(ImposeGravity);
     ldx(ObjectOffset);
     lda(Misc_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x1011b2600>
-    // <conv.chunks.Comment object at 0x1011b2750>
-    // <conv.chunks.Comment object at 0x1011b27e0>
-    // <conv.chunks.Comment object at 0x1011b28d0>
-    // <conv.chunks.Comment object at 0x1011b2a80>
-    // <conv.chunks.Comment object at 0x1011b2ba0>
+    // divide by 2 and set
+    // as upward movement amount (apparently residual)
+    // set A to impose gravity on jumping coin
+    // do sub to move coin vertically and impose gravity on it
+    // get original misc object offset
+    // check vertical speed
     cmp(0x5);
     BNE(RunJCSubs);
     inc(Misc_State, x);
@@ -9258,9 +9258,9 @@ int JCoinRun() {
 }
 
 int RunJCSubs() {
-    // <conv.chunks.Comment object at 0x1011b2d50>
-    // <conv.chunks.Comment object at 0x1011b2f00>
-    // <conv.chunks.Comment object at 0x1011b3050>
+    // if not moving downward fast enough, keep state as-is
+    // otherwise increment state to change to floatey number
+    // get relative coordinates
     JSR(RelativeMiscPosition);
     JSR(GetMiscOffscreenBits);
     JSR(GetMiscBoundBox);
@@ -9282,22 +9282,22 @@ int GiveOneCoin() {
     ldy(offsetof(G, CoinTallyOffsets), x);
     JSR(DigitsMathRoutine);
     inc(CoinTally);
-    // <conv.chunks.Comment object at 0x1011b3a10>
-    // <conv.chunks.Comment object at 0x1011b3cb0>
-    // <conv.chunks.Comment object at 0x1011b3f20>
-    // <conv.chunks.Comment object at 0x1011b8080>
-    // <conv.chunks.Comment object at 0x1011b81d0>
-    // <conv.chunks.Comment object at 0x1011b82f0>
+    // set digit modifier to add 1 coin
+    // to the current player's coin tally
+    // get current player on the screen
+    // get offset for player's coin tally
+    // update the coin tally
+    // increment onscreen player's coin amount
     lda(CoinTally);
     cmp(100);
     BNE(CoinPoints);
-    // <conv.chunks.Comment object at 0x1011b8500>
-    // <conv.chunks.Comment object at 0x1011b8590>
+    // does player have 100 coins yet?
+    // if not, skip all of this
     lda(0x0);
     sta(CoinTally);
     inc(NumberofLives);
-    // <conv.chunks.Comment object at 0x1011b87a0>
-    // <conv.chunks.Comment object at 0x1011b8950>
+    // otherwise, reinitialize coin amount
+    // give the player an extra life
     lda(Sfx_ExtraLife);
     sta(Square2SoundQueue);
     JMP(CoinPoints);
@@ -9324,19 +9324,19 @@ int GetSBNybbles() {
 
 int UpdateNumber() {
     JSR(PrintStatusBarNumbers);
-    // <conv.chunks.Comment object at 0x1011b9640>
+    // print status bar numbers based on nybbles, whatever they be
     ldy(VRAM_Buffer1_Offset);
     lda(((VRAM_Buffer1) - (6)), y);
     BNE(NoZSup);
-    // <conv.chunks.Comment object at 0x1011b9850>
-    // <conv.chunks.Comment object at 0x1011b9a60>
+    // check highest digit of score
+    // if zero, overwrite with space tile for zero suppression
     lda(0x24);
     sta(((VRAM_Buffer1) - (6)), y);
     JMP(NoZSup);
 }
 
 int NoZSup() {
-    // <conv.chunks.Comment object at 0x1011b9e80>
+    // get enemy object buffer offset
     ldx(ObjectOffset);
     return 0;
     JMP(SetupPowerUp);
@@ -9349,17 +9349,17 @@ int SetupPowerUp() {
     sta(((Enemy_PageLoc) + (5)));
     lda(Block_X_Position, x);
     sta(((Enemy_X_Position) + (5)));
-    // <conv.chunks.Comment object at 0x1011ba0f0>
-    // <conv.chunks.Comment object at 0x1011ba210>
-    // <conv.chunks.Comment object at 0x1011ba3f0>
-    // <conv.chunks.Comment object at 0x1011ba540>
-    // <conv.chunks.Comment object at 0x1011ba720>
-    // <conv.chunks.Comment object at 0x1011ba870>
+    // load power-up identifier into
+    // special use slot of enemy object buffer
+    // store page location of block object
+    // as page location of power-up object
+    // store horizontal coordinate of block object
+    // as horizontal coordinate of power-up object
     lda(0x1);
     sta(((Enemy_Y_HighPos) + (5)));
     lda(Block_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1011baab0>
-    // <conv.chunks.Comment object at 0x1011bad20>
+    // set vertical high byte of power-up object
+    // get vertical coordinate of block object
     sec();
     sbc(0x8);
     sta(((Enemy_Y_Position) + (5)));
@@ -9367,24 +9367,24 @@ int SetupPowerUp() {
 }
 
 int PwrUpJmp() {
-    // <conv.chunks.Comment object at 0x1011baf00>
-    // <conv.chunks.Comment object at 0x1011baf90>
-    // <conv.chunks.Comment object at 0x1011bb200>
+    // subtract 8 pixels
+    // and use as vertical coordinate of power-up object
+    // this is a residual jump point in enemy object jump table
     lda(0x1);
     sta(((Enemy_State) + (5)));
     sta(((Enemy_Flag) + (5)));
-    // <conv.chunks.Comment object at 0x1011bb2c0>
-    // <conv.chunks.Comment object at 0x1011bb530>
+    // set power-up object's state
+    // set buffer flag
     lda(0x3);
     sta(((Enemy_BoundBoxCtrl) + (5)));
-    // <conv.chunks.Comment object at 0x1011bb770>
+    // set bounding box size control for power-up object
     lda(PowerUpType);
     cmp(0x2);
     BCS(PutBehind);
     lda(PlayerStatus);
-    // <conv.chunks.Comment object at 0x1011bbad0>
-    // <conv.chunks.Comment object at 0x1011bbb60>
-    // <conv.chunks.Comment object at 0x1011bbd10>
+    // check currently loaded power-up type
+    // if star or 1-up, branch ahead
+    // otherwise check player's current status
     cmp(0x2);
     BCC(StrType);
     lsr();
@@ -9392,9 +9392,9 @@ int PwrUpJmp() {
 }
 
 int StrType() {
-    // <conv.chunks.Comment object at 0x1011bbe90>
-    // <conv.chunks.Comment object at 0x1011c00e0>
-    // <conv.chunks.Comment object at 0x1011c0170>
+    // if player not fiery, use status as power-up type
+    // otherwise shift right to force fire flower type
+    // store type here
     sta(PowerUpType);
     JMP(PutBehind);
 }
@@ -9402,17 +9402,17 @@ int StrType() {
 int PutBehind() {
     lda(0b100000);
     sta(((Enemy_SprAttrib) + (5)));
-    // <conv.chunks.Comment object at 0x1011c0410>
+    // set background priority bit
     lda(Sfx_GrowPowerUp);
     sta(Square2SoundQueue);
-    // <conv.chunks.Comment object at 0x1011c06e0>
+    // load power-up reveal sound and leave
     return 0;
     JMP(PowerUpObjHandler);
 }
 
 int PowerUpObjHandler() {
     ldx(0x5);
-    // <conv.chunks.Comment object at 0x1011c08f0>
+    // set object offset for last slot in enemy object buffer
     stx(ObjectOffset);
     lda(((Enemy_State) + (5)));
     BEQ(ExitPUp);
@@ -9422,17 +9422,17 @@ int PowerUpObjHandler() {
     BNE(RunPUSubs);
     lda(PowerUpType);
     BEQ(ShroomM);
-    // <conv.chunks.Comment object at 0x1011c0b00>
-    // <conv.chunks.Comment object at 0x1011c0ce0>
-    // <conv.chunks.Comment object at 0x1011c0e60>
-    // <conv.chunks.Comment object at 0x1011c0ef0>
-    // <conv.chunks.Comment object at 0x1011c1010>
-    // <conv.chunks.Comment object at 0x1011c1130>
-    // <conv.chunks.Comment object at 0x1011c1250>
-    // <conv.chunks.Comment object at 0x1011c1370>
+    // check power-up object's state
+    // if not set, branch to leave
+    // shift to check if d7 was set in object state
+    // if not set, branch ahead to skip this part
+    // if master timer control set,
+    // branch ahead to enemy object routines
+    // check power-up type
+    // if normal mushroom, branch ahead to move it
     cmp(0x3);
     BEQ(ShroomM);
-    // <conv.chunks.Comment object at 0x1011c1520>
+    // if 1-up mushroom, branch ahead to move it
     cmp(0x2);
     BNE(RunPUSubs);
     JSR(MoveJumpingEnemy);
@@ -9442,11 +9442,11 @@ int PowerUpObjHandler() {
 }
 
 int ShroomM() {
-    // <conv.chunks.Comment object at 0x1011c1760>
-    // <conv.chunks.Comment object at 0x1011c1910>
-    // <conv.chunks.Comment object at 0x1011c1a30>
-    // <conv.chunks.Comment object at 0x1011c1b50>
-    // <conv.chunks.Comment object at 0x1011c1c70>
+    // if not star, branch elsewhere to skip movement
+    // otherwise impose gravity on star power-up and make it jump
+    // note that green paratroopa shares the same code here
+    // then jump to other power-up subroutines
+    // do sub to make mushrooms move
     JSR(MoveNormalEnemy);
     JSR(EnemyToBGCollisionDet);
     JMP(RunPUSubs);
@@ -9462,17 +9462,17 @@ int GrowThePowerUp() {
     inc(((Enemy_State) + (5)));
     cmp(0x11);
     BCC(ChkPUSte);
-    // <conv.chunks.Comment object at 0x1011c2060>
-    // <conv.chunks.Comment object at 0x1011c2180>
-    // <conv.chunks.Comment object at 0x1011c2210>
-    // <conv.chunks.Comment object at 0x1011c23c0>
-    // <conv.chunks.Comment object at 0x1011c25a0>
-    // <conv.chunks.Comment object at 0x1011c2780>
-    // <conv.chunks.Comment object at 0x1011c2960>
-    // <conv.chunks.Comment object at 0x1011c29f0>
+    // get frame counter
+    // mask out all but 2 LSB
+    // if any bits set here, branch
+    // otherwise decrement vertical coordinate slowly
+    // load power-up object state
+    // increment state for next frame (to make power-up rise)
+    // if power-up object state not yet past 16th pixel,
+    // branch ahead to last part here
     lda(0x10);
     sta(Enemy_X_Speed, x);
-    // <conv.chunks.Comment object at 0x1011c2c00>
+    // otherwise set horizontal speed
     lda(0b10000000);
     sta(((Enemy_State) + (5)));
     asl();
@@ -9483,12 +9483,12 @@ int GrowThePowerUp() {
 }
 
 int ChkPUSte() {
-    // <conv.chunks.Comment object at 0x1011c2ed0>
-    // <conv.chunks.Comment object at 0x1011c30e0>
-    // <conv.chunks.Comment object at 0x1011c3170>
-    // <conv.chunks.Comment object at 0x1011c3380>
-    // <conv.chunks.Comment object at 0x1011c3410>
-    // <conv.chunks.Comment object at 0x1011c3560>
+    // and then set d7 in power-up object's state
+    // shift once to init A
+    // initialize background priority bit set here
+    // rotate A to set right moving direction
+    // set moving direction
+    // check power-up object's state
     lda(((Enemy_State) + (5)));
     cmp(0x6);
     BCC(ExitPUp);
@@ -9496,9 +9496,9 @@ int ChkPUSte() {
 }
 
 int RunPUSubs() {
-    // <conv.chunks.Comment object at 0x1011c3770>
-    // <conv.chunks.Comment object at 0x1011c3800>
-    // <conv.chunks.Comment object at 0x1011c39e0>
+    // for if power-up has risen enough
+    // if not, don't even bother running these routines
+    // get coordinates relative to screen
     JSR(RelativeEnemyPosition);
     JSR(GetEnemyOffscreenBits);
     JSR(GetEnemyBoundBox);
@@ -9509,12 +9509,12 @@ int RunPUSubs() {
 }
 
 int ExitPUp() {
-    // <conv.chunks.Comment object at 0x1011c3b30>
-    // <conv.chunks.Comment object at 0x1011c3c50>
-    // <conv.chunks.Comment object at 0x1011c3d70>
-    // <conv.chunks.Comment object at 0x1011c3e90>
-    // <conv.chunks.Comment object at 0x1011c3fb0>
-    // <conv.chunks.Comment object at 0x1011d0110>
+    // get offscreen bits
+    // get bounding box coordinates
+    // draw the power-up object
+    // check for collision with player
+    // check to see if it went offscreen
+    // and we're done
     return 0;
     JMP(PlayerHeadCollision);
 }
@@ -9530,22 +9530,22 @@ int PlayerHeadCollision() {
 }
 
 int DBlockSte() {
-    // <conv.chunks.Comment object at 0x1011d0380>
-    // <conv.chunks.Comment object at 0x1011d0590>
-    // <conv.chunks.Comment object at 0x1011d0620>
-    // <conv.chunks.Comment object at 0x1011d07d0>
-    // <conv.chunks.Comment object at 0x1011d08f0>
-    // <conv.chunks.Comment object at 0x1011d0a10>
-    // <conv.chunks.Comment object at 0x1011d0aa0>
+    // store metatile number to stack
+    // load unbreakable block object state by default
+    // load offset control bit here
+    // check player's size
+    // if small, branch
+    // otherwise load breakable block object state
+    // store into block object buffer
     sta(Block_State, x);
     JSR(DestroyBlockMetatile);
     ldx(SprDataOffset_Ctrl);
     lda(0x2);
     sta(Block_Orig_YPos, x);
-    // <conv.chunks.Comment object at 0x1011d0cb0>
-    // <conv.chunks.Comment object at 0x1011d0dd0>
-    // <conv.chunks.Comment object at 0x1011d0f20>
-    // <conv.chunks.Comment object at 0x1011d0fb0>
+    // store blank metatile in vram buffer to write to name table
+    // load offset control bit
+    // get vertical high nybble offset used in block buffer routine
+    // set as vertical coordinate for block object
     tay();
     lda(0x6);
     sta(Block_BBuf_Low, x);
@@ -9559,15 +9559,15 @@ int DBlockSte() {
 }
 
 int ChkBrick() {
-    // <conv.chunks.Comment object at 0x1011d1220>
-    // <conv.chunks.Comment object at 0x1011d12b0>
-    // <conv.chunks.Comment object at 0x1011d1460>
-    // <conv.chunks.Comment object at 0x1011d14c0>
-    // <conv.chunks.Comment object at 0x1011d1730>
-    // <conv.chunks.Comment object at 0x1011d17c0>
-    // <conv.chunks.Comment object at 0x1011d1940>
-    // <conv.chunks.Comment object at 0x1011d1a90>
-    // <conv.chunks.Comment object at 0x1011d1b20>
+    // get low byte of block buffer address used in same routine
+    // save as offset here to be used later
+    // get contents of block buffer at old address at $06, $07
+    // do a sub to check which block player bumped head on
+    // store metatile here
+    // check player's size
+    // if small, use metatile itself as contents of A
+    // otherwise init A (note: big = 0)
+    // if no match was found in previous sub, skip ahead
     BCC(PutMTileB);
     ldy(0x11);
     sty(Block_State, x);
@@ -9581,18 +9581,18 @@ int ChkBrick() {
 }
 
 int StartBTmr() {
-    // <conv.chunks.Comment object at 0x1011d1c70>
-    // <conv.chunks.Comment object at 0x1011d1d00>
-    // <conv.chunks.Comment object at 0x1011d1ee0>
-    // <conv.chunks.Comment object at 0x1011d2030>
-    // <conv.chunks.Comment object at 0x1011d20c0>
-    // <conv.chunks.Comment object at 0x1011d21b0>
-    // <conv.chunks.Comment object at 0x1011d2360>
-    // <conv.chunks.Comment object at 0x1011d23f0>
-    // <conv.chunks.Comment object at 0x1011d25a0>
+    // otherwise load unbreakable state into block object buffer
+    // note this applies to both player sizes
+    // load empty block metatile into A for now
+    // get metatile from before
+    // is it brick with coins (with line)?
+    // if so, branch
+    // is it brick with coins (without line)?
+    // if not, branch ahead to store empty block metatile
+    // check brick coin timer flag
     lda(BrickCoinTimerFlag);
     BNE(ContBTmr);
-    // <conv.chunks.Comment object at 0x1011d26f0>
+    // if set, timer expired or counting down, thus branch
     lda(0xb);
     sta(BrickCoinTimer);
     inc(BrickCoinTimerFlag);
@@ -9600,9 +9600,9 @@ int StartBTmr() {
 }
 
 int ContBTmr() {
-    // <conv.chunks.Comment object at 0x1011d2870>
-    // <conv.chunks.Comment object at 0x1011d2a20>
-    // <conv.chunks.Comment object at 0x1011d2b40>
+    // if not set, set brick coin timer
+    // and set flag linked to it
+    // check brick coin timer
     lda(BrickCoinTimer);
     BNE(PutOldMT);
     ldy(0xc4);
@@ -9610,23 +9610,23 @@ int ContBTmr() {
 }
 
 int PutOldMT() {
-    // <conv.chunks.Comment object at 0x1011d2c90>
-    // <conv.chunks.Comment object at 0x1011d2db0>
-    // <conv.chunks.Comment object at 0x1011d2e40>
+    // if not yet expired, branch to use current metatile
+    // otherwise use empty block metatile
+    // put metatile into A
     tya();
     JMP(PutMTileB);
 }
 
 int PutMTileB() {
-    // <conv.chunks.Comment object at 0x1011d2fc0>
+    // store whatever metatile be appropriate here
     sta(Block_Metatile, x);
     JSR(InitBlock_XY_Pos);
     ldy(0x2);
-    // <conv.chunks.Comment object at 0x1011d3140>
-    // <conv.chunks.Comment object at 0x1011d3290>
+    // get block object horizontal coordinates saved
+    // get vertical high nybble offset
     lda(0x23);
     sta((0x6), y);
-    // <conv.chunks.Comment object at 0x1011d33e0>
+    // write blank metatile $23 to block buffer
     lda(0x10);
     sta(BlockBounceTimer);
     pla();
@@ -9640,31 +9640,31 @@ int PutMTileB() {
 }
 
 int SmallBP() {
-    // <conv.chunks.Comment object at 0x1011d3650>
-    // <conv.chunks.Comment object at 0x1011d3830>
-    // <conv.chunks.Comment object at 0x1011d38f0>
-    // <conv.chunks.Comment object at 0x1011d3980>
-    // <conv.chunks.Comment object at 0x1011d3a70>
-    // <conv.chunks.Comment object at 0x1011d3c20>
-    // <conv.chunks.Comment object at 0x1011d3d70>
-    // <conv.chunks.Comment object at 0x1011d3e90>
-    // <conv.chunks.Comment object at 0x1011d3fe0>
+    // set block bounce timer
+    // pull original metatile from stack
+    // and save here
+    // set default offset
+    // is player crouching?
+    // if so, branch to increment offset
+    // is player big?
+    // if so, branch to use default offset
+    // increment for small or big and crouching
     iny();
     JMP(BigBP);
 }
 
 int BigBP() {
-    // <conv.chunks.Comment object at 0x1011dc140>
+    // get player's vertical coordinate
     lda(Player_Y_Position);
     clc();
     adc(offsetof(G, BlockYPosAdderData), y);
     anda(0xf0);
     sta(Block_Y_Position, x);
     ldy(Block_State, x);
-    // <conv.chunks.Comment object at 0x1011dc350>
-    // <conv.chunks.Comment object at 0x1011dc4a0>
-    // <conv.chunks.Comment object at 0x1011dc530>
-    // <conv.chunks.Comment object at 0x1011dc710>
+    // add value determined by size
+    // mask out low nybble to get 16-pixel correspondence
+    // save as vertical coordinate for block object
+    // get block object state
     cpy(0x11);
     BEQ(Unbreak);
     JSR(BrickShatter);
@@ -9673,19 +9673,19 @@ int BigBP() {
 }
 
 int Unbreak() {
-    // <conv.chunks.Comment object at 0x1011dc8c0>
-    // <conv.chunks.Comment object at 0x1011dcaa0>
-    // <conv.chunks.Comment object at 0x1011dcbc0>
-    // <conv.chunks.Comment object at 0x1011dcd10>
+    // if set to value loaded for unbreakable, branch
+    // execute code for breakable brick
+    // skip subroutine to do last part of code here
+    // execute code for unbreakable brick or question block
     JSR(BumpBlock);
     JMP(InvOBit);
 }
 
 int InvOBit() {
-    // <conv.chunks.Comment object at 0x1011dce90>
+    // invert control bit used by block objects
     lda(SprDataOffset_Ctrl);
     eor(0x1);
-    // <conv.chunks.Comment object at 0x1011dd010>
+    // and floatey numbers
     sta(SprDataOffset_Ctrl);
     return 0;
     JMP(InitBlock_XY_Pos);
@@ -9693,21 +9693,21 @@ int InvOBit() {
 
 int InitBlock_XY_Pos() {
     lda(Player_X_Position);
-    // <conv.chunks.Comment object at 0x1011dd370>
+    // get player's horizontal coordinate
     clc();
     adc(0x8);
     anda(0xf0);
     sta(Block_X_Position, x);
-    // <conv.chunks.Comment object at 0x1011dd520>
-    // <conv.chunks.Comment object at 0x1011dd5b0>
-    // <conv.chunks.Comment object at 0x1011dd6d0>
+    // add eight pixels
+    // mask out low nybble to give 16-pixel correspondence
+    // save as horizontal coordinate for block object
     lda(Player_PageLoc);
     adc(0x0);
     sta(Block_PageLoc, x);
     sta(Block_PageLoc2, x);
-    // <conv.chunks.Comment object at 0x1011dd9a0>
-    // <conv.chunks.Comment object at 0x1011dda30>
-    // <conv.chunks.Comment object at 0x1011ddc10>
+    // add carry to page location of player
+    // save as page location of block object
+    // save elsewhere to be used later
     lda(Player_Y_HighPos);
     sta(Block_Y_HighPos, x);
     return 0;
@@ -9716,17 +9716,17 @@ int InitBlock_XY_Pos() {
 
 int BumpBlock() {
     JSR(CheckTopOfBlock);
-    // <conv.chunks.Comment object at 0x1011de0c0>
+    // check to see if there's a coin directly above this block
     lda(Sfx_Bump);
     sta(Square1SoundQueue);
-    // <conv.chunks.Comment object at 0x1011de2d0>
+    // play bump sound
     lda(0x0);
     sta(Block_X_Speed, x);
     sta(Block_Y_MoveForce, x);
     sta(Player_Y_Speed);
-    // <conv.chunks.Comment object at 0x1011de450>
-    // <conv.chunks.Comment object at 0x1011de630>
-    // <conv.chunks.Comment object at 0x1011de780>
+    // initialize horizontal speed for block object
+    // init fractional movement force
+    // init player's vertical speed
     lda(0xfe);
     sta(Block_Y_Speed, x);
     lda(0x5);
@@ -9756,8 +9756,8 @@ int StarBlock() {
 int ExtraLifeMushBlock() {
     lda(0x3);
     sta(0x39);
-    // <conv.chunks.Comment object at 0x1011dfce0>
-    // <conv.chunks.Comment object at 0x1011dfe90>
+    // load 1-up mushroom into power-up type
+    // store correct power-up type
     JMP(SetupPowerUp);
     JMP(VineBlock);
 }
@@ -9780,8 +9780,8 @@ int BlockBumpedChk() {
 }
 
 int BumpChkLoop() {
-    // <conv.chunks.Comment object at 0x1011e8950>
-    // <conv.chunks.Comment object at 0x1011e89b0>
+    // start at end of metatile data
+    // check to see if current metatile matches
     cmp(offsetof(G, BrickQBlockMetatiles), y);
     BEQ(MatchBump);
     dey();
@@ -9791,35 +9791,35 @@ int BumpChkLoop() {
 }
 
 int MatchBump() {
-    // <conv.chunks.Comment object at 0x1011e9130>
-    // <conv.chunks.Comment object at 0x1011e9280>
-    // <conv.chunks.Comment object at 0x1011e9310>
-    // <conv.chunks.Comment object at 0x1011e9460>
-    // <conv.chunks.Comment object at 0x1011e94f0>
+    // metatile found in block buffer, branch if so
+    // otherwise move onto next metatile
+    // do this until all metatiles are checked
+    // if none match, return with carry clear
+    // note carry is set if found match
     return 0;
     JMP(BrickShatter);
 }
 
 int BrickShatter() {
     JSR(CheckTopOfBlock);
-    // <conv.chunks.Comment object at 0x1011e9640>
+    // check to see if there's a coin directly above this block
     lda(Sfx_BrickShatter);
     sta(Block_RepFlag, x);
     sta(NoiseSoundQueue);
     JSR(SpawnBrickChunks);
-    // <conv.chunks.Comment object at 0x1011e9850>
-    // <conv.chunks.Comment object at 0x1011e99a0>
-    // <conv.chunks.Comment object at 0x1011e9ac0>
+    // set flag for block object to immediately replace metatile
+    // load brick shatter sound
+    // create brick chunk objects
     lda(0xfe);
     sta(Player_Y_Speed);
-    // <conv.chunks.Comment object at 0x1011e9c40>
+    // set vertical speed for player
     lda(0x5);
     sta(((DigitModifier) + (5)));
     JSR(AddToScore);
     ldx(SprDataOffset_Ctrl);
-    // <conv.chunks.Comment object at 0x1011e9e50>
-    // <conv.chunks.Comment object at 0x1011ea0c0>
-    // <conv.chunks.Comment object at 0x1011ea1e0>
+    // set digit modifier to give player 50 points
+    // do sub to update the score
+    // load control bit and leave
     return 0;
     JMP(CheckTopOfBlock);
 }
@@ -9829,22 +9829,22 @@ int CheckTopOfBlock() {
     ldy(0x2);
     BEQ(TopEx);
     tya();
-    // <conv.chunks.Comment object at 0x1011ea3f0>
-    // <conv.chunks.Comment object at 0x1011ea540>
-    // <conv.chunks.Comment object at 0x1011ea5d0>
-    // <conv.chunks.Comment object at 0x1011ea7b0>
+    // load control bit
+    // get vertical high nybble offset used in block buffer
+    // branch to leave if set to zero, because we're at the top
+    // otherwise set to A
     sec();
     sbc(0x10);
     sta(0x2);
-    // <conv.chunks.Comment object at 0x1011ea8d0>
-    // <conv.chunks.Comment object at 0x1011eaa20>
+    // subtract $10 to move up one row in the block buffer
+    // store as new vertical high nybble offset
     tay();
     lda((0x6), y);
     cmp(0xc2);
     BNE(TopEx);
-    // <conv.chunks.Comment object at 0x1011eaba0>
-    // <conv.chunks.Comment object at 0x1011eac00>
-    // <conv.chunks.Comment object at 0x1011eadb0>
+    // get contents of block buffer in same column, one row up
+    // is it a coin? (not underwater)
+    // if not, branch to leave
     lda(0x0);
     sta((0x6), y);
     JSR(RemoveCoin_Axe);
@@ -9854,11 +9854,11 @@ int CheckTopOfBlock() {
 }
 
 int TopEx() {
-    // <conv.chunks.Comment object at 0x1011eaff0>
-    // <conv.chunks.Comment object at 0x1011eb0e0>
-    // <conv.chunks.Comment object at 0x1011eb320>
-    // <conv.chunks.Comment object at 0x1011eb440>
-    // <conv.chunks.Comment object at 0x1011eb590>
+    // otherwise put blank metatile where coin was
+    // write blank metatile to vram buffer
+    // get control bit
+    // create jumping coin object and update coin variables
+    // leave!
     return 0;
     JMP(SpawnBrickChunks);
 }
@@ -9866,37 +9866,37 @@ int TopEx() {
 int SpawnBrickChunks() {
     lda(Block_X_Position, x);
     sta(Block_Orig_XPos, x);
-    // <conv.chunks.Comment object at 0x1011eb710>
-    // <conv.chunks.Comment object at 0x1011eb860>
+    // set horizontal coordinate of block object
+    // as original horizontal coordinate here
     lda(0xf0);
     sta(Block_X_Speed, x);
-    // <conv.chunks.Comment object at 0x1011eba10>
+    // set horizontal speed for brick chunk objects
     sta(((Block_X_Speed) + (2)), x);
     lda(0xfa);
     sta(Block_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x1011ebe30>
+    // set vertical speed for one
     lda(0xfc);
     sta(((Block_Y_Speed) + (2)), x);
-    // <conv.chunks.Comment object at 0x1011f40b0>
+    // set lower vertical speed for the other
     lda(0x0);
     sta(Block_Y_MoveForce, x);
-    // <conv.chunks.Comment object at 0x1011f43b0>
+    // init fractional movement force for both
     sta(((Block_Y_MoveForce) + (2)), x);
     lda(Block_PageLoc, x);
     sta(((Block_PageLoc) + (2)), x);
-    // <conv.chunks.Comment object at 0x1011f4890>
+    // copy page location
     lda(Block_X_Position, x);
     sta(((Block_X_Position) + (2)), x);
-    // <conv.chunks.Comment object at 0x1011f4bc0>
+    // copy horizontal coordinate
     lda(Block_Y_Position, x);
     clc();
     adc(0x8);
-    // <conv.chunks.Comment object at 0x1011f4f20>
-    // <conv.chunks.Comment object at 0x1011f4fb0>
+    // add 8 pixels to vertical coordinate
+    // and save as vertical coordinate for one of them
     sta(((Block_Y_Position) + (2)), x);
     lda(0xfa);
     sta(Block_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x1011f5310>
+    // set vertical speed...again??? (redundant)
     return 0;
     JMP(BlockObjectsCore);
 }
@@ -9907,11 +9907,11 @@ int BlockObjectsCore() {
     anda(0xf);
     pha();
     tay();
-    // <conv.chunks.Comment object at 0x1011f55e0>
-    // <conv.chunks.Comment object at 0x1011f5730>
-    // <conv.chunks.Comment object at 0x1011f5880>
-    // <conv.chunks.Comment object at 0x1011f59d0>
-    // <conv.chunks.Comment object at 0x1011f5a90>
+    // get state of block object
+    // if not set, branch to leave
+    // mask out high nybble
+    // push to stack
+    // put in Y for now
     txa();
     clc();
     adc(0x9);
@@ -9920,15 +9920,15 @@ int BlockObjectsCore() {
     BEQ(BouncingBlockHandler);
     JSR(ImposeGravityBlock);
     JSR(MoveObjectHorizontally);
-    // <conv.chunks.Comment object at 0x1011f5c40>
-    // <conv.chunks.Comment object at 0x1011f5d90>
-    // <conv.chunks.Comment object at 0x1011f5e50>
-    // <conv.chunks.Comment object at 0x1011f5ee0>
-    // <conv.chunks.Comment object at 0x1011f6000>
-    // <conv.chunks.Comment object at 0x1011f6120>
+    // add 9 bytes to offset (note two block objects are created
+    // when using brick chunks, but only one offset for both)
+    // decrement Y to check for solid block state
+    // branch if found, otherwise continue for brick chunks
+    // do sub to impose gravity on one block object object
+    // do another sub to move horizontally
     txa();
     clc();
-    // <conv.chunks.Comment object at 0x1011f6300>
+    // move onto next block object
     adc(0x2);
     tax();
     JSR(ImposeGravityBlock);
@@ -9941,16 +9941,16 @@ int BlockObjectsCore() {
     ldy(Block_Y_HighPos, x);
     BEQ(UpdSte);
     pha();
-    // <conv.chunks.Comment object at 0x1011f6510>
-    // <conv.chunks.Comment object at 0x1011f6630>
-    // <conv.chunks.Comment object at 0x1011f6750>
-    // <conv.chunks.Comment object at 0x1011f6870>
-    // <conv.chunks.Comment object at 0x1011f6990>
-    // <conv.chunks.Comment object at 0x1011f6ab0>
-    // <conv.chunks.Comment object at 0x1011f6c00>
-    // <conv.chunks.Comment object at 0x1011f6c90>
-    // <conv.chunks.Comment object at 0x1011f6de0>
-    // <conv.chunks.Comment object at 0x1011f6f60>
+    // do sub to impose gravity on other block object
+    // do another sub to move horizontally
+    // get block object offset used for both
+    // get relative coordinates
+    // get offscreen information
+    // draw the brick chunks
+    // get lower nybble of saved state
+    // check vertical high byte of block object
+    // if above the screen, branch to kill it
+    // otherwise save state back into stack
     lda(0xf0);
     cmp(((Block_Y_Position) + (2)), x);
     BCS(ChkTop);
@@ -9959,10 +9959,10 @@ int BlockObjectsCore() {
 }
 
 int ChkTop() {
-    // <conv.chunks.Comment object at 0x1011f7050>
-    // <conv.chunks.Comment object at 0x1011f72f0>
-    // <conv.chunks.Comment object at 0x1011f7440>
-    // <conv.chunks.Comment object at 0x1011f7650>
+    // check to see if bottom block object went
+    // to the bottom of the screen, and branch if not
+    // otherwise set offscreen coordinate
+    // get top block object's vertical coordinate
     lda(Block_Y_Position, x);
     cmp(0xf0);
     pla();
@@ -9982,30 +9982,30 @@ int BouncingBlockHandler() {
     cmp(0x5);
     pla();
     BCS(UpdSte);
-    // <conv.chunks.Comment object at 0x1011f7c80>
-    // <conv.chunks.Comment object at 0x1011f7da0>
-    // <conv.chunks.Comment object at 0x1011f7ec0>
-    // <conv.chunks.Comment object at 0x1011f7fe0>
-    // <conv.chunks.Comment object at 0x1011fc140>
-    // <conv.chunks.Comment object at 0x1011fc260>
-    // <conv.chunks.Comment object at 0x1011fc3b0>
-    // <conv.chunks.Comment object at 0x1011fc440>
-    // <conv.chunks.Comment object at 0x1011fc620>
-    // <conv.chunks.Comment object at 0x1011fc6b0>
+    // do sub to impose gravity on block object
+    // get block object offset
+    // get relative coordinates
+    // get offscreen information
+    // draw the block
+    // get vertical coordinate
+    // mask out high nybble
+    // check to see if low nybble wrapped around
+    // pull state from stack
+    // if still above amount, not time to kill block yet, thus branch
     lda(0x1);
     sta(Block_RepFlag, x);
     JMP(KillBlock);
 }
 
 int KillBlock() {
-    // <conv.chunks.Comment object at 0x1011fc860>
-    // <conv.chunks.Comment object at 0x1011fca40>
+    // otherwise set flag to replace metatile
+    // if branched here, nullify object state
     lda(0x0);
     JMP(UpdSte);
 }
 
 int UpdSte() {
-    // <conv.chunks.Comment object at 0x1011fcb00>
+    // store contents of A in block object state
     sta(Block_State, x);
     return 0;
     JMP(BlockObjMT_Updater);
@@ -10017,8 +10017,8 @@ int BlockObjMT_Updater() {
 }
 
 int UpdateLoop() {
-    // <conv.chunks.Comment object at 0x1011fce90>
-    // <conv.chunks.Comment object at 0x1011fcf20>
+    // set offset to start with second block object
+    // set offset here
     stx(ObjectOffset);
     lda(VRAM_Buffer1);
     BNE(NextBUpd);
@@ -10026,34 +10026,34 @@ int UpdateLoop() {
     BEQ(NextBUpd);
     lda(Block_BBuf_Low, x);
     sta(0x6);
-    // <conv.chunks.Comment object at 0x1011fd100>
-    // <conv.chunks.Comment object at 0x1011fd220>
-    // <conv.chunks.Comment object at 0x1011fd340>
-    // <conv.chunks.Comment object at 0x1011fd490>
-    // <conv.chunks.Comment object at 0x1011fd5b0>
-    // <conv.chunks.Comment object at 0x1011fd730>
+    // if vram buffer already being used here,
+    // branch to move onto next block object
+    // if flag for block object already clear,
+    // branch to move onto next block object
+    // get low byte of block buffer
+    // store into block buffer address
     lda(0x5);
     sta(0x7);
     lda(Block_Orig_YPos, x);
     sta(0x2);
-    // <conv.chunks.Comment object at 0x1011fd940>
-    // <conv.chunks.Comment object at 0x1011fd9d0>
-    // <conv.chunks.Comment object at 0x1011fdbb0>
+    // set high byte of block buffer address
+    // get original vertical coordinate of block object
+    // store here and use as offset to block buffer
     tay();
     lda(Block_Metatile, x);
     sta((0x6), y);
     JSR(ReplaceBlockMetatile);
-    // <conv.chunks.Comment object at 0x1011fdd30>
-    // <conv.chunks.Comment object at 0x1011fde80>
-    // <conv.chunks.Comment object at 0x1011fdee0>
+    // get metatile to be written
+    // write it to the block buffer
+    // do sub to replace metatile where block object is
     lda(0x0);
     sta(Block_RepFlag, x);
     JMP(NextBUpd);
 }
 
 int NextBUpd() {
-    // <conv.chunks.Comment object at 0x1011fe180>
-    // <conv.chunks.Comment object at 0x1011fe360>
+    // clear block object flag
+    // decrement block object offset
     dex();
     BPL(UpdateLoop);
     return 0;
@@ -10079,46 +10079,46 @@ int MoveObjectHorizontally() {
     lda(SprObject_X_Speed, x);
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x1011fee70>
-    // <conv.chunks.Comment object at 0x1011feff0>
-    // <conv.chunks.Comment object at 0x1011ff0b0>
+    // get currently saved value (horizontal
+    // speed, secondary counter, whatever)
+    // and move low nybble to high
     asl();
     asl();
     sta(0x1);
     lda(SprObject_X_Speed, x);
     lsr();
-    // <conv.chunks.Comment object at 0x1011ff290>
-    // <conv.chunks.Comment object at 0x1011ff320>
-    // <conv.chunks.Comment object at 0x1011ff500>
+    // store result here
+    // get saved value again
+    // move high nybble to low
     lsr();
     lsr();
     lsr();
     cmp(0x8);
-    // <conv.chunks.Comment object at 0x1011ff740>
+    // if < 8, branch, do not change
     BCC(SaveXSpd);
     ora(0b11110000);
     JMP(SaveXSpd);
 }
 
 int SaveXSpd() {
-    // <conv.chunks.Comment object at 0x1011ff950>
-    // <conv.chunks.Comment object at 0x1011ffa70>
+    // otherwise alter high nybble
+    // save result here
     sta(0x0);
     ldy(0x0);
     cmp(0x0);
-    // <conv.chunks.Comment object at 0x1011ffb60>
-    // <conv.chunks.Comment object at 0x1011ffc50>
+    // load default Y value here
+    // if result positive, leave Y alone
     BPL(UseAdder);
     dey();
     JMP(UseAdder);
 }
 
 int UseAdder() {
-    // <conv.chunks.Comment object at 0x1011fff20>
-    // <conv.chunks.Comment object at 0x1011fffb0>
+    // otherwise decrement Y
+    // save Y here
     sty(0x2);
     lda(SprObject_X_MoveForce, x);
-    // <conv.chunks.Comment object at 0x1011fffe0>
+    // get whatever number's here
     clc();
     adc(0x1);
     sta(SprObject_X_MoveForce, x);
@@ -10126,22 +10126,22 @@ int UseAdder() {
     rol();
     pha();
     ror();
-    // <conv.chunks.Comment object at 0x101208350>
-    // <conv.chunks.Comment object at 0x1012083e0>
-    // <conv.chunks.Comment object at 0x1012085c0>
-    // <conv.chunks.Comment object at 0x101208710>
-    // <conv.chunks.Comment object at 0x1012087d0>
-    // <conv.chunks.Comment object at 0x101208890>
+    // add low nybble moved to high
+    // store result here
+    // init A
+    // rotate carry into d0
+    // push onto stack
+    // rotate d0 back onto carry
     lda(SprObject_X_Position, x);
     adc(0x0);
     sta(SprObject_X_Position, x);
-    // <conv.chunks.Comment object at 0x101208a70>
-    // <conv.chunks.Comment object at 0x101208b00>
+    // add carry plus saved value (high nybble moved to low
+    // plus $f0 if necessary) to object's horizontal position
     lda(SprObject_PageLoc, x);
     adc(0x2);
     sta(SprObject_PageLoc, x);
-    // <conv.chunks.Comment object at 0x101208e00>
-    // <conv.chunks.Comment object at 0x101208e90>
+    // add carry plus other saved value to the
+    // object's page location and save
     pla();
     clc();
     adc(0x0);
@@ -10149,18 +10149,18 @@ int UseAdder() {
 }
 
 int ExXMove() {
-    // <conv.chunks.Comment object at 0x101209100>
-    // <conv.chunks.Comment object at 0x1012091c0>
-    // <conv.chunks.Comment object at 0x101209250>
+    // pull old carry from stack and add
+    // to high nybble moved to low
+    // and leave
     return 0;
     JMP(MovePlayerVertically);
 }
 
 int MovePlayerVertically() {
     ldx(0x0);
-    // <conv.chunks.Comment object at 0x101209400>
-    // <conv.chunks.Comment object at 0x101209460>
-    // <conv.chunks.Comment object at 0x1012094c0>
+    // $00 - used for downward force
+    // $02 - used for maximum vertical speed
+    // set X for player offset
     lda(TimerControl);
     BNE(NoJSChk);
     lda(JumpspringAnimCtrl);
@@ -10169,10 +10169,10 @@ int MovePlayerVertically() {
 }
 
 int NoJSChk() {
-    // <conv.chunks.Comment object at 0x1012096d0>
-    // <conv.chunks.Comment object at 0x101209820>
-    // <conv.chunks.Comment object at 0x101209940>
-    // <conv.chunks.Comment object at 0x101209a90>
+    // if master timer control set, branch ahead
+    // otherwise check to see if jumpspring is animating
+    // branch to leave if so
+    // dump vertical force
     lda(VerticalForce);
     sta(0x0);
     lda(0x4);
@@ -10194,8 +10194,8 @@ int MoveFallingPlatform() {
 }
 
 int ContVMove() {
-    // <conv.chunks.Comment object at 0x10120a480>
-    // <conv.chunks.Comment object at 0x10120a510>
+    // set movement amount
+    // jump to skip the rest of this
     JMP(SetHiMax);
     JMP(MoveRedPTroopaDown);
 }
@@ -10213,13 +10213,13 @@ int MoveRedPTroopaUp() {
 
 int MoveRedPTroopa() {
     inx();
-    // <conv.chunks.Comment object at 0x10120ab40>
+    // increment X for enemy offset
     lda(0x3);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x10120acf0>
+    // set downward movement amount here
     lda(0x6);
     sta(0x1);
-    // <conv.chunks.Comment object at 0x10120af00>
+    // set upward movement amount here
     lda(0x2);
     sta(0x2);
     tya();
@@ -10239,8 +10239,8 @@ int MoveEnemySlowVert() {
 }
 
 int SetMdMax() {
-    // <conv.chunks.Comment object at 0x10120b6b0>
-    // <conv.chunks.Comment object at 0x10120b740>
+    // set movement amount for bowser/other objects
+    // set maximum speed in A
     lda(0x2);
     BNE(SetXMoveAmt);
     JMP(MoveJ_EnemyVertically);
@@ -10252,21 +10252,21 @@ int MoveJ_EnemyVertically() {
 }
 
 int SetHiMax() {
-    // <conv.chunks.Comment object at 0x10120baa0>
-    // <conv.chunks.Comment object at 0x10120bb30>
+    // set movement amount for podoboo/other objects
+    // set maximum speed in A
     lda(0x3);
     JMP(SetXMoveAmt);
 }
 
 int SetXMoveAmt() {
-    // <conv.chunks.Comment object at 0x10120bc80>
+    // set movement amount here
     sty(0x0);
     inx();
     JSR(ImposeGravitySprObj);
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x10120bd40>
-    // <conv.chunks.Comment object at 0x10120bf20>
-    // <conv.chunks.Comment object at 0x101854080>
+    // increment X for enemy offset
+    // do a sub to move enemy object downwards
+    // get enemy object buffer offset and leave
     return 0;
     JMP(ResidualGravityCode);
 }
@@ -10279,8 +10279,8 @@ int ResidualGravityCode() {
 int ImposeGravityBlock() {
     ldy(0x1);
     lda(0x50);
-    // <conv.chunks.Comment object at 0x101854590>
-    // <conv.chunks.Comment object at 0x101854680>
+    // set offset for maximum speed
+    // set movement amount here
     sta(0x0);
     lda(offsetof(G, MaxSpdBlockData), y);
     JMP(ImposeGravitySprObj);
@@ -10300,7 +10300,7 @@ int MovePlatformDown() {
 
 int MovePlatformUp() {
     lda(0x1);
-    // <conv.chunks.Comment object at 0x101855010>
+    // save value to stack
     pha();
     ldy(Enemy_ID, x);
     inx();
@@ -10312,19 +10312,19 @@ int MovePlatformUp() {
 }
 
 int SetDplSpd() {
-    // <conv.chunks.Comment object at 0x101855220>
-    // <conv.chunks.Comment object at 0x1018553a0>
-    // <conv.chunks.Comment object at 0x101855430>
-    // <conv.chunks.Comment object at 0x1018554c0>
-    // <conv.chunks.Comment object at 0x1018555e0>
-    // <conv.chunks.Comment object at 0x101855790>
-    // <conv.chunks.Comment object at 0x101855820>
+    // get enemy object identifier
+    // increment offset for enemy object
+    // load default value here
+    // residual comparison, object #29 never executes
+    // this code, thus unconditional branch here
+    // residual code
+    // save downward movement amount here
     sta(0x0);
     lda(0xa);
-    // <conv.chunks.Comment object at 0x1018559a0>
+    // save upward movement amount here
     sta(0x1);
     lda(0x3);
-    // <conv.chunks.Comment object at 0x101855a90>
+    // save maximum vertical speed here
     sta(0x2);
     pla();
     tay();
@@ -10334,20 +10334,20 @@ int SetDplSpd() {
 int RedPTroopaGrav() {
     JSR(ImposeGravity);
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x101855fd0>
-    // <conv.chunks.Comment object at 0x1018560f0>
+    // do a sub to move object gradually
+    // get enemy object offset and leave
     return 0;
     JMP(ImposeGravity);
 }
 
 int ImposeGravity() {
     pha();
-    // <conv.chunks.Comment object at 0x1018562d0>
-    // <conv.chunks.Comment object at 0x101856330>
-    // <conv.chunks.Comment object at 0x1018563c0>
+    // $00 - used for downward force
+    // $07 - used as adder for vertical position
+    // push value to stack
     lda(SprObject_YMF_Dummy, x);
     clc();
-    // <conv.chunks.Comment object at 0x1018565a0>
+    // add value in movement force to contents of dummy variable
     adc(SprObject_Y_MoveForce, x);
     sta(SprObject_YMF_Dummy, x);
     ldy(0x0);
@@ -10358,90 +10358,90 @@ int ImposeGravity() {
 }
 
 int AlterYP() {
-    // <conv.chunks.Comment object at 0x101856870>
-    // <conv.chunks.Comment object at 0x101856900>
-    // <conv.chunks.Comment object at 0x101856ae0>
-    // <conv.chunks.Comment object at 0x101856c60>
-    // <conv.chunks.Comment object at 0x101856cf0>
+    // set Y to zero by default
+    // get current vertical speed
+    // if currently moving downwards, do not decrement Y
+    // otherwise decrement Y
+    // store Y here
     sty(0x7);
     adc(SprObject_Y_Position, x);
     sta(SprObject_Y_Position, x);
-    // <conv.chunks.Comment object at 0x101856e10>
-    // <conv.chunks.Comment object at 0x101856fc0>
+    // add vertical position to vertical speed plus carry
+    // store as new vertical position
     lda(SprObject_Y_HighPos, x);
     adc(0x7);
     sta(SprObject_Y_HighPos, x);
-    // <conv.chunks.Comment object at 0x101857260>
-    // <conv.chunks.Comment object at 0x1018572f0>
+    // add carry plus contents of $07 to vertical high byte
+    // store as new vertical high byte
     lda(SprObject_Y_MoveForce, x);
     clc();
     adc(0x0);
-    // <conv.chunks.Comment object at 0x101857680>
+    // add downward movement amount to contents of $0433
     sta(SprObject_Y_MoveForce, x);
     lda(SprObject_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x101857890>
+    // add carry to vertical speed and store
     adc(0x0);
     sta(SprObject_Y_Speed, x);
     cmp(0x2);
     BMI(ChkUpM);
-    // <conv.chunks.Comment object at 0x101857c20>
-    // <conv.chunks.Comment object at 0x101857cb0>
+    // compare to maximum speed
+    // if less than preset value, skip this part
     lda(SprObject_Y_MoveForce, x);
     cmp(0x80);
-    // <conv.chunks.Comment object at 0x101857f80>
+    // if less positively than preset maximum, skip this part
     BCC(ChkUpM);
     lda(0x2);
     sta(SprObject_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x10185c200>
+    // keep vertical speed within maximum value
     lda(0x0);
     sta(SprObject_Y_MoveForce, x);
     JMP(ChkUpM);
 }
 
 int ChkUpM() {
-    // <conv.chunks.Comment object at 0x10185c4a0>
-    // <conv.chunks.Comment object at 0x10185c680>
+    // clear fractional
+    // get value from stack
     pla();
     BEQ(ExVMove);
-    // <conv.chunks.Comment object at 0x10185c7a0>
+    // if set to zero, branch to leave
     lda(0x2);
     eor(0b11111111);
-    // <conv.chunks.Comment object at 0x10185c8f0>
+    // otherwise get two's compliment of maximum speed
     tay();
     iny();
     sty(0x7);
-    // <conv.chunks.Comment object at 0x10185cc50>
+    // store two's compliment here
     lda(SprObject_Y_MoveForce, x);
     sec();
     sbc(0x1);
     sta(SprObject_Y_MoveForce, x);
-    // <conv.chunks.Comment object at 0x10185ce90>
-    // <conv.chunks.Comment object at 0x10185cf50>
-    // <conv.chunks.Comment object at 0x10185cfe0>
+    // subtract upward movement amount from contents
+    // of movement force, note that $01 is twice as large as $00,
+    // thus it effectively undoes add we did earlier
     lda(SprObject_Y_Speed, x);
     sbc(0x0);
-    // <conv.chunks.Comment object at 0x10185d2b0>
+    // subtract borrow from vertical speed and store
     sta(SprObject_Y_Speed, x);
     cmp(0x7);
     BPL(ExVMove);
-    // <conv.chunks.Comment object at 0x10185d520>
-    // <conv.chunks.Comment object at 0x10185d5b0>
+    // compare vertical speed to two's compliment
+    // if less negatively than preset maximum, skip this part
     lda(SprObject_Y_MoveForce, x);
     cmp(0x80);
     BCS(ExVMove);
-    // <conv.chunks.Comment object at 0x10185d880>
-    // <conv.chunks.Comment object at 0x10185d910>
+    // check if fractional part is above certain amount,
+    // and if so, branch to leave
     lda(0x7);
     sta(SprObject_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x10185daf0>
+    // keep vertical speed within maximum value
     lda(0xff);
     sta(SprObject_Y_MoveForce, x);
     JMP(ExVMove);
 }
 
 int ExVMove() {
-    // <conv.chunks.Comment object at 0x10185dd90>
-    // <conv.chunks.Comment object at 0x10185dfa0>
+    // clear fractional
+    // leave!
     return 0;
     JMP(EnemiesAndLoopsCore);
 }
@@ -10449,8 +10449,8 @@ int ExVMove() {
 int EnemiesAndLoopsCore() {
     lda(Enemy_Flag, x);
     pha();
-    // <conv.chunks.Comment object at 0x10185e120>
-    // <conv.chunks.Comment object at 0x10185e2a0>
+    // check data here for MSB set
+    // save in stack
     asl();
     BCS(ChkBowserF);
     pla();
@@ -10460,29 +10460,29 @@ int EnemiesAndLoopsCore() {
 }
 
 int ChkAreaTsk() {
-    // <conv.chunks.Comment object at 0x10185e3c0>
-    // <conv.chunks.Comment object at 0x10185e510>
-    // <conv.chunks.Comment object at 0x10185e5a0>
-    // <conv.chunks.Comment object at 0x10185e6c0>
-    // <conv.chunks.Comment object at 0x10185e7e0>
+    // if MSB set in enemy flag, branch ahead of jumps
+    // get from stack
+    // if data zero, branch
+    // otherwise, jump to run enemy subroutines
+    // check number of tasks to perform
     lda(AreaParserTaskNum);
     anda(0x7);
     cmp(0x7);
-    // <conv.chunks.Comment object at 0x10185e990>
+    // if at a specific task, jump and leave
     BEQ(ExitELCore);
     JMP(ProcLoopCommand);
     JMP(ChkBowserF);
 }
 
 int ChkBowserF() {
-    // <conv.chunks.Comment object at 0x10185ec30>
-    // <conv.chunks.Comment object at 0x10185ed50>
+    // otherwise, jump to process loop command/load enemies
+    // get data from stack
     pla();
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x10185ee40>
+    // mask out high nybble
     tay();
     lda(Enemy_Flag, y);
-    // <conv.chunks.Comment object at 0x10185eff0>
+    // use as pointer and load same place with different offset
     BNE(ExitELCore);
     sta(Enemy_Flag, x);
     JMP(ExitELCore);
@@ -10495,53 +10495,53 @@ int ExitELCore() {
 
 int ExecGameLoopback() {
     lda(Player_PageLoc);
-    // <conv.chunks.Comment object at 0x10185f5f0>
+    // send player back four pages
     sec();
     sbc(0x4);
     sta(Player_PageLoc);
     lda(CurrentPageLoc);
-    // <conv.chunks.Comment object at 0x101864bc0>
+    // send current page back four pages
     sec();
     sbc(0x4);
     sta(CurrentPageLoc);
     lda(ScreenLeft_PageLoc);
     sec();
-    // <conv.chunks.Comment object at 0x101864f50>
-    // <conv.chunks.Comment object at 0x1018650a0>
+    // subtract four from page location
+    // of screen's left border
     sbc(0x4);
     sta(ScreenLeft_PageLoc);
     lda(ScreenRight_PageLoc);
     sec();
-    // <conv.chunks.Comment object at 0x101865310>
-    // <conv.chunks.Comment object at 0x101865460>
+    // do the same for the page location
+    // of screen's right border
     sbc(0x4);
     sta(ScreenRight_PageLoc);
     lda(AreaObjectPageLoc);
     sec();
-    // <conv.chunks.Comment object at 0x1018656d0>
-    // <conv.chunks.Comment object at 0x101865820>
+    // subtract four from page control
+    // for area objects
     sbc(0x4);
     sta(AreaObjectPageLoc);
     lda(0x0);
     sta(EnemyObjectPageSel);
-    // <conv.chunks.Comment object at 0x101865a90>
-    // <conv.chunks.Comment object at 0x101865b20>
+    // initialize page select for both
+    // area and enemy objects
     sta(AreaObjectPageSel);
     sta(EnemyDataOffset);
     sta(EnemyObjectPageLoc);
     lda(offsetof(G, AreaDataOfsLoopback), y);
     sta(AreaDataOffset);
-    // <conv.chunks.Comment object at 0x101865dc0>
-    // <conv.chunks.Comment object at 0x101865ee0>
-    // <conv.chunks.Comment object at 0x101866000>
-    // <conv.chunks.Comment object at 0x101866150>
+    // initialize enemy object data offset
+    // and enemy object page control
+    // adjust area object offset based on
+    // which loop command we encountered
     return 0;
     JMP(ProcLoopCommand);
 }
 
 int ProcLoopCommand() {
     lda(LoopCommand);
-    // <conv.chunks.Comment object at 0x101866330>
+    // check if loop command was found
     BEQ(ChkEnemyFrenzy);
     lda(CurrentColumnPos);
     BNE(ChkEnemyFrenzy);
@@ -10554,19 +10554,19 @@ int FindLoop() {
     BMI(ChkEnemyFrenzy);
     lda(WorldNumber);
     cmp(offsetof(G, LoopCmdWorldNumber), y);
-    // <conv.chunks.Comment object at 0x101866960>
-    // <conv.chunks.Comment object at 0x101866a80>
-    // <conv.chunks.Comment object at 0x101866ba0>
+    // if all data is checked and not match, do not loop
+    // check to see if one of the world numbers
+    // matches our current world number
     BNE(FindLoop);
     lda(CurrentPageLoc);
     cmp(offsetof(G, LoopCmdPageNumber), y);
-    // <conv.chunks.Comment object at 0x101866de0>
-    // <conv.chunks.Comment object at 0x101866f00>
+    // check to see if one of the page numbers
+    // matches the page we're currently on
     BNE(FindLoop);
     lda(Player_Y_Position);
     cmp(offsetof(G, LoopCmdYPosition), y);
-    // <conv.chunks.Comment object at 0x101867140>
-    // <conv.chunks.Comment object at 0x101867260>
+    // check to see if the player is at the correct position
+    // if not, branch to check for world 7
     BNE(WrongChk);
     lda(Player_State);
     cmp(0x0);
@@ -10579,22 +10579,22 @@ int FindLoop() {
 }
 
 int IncMLoop() {
-    // <conv.chunks.Comment object at 0x1018674a0>
-    // <conv.chunks.Comment object at 0x1018675c0>
-    // <conv.chunks.Comment object at 0x101867650>
-    // <conv.chunks.Comment object at 0x101867800>
-    // <conv.chunks.Comment object at 0x101867920>
-    // <conv.chunks.Comment object at 0x101867980>
-    // <conv.chunks.Comment object at 0x101867bc0>
-    // <conv.chunks.Comment object at 0x101867ce0>
+    // check to see if the player is
+    // on solid ground (i.e. not jumping or falling)
+    // if not, player fails to pass loop, and loopback
+    // are we in world 7? (check performed on correct
+    // vertical position and on solid ground)
+    // if not, initialize flags used there, otherwise
+    // increment counter for correct progression
+    // increment master multi-part counter
     inc(MultiLoopPassCntr);
     lda(MultiLoopPassCntr);
-    // <conv.chunks.Comment object at 0x101867e30>
+    // have we done all three parts?
     cmp(0x3);
     BNE(InitLCmd);
     lda(MultiLoopCorrectCntr);
-    // <conv.chunks.Comment object at 0x101867fb0>
-    // <conv.chunks.Comment object at 0x1018701a0>
+    // if not, skip this part
+    // if so, have we done them all correctly?
     cmp(0x3);
     BEQ(InitMLp);
     BNE(DoLpBack);
@@ -10602,25 +10602,25 @@ int IncMLoop() {
 }
 
 int WrongChk() {
-    // <conv.chunks.Comment object at 0x101870320>
-    // <conv.chunks.Comment object at 0x101870500>
-    // <conv.chunks.Comment object at 0x101870620>
+    // if so, branch past unnecessary check here
+    // unconditional branch if previous branch fails
+    // are we in world 7? (check performed on
     lda(WorldNumber);
     cmp(World7);
-    // <conv.chunks.Comment object at 0x101870770>
+    // incorrect vertical position or not on solid ground)
     BEQ(IncMLoop);
     JMP(DoLpBack);
 }
 
 int DoLpBack() {
-    // <conv.chunks.Comment object at 0x1018709b0>
+    // if player is not in right place, loop back
     JSR(ExecGameLoopback);
     JSR(KillAllEnemies);
     JMP(InitMLp);
 }
 
 int InitMLp() {
-    // <conv.chunks.Comment object at 0x101870bf0>
+    // initialize counters used for multi-part loop commands
     lda(0x0);
     sta(MultiLoopPassCntr);
     sta(MultiLoopCorrectCntr);
@@ -10628,7 +10628,7 @@ int InitMLp() {
 }
 
 int InitLCmd() {
-    // <conv.chunks.Comment object at 0x101870f50>
+    // initialize loop command flag
     lda(0x0);
     sta(LoopCommand);
     JMP(ChkEnemyFrenzy);
@@ -10638,15 +10638,15 @@ int ChkEnemyFrenzy() {
     lda(EnemyFrenzyQueue);
     BEQ(ProcessEnemyData);
     sta(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x1018711f0>
-    // <conv.chunks.Comment object at 0x101871310>
-    // <conv.chunks.Comment object at 0x101871430>
+    // check for enemy object in frenzy queue
+    // if not, skip this part
+    // store as enemy object identifier here
     lda(0x1);
     sta(Enemy_Flag, x);
-    // <conv.chunks.Comment object at 0x1018715e0>
+    // activate enemy object flag
     lda(0x0);
     sta(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x101871820>
+    // initialize state and frenzy queue
     sta(EnemyFrenzyQueue);
     JMP(InitEnemyObject);
     JMP(ProcessEnemyData);
@@ -10656,9 +10656,9 @@ int ProcessEnemyData() {
     ldy(EnemyDataOffset);
     lda((EnemyData), y);
     cmp(0xff);
-    // <conv.chunks.Comment object at 0x101871cd0>
-    // <conv.chunks.Comment object at 0x101871df0>
-    // <conv.chunks.Comment object at 0x101871f70>
+    // get offset of enemy object data
+    // load first byte
+    // check for EOD terminator
     BNE(CheckEndofBuffer);
     JMP(CheckFrenzyBuffer);
     JMP(CheckEndofBuffer);
@@ -10666,14 +10666,14 @@ int ProcessEnemyData() {
 
 int CheckEndofBuffer() {
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x1018722d0>
+    // check for special row $0e
     cmp(0xe);
     BEQ(CheckRightBounds);
     cpx(0x5);
     BCC(CheckRightBounds);
-    // <conv.chunks.Comment object at 0x101872450>
-    // <conv.chunks.Comment object at 0x101872600>
-    // <conv.chunks.Comment object at 0x101872690>
+    // if found, branch, otherwise
+    // check for end of buffer
+    // if not at end of buffer, branch
     iny();
     lda((EnemyData), y);
     anda(0b111111);
@@ -10685,25 +10685,25 @@ int CheckEndofBuffer() {
 
 int CheckRightBounds() {
     lda(ScreenRight_X_Pos);
-    // <conv.chunks.Comment object at 0x101872ea0>
+    // add 48 to pixel coordinate of right boundary
     clc();
     adc(0x30);
     anda(0b11110000);
-    // <conv.chunks.Comment object at 0x1018730b0>
+    // store high nybble
     sta(0x7);
     lda(ScreenRight_PageLoc);
-    // <conv.chunks.Comment object at 0x101873260>
+    // add carry to page location of right boundary
     adc(0x0);
     sta(0x6);
-    // <conv.chunks.Comment object at 0x101873590>
+    // store page location + carry
     ldy(EnemyDataOffset);
     iny();
     lda((EnemyData), y);
-    // <conv.chunks.Comment object at 0x101873800>
+    // if MSB of enemy object is clear, branch to check for row $0f
     asl();
     BCC(CheckPageCtrlRow);
     lda(EnemyObjectPageSel);
-    // <conv.chunks.Comment object at 0x101873b00>
+    // if page select already set, do not set again
     BNE(CheckPageCtrlRow);
     inc(EnemyObjectPageSel);
     inc(EnemyObjectPageLoc);
@@ -10713,24 +10713,24 @@ int CheckRightBounds() {
 int CheckPageCtrlRow() {
     dey();
     lda((EnemyData), y);
-    // <conv.chunks.Comment object at 0x10187c050>
+    // reread first byte
     anda(0xf);
     cmp(0xf);
     BNE(PositionEnemyObj);
     lda(EnemyObjectPageSel);
     BNE(PositionEnemyObj);
-    // <conv.chunks.Comment object at 0x10187c230>
-    // <conv.chunks.Comment object at 0x10187c350>
-    // <conv.chunks.Comment object at 0x10187c500>
-    // <conv.chunks.Comment object at 0x10187c620>
+    // check for special row $0f
+    // if not found, branch to position enemy object
+    // if page select set,
+    // branch without reading second byte
     iny();
     lda((EnemyData), y);
-    // <conv.chunks.Comment object at 0x10187c7d0>
+    // otherwise, get second byte, mask out 2 MSB
     anda(0b111111);
     sta(EnemyObjectPageLoc);
     inc(EnemyDataOffset);
-    // <conv.chunks.Comment object at 0x10187ca40>
-    // <conv.chunks.Comment object at 0x10187cb60>
+    // store as page control for enemy object data
+    // increment enemy object data offset 2 bytes
     inc(EnemyDataOffset);
     inc(EnemyObjectPageSel);
     JMP(ProcLoopCommand);
@@ -10741,25 +10741,25 @@ int PositionEnemyObj() {
     lda(EnemyObjectPageLoc);
     sta(Enemy_PageLoc, x);
     lda((EnemyData), y);
-    // <conv.chunks.Comment object at 0x10187cfe0>
-    // <conv.chunks.Comment object at 0x10187d100>
-    // <conv.chunks.Comment object at 0x10187d250>
+    // store page control as page location
+    // for enemy object
+    // get first byte of enemy object
     anda(0b11110000);
     sta(Enemy_X_Position, x);
     cmp(ScreenRight_X_Pos);
     lda(Enemy_PageLoc, x);
     sbc(ScreenRight_PageLoc);
     BCS(CheckRightExtBounds);
-    // <conv.chunks.Comment object at 0x10187d4c0>
-    // <conv.chunks.Comment object at 0x10187d610>
-    // <conv.chunks.Comment object at 0x10187d730>
-    // <conv.chunks.Comment object at 0x10187d880>
-    // <conv.chunks.Comment object at 0x10187d9a0>
+    // store column position
+    // check column position against right boundary
+    // without subtracting, then subtract borrow
+    // from page location
+    // if enemy object beyond or at boundary, branch
     lda((EnemyData), y);
     anda(0b1111);
     cmp(0xe);
-    // <conv.chunks.Comment object at 0x10187dc10>
-    // <conv.chunks.Comment object at 0x10187dd30>
+    // check for special row $0e
+    // if found, jump elsewhere
     BEQ(ParseRow0e);
     JMP(CheckThreeBytes);
     JMP(CheckRightExtBounds);
@@ -10772,26 +10772,26 @@ int CheckRightExtBounds() {
     sbc(Enemy_PageLoc, x);
     BCC(CheckFrenzyBuffer);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x10187e0c0>
-    // <conv.chunks.Comment object at 0x10187e150>
-    // <conv.chunks.Comment object at 0x10187e330>
-    // <conv.chunks.Comment object at 0x10187e3c0>
-    // <conv.chunks.Comment object at 0x10187e570>
-    // <conv.chunks.Comment object at 0x10187e690>
+    // check right boundary + 48 against
+    // column position without subtracting,
+    // then subtract borrow from page control temp
+    // plus carry
+    // if enemy object beyond extended boundary, branch
+    // store value in vertical high byte
     sta(Enemy_Y_HighPos, x);
     lda((EnemyData), y);
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x10187e8d0>
-    // <conv.chunks.Comment object at 0x10187ea80>
-    // <conv.chunks.Comment object at 0x10187eb40>
+    // get first byte again
+    // multiply by four to get the vertical
+    // coordinate
     asl();
     asl();
     sta(Enemy_Y_Position, x);
     cmp(0xe0);
     BEQ(ParseRow0e);
-    // <conv.chunks.Comment object at 0x10187ee10>
-    // <conv.chunks.Comment object at 0x10187eea0>
+    // do one last check for special row $0e
+    // (necessary if branched to $c1cb)
     iny();
     lda((EnemyData), y);
     anda(0b1000000);
@@ -10803,10 +10803,10 @@ int CheckRightExtBounds() {
 
 int CheckForEnemyGroup() {
     lda((EnemyData), y);
-    // <conv.chunks.Comment object at 0x10187f740>
+    // get second byte and mask out 2 MSB
     anda(0b111111);
     cmp(0x37);
-    // <conv.chunks.Comment object at 0x10187f9b0>
+    // check for value below $37
     BCC(BuzzyBeetleMutate);
     cmp(0x3f);
     BCC(DoGroup);
@@ -10818,25 +10818,25 @@ int BuzzyBeetleMutate() {
     BNE(StrID);
     ldy(PrimaryHardMode);
     BEQ(StrID);
-    // <conv.chunks.Comment object at 0x10187fe60>
-    // <conv.chunks.Comment object at 0x10187fec0>
-    // <conv.chunks.Comment object at 0x101884140>
-    // <conv.chunks.Comment object at 0x101884260>
+    // if below $37, check for goomba
+    // value ($3f or more always fails)
+    // check if primary hard mode flag is set
+    // and if so, change goomba to buzzy beetle
     lda(BuzzyBeetle);
     JMP(StrID);
 }
 
 int StrID() {
-    // <conv.chunks.Comment object at 0x1018844a0>
+    // store enemy object number into buffer
     sta(Enemy_ID, x);
     lda(0x1);
     sta(Enemy_Flag, x);
-    // <conv.chunks.Comment object at 0x1018846b0>
+    // set flag for enemy in buffer
     JSR(InitEnemyObject);
     lda(Enemy_Flag, x);
     BNE(Inc2B);
-    // <conv.chunks.Comment object at 0x101884980>
-    // <conv.chunks.Comment object at 0x101884ad0>
+    // check to see if flag is set
+    // if not, leave, otherwise branch
     return 0;
     JMP(CheckFrenzyBuffer);
 }
@@ -10845,9 +10845,9 @@ int CheckFrenzyBuffer() {
     lda(EnemyFrenzyBuffer);
     BNE(StrFre);
     lda(VineFlagOffset);
-    // <conv.chunks.Comment object at 0x101884ce0>
-    // <conv.chunks.Comment object at 0x101884e00>
-    // <conv.chunks.Comment object at 0x101884f50>
+    // if enemy object stored in frenzy buffer
+    // then branch ahead to store in enemy object buffer
+    // otherwise check vine flag offset
     cmp(0x1);
     BNE(ExEPar);
     lda(VineObject);
@@ -10855,24 +10855,24 @@ int CheckFrenzyBuffer() {
 }
 
 int StrFre() {
-    // <conv.chunks.Comment object at 0x1018850d0>
-    // <conv.chunks.Comment object at 0x1018852b0>
-    // <conv.chunks.Comment object at 0x1018853d0>
+    // if other value <> 1, leave
+    // otherwise put vine in enemy identifier
+    // store contents of frenzy buffer into enemy identifier value
     sta(Enemy_ID, x);
     JMP(InitEnemyObject);
 }
 
 int InitEnemyObject() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1018855b0>
+    // initialize enemy state
     sta(Enemy_State, x);
     JSR(CheckpointEnemyID);
     JMP(ExEPar);
 }
 
 int ExEPar() {
-    // <conv.chunks.Comment object at 0x1018857f0>
-    // <conv.chunks.Comment object at 0x101885910>
+    // jump ahead to run jump engine and subroutines
+    // then leave
     return 0;
     JMP(DoGroup);
 }
@@ -10884,13 +10884,13 @@ int DoGroup() {
 
 int ParseRow0e() {
     iny();
-    // <conv.chunks.Comment object at 0x101885c10>
+    // increment Y to load third byte of object
     iny();
     lda((EnemyData), y);
     lsr();
     lsr();
-    // <conv.chunks.Comment object at 0x101885eb0>
-    // <conv.chunks.Comment object at 0x101885f70>
+    // move 3 MSB to the bottom, effectively
+    // making %xxx00000 into %00000xxx
     lsr();
     lsr();
     lsr();
@@ -10899,11 +10899,11 @@ int ParseRow0e() {
     dey();
     lda((EnemyData), y);
     sta(AreaPointer);
-    // <conv.chunks.Comment object at 0x1018861b0>
-    // <conv.chunks.Comment object at 0x1018862d0>
-    // <conv.chunks.Comment object at 0x101886450>
-    // <conv.chunks.Comment object at 0x1018864e0>
-    // <conv.chunks.Comment object at 0x101886660>
+    // is it the same world number as we're on?
+    // if not, do not use (this allows multiple uses
+    // of the same area, like the underground bonus areas)
+    // otherwise, get second byte and use as offset
+    // to addresses for level and enemy object data
     iny();
     lda((EnemyData), y);
     anda(0b11111);
@@ -10920,26 +10920,26 @@ int CheckThreeBytes() {
     ldy(EnemyDataOffset);
     lda((EnemyData), y);
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x101886d80>
-    // <conv.chunks.Comment object at 0x101886ea0>
-    // <conv.chunks.Comment object at 0x101887020>
+    // load current offset for enemy object data
+    // get first byte
+    // check for special row $0e
     cmp(0xe);
     BNE(Inc2B);
     JMP(Inc3B);
 }
 
 int Inc3B() {
-    // <conv.chunks.Comment object at 0x101887350>
+    // if row = $0e, increment three bytes
     inc(EnemyDataOffset);
     JMP(Inc2B);
 }
 
 int Inc2B() {
-    // <conv.chunks.Comment object at 0x1018874d0>
+    // otherwise increment two bytes
     inc(EnemyDataOffset);
     inc(EnemyDataOffset);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x101887740>
+    // init page select for enemy objects
     sta(EnemyObjectPageSel);
     ldx(ObjectOffset);
     return 0;
@@ -10951,14 +10951,14 @@ int CheckpointEnemyID() {
     cmp(0x15);
     BCS(InitEnemyRoutines);
     tay();
-    // <conv.chunks.Comment object at 0x101887c80>
-    // <conv.chunks.Comment object at 0x101887d10>
-    // <conv.chunks.Comment object at 0x101887ef0>
+    // check enemy object identifier for $15 or greater
+    // and branch straight to the jump engine if found
+    // save identifier in Y register for now
     lda(Enemy_Y_Position, x);
     adc(0x8);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1018900e0>
-    // <conv.chunks.Comment object at 0x101890170>
+    // add eight pixels to what will eventually be the
+    // enemy object's vertical coordinate ($00-$14 only)
     lda(0x1);
     sta(EnemyOffscrBitsMasked, x);
     tya();
@@ -10983,12 +10983,12 @@ int InitGoomba() {
 int InitPodoboo() {
     lda(0x2);
     sta(Enemy_Y_HighPos, x);
-    // <conv.chunks.Comment object at 0x101892ba0>
-    // <conv.chunks.Comment object at 0x101892c30>
+    // set enemy position to below
+    // the bottom of the screen
     sta(Enemy_Y_Position, x);
     lsr();
     sta(EnemyIntervalTimer, x);
-    // <conv.chunks.Comment object at 0x101892fc0>
+    // set timer for enemy
     lsr();
     sta(Enemy_State, x);
     JMP(SmallBBox);
@@ -10998,8 +10998,8 @@ int InitPodoboo() {
 int InitRetainerObj() {
     lda(0xb8);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x101893470>
-    // <conv.chunks.Comment object at 0x101893500>
+    // set fixed vertical position for
+    // princess/mushroom retainer object
     return 0;
     JMP(InitNormalEnemy);
 }
@@ -11007,22 +11007,22 @@ int InitRetainerObj() {
 int InitNormalEnemy() {
     ldy(0x1);
     lda(PrimaryHardMode);
-    // <conv.chunks.Comment object at 0x101893830>
-    // <conv.chunks.Comment object at 0x1018939b0>
+    // load offset of 1 by default
+    // check for primary hard mode flag set
     BNE(GetESpd);
     dey();
     JMP(GetESpd);
 }
 
 int GetESpd() {
-    // <conv.chunks.Comment object at 0x101893cb0>
-    // <conv.chunks.Comment object at 0x101893d40>
+    // if not set, decrement offset
+    // get appropriate horizontal speed
     lda(offsetof(G, NormalXSpdData), y);
     JMP(SetESpd);
 }
 
 int SetESpd() {
-    // <conv.chunks.Comment object at 0x101893ef0>
+    // store as speed for enemy object
     sta(Enemy_X_Speed, x);
     JMP(TallBBox);
     JMP(InitRedKoopa);
@@ -11031,8 +11031,8 @@ int SetESpd() {
 int InitRedKoopa() {
     JSR(InitNormalEnemy);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x1018a0260>
-    // <conv.chunks.Comment object at 0x1018a0380>
+    // load appropriate horizontal speed
+    // set enemy state for red koopa troopa $03
     sta(Enemy_State, x);
     return 0;
     JMP(InitHammerBro);
@@ -11041,36 +11041,36 @@ int InitRedKoopa() {
 int InitHammerBro() {
     lda(0x0);
     sta(HammerThrowingTimer, x);
-    // <conv.chunks.Comment object at 0x1018a0710>
-    // <conv.chunks.Comment object at 0x1018a0890>
+    // init horizontal speed and timer used by hammer bro
+    // apparently to time hammer throwing
     sta(Enemy_X_Speed, x);
     ldy(SecondaryHardMode);
-    // <conv.chunks.Comment object at 0x1018a0b90>
+    // get secondary hard mode flag
     lda(offsetof(G, HBroWalkingTimerData), y);
     sta(EnemyIntervalTimer, x);
     lda(0xb);
-    // <conv.chunks.Comment object at 0x1018a0dd0>
-    // <conv.chunks.Comment object at 0x1018a0f20>
+    // set value as delay for hammer bro to walk left
+    // set specific value for bounding box size control
     JMP(SetBBox);
     JMP(InitHorizFlySwimEnemy);
 }
 
 int InitHorizFlySwimEnemy() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1018a11c0>
+    // initialize horizontal speed
     JMP(SetESpd);
     JMP(InitBloober);
 }
 
 int InitBloober() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1018a1460>
+    // initialize horizontal speed
     sta(BlooperMoveSpeed, x);
     JMP(SmallBBox);
 }
 
 int SmallBBox() {
-    // <conv.chunks.Comment object at 0x1018a16a0>
+    // set specific bounding box size control
     lda(0x9);
     BNE(SetBBox);
     JMP(InitRedPTroopa);
@@ -11086,12 +11086,12 @@ int InitRedPTroopa() {
 }
 
 int GetCent() {
-    // <conv.chunks.Comment object at 0x1018a19a0>
-    // <conv.chunks.Comment object at 0x1018a1a30>
-    // <conv.chunks.Comment object at 0x1018a1c10>
-    // <conv.chunks.Comment object at 0x1018a1d60>
-    // <conv.chunks.Comment object at 0x1018a1eb0>
-    // <conv.chunks.Comment object at 0x1018a1f40>
+    // load central position adder for 48 pixels down
+    // set vertical coordinate into location to
+    // be used as original vertical coordinate
+    // if vertical coordinate < $80
+    // if => $80, load position adder for 32 pixels up
+    // send central position adder to A
     tya();
     adc(Enemy_Y_Position, x);
     sta(RedPTroopaCenterYPos, x);
@@ -11099,27 +11099,27 @@ int GetCent() {
 }
 
 int TallBBox() {
-    // <conv.chunks.Comment object at 0x1018a20f0>
-    // <conv.chunks.Comment object at 0x1018a2240>
-    // <conv.chunks.Comment object at 0x1018a2390>
+    // add to current vertical coordinate
+    // store as central vertical coordinate
+    // set specific bounding box size control
     lda(0x3);
     JMP(SetBBox);
 }
 
 int SetBBox() {
-    // <conv.chunks.Comment object at 0x1018a2450>
+    // set bounding box control here
     sta(Enemy_BoundBoxCtrl, x);
     lda(0x2);
-    // <conv.chunks.Comment object at 0x1018a2690>
+    // set moving direction for left
     sta(Enemy_MovingDir, x);
     JMP(InitVStf);
 }
 
 int InitVStf() {
-    // <conv.chunks.Comment object at 0x1018a28d0>
+    // initialize vertical speed
     lda(0x0);
     sta(Enemy_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x1018a2990>
+    // and movement force
     sta(Enemy_Y_MoveForce, x);
     return 0;
     JMP(InitBulletBill);
@@ -11127,10 +11127,10 @@ int InitVStf() {
 
 int InitBulletBill() {
     lda(0x2);
-    // <conv.chunks.Comment object at 0x1018a2d80>
+    // set moving direction for left
     sta(Enemy_MovingDir, x);
     lda(0x9);
-    // <conv.chunks.Comment object at 0x1018a2fc0>
+    // set bounding box control for $09
     sta(Enemy_BoundBoxCtrl, x);
     return 0;
     JMP(InitCheepCheep);
@@ -11141,13 +11141,13 @@ int InitCheepCheep() {
     lda(PseudoRandomBitReg, x);
     anda(0b10000);
     sta(CheepCheepMoveMFlag, x);
-    // <conv.chunks.Comment object at 0x1018a32f0>
-    // <conv.chunks.Comment object at 0x1018a3410>
-    // <conv.chunks.Comment object at 0x1018a3560>
-    // <conv.chunks.Comment object at 0x1018a3680>
+    // set vertical bounding box, speed, init others
+    // check one portion of LSFR
+    // get d4 from it
+    // save as movement flag of some sort
     lda(Enemy_Y_Position, x);
     sta(CheepCheepOrigYPos, x);
-    // <conv.chunks.Comment object at 0x1018a38f0>
+    // save original vertical coordinate here
     return 0;
     JMP(InitLakitu);
 }
@@ -11160,7 +11160,7 @@ int InitLakitu() {
 
 int SetupLakitu() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1018a3da0>
+    // erase counter for lakitu's reappearance
     sta(LakituReappearTimer);
     JSR(InitHorizFlySwimEnemy);
     JMP(TallBBox2);
@@ -11174,32 +11174,32 @@ int KillLakitu() {
 
 int LakituAndSpinyHandler() {
     lda(FrenzyEnemyTimer);
-    // <conv.chunks.Comment object at 0x1018b04a0>
+    // if timer here not expired, leave
     BNE(ExLSHand);
     cpx(0x5);
-    // <conv.chunks.Comment object at 0x1018b0ce0>
+    // if we are on the special use slot, leave
     BCS(ExLSHand);
     lda(0x80);
-    // <conv.chunks.Comment object at 0x1018b0ef0>
+    // set timer
     sta(FrenzyEnemyTimer);
     ldy(0x4);
     JMP(ChkLak);
 }
 
 int ChkLak() {
-    // <conv.chunks.Comment object at 0x1018b1100>
-    // <conv.chunks.Comment object at 0x1018b1190>
+    // start with the last enemy slot
+    // check all enemy slots to see
     lda(Enemy_ID, y);
     cmp(Lakitu);
     BEQ(CreateSpiny);
     dey();
     BPL(ChkLak);
     inc(LakituReappearTimer);
-    // <conv.chunks.Comment object at 0x1018b13d0>
-    // <conv.chunks.Comment object at 0x1018b1430>
-    // <conv.chunks.Comment object at 0x1018b1670>
-    // <conv.chunks.Comment object at 0x1018b1700>
-    // <conv.chunks.Comment object at 0x1018b1850>
+    // if lakitu is on one of them
+    // if so, branch out of this loop
+    // otherwise check another slot
+    // loop until all slots are checked
+    // increment reappearance timer
     lda(LakituReappearTimer);
     cmp(0x7);
     BCC(ExLSHand);
@@ -11208,10 +11208,10 @@ int ChkLak() {
 }
 
 int ChkNoEn() {
-    // <conv.chunks.Comment object at 0x1018b1a60>
-    // <conv.chunks.Comment object at 0x1018b1af0>
-    // <conv.chunks.Comment object at 0x1018b1ca0>
-    // <conv.chunks.Comment object at 0x1018b1d30>
+    // check to see if we're up to a certain value yet
+    // if not, leave
+    // start with the last enemy slot again
+    // check enemy buffer flag for non-active enemy slot
     lda(Enemy_Flag, x);
     BEQ(CreateL);
     dex();
@@ -11221,26 +11221,26 @@ int ChkNoEn() {
 }
 
 int CreateL() {
-    // <conv.chunks.Comment object at 0x1018b1f70>
-    // <conv.chunks.Comment object at 0x1018b20f0>
-    // <conv.chunks.Comment object at 0x1018b2180>
-    // <conv.chunks.Comment object at 0x1018b22d0>
-    // <conv.chunks.Comment object at 0x1018b2420>
+    // branch out of loop if found
+    // otherwise check next slot
+    // branch until all slots are checked
+    // if no empty slots were found, branch to leave
+    // initialize enemy state
     lda(0x0);
     sta(Enemy_State, x);
     lda(Lakitu);
-    // <conv.chunks.Comment object at 0x1018b26c0>
+    // create lakitu enemy object
     sta(Enemy_ID, x);
     JSR(SetupLakitu);
-    // <conv.chunks.Comment object at 0x1018b2930>
+    // do a sub to set up lakitu
     lda(0x20);
     JSR(PutAtRightExtent);
     JMP(RetEOfs);
 }
 
 int RetEOfs() {
-    // <conv.chunks.Comment object at 0x1018b2ab0>
-    // <conv.chunks.Comment object at 0x1018b2c60>
+    // finish setting up lakitu
+    // get enemy object buffer offset again and leave
     ldx(ObjectOffset);
     JMP(ExLSHand);
 }
@@ -11252,28 +11252,28 @@ int ExLSHand() {
 
 int CreateSpiny() {
     lda(Player_Y_Position);
-    // <conv.chunks.Comment object at 0x1018b2f00>
+    // if player above a certain point, branch to leave
     cmp(0x2c);
     BCC(ExLSHand);
     lda(Enemy_State, y);
-    // <conv.chunks.Comment object at 0x1018b3200>
+    // if lakitu is not in normal state, branch to leave
     BNE(ExLSHand);
     lda(Enemy_PageLoc, y);
     sta(Enemy_PageLoc, x);
-    // <conv.chunks.Comment object at 0x1018b3440>
-    // <conv.chunks.Comment object at 0x1018b3590>
+    // store horizontal coordinates (high and low) of lakitu
+    // into the coordinates of the spiny we're going to create
     lda(Enemy_X_Position, y);
     sta(Enemy_X_Position, x);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x1018b3920>
+    // put spiny within vertical screen unit
     sta(Enemy_Y_HighPos, x);
     lda(Enemy_Y_Position, y);
-    // <conv.chunks.Comment object at 0x1018b3b60>
+    // put spiny eight pixels above where lakitu is
     sec();
     sbc(0x8);
     sta(Enemy_Y_Position, x);
     lda(PseudoRandomBitReg, x);
-    // <conv.chunks.Comment object at 0x1018b3f50>
+    // get 2 LSB of LSFR and save to Y
     anda(0b11);
     tay();
     ldx(0x2);
@@ -11281,13 +11281,13 @@ int CreateSpiny() {
 }
 
 int DifLoop() {
-    // <conv.chunks.Comment object at 0x1018b82c0>
+    // get three values and save them
     lda(offsetof(G, PRDiffAdjustData), y);
     sta(0x1, x);
-    // <conv.chunks.Comment object at 0x1018b8500>
+    // to $01-$03
     iny();
     iny();
-    // <conv.chunks.Comment object at 0x1018b8710>
+    // increment Y four bytes for each value
     iny();
     iny();
     dex();
@@ -11295,58 +11295,58 @@ int DifLoop() {
     ldx(ObjectOffset);
     JSR(PlayerLakituDiff);
     ldy(Player_X_Speed);
-    // <conv.chunks.Comment object at 0x1018b88f0>
-    // <conv.chunks.Comment object at 0x1018b8980>
-    // <conv.chunks.Comment object at 0x1018b8ad0>
-    // <conv.chunks.Comment object at 0x1018b8bf0>
-    // <conv.chunks.Comment object at 0x1018b8d10>
+    // decrement X for each one
+    // loop until all three are written
+    // get enemy object buffer offset
+    // move enemy, change direction, get value - difference
+    // check player's horizontal speed
     cpy(0x8);
     BCS(SetSpSpd);
     tay();
-    // <conv.chunks.Comment object at 0x1018b8e90>
-    // <conv.chunks.Comment object at 0x1018b9070>
+    // if moving faster than a certain amount, branch elsewhere
+    // otherwise save value in A to Y for now
     lda(((PseudoRandomBitReg) + (1)), x);
     anda(0b11);
     BEQ(UsePosv);
-    // <conv.chunks.Comment object at 0x1018b92e0>
-    // <conv.chunks.Comment object at 0x1018b9400>
+    // get one of the LSFR parts and save the 2 LSB
+    // branch if neither bits are set
     tya();
     eor(0b11111111);
-    // <conv.chunks.Comment object at 0x1018b95e0>
+    // otherwise get two's compliment of Y
     tay();
     iny();
     JMP(UsePosv);
 }
 
 int UsePosv() {
-    // <conv.chunks.Comment object at 0x1018b9820>
+    // put value from A in Y back to A (they will be lost anyway)
     tya();
     JMP(SetSpSpd);
 }
 
 int SetSpSpd() {
-    // <conv.chunks.Comment object at 0x1018b9940>
+    // set bounding box control, init attributes, lose contents of A
     JSR(SmallBBox);
     ldy(0x2);
     sta(Enemy_X_Speed, x);
     cmp(0x0);
     BMI(SpinyRte);
-    // <conv.chunks.Comment object at 0x1018b9af0>
-    // <conv.chunks.Comment object at 0x1018b9cd0>
-    // <conv.chunks.Comment object at 0x1018b9d60>
+    // set horizontal speed to zero because previous contents
+    // of A were lost...branch here will never be taken for
+    // the same reason
     dey();
     JMP(SpinyRte);
 }
 
 int SpinyRte() {
-    // <conv.chunks.Comment object at 0x1018b9fa0>
+    // set moving direction to the right
     sty(Enemy_MovingDir, x);
     lda(0xfd);
     sta(Enemy_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x1018ba180>
+    // set vertical speed to move upwards
     lda(0x1);
     sta(Enemy_Flag, x);
-    // <conv.chunks.Comment object at 0x1018ba3c0>
+    // enable enemy object by setting flag
     lda(0x5);
     sta(Enemy_State, x);
     JMP(ChpChpEx);
@@ -11364,33 +11364,33 @@ int InitLongFirebar() {
 
 int InitShortFirebar() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1018bb050>
+    // initialize low byte of spin state
     sta(FirebarSpinState_Low, x);
     lda(Enemy_ID, x);
     sec();
-    // <conv.chunks.Comment object at 0x1018bb290>
-    // <conv.chunks.Comment object at 0x1018bb410>
+    // subtract $1b from enemy identifier
+    // to get proper offset for firebar data
     sbc(0x1b);
     tay();
     lda(offsetof(G, FirebarSpinSpdData), y);
-    // <conv.chunks.Comment object at 0x1018bb620>
+    // get spinning speed of firebar
     sta(FirebarSpinSpeed, x);
     lda(offsetof(G, FirebarSpinDirData), y);
-    // <conv.chunks.Comment object at 0x1018bb890>
+    // get spinning direction of firebar
     sta(FirebarSpinDirection, x);
     lda(Enemy_Y_Position, x);
     clc();
-    // <conv.chunks.Comment object at 0x1018bbc50>
+    // add four pixels to vertical coordinate
     adc(0x4);
     sta(Enemy_Y_Position, x);
     lda(Enemy_X_Position, x);
     clc();
-    // <conv.chunks.Comment object at 0x1018c0080>
+    // add four pixels to horizontal coordinate
     adc(0x4);
     sta(Enemy_X_Position, x);
     lda(Enemy_PageLoc, x);
     adc(0x0);
-    // <conv.chunks.Comment object at 0x1018c0440>
+    // add carry to page location
     sta(Enemy_PageLoc, x);
     JMP(TallBBox2);
     JMP(InitFlyingCheepCheep);
@@ -11398,19 +11398,19 @@ int InitShortFirebar() {
 
 int InitFlyingCheepCheep() {
     lda(FrenzyEnemyTimer);
-    // <conv.chunks.Comment object at 0x1018c0860>
+    // if timer here not expired yet, branch to leave
     BNE(ChpChpEx);
     JSR(SmallBBox);
-    // <conv.chunks.Comment object at 0x1018c1cd0>
+    // jump to set bounding box size $09 and init other values
     lda(((PseudoRandomBitReg) + (1)), x);
     anda(0b11);
-    // <conv.chunks.Comment object at 0x1018c1fd0>
+    // set pseudorandom offset here
     tay();
     lda(offsetof(G, FlyCCTimerData), y);
-    // <conv.chunks.Comment object at 0x1018c2180>
+    // load timer with pseudorandom offset
     sta(FrenzyEnemyTimer);
     ldy(0x3);
-    // <conv.chunks.Comment object at 0x1018c23c0>
+    // load Y with default value
     lda(SecondaryHardMode);
     BEQ(MaxCC);
     iny();
@@ -11418,29 +11418,29 @@ int InitFlyingCheepCheep() {
 }
 
 int MaxCC() {
-    // <conv.chunks.Comment object at 0x1018c25d0>
-    // <conv.chunks.Comment object at 0x1018c2750>
-    // <conv.chunks.Comment object at 0x1018c27e0>
+    // if secondary hard mode flag not set, do not increment Y
+    // otherwise, increment Y to allow as many as four onscreen
+    // store whatever pseudorandom bits are in Y
     sty(0x0);
     cpx(0x0);
     BCS(ChpChpEx);
-    // <conv.chunks.Comment object at 0x1018c2840>
-    // <conv.chunks.Comment object at 0x1018c2a20>
+    // compare enemy object buffer offset with Y
+    // if X => Y, branch to leave
     lda(PseudoRandomBitReg, x);
     anda(0b11);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x1018c2cc0>
-    // <conv.chunks.Comment object at 0x1018c2e10>
+    // get last two bits of LSFR, first part
+    // and store in two places
     sta(0x1);
     lda(0xfb);
-    // <conv.chunks.Comment object at 0x1018c2ea0>
+    // set vertical speed for cheep-cheep
     sta(Enemy_Y_Speed, x);
     lda(0x0);
     ldy(Player_X_Speed);
     BEQ(GSeed);
-    // <conv.chunks.Comment object at 0x1018c3230>
-    // <conv.chunks.Comment object at 0x1018c32c0>
-    // <conv.chunks.Comment object at 0x1018c3470>
+    // load default value
+    // check player's horizontal speed
+    // if player not moving left or right, skip this part
     lda(0x4);
     cpy(0x19);
     BCC(GSeed);
@@ -11449,21 +11449,21 @@ int MaxCC() {
 }
 
 int GSeed() {
-    // <conv.chunks.Comment object at 0x1018c3620>
-    // <conv.chunks.Comment object at 0x1018c3740>
-    // <conv.chunks.Comment object at 0x1018c3950>
-    // <conv.chunks.Comment object at 0x1018c39e0>
+    // if moving to the right but not very quickly,
+    // do not change A
+    // otherwise, multiply A by 2
+    // save to stack
     pha();
     clc();
     adc(0x0);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x1018c3bc0>
-    // <conv.chunks.Comment object at 0x1018c3b90>
+    // add to last two bits of LSFR we saved earlier
+    // save it there
     lda(((PseudoRandomBitReg) + (1)), x);
     anda(0b11);
     BEQ(RSeed);
-    // <conv.chunks.Comment object at 0x1018c3fb0>
-    // <conv.chunks.Comment object at 0x1018c8110>
+    // if neither of the last two bits of second LSFR set,
+    // skip this part and save contents of $00
     lda(((PseudoRandomBitReg) + (2)), x);
     anda(0b1111);
     sta(0x0);
@@ -11471,67 +11471,67 @@ int GSeed() {
 }
 
 int RSeed() {
-    // <conv.chunks.Comment object at 0x1018c8440>
-    // <conv.chunks.Comment object at 0x1018c8590>
-    // <conv.chunks.Comment object at 0x1018c8620>
+    // otherwise overwrite with lower nybble of
+    // third LSFR part
+    // get value from stack we saved earlier
     pla();
     clc();
     adc(0x1);
     tay();
     lda(offsetof(G, FlyCCXSpeedData), y);
-    // <conv.chunks.Comment object at 0x1018c8860>
-    // <conv.chunks.Comment object at 0x1018c8830>
-    // <conv.chunks.Comment object at 0x1018c8a10>
+    // add to last two bits of LSFR we saved in other place
+    // use as pseudorandom offset here
+    // get horizontal speed using pseudorandom offset
     sta(Enemy_X_Speed, x);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x1018c8c80>
+    // set to move towards the right
     sta(Enemy_MovingDir, x);
     lda(Player_X_Speed);
-    // <conv.chunks.Comment object at 0x1018c8ec0>
+    // if player moving left or right, branch ahead of this part
     BNE(D2XPos1);
     ldy(0x0);
     tya();
-    // <conv.chunks.Comment object at 0x1018c9130>
-    // <conv.chunks.Comment object at 0x1018c9100>
+    // get first LSFR or third LSFR lower nybble
+    // and check for d1 set
     anda(0b10);
     BEQ(D2XPos1);
-    // <conv.chunks.Comment object at 0x1018c93d0>
+    // if d1 not set, branch
     lda(Enemy_X_Speed, x);
     eor(0xff);
     clc();
     adc(0x1);
-    // <conv.chunks.Comment object at 0x1018c9640>
-    // <conv.chunks.Comment object at 0x1018c9790>
-    // <conv.chunks.Comment object at 0x1018c9820>
+    // if d1 set, change horizontal speed
+    // into two's compliment, thus moving in the opposite
+    // direction
     sta(Enemy_X_Speed, x);
     inc(Enemy_MovingDir, x);
     JMP(D2XPos1);
 }
 
 int D2XPos1() {
-    // <conv.chunks.Comment object at 0x1018c9a60>
-    // <conv.chunks.Comment object at 0x1018c9bb0>
+    // increment to move towards the left
+    // get first LSFR or third LSFR lower nybble again
     tya();
     anda(0b10);
     BEQ(D2XPos2);
     lda(Player_X_Position);
-    // <conv.chunks.Comment object at 0x1018c9dc0>
-    // <conv.chunks.Comment object at 0x1018c9f10>
+    // check for d1 set again, branch again if not set
+    // get player's horizontal position
     clc();
     adc(offsetof(G, FlyCCXPositionData), y);
     sta(Enemy_X_Position, x);
     lda(Player_PageLoc);
     adc(0x0);
-    // <conv.chunks.Comment object at 0x1018ca0c0>
-    // <conv.chunks.Comment object at 0x1018ca210>
-    // <conv.chunks.Comment object at 0x1018ca360>
-    // <conv.chunks.Comment object at 0x1018ca480>
+    // if d1 set, add value obtained from pseudorandom offset
+    // and save as enemy's horizontal position
+    // get player's page location
+    // add carry and jump past this part
     JMP(FinCCSt);
     JMP(D2XPos2);
 }
 
 int D2XPos2() {
-    // <conv.chunks.Comment object at 0x1018ca6c0>
+    // get player's horizontal position
     lda(Player_X_Position);
     sec();
     sbc(offsetof(G, FlyCCXPositionData), y);
@@ -11542,20 +11542,20 @@ int D2XPos2() {
 }
 
 int FinCCSt() {
-    // <conv.chunks.Comment object at 0x1018ca8d0>
-    // <conv.chunks.Comment object at 0x1018caa20>
-    // <conv.chunks.Comment object at 0x1018cab70>
-    // <conv.chunks.Comment object at 0x1018cac90>
-    // <conv.chunks.Comment object at 0x1018cad20>
+    // if d1 not set, subtract value obtained from pseudorandom
+    // offset and save as enemy's horizontal position
+    // get player's page location
+    // subtract borrow
+    // save as enemy's page location
     sta(Enemy_PageLoc, x);
     lda(0x1);
     sta(Enemy_Flag, x);
     sta(Enemy_Y_HighPos, x);
-    // <conv.chunks.Comment object at 0x1018cafc0>
-    // <conv.chunks.Comment object at 0x1018cb1a0>
+    // set enemy's buffer flag
+    // set enemy's high vertical byte
     lda(0xf8);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1018cb350>
+    // put enemy below the screen, and we are done
     return 0;
     JMP(InitBowser);
 }
@@ -11563,31 +11563,31 @@ int FinCCSt() {
 int InitBowser() {
     JSR(DuplicateEnemyObj);
     stx(BowserFront_Offset);
-    // <conv.chunks.Comment object at 0x1018cb620>
-    // <conv.chunks.Comment object at 0x1018cb740>
+    // jump to create another bowser object
+    // save offset of first here
     lda(0x0);
     sta(BowserBodyControls);
     sta(BridgeCollapseOffset);
-    // <conv.chunks.Comment object at 0x1018cb8c0>
-    // <conv.chunks.Comment object at 0x1018cba70>
+    // initialize bowser's body controls
+    // and bridge collapse offset
     lda(Enemy_X_Position, x);
     sta(BowserOrigXPos);
-    // <conv.chunks.Comment object at 0x1018cbcb0>
+    // store original horizontal position here
     lda(0xdf);
     sta(BowserFireBreathTimer);
     sta(Enemy_MovingDir, x);
-    // <conv.chunks.Comment object at 0x1018cbe30>
-    // <conv.chunks.Comment object at 0x1018cbfe0>
+    // store something here
+    // and in moving direction
     lda(0x20);
     sta(BowserFeetCounter);
-    // <conv.chunks.Comment object at 0x1018d41d0>
+    // set bowser's feet timer and in enemy timer
     sta(EnemyFrameTimer, x);
     lda(0x5);
     sta(BowserHitPoints);
-    // <conv.chunks.Comment object at 0x1018d4500>
+    // give bowser 5 hit points
     lsr();
     sta(BowserMovementSpeed);
-    // <conv.chunks.Comment object at 0x1018d4740>
+    // set default movement speed here
     return 0;
     JMP(DuplicateEnemyObj);
 }
@@ -11598,8 +11598,8 @@ int DuplicateEnemyObj() {
 }
 
 int FSLoop() {
-    // <conv.chunks.Comment object at 0x1018d4950>
-    // <conv.chunks.Comment object at 0x1018d49e0>
+    // start at beginning of enemy slots
+    // increment one slot
     iny();
     lda(Enemy_Flag, y);
     BNE(FSLoop);
@@ -11607,68 +11607,68 @@ int FSLoop() {
     txa();
     ora(0b10000000);
     sta(Enemy_Flag, y);
-    // <conv.chunks.Comment object at 0x1018d4b90>
-    // <conv.chunks.Comment object at 0x1018d4ce0>
-    // <conv.chunks.Comment object at 0x1018d4e30>
-    // <conv.chunks.Comment object at 0x1018d4f80>
-    // <conv.chunks.Comment object at 0x1018d5010>
-    // <conv.chunks.Comment object at 0x1018d5130>
+    // check enemy buffer flag for empty slot
+    // if set, branch and keep checking
+    // otherwise set offset here
+    // transfer original enemy buffer offset
+    // store with d7 set as flag in new enemy
+    // slot as well as enemy offset
     lda(Enemy_PageLoc, x);
     sta(Enemy_PageLoc, y);
     lda(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x1018d53a0>
-    // <conv.chunks.Comment object at 0x1018d54f0>
+    // copy page location and horizontal coordinates
+    // from original enemy to new enemy
     sta(Enemy_X_Position, y);
     lda(0x1);
     sta(Enemy_Flag, x);
     sta(Enemy_Y_HighPos, y);
-    // <conv.chunks.Comment object at 0x1018d57c0>
-    // <conv.chunks.Comment object at 0x1018d59a0>
+    // set flag as normal for original enemy
+    // set high vertical byte for new enemy
     lda(Enemy_Y_Position, x);
     sta(Enemy_Y_Position, y);
     JMP(FlmEx);
 }
 
 int FlmEx() {
-    // <conv.chunks.Comment object at 0x1018d5c10>
-    // <conv.chunks.Comment object at 0x1018d5d60>
+    // copy vertical coordinate from original to new
+    // and then leave
     return 0;
     JMP(InitBowserFlame);
 }
 
 int InitBowserFlame() {
     lda(FrenzyEnemyTimer);
-    // <conv.chunks.Comment object at 0x1018d5fa0>
+    // if timer not expired yet, branch to leave
     BNE(FlmEx);
     sta(Enemy_Y_MoveForce, x);
-    // <conv.chunks.Comment object at 0x1018d64e0>
+    // reset something here
     lda(NoiseSoundQueue);
     ora(Sfx_BowserFlame);
-    // <conv.chunks.Comment object at 0x1018d6720>
+    // load bowser's flame sound into queue
     sta(NoiseSoundQueue);
     ldy(BowserFront_Offset);
     lda(Enemy_ID, y);
-    // <conv.chunks.Comment object at 0x1018d6930>
-    // <conv.chunks.Comment object at 0x1018d6a50>
+    // get bowser's buffer offset
+    // check for bowser
     cmp(Bowser);
     BEQ(SpawnFromMouth);
     JSR(SetFlameTimer);
-    // <conv.chunks.Comment object at 0x1018d6bd0>
-    // <conv.chunks.Comment object at 0x1018d6de0>
+    // branch if found
+    // get timer data based on flame counter
     clc();
     adc(0x20);
-    // <conv.chunks.Comment object at 0x1018d6f90>
+    // add 32 frames by default
     ldy(SecondaryHardMode);
     BEQ(SetFrT);
-    // <conv.chunks.Comment object at 0x1018d71a0>
+    // if secondary mode flag not set, use as timer setting
     sec();
     sbc(0x10);
     JMP(SetFrT);
 }
 
 int SetFrT() {
-    // <conv.chunks.Comment object at 0x1018d7380>
-    // <conv.chunks.Comment object at 0x1018d7410>
+    // otherwise subtract 16 frames for secondary hard mode
+    // set timer accordingly
     sta(FrenzyEnemyTimer);
     lda(PseudoRandomBitReg, x);
     anda(0b11);
@@ -11680,15 +11680,15 @@ int SetFrT() {
 
 int PutAtRightExtent() {
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1018d7bf0>
+    // set vertical position
     lda(ScreenRight_X_Pos);
     clc();
     adc(0x20);
-    // <conv.chunks.Comment object at 0x1018d7ec0>
+    // place enemy 32 pixels beyond right side of screen
     sta(Enemy_X_Position, x);
     lda(ScreenRight_PageLoc);
     adc(0x0);
-    // <conv.chunks.Comment object at 0x1018e0230>
+    // add carry
     sta(Enemy_PageLoc, x);
     JMP(FinishFlame);
     JMP(SpawnFromMouth);
@@ -11696,21 +11696,21 @@ int PutAtRightExtent() {
 
 int SpawnFromMouth() {
     lda(Enemy_X_Position, y);
-    // <conv.chunks.Comment object at 0x1018e05c0>
+    // get bowser's horizontal position
     sec();
     sbc(0xe);
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x1018e07a0>
-    // <conv.chunks.Comment object at 0x1018e0830>
+    // subtract 14 pixels
+    // save as flame's horizontal position
     lda(Enemy_PageLoc, y);
     sta(Enemy_PageLoc, x);
-    // <conv.chunks.Comment object at 0x1018e0b30>
+    // copy page location from bowser to flame
     lda(Enemy_Y_Position, y);
     clc();
-    // <conv.chunks.Comment object at 0x1018e0dd0>
+    // add 8 pixels to bowser's vertical position
     adc(0x8);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1018e0ec0>
+    // save as flame's vertical position
     lda(PseudoRandomBitReg, x);
     anda(0b11);
     sta(Enemy_YMF_Dummy, x);
@@ -11724,18 +11724,18 @@ int SpawnFromMouth() {
 }
 
 int SetMF() {
-    // <conv.chunks.Comment object at 0x1018e11c0>
-    // <conv.chunks.Comment object at 0x1018e12e0>
-    // <conv.chunks.Comment object at 0x1018e1460>
-    // <conv.chunks.Comment object at 0x1018e14f0>
-    // <conv.chunks.Comment object at 0x1018e1640>
-    // <conv.chunks.Comment object at 0x1018e16d0>
-    // <conv.chunks.Comment object at 0x1018e18b0>
-    // <conv.chunks.Comment object at 0x1018e1a30>
-    // <conv.chunks.Comment object at 0x1018e1ac0>
+    // get 2 LSB from first part of LSFR
+    // save here
+    // use as offset
+    // get value here using bits as offset
+    // load default offset
+    // compare value to flame's current vertical position
+    // if less, do not increment offset
+    // otherwise increment now
+    // get value here and save
     lda(offsetof(G, FlameYMFAdderData), y);
     sta(Enemy_Y_MoveForce, x);
-    // <conv.chunks.Comment object at 0x1018e1c70>
+    // to vertical movement force
     lda(0x0);
     sta(EnemyFrenzyBuffer);
     JMP(FinishFlame);
@@ -11743,28 +11743,28 @@ int SetMF() {
 
 int FinishFlame() {
     lda(0x8);
-    // <conv.chunks.Comment object at 0x1018e2000>
+    // set $08 for bounding box control
     sta(Enemy_BoundBoxCtrl, x);
     lda(0x1);
     sta(Enemy_Y_HighPos, x);
-    // <conv.chunks.Comment object at 0x1018e2240>
-    // <conv.chunks.Comment object at 0x1018e22d0>
+    // set high byte of vertical and
+    // enemy buffer flag
     sta(Enemy_Flag, x);
     lsr();
     sta(Enemy_X_MoveForce, x);
     sta(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x1018e2660>
-    // <conv.chunks.Comment object at 0x1018e27b0>
+    // initialize horizontal movement force, and
+    // enemy state
     return 0;
     JMP(InitFireworks);
 }
 
 int InitFireworks() {
     lda(FrenzyEnemyTimer);
-    // <conv.chunks.Comment object at 0x1018e2ab0>
+    // if timer not expired yet, branch to leave
     BNE(ExitFWk);
     lda(0x20);
-    // <conv.chunks.Comment object at 0x1018e3350>
+    // otherwise reset timer
     sta(FrenzyEnemyTimer);
     dec(FireworksCounter);
     ldy(0x6);
@@ -11776,52 +11776,52 @@ int StarFChk() {
     lda(Enemy_ID, y);
     cmp(StarFlagObject);
     BNE(StarFChk);
-    // <conv.chunks.Comment object at 0x1018e3860>
-    // <conv.chunks.Comment object at 0x1018e39b0>
-    // <conv.chunks.Comment object at 0x1018e3ad0>
+    // check for presence of star flag object
+    // if there isn't a star flag object,
+    // routine goes into infinite loop = crash
     lda(Enemy_X_Position, y);
     sec();
     sbc(0x30);
     pha();
-    // <conv.chunks.Comment object at 0x1018e3d40>
-    // <conv.chunks.Comment object at 0x1018e3dd0>
-    // <conv.chunks.Comment object at 0x1018e3f20>
+    // get horizontal coordinate of star flag object, then
+    // subtract 48 pixels from it and save to
+    // the stack
     lda(Enemy_PageLoc, y);
     sbc(0x0);
     sta(0x0);
     lda(FireworksCounter);
-    // <conv.chunks.Comment object at 0x1018e8110>
-    // <conv.chunks.Comment object at 0x1018e8260>
-    // <conv.chunks.Comment object at 0x1018e82f0>
+    // subtract the carry from the page location
+    // of the star flag object
+    // get fireworks counter
     clc();
     adc(Enemy_State, y);
     tay();
     pla();
-    // <conv.chunks.Comment object at 0x1018e8500>
-    // <conv.chunks.Comment object at 0x1018e8680>
-    // <conv.chunks.Comment object at 0x1018e8740>
+    // add state of star flag object (possibly not necessary)
+    // use as offset
+    // get saved horizontal coordinate of star flag - 48 pixels
     clc();
     adc(offsetof(G, FireworksXPosData), y);
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x1018e8860>
-    // <conv.chunks.Comment object at 0x1018e89b0>
+    // add number based on offset of fireworks counter
+    // store as the fireworks object horizontal coordinate
     lda(0x0);
     adc(0x0);
     sta(Enemy_PageLoc, x);
     lda(offsetof(G, FireworksYPosData), y);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1018e8b00>
-    // <conv.chunks.Comment object at 0x1018e8c80>
-    // <conv.chunks.Comment object at 0x1018e8e60>
-    // <conv.chunks.Comment object at 0x1018e8fb0>
+    // add carry and store as page location for
+    // the fireworks object
+    // get vertical position using same offset
+    // and store as vertical coordinate for fireworks object
     lda(0x1);
     sta(Enemy_Y_HighPos, x);
     sta(Enemy_Flag, x);
-    // <conv.chunks.Comment object at 0x1018e9160>
-    // <conv.chunks.Comment object at 0x1018e9340>
+    // store in vertical high byte
+    // and activate enemy buffer flag
     lsr();
     sta(ExplosionGfxCounter, x);
-    // <conv.chunks.Comment object at 0x1018e9520>
+    // initialize explosion counter
     lda(0x8);
     sta(ExplosionTimerCounter, x);
     JMP(ExitFWk);
@@ -11834,18 +11834,18 @@ int ExitFWk() {
 
 int BulletBillCheepCheep() {
     lda(FrenzyEnemyTimer);
-    // <conv.chunks.Comment object at 0x1018e9f70>
+    // if timer not expired yet, branch to leave
     BNE(ExF17);
     lda(AreaType);
     BNE(DoBulletBills);
     cpx(0x3);
     BCS(ExF17);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x1018ea6f0>
-    // <conv.chunks.Comment object at 0x1018ea810>
-    // <conv.chunks.Comment object at 0x1018ea930>
-    // <conv.chunks.Comment object at 0x1018ea9c0>
-    // <conv.chunks.Comment object at 0x1018eaba0>
+    // are we in a water-type level?
+    // if not, branch elsewhere
+    // are we past third enemy slot?
+    // if so, branch to leave
+    // load default offset
     lda(PseudoRandomBitReg, x);
     cmp(0xaa);
     BCC(ChkW2);
@@ -11854,10 +11854,10 @@ int BulletBillCheepCheep() {
 }
 
 int ChkW2() {
-    // <conv.chunks.Comment object at 0x1018eade0>
-    // <conv.chunks.Comment object at 0x1018eae70>
-    // <conv.chunks.Comment object at 0x1018eb080>
-    // <conv.chunks.Comment object at 0x1018eb110>
+    // check first part of LSFR against preset value
+    // if less than preset, do not increment offset
+    // otherwise increment
+    // check world number
     lda(WorldNumber);
     cmp(World2);
     BEQ(Get17ID);
@@ -11868,44 +11868,44 @@ int ChkW2() {
 int Get17ID() {
     tya();
     anda(0b1);
-    // <conv.chunks.Comment object at 0x1018eb6b0>
+    // mask out all but last bit of offset
     tay();
     lda(offsetof(G, SwimCC_IDData), y);
     JMP(Set17ID);
 }
 
 int Set17ID() {
-    // <conv.chunks.Comment object at 0x1018eb860>
-    // <conv.chunks.Comment object at 0x1018eb9b0>
+    // load identifier for cheep-cheeps
+    // store whatever's in A as enemy identifier
     sta(Enemy_ID, x);
     lda(BitMFilter);
     cmp(0xff);
-    // <conv.chunks.Comment object at 0x1018ebc50>
+    // if not all bits set, skip init part and compare bits
     BNE(GetRBit);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1018ebe90>
+    // initialize vertical position filter
     sta(BitMFilter);
     JMP(GetRBit);
 }
 
 int GetRBit() {
-    // <conv.chunks.Comment object at 0x1018f40e0>
+    // get first part of LSFR
     lda(PseudoRandomBitReg, x);
     anda(0b111);
     JMP(ChkRBit);
 }
 
 int ChkRBit() {
-    // <conv.chunks.Comment object at 0x1018f4290>
-    // <conv.chunks.Comment object at 0x1018f43b0>
+    // mask out all but 3 LSB
+    // use as offset
     tay();
     lda(offsetof(G, Bitmasks), y);
     bit(BitMFilter);
-    // <conv.chunks.Comment object at 0x1018f44d0>
-    // <conv.chunks.Comment object at 0x1018f4620>
+    // load bitmask
+    // perform AND on filter without changing it
     BEQ(AddFBit);
     iny();
-    // <conv.chunks.Comment object at 0x1018f4890>
+    // increment offset
     tya();
     anda(0b111);
     JMP(ChkRBit);
@@ -11913,20 +11913,20 @@ int ChkRBit() {
 }
 
 int AddFBit() {
-    // <conv.chunks.Comment object at 0x1018f49b0>
-    // <conv.chunks.Comment object at 0x1018f4ad0>
-    // <conv.chunks.Comment object at 0x1018f4c20>
+    // mask out all but 3 LSB thus keeping it 0-7
+    // do another check
+    // add bit to already set bits in filter
     ora(BitMFilter);
     sta(BitMFilter);
     lda(offsetof(G, Enemy17YPosData), y);
     JSR(PutAtRightExtent);
     sta(Enemy_YMF_Dummy, x);
     lda(0x20);
-    // <conv.chunks.Comment object at 0x1018f4da0>
-    // <conv.chunks.Comment object at 0x1018f4ec0>
-    // <conv.chunks.Comment object at 0x1018f5010>
-    // <conv.chunks.Comment object at 0x1018f5130>
-    // <conv.chunks.Comment object at 0x1018f5280>
+    // and store
+    // load vertical position using offset
+    // set vertical position and other values
+    // initialize dummy variable
+    // set timer
     sta(FrenzyEnemyTimer);
     JMP(CheckpointEnemyID);
     JMP(DoBulletBills);
@@ -11938,16 +11938,16 @@ int DoBulletBills() {
 }
 
 int BB_SLoop() {
-    // <conv.chunks.Comment object at 0x1018f55e0>
-    // <conv.chunks.Comment object at 0x1018f5670>
+    // start at beginning of enemy slots
+    // move onto the next slot
     iny();
     cpy(0x5);
-    // <conv.chunks.Comment object at 0x1018f57f0>
+    // branch to play sound if we've done all slots
     BCS(FireBulletBill);
     lda(Enemy_Flag, y);
     BEQ(BB_SLoop);
-    // <conv.chunks.Comment object at 0x1018f5a00>
-    // <conv.chunks.Comment object at 0x1018f5b50>
+    // if enemy buffer flag not set,
+    // loop back and check another slot
     lda(Enemy_ID, y);
     cmp(BulletBill_FrenzyVar);
     BNE(BB_SLoop);
@@ -11955,9 +11955,9 @@ int BB_SLoop() {
 }
 
 int ExF17() {
-    // <conv.chunks.Comment object at 0x1018f5d90>
-    // <conv.chunks.Comment object at 0x1018f5eb0>
-    // <conv.chunks.Comment object at 0x1018f5fd0>
+    // check enemy identifier for
+    // bullet bill object (frenzy variant)
+    // if found, leave
     return 0;
     JMP(FireBulletBill);
 }
@@ -11965,7 +11965,7 @@ int ExF17() {
 int FireBulletBill() {
     lda(Square2SoundQueue);
     ora(Sfx_Blast);
-    // <conv.chunks.Comment object at 0x1018f6210>
+    // play fireworks/gunfire sound
     sta(Square2SoundQueue);
     lda(BulletBill_FrenzyVar);
     BNE(Set17ID);
@@ -11974,7 +11974,7 @@ int FireBulletBill() {
 
 int HandleGroupEnemies() {
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x1018f67b0>
+    // load value for green koopa troopa
     sec();
     sbc(0x37);
     pha();
@@ -11989,22 +11989,22 @@ int HandleGroupEnemies() {
 }
 
 int PullID() {
-    // <conv.chunks.Comment object at 0x1018f6960>
-    // <conv.chunks.Comment object at 0x1018f6ab0>
-    // <conv.chunks.Comment object at 0x1018f6b40>
-    // <conv.chunks.Comment object at 0x1018f6bd0>
-    // <conv.chunks.Comment object at 0x1018f6de0>
-    // <conv.chunks.Comment object at 0x1018f6e70>
-    // <conv.chunks.Comment object at 0x1018f6ed0>
-    // <conv.chunks.Comment object at 0x1018f70e0>
-    // <conv.chunks.Comment object at 0x1018f7230>
-    // <conv.chunks.Comment object at 0x1018f7350>
+    // subtract $37 from second byte read
+    // save result in stack for now
+    // was byte in $3b-$3e range?
+    // if so, branch
+    // save another copy to stack
+    // load value for goomba enemy
+    // if primary hard mode flag not set,
+    // branch, otherwise change to value
+    // for buzzy beetle
+    // get second copy from stack
     pla();
     JMP(SnglID);
 }
 
 int SnglID() {
-    // <conv.chunks.Comment object at 0x1018f7470>
+    // save enemy id here
     sty(0x1);
     ldy(0xb0);
     anda(0x2);
@@ -12014,11 +12014,11 @@ int SnglID() {
 }
 
 int SetYGp() {
-    // <conv.chunks.Comment object at 0x1018f7590>
-    // <conv.chunks.Comment object at 0x1018f7680>
-    // <conv.chunks.Comment object at 0x1018f77a0>
-    // <conv.chunks.Comment object at 0x1018f7980>
-    // <conv.chunks.Comment object at 0x1018f7a10>
+    // load default y coordinate
+    // check to see if d1 was set
+    // if so, move y coordinate up,
+    // otherwise branch and use default
+    // save y coordinate here
     sty(0x0);
     lda(ScreenRight_PageLoc);
     sta(0x2);
@@ -12033,92 +12033,92 @@ int SetYGp() {
 }
 
 int CntGrp() {
-    // <conv.chunks.Comment object at 0x1018f7bc0>
-    // <conv.chunks.Comment object at 0x1018f7d70>
-    // <conv.chunks.Comment object at 0x1018f7e00>
-    // <conv.chunks.Comment object at 0x1018f7fb0>
-    // <conv.chunks.Comment object at 0x1018f7f80>
-    // <conv.chunks.Comment object at 0x1018fc230>
-    // <conv.chunks.Comment object at 0x1018fc2f0>
-    // <conv.chunks.Comment object at 0x1018fc380>
-    // <conv.chunks.Comment object at 0x1018fc500>
-    // <conv.chunks.Comment object at 0x1018fc590>
+    // get page number of right edge of screen
+    // save here
+    // get pixel coordinate of right edge
+    // save here
+    // load two enemies by default
+    // get first copy from stack
+    // check to see if d0 was set
+    // if not, use default value
+    // otherwise increment to three enemies
+    // save number of enemies here
     sty(NumberofGroupEnemies);
     JMP(GrLoop);
 }
 
 int GrLoop() {
-    // <conv.chunks.Comment object at 0x1018fc710>
+    // start at beginning of enemy buffers
     ldx(0xff);
     JMP(GSltLp);
 }
 
 int GSltLp() {
-    // <conv.chunks.Comment object at 0x1018fc800>
+    // increment and branch if past
     inx();
     cpx(0x5);
-    // <conv.chunks.Comment object at 0x1018fc9b0>
+    // end of buffers
     BCS(NextED);
     lda(Enemy_Flag, x);
     BNE(GSltLp);
-    // <conv.chunks.Comment object at 0x1018fcbf0>
-    // <conv.chunks.Comment object at 0x1018fcd40>
+    // check to see if enemy is already
+    // stored in buffer, and branch if so
     lda(0x1);
     sta(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x1018fce90>
+    // store enemy object identifier
     lda(0x2);
     sta(Enemy_PageLoc, x);
-    // <conv.chunks.Comment object at 0x1018fd0d0>
+    // store page location for enemy object
     lda(0x3);
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x1018fd310>
+    // store x coordinate for enemy object
     clc();
     adc(0x18);
-    // <conv.chunks.Comment object at 0x1018fd5e0>
+    // add 24 pixels for next enemy
     sta(0x3);
     lda(0x2);
     adc(0x0);
-    // <conv.chunks.Comment object at 0x1018fd790>
-    // <conv.chunks.Comment object at 0x1018fd8b0>
+    // add carry to page location for
+    // next enemy
     sta(0x2);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1018fdac0>
+    // store y coordinate for enemy object
     sta(Enemy_Y_Position, x);
     lda(0x1);
     sta(Enemy_Y_HighPos, x);
-    // <conv.chunks.Comment object at 0x1018fdd60>
-    // <conv.chunks.Comment object at 0x1018fddf0>
+    // activate flag for buffer, and
+    // put enemy within the screen vertically
     sta(Enemy_Flag, x);
     JSR(CheckpointEnemyID);
     dec(NumberofGroupEnemies);
-    // <conv.chunks.Comment object at 0x1018fe0f0>
-    // <conv.chunks.Comment object at 0x1018fe210>
+    // process each enemy object separately
+    // do this until we run out of enemy objects
     BNE(GrLoop);
     JMP(NextED);
 }
 
 int NextED() {
-    // <conv.chunks.Comment object at 0x1018fe450>
+    // jump to increment data offset and leave
     JMP(Inc2B);
     JMP(InitPiranhaPlant);
 }
 
 int InitPiranhaPlant() {
     lda(0x1);
-    // <conv.chunks.Comment object at 0x1018fe660>
+    // set initial speed
     sta(PiranhaPlant_Y_Speed, x);
     lsr();
     sta(Enemy_State, x);
     sta(PiranhaPlant_MoveFlag, x);
-    // <conv.chunks.Comment object at 0x1018fe930>
-    // <conv.chunks.Comment object at 0x1018fea80>
+    // initialize enemy state and what would normally
+    // be used as vertical speed, but not in this case
     lda(Enemy_Y_Position, x);
     sta(PiranhaPlantDownYPos, x);
-    // <conv.chunks.Comment object at 0x1018fecf0>
+    // save original vertical coordinate here
     sec();
     sbc(0x18);
     sta(PiranhaPlantUpYPos, x);
-    // <conv.chunks.Comment object at 0x1018fef30>
+    // save original vertical coordinate - 24 pixels here
     lda(0x9);
     JMP(SetBBox2);
     JMP(InitEnemyFrenzy);
@@ -12127,8 +12127,8 @@ int InitPiranhaPlant() {
 int InitEnemyFrenzy() {
     lda(Enemy_ID, x);
     sta(EnemyFrenzyBuffer);
-    // <conv.chunks.Comment object at 0x1018ff380>
-    // <conv.chunks.Comment object at 0x1018ff4d0>
+    // load enemy identifier
+    // save in enemy frenzy buffer
     sec();
     sbc(0x12);
     JMP(NoFrenzyCode);
@@ -12145,50 +12145,50 @@ int EndFrenzy() {
 }
 
 int LakituChk() {
-    // <conv.chunks.Comment object at 0x1018ffd70>
-    // <conv.chunks.Comment object at 0x1018ffe00>
+    // start at last slot
+    // check enemy identifiers
     lda(Enemy_ID, y);
     cmp(Lakitu);
-    // <conv.chunks.Comment object at 0x101908050>
+    // for lakitu
     BNE(NextFSlot);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x101908290>
+    // if found, set state
     sta(Enemy_State, y);
     JMP(NextFSlot);
 }
 
 int NextFSlot() {
-    // <conv.chunks.Comment object at 0x1019084d0>
+    // move onto the next slot
     dey();
     BPL(LakituChk);
-    // <conv.chunks.Comment object at 0x1019085c0>
+    // do this until all slots are checked
     lda(0x0);
     sta(EnemyFrenzyBuffer);
     sta(Enemy_Flag, x);
-    // <conv.chunks.Comment object at 0x101908740>
-    // <conv.chunks.Comment object at 0x1019088f0>
+    // empty enemy frenzy buffer
+    // disable enemy buffer flag for this object
     return 0;
     JMP(InitJumpGPTroopa);
 }
 
 int InitJumpGPTroopa() {
     lda(0x2);
-    // <conv.chunks.Comment object at 0x101908b30>
+    // set for movement to the left
     sta(Enemy_MovingDir, x);
     lda(0xf8);
-    // <conv.chunks.Comment object at 0x101908d70>
+    // set horizontal speed
     sta(Enemy_X_Speed, x);
     JMP(TallBBox2);
 }
 
 int TallBBox2() {
-    // <conv.chunks.Comment object at 0x101908fb0>
+    // set specific value for bounding box control
     lda(0x3);
     JMP(SetBBox2);
 }
 
 int SetBBox2() {
-    // <conv.chunks.Comment object at 0x101909070>
+    // set bounding box control then leave
     sta(Enemy_BoundBoxCtrl, x);
     return 0;
     JMP(InitBalPlatform);
@@ -12196,7 +12196,7 @@ int SetBBox2() {
 
 int InitBalPlatform() {
     dec(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x101909370>
+    // raise vertical position by two pixels
     dec(Enemy_Y_Position, x);
     ldy(SecondaryHardMode);
     BNE(AlignP);
@@ -12206,11 +12206,11 @@ int InitBalPlatform() {
 }
 
 int AlignP() {
-    // <conv.chunks.Comment object at 0x1019095e0>
-    // <conv.chunks.Comment object at 0x101909700>
-    // <conv.chunks.Comment object at 0x101909850>
-    // <conv.chunks.Comment object at 0x1019098e0>
-    // <conv.chunks.Comment object at 0x101909a90>
+    // if secondary hard mode flag not set,
+    // branch ahead
+    // otherwise set value here
+    // do a sub to add or subtract pixels
+    // set default value here for now
     ldy(0xff);
     lda(BalPlatformAlignment);
     sta(Enemy_State, x);
@@ -12221,12 +12221,12 @@ int AlignP() {
 }
 
 int SetBPA() {
-    // <conv.chunks.Comment object at 0x101909b80>
-    // <conv.chunks.Comment object at 0x101909d30>
-    // <conv.chunks.Comment object at 0x101909e80>
-    // <conv.chunks.Comment object at 0x10190a000>
-    // <conv.chunks.Comment object at 0x10190a0c0>
-    // <conv.chunks.Comment object at 0x10190a150>
+    // get current balance platform alignment
+    // set platform alignment to object state here
+    // if old alignment $ff, put $ff as alignment for negative
+    // if old contents already $ff, put
+    // object offset as alignment to make next positive
+    // store whatever value's in Y here
     sty(BalPlatformAlignment);
     lda(0x0);
     sta(Enemy_MovingDir, x);
@@ -12253,20 +12253,20 @@ int InitVertPlatform() {
     ldy(0x40);
     lda(Enemy_Y_Position, x);
     BPL(SetYO);
-    // <conv.chunks.Comment object at 0x10190af00>
-    // <conv.chunks.Comment object at 0x10190af90>
-    // <conv.chunks.Comment object at 0x10190b170>
+    // set default value here
+    // check vertical position
+    // if above a certain point, skip this part
     eor(0xff);
     clc();
-    // <conv.chunks.Comment object at 0x10190b3e0>
+    // otherwise get two's compliment
     adc(0x1);
     ldy(0xc0);
     JMP(SetYO);
 }
 
 int SetYO() {
-    // <conv.chunks.Comment object at 0x10190b4d0>
-    // <conv.chunks.Comment object at 0x10190b5f0>
+    // get alternate value to add to vertical position
+    // save as top vertical position
     sta(YPlatformTopYPos, x);
     tya();
     clc();
@@ -12281,8 +12281,8 @@ int CommonPlatCode() {
 }
 
 int SPBBox() {
-    // <conv.chunks.Comment object at 0x10190bc80>
-    // <conv.chunks.Comment object at 0x10190bda0>
+    // do a sub to init certain other values
+    // set default bounding box size control
     lda(0x5);
     ldy(AreaType);
     cpy(0x3);
@@ -12294,12 +12294,12 @@ int SPBBox() {
 }
 
 int CasPBB() {
-    // <conv.chunks.Comment object at 0x101918050>
-    // <conv.chunks.Comment object at 0x1019180e0>
-    // <conv.chunks.Comment object at 0x1019182c0>
-    // <conv.chunks.Comment object at 0x1019183e0>
-    // <conv.chunks.Comment object at 0x101918530>
-    // <conv.chunks.Comment object at 0x1019185c0>
+    // check for castle-type level
+    // use default value if found
+    // otherwise check for secondary hard mode flag
+    // if set, use default value
+    // use alternate value if not castle or secondary not set
+    // set bounding box size control here and leave
     sta(Enemy_BoundBoxCtrl, x);
     return 0;
     JMP(LargeLiftUp);
@@ -12323,10 +12323,10 @@ int LargeLiftBBox() {
 
 int PlatLiftUp() {
     lda(0x10);
-    // <conv.chunks.Comment object at 0x101918e60>
+    // set movement amount here
     sta(Enemy_Y_MoveForce, x);
     lda(0xff);
-    // <conv.chunks.Comment object at 0x1019190a0>
+    // set moving speed for platforms going up
     sta(Enemy_Y_Speed, x);
     JMP(CommonSmallLift);
     JMP(PlatLiftDown);
@@ -12334,10 +12334,10 @@ int PlatLiftUp() {
 
 int PlatLiftDown() {
     lda(0xf0);
-    // <conv.chunks.Comment object at 0x101919460>
+    // set movement amount here
     sta(Enemy_Y_MoveForce, x);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1019196a0>
+    // set moving speed for platforms going down
     sta(Enemy_Y_Speed, x);
     JMP(CommonSmallLift);
 }
@@ -12345,22 +12345,22 @@ int PlatLiftDown() {
 int CommonSmallLift() {
     ldy(0x1);
     JSR(PosPlatform);
-    // <conv.chunks.Comment object at 0x1019199a0>
+    // do a sub to add 12 pixels due to preset value
     lda(0x4);
     sta(Enemy_BoundBoxCtrl, x);
-    // <conv.chunks.Comment object at 0x101919bb0>
+    // set bounding box control for small platforms
     return 0;
     JMP(PosPlatform);
 }
 
 int PosPlatform() {
     lda(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x101919e80>
+    // get horizontal coordinate
     clc();
     adc(offsetof(G, PlatPosDataLow), y);
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x10191a420>
-    // <conv.chunks.Comment object at 0x10191a570>
+    // add or subtract pixels depending on offset
+    // store as new horizontal coordinate
     lda(Enemy_PageLoc, x);
     adc(offsetof(G, PlatPosDataHigh), y);
     sta(Enemy_PageLoc, x);
@@ -12376,11 +12376,11 @@ int EndOfEnemyInitCode() {
 int RunEnemyObjectsCore() {
     ldx(ObjectOffset);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x10191ac90>
-    // <conv.chunks.Comment object at 0x10191adb0>
+    // get offset for enemy object buffer
+    // load value 0 for jump engine by default
     ldy(Enemy_ID, x);
     cpy(0x15);
-    // <conv.chunks.Comment object at 0x10191aff0>
+    // if enemy object < $15, use default value
     BCC(JmpEO);
     tya();
     sbc(0x14);
@@ -12405,7 +12405,7 @@ int RunRetainerObj() {
 
 int RunNormalEnemies() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x101920e00>
+    // init sprite attributes
     sta(Enemy_SprAttrib, x);
     JSR(GetEnemyOffscreenBits);
     JSR(RelativeEnemyPosition);
@@ -12415,7 +12415,7 @@ int RunNormalEnemies() {
     JSR(EnemiesCollision);
     JSR(PlayerEnemyCollision);
     ldy(TimerControl);
-    // <conv.chunks.Comment object at 0x1019216d0>
+    // if master timer control set, skip to last routine
     BNE(SkipMove);
     JSR(EnemyMovementSubs);
     JMP(SkipMove);
@@ -12471,8 +12471,8 @@ int RunLargePlatform() {
     JSR(LargePlatformCollision);
     lda(TimerControl);
     BNE(SkipPT);
-    // <conv.chunks.Comment object at 0x101923ec0>
-    // <conv.chunks.Comment object at 0x101923fe0>
+    // if master timer control set,
+    // skip subroutine tree
     JSR(LargePlatformSubroutines);
     JMP(SkipPT);
 }
@@ -12486,7 +12486,7 @@ int SkipPT() {
 
 int LargePlatformSubroutines() {
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x1019305f0>
+    // subtract $24 to get proper offset for jump table
     sec();
     sbc(0x24);
     JMP(EraseEnemyObject);
@@ -12494,7 +12494,7 @@ int LargePlatformSubroutines() {
 
 int EraseEnemyObject() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x101930e30>
+    // clear all enemy object variables
     sta(Enemy_Flag, x);
     sta(Enemy_ID, x);
     sta(Enemy_State, x);
@@ -12517,30 +12517,30 @@ int MovePodoboo() {
     anda(0b1111);
     ora(0x6);
     sta(EnemyIntervalTimer, x);
-    // <conv.chunks.Comment object at 0x101931940>
-    // <conv.chunks.Comment object at 0x101931a90>
-    // <conv.chunks.Comment object at 0x101931be0>
-    // <conv.chunks.Comment object at 0x101931d00>
-    // <conv.chunks.Comment object at 0x101931f40>
-    // <conv.chunks.Comment object at 0x101932060>
-    // <conv.chunks.Comment object at 0x1019321b0>
-    // <conv.chunks.Comment object at 0x1019322d0>
-    // <conv.chunks.Comment object at 0x101932360>
+    // check enemy timer
+    // branch to move enemy if not expired
+    // otherwise set up podoboo again
+    // get part of LSFR
+    // set d7
+    // store as movement force
+    // mask out high nybble
+    // set for at least six intervals
+    // store as new enemy timer
     lda(0xf9);
     sta(Enemy_Y_Speed, x);
     JMP(PdbM);
 }
 
 int PdbM() {
-    // <conv.chunks.Comment object at 0x1019325a0>
-    // <conv.chunks.Comment object at 0x101932780>
+    // set vertical speed to move podoboo upwards
+    // branch to impose gravity on podoboo
     JMP(MoveJ_EnemyVertically);
     JMP(ProcHammerBro);
 }
 
 int ProcHammerBro() {
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x101932ba0>
+    // check hammer bro's enemy state for d5 set
     anda(0b100000);
     BEQ(ChkJH);
     JMP(MoveDefeatedEnemy);
@@ -12548,14 +12548,14 @@ int ProcHammerBro() {
 }
 
 int ChkJH() {
-    // <conv.chunks.Comment object at 0x101933200>
-    // <conv.chunks.Comment object at 0x101933350>
-    // <conv.chunks.Comment object at 0x101933470>
+    // if not set, go ahead with code
+    // otherwise jump to something else
+    // check jump timer
     lda(HammerBroJumpTimer, x);
     BEQ(HammerBroJumpCode);
     dec(HammerBroJumpTimer, x);
-    // <conv.chunks.Comment object at 0x101933620>
-    // <conv.chunks.Comment object at 0x101933740>
+    // if expired, branch to jump
+    // otherwise decrement jump timer
     lda(Enemy_OffscreenBits);
     anda(0b1100);
     BNE(MoveHammerBroXDir);
@@ -12566,26 +12566,26 @@ int ChkJH() {
     sta(HammerThrowingTimer, x);
     JSR(SpawnHammerObj);
     BCC(DecHT);
-    // <conv.chunks.Comment object at 0x101933980>
-    // <conv.chunks.Comment object at 0x101933aa0>
-    // <conv.chunks.Comment object at 0x101933bc0>
-    // <conv.chunks.Comment object at 0x101933d10>
-    // <conv.chunks.Comment object at 0x101933e60>
-    // <conv.chunks.Comment object at 0x101933f80>
-    // <conv.chunks.Comment object at 0x101938110>
-    // <conv.chunks.Comment object at 0x101938260>
-    // <conv.chunks.Comment object at 0x101938380>
+    // check offscreen bits
+    // if hammer bro a little offscreen, skip to movement code
+    // check hammer throwing timer
+    // if not expired, skip ahead, do not throw hammer
+    // otherwise get secondary hard mode flag
+    // get timer data using flag as offset
+    // set as new timer
+    // do a sub here to spawn hammer object
+    // if carry clear, hammer not spawned, skip to decrement timer
     lda(Enemy_State, x);
     ora(0b1000);
-    // <conv.chunks.Comment object at 0x1019385f0>
+    // set d3 in enemy state for hammer throw
     sta(Enemy_State, x);
     JMP(MoveHammerBroXDir);
     JMP(DecHT);
 }
 
 int DecHT() {
-    // <conv.chunks.Comment object at 0x101938830>
-    // <conv.chunks.Comment object at 0x101938950>
+    // jump to move hammer bro
+    // decrement timer
     dec(HammerThrowingTimer, x);
     JMP(MoveHammerBroXDir);
     JMP(HammerBroJumpCode);
@@ -12607,21 +12607,21 @@ int HammerBroJumpCode() {
     BCC(SetHJ);
     dec(0x0);
     lda(((PseudoRandomBitReg) + (1)), x);
-    // <conv.chunks.Comment object at 0x101938cb0>
-    // <conv.chunks.Comment object at 0x101938ef0>
-    // <conv.chunks.Comment object at 0x101939010>
-    // <conv.chunks.Comment object at 0x1019390a0>
-    // <conv.chunks.Comment object at 0x101939250>
-    // <conv.chunks.Comment object at 0x1019393a0>
-    // <conv.chunks.Comment object at 0x101939430>
-    // <conv.chunks.Comment object at 0x101939520>
-    // <conv.chunks.Comment object at 0x101939700>
-    // <conv.chunks.Comment object at 0x101939850>
-    // <conv.chunks.Comment object at 0x1019398e0>
-    // <conv.chunks.Comment object at 0x101939ac0>
-    // <conv.chunks.Comment object at 0x101939b50>
-    // <conv.chunks.Comment object at 0x101939d30>
-    // <conv.chunks.Comment object at 0x101939dc0>
+    // get hammer bro's enemy state
+    // mask out all but 3 LSB
+    // check for d0 set (for jumping)
+    // if set, branch ahead to moving code
+    // load default value here
+    // save into temp variable for now
+    // set default vertical speed
+    // check hammer bro's vertical coordinate
+    // if on the bottom half of the screen, use current speed
+    // otherwise set alternate vertical speed
+    // check to see if hammer bro is above the middle of screen
+    // increment preset value to $01
+    // if above the middle of the screen, use current speed and $01
+    // otherwise return value to $00
+    // get part of LSFR, mask out all but LSB
     anda(0x1);
     BNE(SetHJ);
     ldy(0xfa);
@@ -12629,33 +12629,33 @@ int HammerBroJumpCode() {
 }
 
 int SetHJ() {
-    // <conv.chunks.Comment object at 0x10193a090>
-    // <conv.chunks.Comment object at 0x10193a270>
-    // <conv.chunks.Comment object at 0x10193a300>
+    // if d0 of LSFR set, branch and use current speed and $00
+    // otherwise reset to default vertical speed
+    // set vertical speed for jumping
     sty(Enemy_Y_Speed, x);
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x10193a540>
+    // set d0 in enemy state for jumping
     ora(0x1);
     sta(Enemy_State, x);
     lda(0x0);
     anda(((PseudoRandomBitReg) + (2)), x);
     tay();
     lda(SecondaryHardMode);
-    // <conv.chunks.Comment object at 0x10193a8d0>
-    // <conv.chunks.Comment object at 0x10193a960>
-    // <conv.chunks.Comment object at 0x10193ac00>
-    // <conv.chunks.Comment object at 0x10193ac90>
+    // load preset value here to use as bitmask
+    // and do bit-wise comparison with part of LSFR
+    // then use as offset
+    // check secondary hard mode flag
     BNE(HJump);
     tay();
     JMP(HJump);
 }
 
 int HJump() {
-    // <conv.chunks.Comment object at 0x10193af00>
-    // <conv.chunks.Comment object at 0x10193af90>
+    // if secondary hard mode flag clear, set offset to 0
+    // get jump length timer data using offset from before
     lda(offsetof(G, HammerBroJumpLData), y);
     sta(EnemyFrameTimer, x);
-    // <conv.chunks.Comment object at 0x10193b140>
+    // save in enemy timer
     lda(((PseudoRandomBitReg) + (1)), x);
     ora(0b11000000);
     sta(HammerBroJumpTimer, x);
@@ -12664,18 +12664,18 @@ int HJump() {
 
 int MoveHammerBroXDir() {
     ldy(0xfc);
-    // <conv.chunks.Comment object at 0x10193b710>
+    // move hammer bro a little to the left
     lda(FrameCounter);
     anda(0b1000000);
-    // <conv.chunks.Comment object at 0x10193b920>
+    // change hammer bro's direction every 64 frames
     BNE(Shimmy);
     ldy(0x4);
     JMP(Shimmy);
 }
 
 int Shimmy() {
-    // <conv.chunks.Comment object at 0x10193bb60>
-    // <conv.chunks.Comment object at 0x10193bbf0>
+    // if d6 set in counter, move him a little to the right
+    // store horizontal speed
     sty(Enemy_X_Speed, x);
     ldy(0x1);
     JSR(PlayerEnemyDiff);
@@ -12683,97 +12683,97 @@ int Shimmy() {
     iny();
     lda(EnemyIntervalTimer, x);
     BNE(SetShim);
-    // <conv.chunks.Comment object at 0x10193be30>
-    // <conv.chunks.Comment object at 0x10193bec0>
-    // <conv.chunks.Comment object at 0x1019400b0>
-    // <conv.chunks.Comment object at 0x101940230>
-    // <conv.chunks.Comment object at 0x1019402c0>
-    // <conv.chunks.Comment object at 0x101940410>
+    // set to face right by default
+    // get horizontal difference between player and hammer bro
+    // if enemy to the left of player, skip this part
+    // set to face left
+    // check walking timer
+    // if not yet expired, skip to set moving direction
     lda(0xf8);
     sta(Enemy_X_Speed, x);
     JMP(SetShim);
 }
 
 int SetShim() {
-    // <conv.chunks.Comment object at 0x1019405c0>
-    // <conv.chunks.Comment object at 0x1019407a0>
+    // otherwise, make the hammer bro walk left towards player
+    // set moving direction
     sty(Enemy_MovingDir, x);
     JMP(MoveNormalEnemy);
 }
 
 int MoveNormalEnemy() {
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x101940980>
+    // init Y to leave horizontal movement as-is
     lda(Enemy_State, x);
     anda(0b1000000);
     BNE(FallE);
-    // <conv.chunks.Comment object at 0x101940bc0>
-    // <conv.chunks.Comment object at 0x101940ce0>
+    // check enemy state for d6 set, if set skip
+    // to move enemy vertically, then horizontally if necessary
     lda(Enemy_State, x);
     asl();
     BCS(SteadM);
-    // <conv.chunks.Comment object at 0x101940f80>
-    // <conv.chunks.Comment object at 0x101941010>
+    // check enemy state for d7 set
+    // if set, branch to move enemy horizontally
     lda(Enemy_State, x);
     anda(0b100000);
     BNE(MoveDefeatedEnemy);
-    // <conv.chunks.Comment object at 0x101941280>
-    // <conv.chunks.Comment object at 0x1019413a0>
+    // check enemy state for d5 set
+    // if set, branch to move defeated enemy object
     lda(Enemy_State, x);
     anda(0b111);
     BEQ(SteadM);
-    // <conv.chunks.Comment object at 0x1019415e0>
-    // <conv.chunks.Comment object at 0x101941700>
+    // check d2-d0 of enemy state for any set bits
+    // if enemy in normal state, branch to move enemy horizontally
     cmp(0x5);
     BEQ(FallE);
-    // <conv.chunks.Comment object at 0x1019418b0>
+    // if enemy in state used by spiny's egg, go ahead here
     cmp(0x3);
     BCS(ReviveStunned);
     JMP(FallE);
 }
 
 int FallE() {
-    // <conv.chunks.Comment object at 0x101941af0>
-    // <conv.chunks.Comment object at 0x101941ca0>
+    // if enemy in states $03 or $04, skip ahead to yet another part
+    // do a sub here to move enemy downwards
     JSR(MoveD_EnemyVertically);
     ldy(0x0);
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x101941e80>
+    // check for enemy state $02
     cmp(0x2);
     BEQ(MEHor);
     anda(0b1000000);
     BEQ(SteadM);
-    // <conv.chunks.Comment object at 0x1019420c0>
-    // <conv.chunks.Comment object at 0x1019422a0>
-    // <conv.chunks.Comment object at 0x1019423c0>
+    // if found, branch to move enemy horizontally
+    // check for d6 set
+    // if not set, branch to something else
     lda(Enemy_ID, x);
     cmp(PowerUpObject);
-    // <conv.chunks.Comment object at 0x101942630>
+    // check for power-up object
     BEQ(SteadM);
     BNE(SlowM);
     JMP(MEHor);
 }
 
 int MEHor() {
-    // <conv.chunks.Comment object at 0x101942870>
-    // <conv.chunks.Comment object at 0x1019429c0>
+    // if any other object where d6 set, jump to set Y
+    // jump here to move enemy horizontally for <> $2e and d6 set
     JMP(MoveEnemyHorizontally);
     JMP(SlowM);
 }
 
 int SlowM() {
-    // <conv.chunks.Comment object at 0x101942b40>
+    // if branched here, increment Y to slow horizontal movement
     ldy(0x1);
     JMP(SteadM);
 }
 
 int SteadM() {
-    // <conv.chunks.Comment object at 0x101942c30>
+    // get current horizontal speed
     lda(Enemy_X_Speed, x);
     pha();
     BPL(AddHS);
-    // <conv.chunks.Comment object at 0x101942ea0>
-    // <conv.chunks.Comment object at 0x101942f30>
+    // save to stack
+    // if not moving or moving right, skip, leave Y alone
     iny();
     iny();
     JMP(AddHS);
@@ -12784,9 +12784,9 @@ int AddHS() {
     adc(offsetof(G, XSpeedAdderData), y);
     sta(Enemy_X_Speed, x);
     JSR(MoveEnemyHorizontally);
-    // <conv.chunks.Comment object at 0x1019432c0>
-    // <conv.chunks.Comment object at 0x101943410>
-    // <conv.chunks.Comment object at 0x101943560>
+    // add value here to slow enemy down if necessary
+    // save as horizontal speed temporarily
+    // then do a sub to move horizontally
     pla();
     sta(Enemy_X_Speed, x);
     return 0;
@@ -12797,34 +12797,34 @@ int ReviveStunned() {
     lda(EnemyIntervalTimer, x);
     BNE(ChkKillGoomba);
     sta(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x101943950>
-    // <conv.chunks.Comment object at 0x101943aa0>
-    // <conv.chunks.Comment object at 0x101943bc0>
+    // if enemy timer not expired yet,
+    // skip ahead to something else
+    // otherwise initialize enemy state to normal
     lda(FrameCounter);
     anda(0x1);
     tay();
-    // <conv.chunks.Comment object at 0x101943e00>
-    // <conv.chunks.Comment object at 0x101943f50>
+    // get d0 of frame counter
+    // use as Y and increment for movement direction
     iny();
     sty(Enemy_MovingDir, x);
     dey();
     lda(PrimaryHardMode);
     BEQ(SetRSpd);
-    // <conv.chunks.Comment object at 0x10194c0b0>
-    // <conv.chunks.Comment object at 0x10194c230>
-    // <conv.chunks.Comment object at 0x10194c2c0>
-    // <conv.chunks.Comment object at 0x10194c3e0>
+    // store as pseudorandom movement direction
+    // decrement for use as pointer
+    // check primary hard mode flag
+    // if not set, use pointer as-is
     iny();
     iny();
     JMP(SetRSpd);
 }
 
 int SetRSpd() {
-    // <conv.chunks.Comment object at 0x10194c5f0>
-    // <conv.chunks.Comment object at 0x10194c680>
+    // otherwise increment 2 bytes to next data
+    // load and store new horizontal speed
     lda(offsetof(G, RevivedXSpeed), y);
     sta(Enemy_X_Speed, x);
-    // <conv.chunks.Comment object at 0x10194c830>
+    // and leave
     return 0;
     JMP(MoveDefeatedEnemy);
 }
@@ -12838,8 +12838,8 @@ int MoveDefeatedEnemy() {
 int ChkKillGoomba() {
     cmp(0xe);
     BNE(NKGmba);
-    // <conv.chunks.Comment object at 0x10194ccb0>
-    // <conv.chunks.Comment object at 0x10194cd40>
+    // check to see if enemy timer has reached
+    // a certain point, and branch to leave if not
     lda(Enemy_ID, x);
     cmp(Goomba);
     BNE(NKGmba);
@@ -12848,10 +12848,10 @@ int ChkKillGoomba() {
 }
 
 int NKGmba() {
-    // <conv.chunks.Comment object at 0x10194d040>
-    // <conv.chunks.Comment object at 0x10194d0a0>
-    // <conv.chunks.Comment object at 0x10194d2e0>
-    // <conv.chunks.Comment object at 0x10194d430>
+    // check for goomba object
+    // branch if not found
+    // otherwise, kill this goomba object
+    // leave!
     return 0;
     JMP(MoveJumpingEnemy);
 }
@@ -12868,10 +12868,10 @@ int ProcMoveRedPTroopa() {
     BNE(MoveRedPTUpOrDown);
     sta(Enemy_YMF_Dummy, x);
     lda(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x10194d970>
-    // <conv.chunks.Comment object at 0x10194dac0>
-    // <conv.chunks.Comment object at 0x10194dbe0>
-    // <conv.chunks.Comment object at 0x10194dd30>
+    // check for any vertical force or speed
+    // branch if any found
+    // initialize something here
+    // check current vs. original vertical coordinate
     cmp(RedPTroopaOrigXPos, x);
     BCS(MoveRedPTUpOrDown);
     lda(FrameCounter);
@@ -12882,19 +12882,19 @@ int ProcMoveRedPTroopa() {
 }
 
 int NoIncPT() {
-    // <conv.chunks.Comment object at 0x10194dfa0>
-    // <conv.chunks.Comment object at 0x10194e0c0>
-    // <conv.chunks.Comment object at 0x10194e1e0>
-    // <conv.chunks.Comment object at 0x10194e300>
-    // <conv.chunks.Comment object at 0x10194e450>
-    // <conv.chunks.Comment object at 0x10194e5d0>
+    // if current => original, skip ahead to more code
+    // get frame counter
+    // mask out all but 3 LSB
+    // if any bits set, branch to leave
+    // otherwise increment red paratroopa's vertical position
+    // leave
     return 0;
     JMP(MoveRedPTUpOrDown);
 }
 
 int MoveRedPTUpOrDown() {
     lda(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x10194e720>
+    // check current vs. central vertical coordinate
     cmp(RedPTroopaCenterYPos, x);
     BCC(MovPTDwn);
     JMP(MoveRedPTroopaUp);
@@ -12902,9 +12902,9 @@ int MoveRedPTUpOrDown() {
 }
 
 int MovPTDwn() {
-    // <conv.chunks.Comment object at 0x10194e990>
-    // <conv.chunks.Comment object at 0x10194eab0>
-    // <conv.chunks.Comment object at 0x10194ebd0>
+    // if current < central, jump to move downwards
+    // otherwise jump to move upwards
+    // move downwards
     JMP(MoveRedPTroopaDown);
     JMP(MoveFlyGreenPTroopa);
 }
@@ -12913,14 +12913,14 @@ int MoveFlyGreenPTroopa() {
     JSR(XMoveCntr_GreenPTroopa);
     JSR(MoveWithXMCntrs);
     ldy(0x1);
-    // <conv.chunks.Comment object at 0x10194ede0>
-    // <conv.chunks.Comment object at 0x10194ef00>
-    // <conv.chunks.Comment object at 0x10194f020>
+    // do sub to increment primary and secondary counters
+    // do sub to move green paratroopa accordingly, and horizontally
+    // set Y to move green paratroopa down
     lda(FrameCounter);
     anda(0b11);
     BNE(NoMGPT);
-    // <conv.chunks.Comment object at 0x10194f230>
-    // <conv.chunks.Comment object at 0x10194f350>
+    // check frame counter 2 LSB for any bits set
+    // branch to leave if set to move up/down every fourth frame
     lda(FrameCounter);
     anda(0b1000000);
     BNE(YSway);
@@ -12929,22 +12929,22 @@ int MoveFlyGreenPTroopa() {
 }
 
 int YSway() {
-    // <conv.chunks.Comment object at 0x10194f590>
-    // <conv.chunks.Comment object at 0x10194f6b0>
-    // <conv.chunks.Comment object at 0x10194f800>
-    // <conv.chunks.Comment object at 0x10194f890>
+    // check frame counter for d6 set
+    // branch to move green paratroopa down if set
+    // otherwise set Y to move green paratroopa up
+    // store adder here
     sty(0x0);
     lda(Enemy_Y_Position, x);
     clc();
     adc(0x0);
-    // <conv.chunks.Comment object at 0x10194fbf0>
-    // <conv.chunks.Comment object at 0x10194fcb0>
+    // add or subtract from vertical position
+    // to give green paratroopa a wavy flight
     sta(Enemy_Y_Position, x);
     JMP(NoMGPT);
 }
 
 int NoMGPT() {
-    // <conv.chunks.Comment object at 0x10194fef0>
+    // leave!
     return 0;
     JMP(XMoveCntr_GreenPTroopa);
 }
@@ -12956,16 +12956,16 @@ int XMoveCntr_GreenPTroopa() {
 
 int XMoveCntr_Platform() {
     sta(0x1);
-    // <conv.chunks.Comment object at 0x101958200>
+    // store value here
     lda(FrameCounter);
     anda(0b11);
     BNE(NoIncXM);
     ldy(XMoveSecondaryCounter, x);
     lda(XMovePrimaryCounter, x);
-    // <conv.chunks.Comment object at 0x1019583e0>
-    // <conv.chunks.Comment object at 0x101958500>
-    // <conv.chunks.Comment object at 0x101958650>
-    // <conv.chunks.Comment object at 0x1019587a0>
+    // branch to leave if not on
+    // every fourth frame
+    // get secondary counter
+    // get primary counter
     lsr();
     BCS(DecSeXM);
     cpy(0x1);
@@ -12980,39 +12980,39 @@ int NoIncXM() {
 }
 
 int IncPXM() {
-    // <conv.chunks.Comment object at 0x101958f80>
+    // increment primary counter and leave
     inc(XMovePrimaryCounter, x);
     return 0;
     JMP(DecSeXM);
 }
 
 int DecSeXM() {
-    // <conv.chunks.Comment object at 0x1019591c0>
+    // put secondary counter in A
     tya();
     BEQ(IncPXM);
     dec(XMoveSecondaryCounter, x);
-    // <conv.chunks.Comment object at 0x1019592e0>
-    // <conv.chunks.Comment object at 0x101959430>
+    // if secondary counter at zero, branch back
+    // otherwise decrement secondary counter and leave
     return 0;
     JMP(MoveWithXMCntrs);
 }
 
 int MoveWithXMCntrs() {
     lda(XMoveSecondaryCounter, x);
-    // <conv.chunks.Comment object at 0x101959640>
+    // save secondary counter to stack
     pha();
     ldy(0x1);
-    // <conv.chunks.Comment object at 0x101959820>
+    // set value here by default
     lda(XMovePrimaryCounter, x);
     anda(0b10);
     BNE(XMRight);
-    // <conv.chunks.Comment object at 0x101959a60>
-    // <conv.chunks.Comment object at 0x101959b80>
+    // if d1 of primary counter is
+    // set, branch ahead of this part here
     lda(XMoveSecondaryCounter, x);
     eor(0xff);
     clc();
-    // <conv.chunks.Comment object at 0x101959df0>
-    // <conv.chunks.Comment object at 0x101959f40>
+    // otherwise change secondary
+    // counter to two's compliment
     adc(0x1);
     sta(XMoveSecondaryCounter, x);
     ldy(0x2);
@@ -13020,16 +13020,16 @@ int MoveWithXMCntrs() {
 }
 
 int XMRight() {
-    // <conv.chunks.Comment object at 0x10195a1e0>
-    // <conv.chunks.Comment object at 0x10195a270>
+    // load alternate value here
+    // store as moving direction
     sty(Enemy_MovingDir, x);
     JSR(MoveEnemyHorizontally);
     sta(0x0);
     pla();
     sta(XMoveSecondaryCounter, x);
-    // <conv.chunks.Comment object at 0x10195a5d0>
-    // <conv.chunks.Comment object at 0x10195a5a0>
-    // <conv.chunks.Comment object at 0x10195a780>
+    // save value obtained from sub here
+    // get secondary counter from stack
+    // and return to original place
     return 0;
     JMP(MoveBloober);
 }
@@ -13042,12 +13042,12 @@ int MoveBloober() {
     lda(((PseudoRandomBitReg) + (1)), x);
     anda(offsetof(G, BlooberBitmasks), y);
     BNE(BlooberSwim);
-    // <conv.chunks.Comment object at 0x10195ac30>
-    // <conv.chunks.Comment object at 0x10195ad50>
-    // <conv.chunks.Comment object at 0x10195ae70>
-    // <conv.chunks.Comment object at 0x10195af90>
-    // <conv.chunks.Comment object at 0x10195b1a0>
-    // <conv.chunks.Comment object at 0x10195b2f0>
+    // check enemy state for d5 set
+    // branch if set to move defeated bloober
+    // use secondary hard mode flag as offset
+    // get LSFR
+    // mask out bits in LSFR using bitmask loaded with offset
+    // if any bits set, skip ahead to make swim
     txa();
     lsr();
     BCC(FBLeft);
@@ -13057,11 +13057,11 @@ int MoveBloober() {
 }
 
 int FBLeft() {
-    // <conv.chunks.Comment object at 0x10195b4d0>
-    // <conv.chunks.Comment object at 0x10195b560>
-    // <conv.chunks.Comment object at 0x10195b6b0>
-    // <conv.chunks.Comment object at 0x10195b7d0>
-    // <conv.chunks.Comment object at 0x10195b920>
+    // check to see if on second or fourth slot (1 or 3)
+    // if not, branch to figure out moving direction
+    // otherwise, load player's moving direction and
+    // do an unconditional branch to set
+    // set left moving direction by default
     ldy(0x2);
     JSR(PlayerEnemyDiff);
     BPL(SBMDir);
@@ -13070,10 +13070,10 @@ int FBLeft() {
 }
 
 int SBMDir() {
-    // <conv.chunks.Comment object at 0x10195ba10>
-    // <conv.chunks.Comment object at 0x10195bbc0>
-    // <conv.chunks.Comment object at 0x10195bd40>
-    // <conv.chunks.Comment object at 0x10195bdd0>
+    // get horizontal difference between player and bloober
+    // if enemy to the right of player, keep left
+    // otherwise decrement to set right moving direction
+    // set moving direction of bloober, then continue on here
     sty(Enemy_MovingDir, x);
     JMP(BlooberSwim);
 }
@@ -13081,8 +13081,8 @@ int SBMDir() {
 int BlooberSwim() {
     JSR(ProcSwimmingB);
     lda(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x10195bfb0>
-    // <conv.chunks.Comment object at 0x101960110>
+    // execute sub to make bloober swim characteristically
+    // get vertical coordinate
     sec();
     sbc(Enemy_Y_MoveForce, x);
     cmp(0x20);
@@ -13092,26 +13092,26 @@ int BlooberSwim() {
 }
 
 int SwimX() {
-    // <conv.chunks.Comment object at 0x1019602f0>
-    // <conv.chunks.Comment object at 0x101960440>
-    // <conv.chunks.Comment object at 0x1019604d0>
-    // <conv.chunks.Comment object at 0x1019606b0>
-    // <conv.chunks.Comment object at 0x101960800>
+    // subtract movement force
+    // check to see if position is above edge of status bar
+    // if so, don't do it
+    // otherwise, set new vertical position, make bloober swim
+    // check moving direction
     ldy(Enemy_MovingDir, x);
     dey();
     BNE(LeftSwim);
-    // <conv.chunks.Comment object at 0x101960a40>
+    // if moving to the left, branch to second part
     lda(Enemy_X_Position, x);
     clc();
-    // <conv.chunks.Comment object at 0x101960cb0>
+    // add movement speed to horizontal coordinate
     adc(BlooperMoveSpeed, x);
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x101960e60>
+    // store result as new horizontal coordinate
     lda(Enemy_PageLoc, x);
     adc(0x0);
     sta(Enemy_PageLoc, x);
-    // <conv.chunks.Comment object at 0x1019610d0>
-    // <conv.chunks.Comment object at 0x101961160>
+    // add carry to page location
+    // store as new page location and leave
     return 0;
     JMP(LeftSwim);
 }
@@ -13119,15 +13119,15 @@ int SwimX() {
 int LeftSwim() {
     lda(Enemy_X_Position, x);
     sec();
-    // <conv.chunks.Comment object at 0x101961550>
+    // subtract movement speed from horizontal coordinate
     sbc(BlooperMoveSpeed, x);
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x101961700>
+    // store result as new horizontal coordinate
     lda(Enemy_PageLoc, x);
     sbc(0x0);
     sta(Enemy_PageLoc, x);
-    // <conv.chunks.Comment object at 0x101961970>
-    // <conv.chunks.Comment object at 0x101961a00>
+    // subtract borrow from page location
+    // store as new page location and leave
     return 0;
     JMP(MoveDefeatedBloober);
 }
@@ -13141,9 +13141,9 @@ int ProcSwimmingB() {
     lda(BlooperMoveCounter, x);
     anda(0b10);
     BNE(ChkForFloatdown);
-    // <conv.chunks.Comment object at 0x101961df0>
-    // <conv.chunks.Comment object at 0x101961f40>
-    // <conv.chunks.Comment object at 0x101962060>
+    // get enemy's movement counter
+    // check for d1 set
+    // branch if set
     lda(FrameCounter);
     anda(0b111);
     pha();
@@ -13152,21 +13152,21 @@ int ProcSwimmingB() {
     BCS(SlowSwim);
     pla();
     BNE(BSwimE);
-    // <conv.chunks.Comment object at 0x101962270>
-    // <conv.chunks.Comment object at 0x1019623c0>
-    // <conv.chunks.Comment object at 0x101962450>
-    // <conv.chunks.Comment object at 0x1019625d0>
-    // <conv.chunks.Comment object at 0x101962660>
-    // <conv.chunks.Comment object at 0x1019627b0>
-    // <conv.chunks.Comment object at 0x101962840>
+    // get 3 LSB of frame counter
+    // and save it to the stack
+    // get enemy's movement counter
+    // check for d0 set
+    // branch if set
+    // pull 3 LSB of frame counter from the stack
+    // branch to leave, execute code only every eighth frame
     lda(Enemy_Y_MoveForce, x);
     clc();
-    // <conv.chunks.Comment object at 0x101962ae0>
+    // add to movement force to speed up swim
     adc(0x1);
     sta(Enemy_Y_MoveForce, x);
     sta(BlooperMoveSpeed, x);
-    // <conv.chunks.Comment object at 0x101962bd0>
-    // <conv.chunks.Comment object at 0x101962db0>
+    // set movement force
+    // set as movement speed
     cmp(0x2);
     BNE(BSwimE);
     inc(BlooperMoveCounter, x);
@@ -13181,28 +13181,28 @@ int BSwimE() {
 int SlowSwim() {
     pla();
     BNE(NoSSw);
-    // <conv.chunks.Comment object at 0x1019633e0>
-    // <conv.chunks.Comment object at 0x101963470>
+    // pull 3 LSB of frame counter from the stack
+    // branch to leave, execute code only every eighth frame
     lda(Enemy_Y_MoveForce, x);
     sec();
-    // <conv.chunks.Comment object at 0x101963710>
+    // subtract from movement force to slow swim
     sbc(0x1);
     sta(Enemy_Y_MoveForce, x);
     sta(BlooperMoveSpeed, x);
     BNE(NoSSw);
     inc(BlooperMoveCounter, x);
-    // <conv.chunks.Comment object at 0x101963800>
-    // <conv.chunks.Comment object at 0x1019639e0>
-    // <conv.chunks.Comment object at 0x101963b30>
-    // <conv.chunks.Comment object at 0x101963c80>
+    // set movement force
+    // set as movement speed
+    // if any speed, branch to leave
+    // otherwise increment movement counter
     lda(0x2);
     sta(EnemyIntervalTimer, x);
     JMP(NoSSw);
 }
 
 int NoSSw() {
-    // <conv.chunks.Comment object at 0x101963e30>
-    // <conv.chunks.Comment object at 0x101970080>
+    // set enemy's timer
+    // leave
     return 0;
     JMP(ChkForFloatdown);
 }
@@ -13222,11 +13222,11 @@ int Floatdown() {
 }
 
 int NoFD() {
-    // <conv.chunks.Comment object at 0x101970470>
-    // <conv.chunks.Comment object at 0x1019705c0>
-    // <conv.chunks.Comment object at 0x101970650>
-    // <conv.chunks.Comment object at 0x1019707a0>
-    // <conv.chunks.Comment object at 0x101970920>
+    // get frame counter
+    // check for d0 set
+    // branch to leave on every other frame
+    // otherwise increment vertical coordinate
+    // leave
     return 0;
     JMP(ChkNearPlayer);
 }
@@ -13236,20 +13236,20 @@ int ChkNearPlayer() {
     adc(0x10);
     cmp(Player_Y_Position);
     BCC(Floatdown);
-    // <conv.chunks.Comment object at 0x101970a70>
-    // <conv.chunks.Comment object at 0x101970bc0>
-    // <conv.chunks.Comment object at 0x101970c50>
-    // <conv.chunks.Comment object at 0x101970e00>
+    // get vertical coordinate
+    // add sixteen pixels
+    // compare result with player's vertical coordinate
+    // if modified vertical less than player's, branch
     lda(0x0);
     sta(BlooperMoveCounter, x);
-    // <conv.chunks.Comment object at 0x101970f80>
+    // otherwise nullify movement counter
     return 0;
     JMP(MoveBulletBill);
 }
 
 int MoveBulletBill() {
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x101971250>
+    // check bullet bill's enemy object state for d5 set
     anda(0b100000);
     BEQ(NotDefB);
     JMP(MoveJ_EnemyVertically);
@@ -13257,9 +13257,9 @@ int MoveBulletBill() {
 }
 
 int NotDefB() {
-    // <conv.chunks.Comment object at 0x101971490>
-    // <conv.chunks.Comment object at 0x1019715e0>
-    // <conv.chunks.Comment object at 0x101971700>
+    // if not set, continue with movement code
+    // otherwise jump to move defeated bullet bill downwards
+    // set bullet bill's horizontal speed
     lda(0xe8);
     sta(Enemy_X_Speed, x);
     JMP(MoveEnemyHorizontally);
@@ -13275,40 +13275,40 @@ int MoveSwimmingCheepCheep() {
 }
 
 int CCSwim() {
-    // <conv.chunks.Comment object at 0x101971c40>
-    // <conv.chunks.Comment object at 0x101971fa0>
-    // <conv.chunks.Comment object at 0x1019720c0>
-    // <conv.chunks.Comment object at 0x101972210>
-    // <conv.chunks.Comment object at 0x101972330>
+    // check cheep-cheep's enemy object state
+    // for d5 set
+    // if not set, continue with movement code
+    // otherwise jump to move defeated cheep-cheep downwards
+    // save enemy state in $03
     sta(0x3);
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x101972450>
+    // get enemy identifier
     sec();
     sbc(0xa);
     tay();
     lda(offsetof(G, SwimCCXMoveData), y);
-    // <conv.chunks.Comment object at 0x101972690>
-    // <conv.chunks.Comment object at 0x1019727e0>
-    // <conv.chunks.Comment object at 0x101972870>
+    // subtract ten for cheep-cheep identifiers
+    // use as offset
+    // load value here
     sta(0x2);
     lda(Enemy_X_MoveForce, x);
-    // <conv.chunks.Comment object at 0x1019729c0>
+    // load horizontal force
     sec();
     sbc(0x2);
     sta(Enemy_X_MoveForce, x);
     lda(Enemy_X_Position, x);
     sbc(0x0);
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x101972cc0>
-    // <conv.chunks.Comment object at 0x101972d50>
-    // <conv.chunks.Comment object at 0x101972f00>
-    // <conv.chunks.Comment object at 0x101973050>
-    // <conv.chunks.Comment object at 0x1019730e0>
+    // subtract preset value from horizontal force
+    // store as new horizontal force
+    // get horizontal coordinate
+    // subtract borrow (thus moving it slowly)
+    // and save as new horizontal coordinate
     lda(Enemy_PageLoc, x);
     sbc(0x0);
     sta(Enemy_PageLoc, x);
-    // <conv.chunks.Comment object at 0x1019733e0>
-    // <conv.chunks.Comment object at 0x101973470>
+    // subtract borrow again, this time from the
+    // page location, then save
     lda(0x20);
     sta(0x2);
     cpx(0x2);
@@ -13316,12 +13316,12 @@ int CCSwim() {
     lda(CheepCheepMoveMFlag, x);
     cmp(0x10);
     BCC(CCSwimUpwards);
-    // <conv.chunks.Comment object at 0x101973770>
-    // <conv.chunks.Comment object at 0x101973800>
-    // <conv.chunks.Comment object at 0x1019738f0>
-    // <conv.chunks.Comment object at 0x101973ad0>
-    // <conv.chunks.Comment object at 0x101973c20>
-    // <conv.chunks.Comment object at 0x101973cb0>
+    // save new value here
+    // check enemy object offset
+    // if in first or second slot, branch to leave
+    // check movement flag
+    // if movement speed set to $00,
+    // branch to move upwards
     lda(Enemy_YMF_Dummy, x);
     clc();
     adc(0x2);
@@ -13329,11 +13329,11 @@ int CCSwim() {
     lda(Enemy_Y_Position, x);
     adc(0x3);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x101978080>
-    // <conv.chunks.Comment object at 0x101978110>
-    // <conv.chunks.Comment object at 0x1019782c0>
-    // <conv.chunks.Comment object at 0x101978440>
-    // <conv.chunks.Comment object at 0x1019784d0>
+    // add preset value to dummy variable to get carry
+    // and save dummy
+    // get vertical coordinate
+    // add carry to it plus enemy state to slowly move it downwards
+    // save as new vertical coordinate
     lda(Enemy_Y_HighPos, x);
     adc(0x0);
     JMP(ChkSwimYPos);
@@ -13348,11 +13348,11 @@ int CCSwimUpwards() {
     lda(Enemy_Y_Position, x);
     sbc(0x3);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x101978bf0>
-    // <conv.chunks.Comment object at 0x101978c80>
-    // <conv.chunks.Comment object at 0x101978e30>
-    // <conv.chunks.Comment object at 0x101978fb0>
-    // <conv.chunks.Comment object at 0x101979040>
+    // subtract preset value to dummy variable to get borrow
+    // and save dummy
+    // get vertical coordinate
+    // subtract borrow to it plus enemy state to slowly move it upwards
+    // save as new vertical coordinate
     lda(Enemy_Y_HighPos, x);
     sbc(0x0);
     JMP(ChkSwimYPos);
@@ -13362,16 +13362,16 @@ int ChkSwimYPos() {
     sta(Enemy_Y_HighPos, x);
     ldy(0x0);
     lda(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x101979460>
-    // <conv.chunks.Comment object at 0x1019795b0>
-    // <conv.chunks.Comment object at 0x101979640>
+    // save new page location here
+    // load movement speed to upwards by default
+    // get vertical coordinate
     sec();
     sbc(CheepCheepOrigYPos, x);
     BPL(YPDiff);
     ldy(0x10);
-    // <conv.chunks.Comment object at 0x1019798b0>
-    // <conv.chunks.Comment object at 0x101979a00>
-    // <conv.chunks.Comment object at 0x101979b50>
+    // subtract original coordinate from current
+    // if result positive, skip to next part
+    // otherwise load movement speed to downwards
     eor(0xff);
     clc();
     adc(0x1);
@@ -13379,20 +13379,20 @@ int ChkSwimYPos() {
 }
 
 int YPDiff() {
-    // <conv.chunks.Comment object at 0x101979d90>
-    // <conv.chunks.Comment object at 0x101979e20>
-    // <conv.chunks.Comment object at 0x101979eb0>
+    // get two's compliment of result
+    // to obtain total difference of original vs. current
+    // if difference between original vs. current vertical
     cmp(0xf);
     BCC(ExSwCC);
-    // <conv.chunks.Comment object at 0x10197a030>
+    // coordinates < 15 pixels, leave movement speed alone
     tya();
     sta(CheepCheepMoveMFlag, x);
     JMP(ExSwCC);
 }
 
 int ExSwCC() {
-    // <conv.chunks.Comment object at 0x10197a2a0>
-    // <conv.chunks.Comment object at 0x10197a420>
+    // otherwise change movement speed
+    // leave
     return 0;
     JMP(ProcFirebar);
 }
@@ -13401,9 +13401,9 @@ int ProcFirebar() {
     JSR(GetEnemyOffscreenBits);
     lda(Enemy_OffscreenBits);
     anda(0b1000);
-    // <conv.chunks.Comment object at 0x10197a8d0>
-    // <conv.chunks.Comment object at 0x101982c00>
-    // <conv.chunks.Comment object at 0x101982d20>
+    // get offscreen information
+    // check for d3 set
+    // if so, branch to leave
     BNE(SkipFBar);
     lda(TimerControl);
     BNE(SusFbar);
@@ -13415,23 +13415,23 @@ int ProcFirebar() {
 }
 
 int SusFbar() {
-    // <conv.chunks.Comment object at 0x101982f30>
-    // <conv.chunks.Comment object at 0x101983050>
-    // <conv.chunks.Comment object at 0x1019831a0>
-    // <conv.chunks.Comment object at 0x1019832f0>
-    // <conv.chunks.Comment object at 0x101983410>
-    // <conv.chunks.Comment object at 0x101983530>
-    // <conv.chunks.Comment object at 0x101983680>
+    // if master timer control set, branch
+    // ahead of this part
+    // load spinning speed of firebar
+    // modify current spinstate
+    // mask out all but 5 LSB
+    // and store as new high byte of spinstate
+    // get high byte of spinstate
     lda(FirebarSpinState_High, x);
     ldy(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x101983830>
+    // check enemy identifier
     cpy(0x1f);
     BCC(SetupGFB);
     cmp(0x8);
     BEQ(SkpFSte);
-    // <conv.chunks.Comment object at 0x1019839e0>
-    // <conv.chunks.Comment object at 0x101983b90>
-    // <conv.chunks.Comment object at 0x101983c20>
+    // if < $1f (long firebar), branch
+    // check high byte of spinstate
+    // if eight, branch to change
     cmp(0x18);
     BNE(SetupGFB);
     JMP(SkpFSte);
@@ -13440,13 +13440,13 @@ int SusFbar() {
 int SkpFSte() {
     clc();
     adc(0x1);
-    // <conv.chunks.Comment object at 0x10198c140>
+    // add one to spinning thing to avoid horizontal state
     sta(FirebarSpinState_High, x);
     JMP(SetupGFB);
 }
 
 int SetupGFB() {
-    // <conv.chunks.Comment object at 0x10198c380>
+    // save high byte of spinning thing, modified or otherwise
     sta(0xef);
     JSR(RelativeEnemyPosition);
     JSR(GetFirebarPosition);
@@ -13457,22 +13457,22 @@ int SetupGFB() {
     lda(Enemy_Rel_XPos);
     sta(Sprite_X_Position, y);
     sta(0x6);
-    // <conv.chunks.Comment object at 0x10198c470>
-    // <conv.chunks.Comment object at 0x10198c5f0>
-    // <conv.chunks.Comment object at 0x10198c710>
-    // <conv.chunks.Comment object at 0x10198c860>
-    // <conv.chunks.Comment object at 0x10198c980>
-    // <conv.chunks.Comment object at 0x10198cb00>
-    // <conv.chunks.Comment object at 0x10198cb90>
-    // <conv.chunks.Comment object at 0x10198cd10>
-    // <conv.chunks.Comment object at 0x10198ce90>
+    // get relative coordinates to screen
+    // do a sub here (residual, too early to be used now)
+    // get OAM data offset
+    // get relative vertical coordinate
+    // store as Y in OAM data
+    // also save here
+    // get relative horizontal coordinate
+    // store as X in OAM data
+    // also save here
     lda(0x1);
     sta(0x0);
     JSR(FirebarCollision);
     ldy(0x5);
-    // <conv.chunks.Comment object at 0x10198d0a0>
-    // <conv.chunks.Comment object at 0x10198d130>
-    // <conv.chunks.Comment object at 0x10198d2b0>
+    // set $01 value here (not necessary)
+    // draw fireball part and do collision detection
+    // load value for short firebars by default
     lda(Enemy_ID, x);
     cmp(0x1f);
     BCC(SetMFbar);
@@ -13481,10 +13481,10 @@ int SetupGFB() {
 }
 
 int SetMFbar() {
-    // <conv.chunks.Comment object at 0x10198d4f0>
-    // <conv.chunks.Comment object at 0x10198d580>
-    // <conv.chunks.Comment object at 0x10198d730>
-    // <conv.chunks.Comment object at 0x10198d7c0>
+    // are we doing a long firebar?
+    // no, branch then
+    // otherwise load value for long firebars
+    // store maximum value for length of firebars
     sty(0xed);
     lda(0x0);
     sta(0x0);
@@ -13492,15 +13492,15 @@ int SetMFbar() {
 }
 
 int DrawFbar() {
-    // <conv.chunks.Comment object at 0x10198dac0>
-    // <conv.chunks.Comment object at 0x10198db50>
+    // initialize counter here
+    // load high byte of spinstate
     lda(0xef);
     JSR(GetFirebarPosition);
     JSR(DrawFirebar_Collision);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x10198dca0>
-    // <conv.chunks.Comment object at 0x10198de20>
-    // <conv.chunks.Comment object at 0x10198df70>
+    // get fireball position data depending on firebar part
+    // position it properly, draw it and do collision detection
+    // check which firebar part
     cmp(0x4);
     BNE(NextFbar);
     ldy(DuplicateObj_Offset);
@@ -13510,10 +13510,10 @@ int DrawFbar() {
 }
 
 int NextFbar() {
-    // <conv.chunks.Comment object at 0x10198e240>
-    // <conv.chunks.Comment object at 0x10198e360>
-    // <conv.chunks.Comment object at 0x10198e4e0>
-    // <conv.chunks.Comment object at 0x10198e570>
+    // if we arrive at fifth firebar part,
+    // get offset from long firebar and load OAM data offset
+    // using long firebar offset, then store as new one here
+    // move onto the next firebar part
     inc(0x0);
     lda(0x0);
     cmp(0xed);
@@ -13528,54 +13528,54 @@ int SkipFBar() {
 
 int DrawFirebar_Collision() {
     lda(0x3);
-    // <conv.chunks.Comment object at 0x10198eb70>
+    // store mirror data elsewhere
     sta(0x5);
     ldy(0x6);
     lda(0x1);
     lsr(0x5);
     BCS(AddHA);
-    // <conv.chunks.Comment object at 0x10198ecf0>
-    // <conv.chunks.Comment object at 0x10198ec00>
-    // <conv.chunks.Comment object at 0x10198ee10>
-    // <conv.chunks.Comment object at 0x10198f050>
+    // load OAM data offset for firebar
+    // load horizontal adder we got from position loader
+    // shift LSB of mirror data
+    // if carry was set, skip this part
     eor(0xff);
     adc(0x1);
     JMP(AddHA);
 }
 
 int AddHA() {
-    // <conv.chunks.Comment object at 0x10198f260>
-    // <conv.chunks.Comment object at 0x10198f380>
+    // otherwise get two's compliment of horizontal adder
+    // add horizontal coordinate relative to screen to
     clc();
     adc(Enemy_Rel_XPos);
     sta(Sprite_X_Position, y);
     sta(0x6);
     cmp(Enemy_Rel_XPos);
     BCS(SubtR1);
-    // <conv.chunks.Comment object at 0x10198f530>
-    // <conv.chunks.Comment object at 0x10198f650>
-    // <conv.chunks.Comment object at 0x10198f7d0>
-    // <conv.chunks.Comment object at 0x10198f860>
-    // <conv.chunks.Comment object at 0x10198f9e0>
+    // horizontal adder, modified or otherwise
+    // store as X coordinate here
+    // store here for now, note offset is saved in Y still
+    // compare X coordinate of sprite to original X of firebar
+    // if sprite coordinate => original coordinate, branch
     lda(Enemy_Rel_XPos);
     sec();
     sbc(0x6);
-    // <conv.chunks.Comment object at 0x10198fc50>
-    // <conv.chunks.Comment object at 0x10198fd10>
+    // otherwise subtract sprite X from the
+    // original one and skip this part
     JMP(ChkFOfs);
     JMP(SubtR1);
 }
 
 int SubtR1() {
-    // <conv.chunks.Comment object at 0x10198ff20>
+    // subtract original X from the
     sec();
     sbc(Enemy_Rel_XPos);
     JMP(ChkFOfs);
 }
 
 int ChkFOfs() {
-    // <conv.chunks.Comment object at 0x101994080>
-    // <conv.chunks.Comment object at 0x1019941a0>
+    // current sprite X
+    // if difference of coordinates within a certain range,
     cmp(0x59);
     BCC(VAHandl);
     lda(0xf8);
@@ -13584,36 +13584,36 @@ int ChkFOfs() {
 }
 
 int VAHandl() {
-    // <conv.chunks.Comment object at 0x101994290>
-    // <conv.chunks.Comment object at 0x101994470>
-    // <conv.chunks.Comment object at 0x101994500>
-    // <conv.chunks.Comment object at 0x1019946e0>
+    // continue by handling vertical adder
+    // otherwise, load offscreen Y coordinate
+    // and unconditionally branch to move sprite offscreen
+    // if vertical relative coordinate offscreen,
     lda(Enemy_Rel_YPos);
     cmp(0xf8);
-    // <conv.chunks.Comment object at 0x101994860>
+    // skip ahead of this part and write into sprite Y coordinate
     BEQ(SetVFbr);
     lda(0x2);
     lsr(0x5);
     BCS(AddVA);
-    // <conv.chunks.Comment object at 0x101994ad0>
-    // <conv.chunks.Comment object at 0x101994aa0>
-    // <conv.chunks.Comment object at 0x101994c80>
+    // load vertical adder we got from position loader
+    // shift LSB of mirror data one more time
+    // if carry was set, skip this part
     eor(0xff);
     adc(0x1);
     JMP(AddVA);
 }
 
 int AddVA() {
-    // <conv.chunks.Comment object at 0x101994e90>
-    // <conv.chunks.Comment object at 0x101994fb0>
+    // otherwise get two's compliment of second part
+    // add vertical coordinate relative to screen to
     clc();
     adc(Enemy_Rel_YPos);
     JMP(SetVFbr);
 }
 
 int SetVFbr() {
-    // <conv.chunks.Comment object at 0x101995160>
-    // <conv.chunks.Comment object at 0x101995280>
+    // the second data, modified or otherwise
+    // store as Y coordinate here
     sta(Sprite_Y_Position, y);
     sta(0x7);
     JMP(FirebarCollision);
@@ -13627,76 +13627,76 @@ int FirebarCollision() {
     ora(TimerControl);
     BNE(NoColFB);
     sta(0x5);
-    // <conv.chunks.Comment object at 0x101995430>
-    // <conv.chunks.Comment object at 0x1019956d0>
-    // <conv.chunks.Comment object at 0x101995790>
-    // <conv.chunks.Comment object at 0x101995820>
-    // <conv.chunks.Comment object at 0x101995940>
-    // <conv.chunks.Comment object at 0x101995a60>
-    // <conv.chunks.Comment object at 0x101995be0>
+    // run sub here to draw current tile of firebar
+    // return OAM data offset and save
+    // to the stack for now
+    // if star mario invincibility timer
+    // or master timer controls set
+    // then skip all of this
+    // otherwise initialize counter
     ldy(Player_Y_HighPos);
     dey();
     BNE(NoColFB);
     ldy(Player_Y_Position);
     lda(PlayerSize);
     BNE(AdjSm);
-    // <conv.chunks.Comment object at 0x101995df0>
-    // <conv.chunks.Comment object at 0x101995e80>
-    // <conv.chunks.Comment object at 0x101995fd0>
-    // <conv.chunks.Comment object at 0x1019960f0>
-    // <conv.chunks.Comment object at 0x101996210>
+    // if player's vertical high byte offscreen,
+    // skip all of this
+    // get player's vertical position
+    // get player's size
+    // if player small, branch to alter variables
     lda(CrouchingFlag);
     BEQ(BigJp);
     JMP(AdjSm);
 }
 
 int AdjSm() {
-    // <conv.chunks.Comment object at 0x101996450>
-    // <conv.chunks.Comment object at 0x1019965a0>
+    // if player big and not crouching, jump ahead
+    // if small or big but crouching, execute this part
     inc(0x5);
     inc(0x5);
-    // <conv.chunks.Comment object at 0x101996600>
+    // first increment our counter twice (setting $02 as flag)
     tya();
     clc();
     adc(0x18);
-    // <conv.chunks.Comment object at 0x101996900>
-    // <conv.chunks.Comment object at 0x101996990>
+    // then add 24 pixels to the player's
+    // vertical coordinate
     tay();
     JMP(BigJp);
 }
 
 int BigJp() {
-    // <conv.chunks.Comment object at 0x101996b40>
+    // get vertical coordinate, altered or otherwise, from Y
     tya();
     JMP(FBCLoop);
 }
 
 int FBCLoop() {
-    // <conv.chunks.Comment object at 0x101996c60>
+    // subtract vertical position of firebar
     sec();
     sbc(0x7);
     BPL(ChkVFBD);
     eor(0xff);
     clc();
-    // <conv.chunks.Comment object at 0x101996db0>
-    // <conv.chunks.Comment object at 0x101996e40>
-    // <conv.chunks.Comment object at 0x101996ff0>
-    // <conv.chunks.Comment object at 0x101997140>
+    // from the vertical coordinate of the player
+    // if player lower on the screen than firebar,
+    // skip two's compliment part
+    // otherwise get two's compliment
     adc(0x1);
     JMP(ChkVFBD);
 }
 
 int ChkVFBD() {
-    // <conv.chunks.Comment object at 0x101997230>
+    // if difference => 8 pixels, skip ahead of this part
     cmp(0x8);
     BCS(Chk2Ofs);
     lda(0x6);
     cmp(0xf0);
-    // <conv.chunks.Comment object at 0x101997590>
-    // <conv.chunks.Comment object at 0x101997620>
+    // if firebar on far right on the screen, skip this,
+    // because, really, what's the point?
     BCS(Chk2Ofs);
     lda(((Sprite_X_Position) + (4)));
-    // <conv.chunks.Comment object at 0x1019978c0>
+    // get OAM X coordinate for sprite #1
     clc();
     adc(0x4);
     sta(0x4);
@@ -13705,45 +13705,45 @@ int ChkVFBD() {
     BPL(ChkFBCl);
     eor(0xff);
     clc();
-    // <conv.chunks.Comment object at 0x101997b30>
-    // <conv.chunks.Comment object at 0x101997c80>
-    // <conv.chunks.Comment object at 0x101997bc0>
-    // <conv.chunks.Comment object at 0x101997e60>
-    // <conv.chunks.Comment object at 0x101997ef0>
-    // <conv.chunks.Comment object at 0x1019a00e0>
-    // <conv.chunks.Comment object at 0x1019a0230>
+    // add four pixels
+    // store here
+    // subtract horizontal coordinate of firebar
+    // from the X coordinate of player's sprite 1
+    // if modded X coordinate to the right of firebar
+    // skip two's compliment part
+    // otherwise get two's compliment
     adc(0x1);
     JMP(ChkFBCl);
 }
 
 int ChkFBCl() {
-    // <conv.chunks.Comment object at 0x1019a0320>
+    // if difference < 8 pixels, collision, thus branch
     cmp(0x8);
     BCC(ChgSDir);
     JMP(Chk2Ofs);
 }
 
 int Chk2Ofs() {
-    // <conv.chunks.Comment object at 0x1019a04a0>
-    // <conv.chunks.Comment object at 0x1019a0680>
+    // to process
+    // if value of $02 was set earlier for whatever reason,
     lda(0x5);
     cmp(0x2);
-    // <conv.chunks.Comment object at 0x1019a07a0>
+    // branch to increment OAM offset and leave, no collision
     BEQ(NoColFB);
     ldy(0x5);
-    // <conv.chunks.Comment object at 0x1019a0a70>
+    // otherwise get temp here and use as offset
     lda(Player_Y_Position);
     clc();
     adc(offsetof(G, FirebarYPos), y);
     inc(0x5);
-    // <conv.chunks.Comment object at 0x1019a0ce0>
-    // <conv.chunks.Comment object at 0x1019a0e60>
+    // add value loaded with offset to player's vertical coordinate
+    // then increment temp and jump back
     JMP(FBCLoop);
     JMP(ChgSDir);
 }
 
 int ChgSDir() {
-    // <conv.chunks.Comment object at 0x1019a1070>
+    // set movement direction by default
     ldx(0x1);
     lda(0x4);
     cmp(0x6);
@@ -13753,33 +13753,33 @@ int ChgSDir() {
 }
 
 int SetSDir() {
-    // <conv.chunks.Comment object at 0x1019a1220>
-    // <conv.chunks.Comment object at 0x1019a1160>
-    // <conv.chunks.Comment object at 0x1019a13d0>
-    // <conv.chunks.Comment object at 0x1019a15b0>
-    // <conv.chunks.Comment object at 0x1019a1640>
+    // if OAM X coordinate of player's sprite 1
+    // is greater than horizontal coordinate of firebar
+    // then do not alter movement direction
+    // otherwise increment it
+    // store movement direction here
     stx(Enemy_MovingDir);
     ldx(0x0);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1019a18e0>
+    // save value written to $00 to stack
     pha();
     JSR(InjurePlayer);
-    // <conv.chunks.Comment object at 0x1019a1a60>
+    // perform sub to hurt or kill player
     pla();
     sta(0x0);
     JMP(NoColFB);
 }
 
 int NoColFB() {
-    // <conv.chunks.Comment object at 0x1019a1c40>
-    // <conv.chunks.Comment object at 0x1019a1cd0>
+    // get value of $00 from stack
+    // get OAM data offset
     pla();
     clc();
-    // <conv.chunks.Comment object at 0x1019a1e80>
+    // add four to it and save
     adc(0x4);
     sta(0x6);
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x1019a1f70>
+    // get enemy object buffer offset and leave
     return 0;
     JMP(GetFirebarPosition);
 }
@@ -13787,77 +13787,77 @@ int NoColFB() {
 int GetFirebarPosition() {
     pha();
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x1019a2300>
-    // <conv.chunks.Comment object at 0x1019a2390>
+    // save high byte of spinstate to the stack
+    // mask out low nybble
     cmp(0x9);
     BCC(GetHAdder);
     eor(0b1111);
-    // <conv.chunks.Comment object at 0x1019a2510>
-    // <conv.chunks.Comment object at 0x1019a26c0>
+    // if lower than $09, branch ahead
+    // otherwise get two's compliment to oscillate
     clc();
     adc(0x1);
     JMP(GetHAdder);
 }
 
 int GetHAdder() {
-    // <conv.chunks.Comment object at 0x1019a28d0>
+    // store result, modified or not, here
     sta(0x1);
     ldy(0x0);
     lda(offsetof(G, FirebarTblOffsets), y);
-    // <conv.chunks.Comment object at 0x1019a2990>
-    // <conv.chunks.Comment object at 0x1019a2b70>
+    // load number of firebar ball where we're at
+    // load offset to firebar position data
     clc();
     adc(0x1);
     tay();
     lda(offsetof(G, FirebarPosLookupTbl), y);
-    // <conv.chunks.Comment object at 0x1019a2de0>
-    // <conv.chunks.Comment object at 0x1019a2db0>
-    // <conv.chunks.Comment object at 0x1019a2f90>
+    // add oscillated high byte of spinstate
+    // to offset here and use as new offset
+    // get data here and store as horizontal adder
     sta(0x1);
     pla();
     pha();
-    // <conv.chunks.Comment object at 0x1019a3170>
-    // <conv.chunks.Comment object at 0x1019a32c0>
+    // pull whatever was in A from the stack
+    // save it again because we still need it
     clc();
     adc(0x8);
     anda(0b1111);
     cmp(0x9);
-    // <conv.chunks.Comment object at 0x1019a33e0>
-    // <conv.chunks.Comment object at 0x1019a3470>
-    // <conv.chunks.Comment object at 0x1019a3620>
+    // add eight this time, to get vertical adder
+    // mask out high nybble
+    // if lower than $09, branch ahead
     BCC(GetVAdder);
     eor(0b1111);
-    // <conv.chunks.Comment object at 0x1019a3830>
+    // otherwise get two's compliment
     clc();
     adc(0x1);
     JMP(GetVAdder);
 }
 
 int GetVAdder() {
-    // <conv.chunks.Comment object at 0x1019a3a40>
+    // store result here
     sta(0x2);
     ldy(0x0);
     lda(offsetof(G, FirebarTblOffsets), y);
-    // <conv.chunks.Comment object at 0x1019a3bc0>
+    // load offset to firebar position data again
     clc();
     adc(0x2);
-    // <conv.chunks.Comment object at 0x1019a3f20>
+    // this time add value in $02 to offset here and use as offset
     tay();
     lda(offsetof(G, FirebarPosLookupTbl), y);
-    // <conv.chunks.Comment object at 0x1019ac0e0>
+    // get data here and store as vertica adder
     sta(0x2);
     pla();
     lsr();
-    // <conv.chunks.Comment object at 0x1019ac2c0>
-    // <conv.chunks.Comment object at 0x1019ac410>
+    // pull out whatever was in A one last time
+    // divide by eight or shift three to the right
     lsr();
     lsr();
     tay();
     lda(offsetof(G, FirebarMirrorData), y);
     sta(0x3);
-    // <conv.chunks.Comment object at 0x1019ac5f0>
-    // <conv.chunks.Comment object at 0x1019ac680>
-    // <conv.chunks.Comment object at 0x1019ac830>
+    // use as offset
+    // load mirroring data here
+    // store
     return 0;
     JMP(MoveFlyingCheepCheep);
 }
@@ -13866,9 +13866,9 @@ int MoveFlyingCheepCheep() {
     lda(Enemy_State, x);
     anda(0b100000);
     BEQ(FlyCC);
-    // <conv.chunks.Comment object at 0x1019acad0>
-    // <conv.chunks.Comment object at 0x1019ad160>
-    // <conv.chunks.Comment object at 0x1019ad280>
+    // check cheep-cheep's enemy state
+    // for d5 set
+    // branch to continue code if not set
     lda(0x0);
     sta(Enemy_SprAttrib, x);
     JMP(MoveJ_EnemyVertically);
@@ -13876,51 +13876,51 @@ int MoveFlyingCheepCheep() {
 }
 
 int FlyCC() {
-    // <conv.chunks.Comment object at 0x1019ad430>
-    // <conv.chunks.Comment object at 0x1019ad610>
-    // <conv.chunks.Comment object at 0x1019ad730>
+    // otherwise clear sprite attributes
+    // and jump to move defeated cheep-cheep downwards
+    // move cheep-cheep horizontally based on speed and force
     JSR(MoveEnemyHorizontally);
     ldy(0xd);
     lda(0x5);
     JSR(SetXMoveAmt);
-    // <conv.chunks.Comment object at 0x1019ad8b0>
-    // <conv.chunks.Comment object at 0x1019ad940>
-    // <conv.chunks.Comment object at 0x1019ada60>
+    // set vertical movement amount
+    // set maximum speed
+    // branch to impose gravity on flying cheep-cheep
     lda(Enemy_Y_MoveForce, x);
     lsr();
     lsr();
-    // <conv.chunks.Comment object at 0x1019add60>
-    // <conv.chunks.Comment object at 0x1019ade20>
+    // get vertical movement force and
+    // move high nybble to low
     lsr();
     lsr();
     tay();
     lda(Enemy_Y_Position, x);
     sec();
-    // <conv.chunks.Comment object at 0x1019ae000>
-    // <conv.chunks.Comment object at 0x1019ae090>
-    // <conv.chunks.Comment object at 0x1019ae210>
+    // save as offset (note this tends to go into reach of code)
+    // get vertical position
+    // subtract pseudorandom value based on offset from position
     sbc(offsetof(G, PRandomSubtracter), y);
     BPL(AddCCF);
-    // <conv.chunks.Comment object at 0x1019ae3c0>
+    // if result within top half of screen, skip this part
     eor(0xff);
     clc();
-    // <conv.chunks.Comment object at 0x1019ae630>
+    // otherwise get two's compliment
     adc(0x1);
     JMP(AddCCF);
 }
 
 int AddCCF() {
-    // <conv.chunks.Comment object at 0x1019ae720>
+    // if result or two's compliment greater than eight,
     cmp(0x8);
     BCS(BPGet);
-    // <conv.chunks.Comment object at 0x1019ae8a0>
+    // skip to the end without changing movement force
     lda(Enemy_Y_MoveForce, x);
     clc();
     adc(0x10);
-    // <conv.chunks.Comment object at 0x1019aec30>
+    // otherwise add to it
     sta(Enemy_Y_MoveForce, x);
     lsr();
-    // <conv.chunks.Comment object at 0x1019aeea0>
+    // move high nybble to low again
     lsr();
     lsr();
     lsr();
@@ -13929,7 +13929,7 @@ int AddCCF() {
 }
 
 int BPGet() {
-    // <conv.chunks.Comment object at 0x1019af170>
+    // load bg priority data and store (this is very likely
     lda(offsetof(G, FlyCCBPriority), y);
     sta(Enemy_SprAttrib, x);
     return 0;
@@ -13945,19 +13945,19 @@ int MoveLakitu() {
 }
 
 int ChkLS() {
-    // <conv.chunks.Comment object at 0x1019af650>
-    // <conv.chunks.Comment object at 0x1019af920>
-    // <conv.chunks.Comment object at 0x1019afa40>
-    // <conv.chunks.Comment object at 0x1019afb90>
-    // <conv.chunks.Comment object at 0x1019afcb0>
+    // check lakitu's enemy state
+    // for d5 set
+    // if not set, continue with code
+    // otherwise jump to move defeated lakitu downwards
+    // if lakitu's enemy state not set at all,
     lda(Enemy_State, x);
     BEQ(Fr12S);
-    // <conv.chunks.Comment object at 0x1019afe60>
+    // go ahead and continue with code
     lda(0x0);
     sta(LakituMoveDirection, x);
     sta(EnemyFrenzyBuffer);
-    // <conv.chunks.Comment object at 0x1019b8050>
-    // <conv.chunks.Comment object at 0x1019b8230>
+    // otherwise initialize moving direction to move to left
+    // initialize frenzy buffer
     lda(0x10);
     BNE(SetLSpd);
     JMP(Fr12S);
@@ -13966,16 +13966,16 @@ int ChkLS() {
 int Fr12S() {
     lda(Spiny);
     sta(EnemyFrenzyBuffer);
-    // <conv.chunks.Comment object at 0x1019b8650>
+    // set spiny identifier in frenzy buffer
     ldy(0x2);
     JMP(LdLDa);
 }
 
 int LdLDa() {
-    // <conv.chunks.Comment object at 0x1019b8890>
+    // load values
     lda(offsetof(G, LakituDiffAdj), y);
     sta(0x1, y);
-    // <conv.chunks.Comment object at 0x1019b8ad0>
+    // store in zero page
     dey();
     BPL(LdLDa);
     JSR(PlayerLakituDiff);
@@ -13983,20 +13983,20 @@ int LdLDa() {
 }
 
 int SetLSpd() {
-    // <conv.chunks.Comment object at 0x1019b8cb0>
-    // <conv.chunks.Comment object at 0x1019b8e00>
-    // <conv.chunks.Comment object at 0x1019b8f20>
+    // do this until all values are stired
+    // execute sub to set speed and create spinys
+    // set movement speed returned from sub
     sta(LakituMoveSpeed, x);
     ldy(0x1);
-    // <conv.chunks.Comment object at 0x1019b90d0>
+    // set moving direction to right by default
     lda(LakituMoveDirection, x);
     anda(0x1);
     BNE(SetLMov);
-    // <conv.chunks.Comment object at 0x1019b9310>
-    // <conv.chunks.Comment object at 0x1019b93a0>
+    // get LSB of moving direction
+    // if set, branch to the end to use moving direction
     lda(LakituMoveSpeed, x);
     eor(0xff);
-    // <conv.chunks.Comment object at 0x1019b96a0>
+    // get two's compliment of moving speed
     clc();
     adc(0x1);
     sta(LakituMoveSpeed, x);
@@ -14005,9 +14005,9 @@ int SetLSpd() {
 }
 
 int SetLMov() {
-    // <conv.chunks.Comment object at 0x1019b98b0>
-    // <conv.chunks.Comment object at 0x1019b9ac0>
-    // <conv.chunks.Comment object at 0x1019b9b50>
+    // store as new moving speed
+    // increment moving direction to left
+    // store moving direction
     sty(Enemy_MovingDir, x);
     JMP(MoveEnemyHorizontally);
     JMP(PlayerLakituDiff);
@@ -14018,31 +14018,31 @@ int PlayerLakituDiff() {
     JSR(PlayerEnemyDiff);
     BPL(ChkLakDif);
     iny();
-    // <conv.chunks.Comment object at 0x1019b9e50>
-    // <conv.chunks.Comment object at 0x1019b9ee0>
-    // <conv.chunks.Comment object at 0x1019ba090>
-    // <conv.chunks.Comment object at 0x1019ba1e0>
+    // set Y for default value
+    // get horizontal difference between enemy and player
+    // branch if enemy is to the right of the player
+    // increment Y for left of player
     lda(0x0);
     eor(0xff);
-    // <conv.chunks.Comment object at 0x1019ba270>
+    // get two's compliment of low byte of horizontal difference
     clc();
     adc(0x1);
-    // <conv.chunks.Comment object at 0x1019ba510>
+    // store two's compliment as horizontal difference
     sta(0x0);
     JMP(ChkLakDif);
 }
 
 int ChkLakDif() {
-    // <conv.chunks.Comment object at 0x1019ba5a0>
+    // get low byte of horizontal difference
     lda(0x0);
     cmp(0x3c);
-    // <conv.chunks.Comment object at 0x1019ba810>
+    // if within a certain distance of player, branch
     BCC(ChkPSpeed);
     lda(0x3c);
-    // <conv.chunks.Comment object at 0x1019baa80>
+    // otherwise set maximum distance
     sta(0x0);
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x1019bab10>
+    // check if lakitu is in our current enemy slot
     cmp(Lakitu);
     BNE(ChkPSpeed);
     tya();
@@ -14052,20 +14052,20 @@ int ChkLakDif() {
     BEQ(SetLMovD);
     dec(LakituMoveSpeed, x);
     lda(LakituMoveSpeed, x);
-    // <conv.chunks.Comment object at 0x1019bae10>
-    // <conv.chunks.Comment object at 0x1019bb050>
-    // <conv.chunks.Comment object at 0x1019bb0e0>
-    // <conv.chunks.Comment object at 0x1019bb230>
-    // <conv.chunks.Comment object at 0x1019bb350>
-    // <conv.chunks.Comment object at 0x1019bb4a0>
-    // <conv.chunks.Comment object at 0x1019bb5c0>
-    // <conv.chunks.Comment object at 0x1019bb710>
+    // if not, branch elsewhere
+    // compare contents of Y, now in A
+    // to what is being used as horizontal movement direction
+    // if moving toward the player, branch, do not alter
+    // if moving to the left beyond maximum distance,
+    // branch and alter without delay
+    // decrement horizontal speed
+    // if horizontal speed not yet at zero, branch to leave
     BNE(ExMoveLak);
     JMP(SetLMovD);
 }
 
 int SetLMovD() {
-    // <conv.chunks.Comment object at 0x1019bb950>
+    // set horizontal direction depending on horizontal
     tya();
     sta(LakituMoveDirection, x);
     JMP(ChkPSpeed);
@@ -14075,24 +14075,24 @@ int ChkPSpeed() {
     lda(0x0);
     anda(0b111100);
     lsr();
-    // <conv.chunks.Comment object at 0x1019bbc50>
-    // <conv.chunks.Comment object at 0x1019bbe00>
+    // mask out all but four bits in the middle
+    // divide masked difference by four
     lsr();
     sta(0x0);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x1019bbf50>
-    // <conv.chunks.Comment object at 0x1019bbfe0>
+    // store as new value
+    // init offset
     lda(Player_X_Speed);
     BEQ(SubDifAdj);
-    // <conv.chunks.Comment object at 0x1019c0290>
+    // if player not moving horizontally, branch
     lda(ScrollAmount);
     BEQ(SubDifAdj);
     iny();
-    // <conv.chunks.Comment object at 0x1019c04a0>
-    // <conv.chunks.Comment object at 0x1019c05f0>
+    // if scroll speed not set, branch to same place
+    // otherwise increment offset
     lda(Player_X_Speed);
     cmp(0x19);
-    // <conv.chunks.Comment object at 0x1019c0770>
+    // if player not running, branch
     BCC(ChkSpinyO);
     lda(ScrollAmount);
     cmp(0x2);
@@ -14102,22 +14102,22 @@ int ChkPSpeed() {
 }
 
 int ChkSpinyO() {
-    // <conv.chunks.Comment object at 0x1019c0a70>
-    // <conv.chunks.Comment object at 0x1019c0b00>
-    // <conv.chunks.Comment object at 0x1019c0ce0>
-    // <conv.chunks.Comment object at 0x1019c0d70>
+    // if scroll speed below a certain amount, branch
+    // to same place
+    // otherwise increment once more
+    // check for spiny object
     lda(Enemy_ID, x);
     cmp(Spiny);
     BNE(ChkEmySpd);
     lda(Player_X_Speed);
-    // <conv.chunks.Comment object at 0x1019c0f50>
-    // <conv.chunks.Comment object at 0x1019c1130>
+    // branch if not found
+    // if player not moving, skip this part
     BNE(SubDifAdj);
     JMP(ChkEmySpd);
 }
 
 int ChkEmySpd() {
-    // <conv.chunks.Comment object at 0x1019c1340>
+    // check vertical speed
     lda(Enemy_Y_Speed, x);
     BNE(SubDifAdj);
     ldy(0x0);
@@ -14125,28 +14125,28 @@ int ChkEmySpd() {
 }
 
 int SubDifAdj() {
-    // <conv.chunks.Comment object at 0x1019c14c0>
-    // <conv.chunks.Comment object at 0x1019c15e0>
-    // <conv.chunks.Comment object at 0x1019c1670>
+    // branch if nonzero
+    // otherwise reinit offset
+    // get one of three saved values from earlier
     lda(0x1, y);
     ldy(0x0);
     JMP(SPixelLak);
 }
 
 int SPixelLak() {
-    // <conv.chunks.Comment object at 0x1019c18b0>
-    // <conv.chunks.Comment object at 0x1019c1940>
+    // get saved horizontal difference
+    // subtract one for each pixel of horizontal difference
     sec();
     sbc(0x1);
-    // <conv.chunks.Comment object at 0x1019c1a90>
+    // from one of three saved values
     dey();
     BPL(SPixelLak);
     JMP(ExMoveLak);
 }
 
 int ExMoveLak() {
-    // <conv.chunks.Comment object at 0x1019c1c40>
-    // <conv.chunks.Comment object at 0x1019c1d60>
+    // branch until all pixels are subtracted, to adjust difference
+    // leave!!!
     return 0;
     JMP(BridgeCollapse);
 }
@@ -14158,26 +14158,26 @@ int BridgeCollapse() {
     BNE(SetM2);
     stx(ObjectOffset);
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x1019c21b0>
-    // <conv.chunks.Comment object at 0x1019c1fa0>
-    // <conv.chunks.Comment object at 0x1019c2b10>
-    // <conv.chunks.Comment object at 0x1019c2b70>
-    // <conv.chunks.Comment object at 0x1019c2db0>
-    // <conv.chunks.Comment object at 0x1019c2ed0>
+    // get enemy offset for bowser
+    // check enemy object identifier for bowser
+    // if not found, branch ahead,
+    // metatile removal not necessary
+    // store as enemy offset here
+    // if bowser in normal state, skip all of this
     BEQ(RemoveBridge);
     anda(0b1000000);
-    // <conv.chunks.Comment object at 0x1019c3110>
+    // if bowser's state has d6 clear, skip to silence music
     BEQ(SetM2);
     lda(Enemy_Y_Position, x);
     cmp(0xe0);
-    // <conv.chunks.Comment object at 0x1019c3350>
-    // <conv.chunks.Comment object at 0x1019c34a0>
+    // check bowser's vertical coordinate
+    // if bowser not yet low enough, skip this part ahead
     BCC(MoveD_Bowser);
     JMP(SetM2);
 }
 
 int SetM2() {
-    // <conv.chunks.Comment object at 0x1019c36b0>
+    // silence music
     lda(Silence);
     sta(EventMusicQueue);
     inc(OperMode_Task);
@@ -14194,25 +14194,25 @@ int MoveD_Bowser() {
 int RemoveBridge() {
     dec(BowserFeetCounter);
     BNE(NoBFall);
-    // <conv.chunks.Comment object at 0x1019c3e30>
-    // <conv.chunks.Comment object at 0x1019c3f50>
+    // decrement timer to control bowser's feet
+    // if not expired, skip all of this
     lda(0x4);
     sta(BowserFeetCounter);
-    // <conv.chunks.Comment object at 0x1019c8140>
+    // otherwise, set timer now
     lda(BowserBodyControls);
     eor(0x1);
-    // <conv.chunks.Comment object at 0x1019c83e0>
+    // invert bit to control bowser's feet
     sta(BowserBodyControls);
     lda(0x22);
-    // <conv.chunks.Comment object at 0x1019c85f0>
+    // put high byte of name table address here for now
     sta(0x5);
     ldy(BridgeCollapseOffset);
     lda(offsetof(G, BridgeCollapseData), y);
-    // <conv.chunks.Comment object at 0x1019c8680>
-    // <conv.chunks.Comment object at 0x1019c8920>
+    // get bridge collapse offset here
+    // load low byte of name table address and store here
     sta(0x4);
     ldy(VRAM_Buffer1_Offset);
-    // <conv.chunks.Comment object at 0x1019c8a70>
+    // increment vram buffer offset
     iny();
     ldx(0xc);
     JSR(RemBridge);
@@ -14223,33 +14223,33 @@ int RemoveBridge() {
     lda(Sfx_BrickShatter);
     sta(NoiseSoundQueue);
     inc(BridgeCollapseOffset);
-    // <conv.chunks.Comment object at 0x1019c8d10>
-    // <conv.chunks.Comment object at 0x1019c8da0>
-    // <conv.chunks.Comment object at 0x1019c8f50>
-    // <conv.chunks.Comment object at 0x1019c9070>
-    // <conv.chunks.Comment object at 0x1019c9190>
-    // <conv.chunks.Comment object at 0x1019c92b0>
-    // <conv.chunks.Comment object at 0x1019c93d0>
-    // <conv.chunks.Comment object at 0x1019c94f0>
-    // <conv.chunks.Comment object at 0x1019c9610>
+    // set offset for tile data for sub to draw blank metatile
+    // do sub here to remove bowser's bridge metatiles
+    // get enemy offset
+    // set new vram buffer offset
+    // load the fireworks/gunfire sound into the square 2 sfx
+    // queue while at the same time loading the brick
+    // shatter sound into the noise sfx queue thus
+    // producing the unique sound of the bridge collapsing
+    // increment bridge collapse offset
     lda(BridgeCollapseOffset);
     cmp(0xf);
     BNE(NoBFall);
     JSR(InitVStf);
-    // <conv.chunks.Comment object at 0x1019c9820>
-    // <conv.chunks.Comment object at 0x1019c98b0>
-    // <conv.chunks.Comment object at 0x1019c9a90>
+    // if bridge collapse offset has not yet reached
+    // the end, go ahead and skip this part
+    // initialize whatever vertical speed bowser has
     lda(0b1000000);
     sta(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x1019c9ca0>
+    // set bowser's state to one of defeated states (d6 set)
     lda(Sfx_BowserFall);
     sta(Square2SoundQueue);
     JMP(NoBFall);
 }
 
 int NoBFall() {
-    // <conv.chunks.Comment object at 0x1019c9ee0>
-    // <conv.chunks.Comment object at 0x1019ca000>
+    // play bowser defeat sound
+    // jump to code that draws bowser
     JMP(BowserGfxHandler);
     JMP(RunBowser);
 }
@@ -14257,8 +14257,8 @@ int NoBFall() {
 int RunBowser() {
     lda(Enemy_State, x);
     anda(0b100000);
-    // <conv.chunks.Comment object at 0x1019ca240>
-    // <conv.chunks.Comment object at 0x1019ca5a0>
+    // if d5 in enemy state is not set
+    // then branch elsewhere to run bowser
     BEQ(BowserControl);
     lda(Enemy_Y_Position, x);
     cmp(0xe0);
@@ -14272,17 +14272,17 @@ int KillAllEnemies() {
 }
 
 int KillLoop() {
-    // <conv.chunks.Comment object at 0x1019cab70>
-    // <conv.chunks.Comment object at 0x1019cac00>
+    // start with last enemy slot
+    // branch to kill enemy objects
     JSR(EraseEnemyObject);
     dex();
     BPL(KillLoop);
     sta(EnemyFrenzyBuffer);
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x1019cae10>
-    // <conv.chunks.Comment object at 0x1019caea0>
-    // <conv.chunks.Comment object at 0x1019cafc0>
-    // <conv.chunks.Comment object at 0x1019cb0e0>
+    // move onto next enemy slot
+    // do this until all slots are emptied
+    // empty frenzy buffer
+    // get enemy object offset and leave
     return 0;
     JMP(BowserControl);
 }
@@ -14297,11 +14297,11 @@ int BowserControl() {
 }
 
 int ChkMouth() {
-    // <conv.chunks.Comment object at 0x1019cb320>
-    // <conv.chunks.Comment object at 0x1019cb4d0>
-    // <conv.chunks.Comment object at 0x1019cb5f0>
-    // <conv.chunks.Comment object at 0x1019cb710>
-    // <conv.chunks.Comment object at 0x1019cb830>
+    // empty frenzy buffer
+    // if master timer control not set,
+    // skip jump and execute code here
+    // otherwise, jump over a bunch of code
+    // check bowser's mouth
     lda(BowserBodyControls);
     BPL(FeetTmr);
     JMP(HammerChk);
@@ -14309,25 +14309,25 @@ int ChkMouth() {
 }
 
 int FeetTmr() {
-    // <conv.chunks.Comment object at 0x1019cb980>
-    // <conv.chunks.Comment object at 0x1019cbad0>
-    // <conv.chunks.Comment object at 0x1019cbbf0>
+    // if bit clear, go ahead with code here
+    // otherwise skip a whole section starting here
+    // decrement timer to control bowser's feet
     dec(BowserFeetCounter);
     BNE(ResetMDr);
     lda(0x20);
-    // <conv.chunks.Comment object at 0x1019cbd70>
-    // <conv.chunks.Comment object at 0x1019cbe90>
+    // if not expired, skip this part
+    // otherwise, reset timer
     sta(BowserFeetCounter);
     lda(BowserBodyControls);
     eor(0b1);
-    // <conv.chunks.Comment object at 0x1019d40e0>
-    // <conv.chunks.Comment object at 0x1019d4200>
+    // and invert bit used
+    // to control bowser's feet
     sta(BowserBodyControls);
     JMP(ResetMDr);
 }
 
 int ResetMDr() {
-    // <conv.chunks.Comment object at 0x1019d4410>
+    // check frame counter
     lda(FrameCounter);
     anda(0b1111);
     BNE(B_FaceP);
@@ -14337,29 +14337,29 @@ int ResetMDr() {
 }
 
 int B_FaceP() {
-    // <conv.chunks.Comment object at 0x1019d4560>
-    // <conv.chunks.Comment object at 0x1019d4680>
-    // <conv.chunks.Comment object at 0x1019d47d0>
-    // <conv.chunks.Comment object at 0x1019d4860>
-    // <conv.chunks.Comment object at 0x1019d4a40>
+    // if not on every sixteenth frame, skip
+    // ahead to continue code
+    // otherwise reset moving/facing direction every
+    // sixteen frames
+    // if timer set here expired,
     lda(EnemyFrameTimer, x);
     BEQ(GetPRCmp);
     JSR(PlayerEnemyDiff);
     BPL(GetPRCmp);
-    // <conv.chunks.Comment object at 0x1019d4bf0>
-    // <conv.chunks.Comment object at 0x1019d4d10>
-    // <conv.chunks.Comment object at 0x1019d4e30>
+    // branch to next section
+    // get horizontal difference between player and bowser,
+    // and branch if bowser to the right of the player
     lda(0x1);
     sta(Enemy_MovingDir, x);
-    // <conv.chunks.Comment object at 0x1019d4fb0>
+    // set bowser to move and face to the right
     lda(0x2);
     sta(BowserMovementSpeed);
-    // <conv.chunks.Comment object at 0x1019d51f0>
+    // set movement speed
     lda(0x20);
     sta(EnemyFrameTimer, x);
     sta(BowserFireBreathTimer);
-    // <conv.chunks.Comment object at 0x1019d5400>
-    // <conv.chunks.Comment object at 0x1019d55e0>
+    // set timer here
+    // set timer used for bowser's flame
     lda(Enemy_X_Position, x);
     cmp(0xc8);
     BCS(HammerChk);
@@ -14367,21 +14367,21 @@ int B_FaceP() {
 }
 
 int GetPRCmp() {
-    // <conv.chunks.Comment object at 0x1019d5820>
-    // <conv.chunks.Comment object at 0x1019d58b0>
-    // <conv.chunks.Comment object at 0x1019d5a60>
+    // if bowser to the right past a certain point,
+    // skip ahead to some other section
+    // get frame counter
     lda(FrameCounter);
     anda(0b11);
     BNE(HammerChk);
-    // <conv.chunks.Comment object at 0x1019d5ca0>
+    // execute this code every fourth frame, otherwise branch
     lda(Enemy_X_Position, x);
     cmp(BowserOrigXPos);
     BNE(GetDToO);
-    // <conv.chunks.Comment object at 0x1019d5ee0>
-    // <conv.chunks.Comment object at 0x1019d6000>
+    // if bowser not at original horizontal position,
+    // branch to skip this part
     lda(PseudoRandomBitReg, x);
     anda(0b11);
-    // <conv.chunks.Comment object at 0x1019d6270>
+    // get pseudorandom offset
     tay();
     lda(offsetof(G, PRandomRange), y);
     sta(MaxRangeFromOrigin);
@@ -14392,32 +14392,32 @@ int GetDToO() {
     lda(Enemy_X_Position, x);
     clc();
     adc(BowserMovementSpeed);
-    // <conv.chunks.Comment object at 0x1019d6840>
-    // <conv.chunks.Comment object at 0x1019d68d0>
+    // add movement speed to bowser's horizontal
+    // coordinate and save as new horizontal position
     sta(Enemy_X_Position, x);
     ldy(Enemy_MovingDir, x);
     cpy(0x1);
-    // <conv.chunks.Comment object at 0x1019d6c30>
+    // if bowser moving and facing to the right, skip ahead
     BEQ(HammerChk);
     ldy(0xff);
     sec();
     sbc(BowserOrigXPos);
     BPL(CompDToO);
-    // <conv.chunks.Comment object at 0x1019d6e40>
-    // <conv.chunks.Comment object at 0x1019d6f90>
-    // <conv.chunks.Comment object at 0x1019d7020>
-    // <conv.chunks.Comment object at 0x1019d7140>
+    // set default movement speed here (move left)
+    // get difference of current vs. original
+    // horizontal position
+    // if current position to the right of original, skip ahead
     eor(0xff);
     clc();
-    // <conv.chunks.Comment object at 0x1019d7380>
+    // get two's compliment
     adc(0x1);
     ldy(0x1);
     JMP(CompDToO);
 }
 
 int CompDToO() {
-    // <conv.chunks.Comment object at 0x1019d7470>
-    // <conv.chunks.Comment object at 0x1019d7590>
+    // set alternate movement speed here (move right)
+    // compare difference with pseudorandom value
     cmp(MaxRangeFromOrigin);
     BCC(HammerChk);
     sty(BowserMovementSpeed);
@@ -14425,19 +14425,19 @@ int CompDToO() {
 }
 
 int HammerChk() {
-    // <conv.chunks.Comment object at 0x1019d7770>
-    // <conv.chunks.Comment object at 0x1019d7890>
-    // <conv.chunks.Comment object at 0x1019d79b0>
+    // if difference < pseudorandom value, leave speed alone
+    // otherwise change bowser's movement speed
+    // if timer set here not expired yet, skip ahead to
     lda(EnemyFrameTimer, x);
     BNE(MakeBJump);
     JSR(MoveEnemySlowVert);
     lda(WorldNumber);
-    // <conv.chunks.Comment object at 0x1019d7b30>
-    // <conv.chunks.Comment object at 0x1019d7c50>
-    // <conv.chunks.Comment object at 0x1019d7d70>
+    // some other section of code
+    // otherwise start by moving bowser downwards
+    // check world number
     cmp(World6);
     BCC(SetHmrTmr);
-    // <conv.chunks.Comment object at 0x1019d7ec0>
+    // if world 1-5, skip this part (not time to throw hammers yet)
     lda(FrameCounter);
     anda(0b11);
     BNE(SetHmrTmr);
@@ -14446,18 +14446,18 @@ int HammerChk() {
 }
 
 int SetHmrTmr() {
-    // <conv.chunks.Comment object at 0x1019e0200>
-    // <conv.chunks.Comment object at 0x1019e0320>
-    // <conv.chunks.Comment object at 0x1019e0440>
-    // <conv.chunks.Comment object at 0x1019e0560>
+    // check to see if it's time to execute sub
+    // if not, skip sub, otherwise
+    // execute sub on every fourth frame to spawn misc object (hammer)
+    // get current vertical position
     lda(Enemy_Y_Position, x);
     cmp(0x80);
     BCC(ChkFireB);
-    // <conv.chunks.Comment object at 0x1019e06e0>
-    // <conv.chunks.Comment object at 0x1019e0770>
+    // if still above a certain point
+    // then skip to world number check for flames
     lda(PseudoRandomBitReg, x);
     anda(0b11);
-    // <conv.chunks.Comment object at 0x1019e0a40>
+    // get pseudorandom offset
     tay();
     lda(offsetof(G, PRandomRange), y);
     sta(EnemyFrameTimer, x);
@@ -14465,30 +14465,30 @@ int SetHmrTmr() {
 }
 
 int SkipToFB() {
-    // <conv.chunks.Comment object at 0x1019e0bf0>
-    // <conv.chunks.Comment object at 0x1019e0d40>
-    // <conv.chunks.Comment object at 0x1019e0e90>
+    // get value using pseudorandom offset
+    // set for timer here
+    // jump to execute flames code
     JMP(ChkFireB);
     JMP(MakeBJump);
 }
 
 int MakeBJump() {
-    // <conv.chunks.Comment object at 0x1019e0fe0>
+    // if timer not yet about to expire,
     cmp(0x1);
     BNE(ChkFireB);
     dec(Enemy_Y_Position, x);
     JSR(InitVStf);
-    // <conv.chunks.Comment object at 0x1019e10a0>
-    // <conv.chunks.Comment object at 0x1019e1250>
-    // <conv.chunks.Comment object at 0x1019e13a0>
+    // skip ahead to next part
+    // otherwise decrement vertical coordinate
+    // initialize movement amount
     lda(0xfe);
     sta(Enemy_Y_Speed, x);
     JMP(ChkFireB);
 }
 
 int ChkFireB() {
-    // <conv.chunks.Comment object at 0x1019e1520>
-    // <conv.chunks.Comment object at 0x1019e1700>
+    // set vertical speed to move bowser upwards
+    // check world number here
     lda(WorldNumber);
     cmp(World8);
     BEQ(SpawnFBr);
@@ -14498,37 +14498,37 @@ int ChkFireB() {
 }
 
 int SpawnFBr() {
-    // <conv.chunks.Comment object at 0x1019e1850>
-    // <conv.chunks.Comment object at 0x1019e18b0>
-    // <conv.chunks.Comment object at 0x1019e1ac0>
-    // <conv.chunks.Comment object at 0x1019e1b20>
-    // <conv.chunks.Comment object at 0x1019e1d30>
+    // world 8?
+    // if so, execute this part here
+    // world 6-7?
+    // if so, skip this part here
+    // check timer here
     lda(BowserFireBreathTimer);
     BNE(BowserGfxHandler);
-    // <conv.chunks.Comment object at 0x1019e1e80>
+    // if not expired yet, skip all of this
     lda(0x20);
     sta(BowserFireBreathTimer);
-    // <conv.chunks.Comment object at 0x1019e2000>
+    // set timer here
     lda(BowserBodyControls);
     eor(0b10000000);
     sta(BowserBodyControls);
     BMI(ChkFireB);
     JSR(SetFlameTimer);
-    // <conv.chunks.Comment object at 0x1019e22a0>
-    // <conv.chunks.Comment object at 0x1019e23c0>
-    // <conv.chunks.Comment object at 0x1019e24e0>
-    // <conv.chunks.Comment object at 0x1019e2600>
+    // invert bowser's mouth bit to open
+    // and close bowser's mouth
+    // if bowser's mouth open, loop back
+    // get timing for bowser's flame
     ldy(SecondaryHardMode);
     BEQ(SetFBTmr);
-    // <conv.chunks.Comment object at 0x1019e2810>
+    // if secondary hard mode flag not set, skip this
     sec();
     sbc(0x10);
     JMP(SetFBTmr);
 }
 
 int SetFBTmr() {
-    // <conv.chunks.Comment object at 0x1019e29c0>
-    // <conv.chunks.Comment object at 0x1019e2a50>
+    // otherwise subtract from value in A
+    // set value as timer here
     sta(BowserFireBreathTimer);
     lda(BowserFlame);
     sta(EnemyFrenzyBuffer);
@@ -14539,9 +14539,9 @@ int BowserGfxHandler() {
     JSR(ProcessBowserHalf);
     ldy(0x10);
     lda(Enemy_MovingDir, x);
-    // <conv.chunks.Comment object at 0x1019e2ed0>
-    // <conv.chunks.Comment object at 0x1019e2ff0>
-    // <conv.chunks.Comment object at 0x1019e3080>
+    // do a sub here to process bowser's front
+    // load default value here to position bowser's rear
+    // check moving direction
     lsr();
     BCC(CopyFToR);
     ldy(0xf0);
@@ -14549,54 +14549,54 @@ int BowserGfxHandler() {
 }
 
 int CopyFToR() {
-    // <conv.chunks.Comment object at 0x1019e32f0>
-    // <conv.chunks.Comment object at 0x1019e3410>
-    // <conv.chunks.Comment object at 0x1019e34a0>
+    // if moving left, use default
+    // otherwise load alternate positioning value here
+    // move bowser's rear object position value to A
     tya();
     clc();
     adc(Enemy_X_Position, x);
     ldy(DuplicateObj_Offset);
     sta(Enemy_X_Position, y);
-    // <conv.chunks.Comment object at 0x1019e36b0>
-    // <conv.chunks.Comment object at 0x1019e3800>
-    // <conv.chunks.Comment object at 0x1019e3920>
+    // add to bowser's front object horizontal coordinate
+    // get bowser's rear object offset
+    // store A as bowser's rear horizontal coordinate
     lda(Enemy_Y_Position, x);
     clc();
     adc(0x8);
     sta(Enemy_Y_Position, y);
-    // <conv.chunks.Comment object at 0x1019e3bc0>
-    // <conv.chunks.Comment object at 0x1019e3c50>
-    // <conv.chunks.Comment object at 0x1019e3ce0>
+    // add eight pixels to bowser's front object
+    // vertical coordinate and store as vertical coordinate
+    // for bowser's rear
     lda(Enemy_State, x);
     sta(Enemy_State, y);
-    // <conv.chunks.Comment object at 0x1019e3fe0>
+    // copy enemy state directly from front to rear
     lda(Enemy_MovingDir, x);
     sta(Enemy_MovingDir, y);
     lda(ObjectOffset);
-    // <conv.chunks.Comment object at 0x1019ec290>
-    // <conv.chunks.Comment object at 0x1019ec3e0>
+    // copy moving direction also
+    // save enemy object offset of front to stack
     pha();
     ldx(DuplicateObj_Offset);
-    // <conv.chunks.Comment object at 0x1019ec590>
+    // put enemy object offset of rear as current
     stx(ObjectOffset);
     lda(Bowser);
     sta(Enemy_ID, x);
     JSR(ProcessBowserHalf);
-    // <conv.chunks.Comment object at 0x1019ec7a0>
-    // <conv.chunks.Comment object at 0x1019ec800>
-    // <conv.chunks.Comment object at 0x1019eca40>
+    // set bowser's enemy identifier
+    // store in bowser's rear object
+    // do a sub here to process bowser's rear
     pla();
     sta(ObjectOffset);
-    // <conv.chunks.Comment object at 0x1019ecbf0>
+    // get original enemy object offset
     tax();
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1019ecda0>
+    // nullify bowser's front/rear graphics flag
     sta(BowserGfxFlag);
     JMP(ExBGfxH);
 }
 
 int ExBGfxH() {
-    // <conv.chunks.Comment object at 0x1019ecfe0>
+    // leave!
     return 0;
     JMP(ProcessBowserHalf);
 }
@@ -14604,11 +14604,11 @@ int ExBGfxH() {
 int ProcessBowserHalf() {
     inc(BowserGfxFlag);
     JSR(RunRetainerObj);
-    // <conv.chunks.Comment object at 0x1019ed130>
-    // <conv.chunks.Comment object at 0x1019ed250>
+    // increment bowser's graphics flag, then run subroutines
+    // to get offscreen bits, relative position and draw bowser (finally!)
     lda(Enemy_State, x);
     BNE(ExBGfxH);
-    // <conv.chunks.Comment object at 0x1019ed490>
+    // if either enemy object not in normal state, branch to leave
     lda(0xa);
     sta(Enemy_BoundBoxCtrl, x);
     JSR(GetEnemyBoundBox);
@@ -14621,10 +14621,10 @@ int SetFlameTimer() {
     inc(BowserFlameTimerCtrl);
     lda(BowserFlameTimerCtrl);
     anda(0b111);
-    // <conv.chunks.Comment object at 0x1019edb80>
-    // <conv.chunks.Comment object at 0x1019edca0>
-    // <conv.chunks.Comment object at 0x1019ee210>
-    // <conv.chunks.Comment object at 0x1019ee330>
+    // load counter as offset
+    // increment
+    // mask out all but 3 LSB
+    // to keep in range of 0-7
     sta(BowserFlameTimerCtrl);
     lda(offsetof(G, FlameTimerData), y);
     JMP(ExFl);
@@ -14639,9 +14639,9 @@ int ProcBowserFlame() {
     lda(TimerControl);
     BNE(SetGfxF);
     lda(0x40);
-    // <conv.chunks.Comment object at 0x1019ee7b0>
-    // <conv.chunks.Comment object at 0x1019ee8d0>
-    // <conv.chunks.Comment object at 0x1019eea20>
+    // if master timer control flag set,
+    // skip all of this
+    // load default movement force
     ldy(SecondaryHardMode);
     BEQ(SFlmX);
     lda(0x60);
@@ -14649,33 +14649,33 @@ int ProcBowserFlame() {
 }
 
 int SFlmX() {
-    // <conv.chunks.Comment object at 0x1019eec30>
-    // <conv.chunks.Comment object at 0x1019eed80>
-    // <conv.chunks.Comment object at 0x1019eee10>
+    // if secondary hard mode flag not set, use default
+    // otherwise load alternate movement force to go faster
+    // store value here
     sta(0x0);
     lda(Enemy_X_MoveForce, x);
     sec();
-    // <conv.chunks.Comment object at 0x1019ef170>
+    // subtract value from movement force
     sbc(0x0);
     sta(Enemy_X_MoveForce, x);
-    // <conv.chunks.Comment object at 0x1019ef200>
+    // save new value
     lda(Enemy_X_Position, x);
     sbc(0x1);
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x1019ef560>
-    // <conv.chunks.Comment object at 0x1019ef5f0>
+    // subtract one from horizontal position to move
+    // to the left
     lda(Enemy_PageLoc, x);
     sbc(0x0);
-    // <conv.chunks.Comment object at 0x1019ef8f0>
+    // subtract borrow from page location
     sta(Enemy_PageLoc, x);
     ldy(BowserFlamePRandomOfs, x);
     lda(Enemy_Y_Position, x);
     cmp(offsetof(G, FlameYPosData), y);
     BEQ(SetGfxF);
-    // <conv.chunks.Comment object at 0x1019efb30>
-    // <conv.chunks.Comment object at 0x1019efc80>
-    // <conv.chunks.Comment object at 0x1019efdd0>
-    // <conv.chunks.Comment object at 0x1019eff20>
+    // get some value here and use as offset
+    // load vertical coordinate
+    // compare against coordinate data using $0417,x as offset
+    // if equal, branch and do not modify coordinate
     clc();
     adc(Enemy_Y_MoveForce, x);
     sta(Enemy_Y_Position, x);
@@ -14683,20 +14683,20 @@ int SFlmX() {
 }
 
 int SetGfxF() {
-    // <conv.chunks.Comment object at 0x1019f8140>
-    // <conv.chunks.Comment object at 0x1019f8290>
-    // <conv.chunks.Comment object at 0x1019f83e0>
+    // otherwise add value here to coordinate and store
+    // as new vertical coordinate
+    // get new relative coordinates
     JSR(RelativeEnemyPosition);
     lda(Enemy_State, x);
     BNE(ExFl);
     lda(0x51);
     sta(0x0);
     ldy(0x2);
-    // <conv.chunks.Comment object at 0x1019f8560>
-    // <conv.chunks.Comment object at 0x1019f86b0>
-    // <conv.chunks.Comment object at 0x1019f8800>
-    // <conv.chunks.Comment object at 0x1019f8950>
-    // <conv.chunks.Comment object at 0x1019f89e0>
+    // if bowser's flame not in normal state,
+    // branch to leave
+    // otherwise, continue
+    // write first tile number
+    // load attributes without vertical flip by default
     lda(FrameCounter);
     anda(0b10);
     BEQ(FlmeAt);
@@ -14705,13 +14705,13 @@ int SetGfxF() {
 }
 
 int FlmeAt() {
-    // <conv.chunks.Comment object at 0x1019f8c50>
-    // <conv.chunks.Comment object at 0x1019f8d70>
-    // <conv.chunks.Comment object at 0x1019f8ec0>
-    // <conv.chunks.Comment object at 0x1019f8f50>
+    // invert vertical flip bit every 2 frames
+    // if d1 not set, write default value
+    // otherwise write value with vertical flip bit set
+    // set bowser's flame sprite attributes here
     sty(0x1);
     ldy(Enemy_SprDataOffset, x);
-    // <conv.chunks.Comment object at 0x1019f9100>
+    // get OAM data offset
     ldx(0x0);
     JMP(DrawFlameLoop);
 }
@@ -14719,43 +14719,43 @@ int FlmeAt() {
 int DrawFlameLoop() {
     lda(Enemy_Rel_YPos);
     sta(Sprite_Y_Position, y);
-    // <conv.chunks.Comment object at 0x1019f93d0>
-    // <conv.chunks.Comment object at 0x1019f94f0>
+    // get Y relative coordinate of current enemy object
+    // write into Y coordinate of OAM data
     lda(0x0);
     sta(Sprite_Tilenumber, y);
     inc(0x0);
-    // <conv.chunks.Comment object at 0x1019f9640>
-    // <conv.chunks.Comment object at 0x1019f98b0>
+    // write current tile number into OAM data
+    // increment tile number to draw more bowser's flame
     lda(0x1);
     sta(Sprite_Attributes, y);
-    // <conv.chunks.Comment object at 0x1019f9940>
+    // write saved attributes into OAM data
     lda(Enemy_Rel_XPos);
     sta(Sprite_X_Position, y);
-    // <conv.chunks.Comment object at 0x1019f9cd0>
+    // write X relative coordinate of current enemy object
     clc();
     adc(0x8);
     sta(Enemy_Rel_XPos);
-    // <conv.chunks.Comment object at 0x1019f9f10>
+    // then add eight to it and store
     iny();
     iny();
     iny();
     iny();
     inx();
     cpx(0x3);
-    // <conv.chunks.Comment object at 0x1019fa2a0>
-    // <conv.chunks.Comment object at 0x1019fa360>
-    // <conv.chunks.Comment object at 0x1019fa3f0>
+    // increment Y four times to move onto the next OAM
+    // move onto the next OAM, and branch if three
+    // have not yet been done
     BCC(DrawFlameLoop);
     ldx(ObjectOffset);
     JSR(GetEnemyOffscreenBits);
     ldy(Enemy_SprDataOffset, x);
     lda(Enemy_OffscreenBits);
     lsr();
-    // <conv.chunks.Comment object at 0x1019fa600>
-    // <conv.chunks.Comment object at 0x1019fa720>
-    // <conv.chunks.Comment object at 0x1019fa840>
-    // <conv.chunks.Comment object at 0x1019fa990>
-    // <conv.chunks.Comment object at 0x1019faae0>
+    // reload original enemy offset
+    // get offscreen information
+    // get OAM data offset
+    // get enemy object offscreen bits
+    // move d0 to carry and result to stack
     pha();
     BCC(M3FOfs);
     lda(0xf8);
@@ -14764,51 +14764,51 @@ int DrawFlameLoop() {
 }
 
 int M3FOfs() {
-    // <conv.chunks.Comment object at 0x1019fac00>
-    // <conv.chunks.Comment object at 0x1019fad50>
-    // <conv.chunks.Comment object at 0x1019fade0>
-    // <conv.chunks.Comment object at 0x1019fb080>
+    // branch if carry not set
+    // otherwise move sprite offscreen, this part likely
+    // residual since flame is only made of three sprites
+    // get bits from stack
     pla();
     lsr();
-    // <conv.chunks.Comment object at 0x1019fb1d0>
+    // move d1 to carry and move bits back to stack
     pha();
     BCC(M2FOfs);
     lda(0xf8);
-    // <conv.chunks.Comment object at 0x1019fb2f0>
-    // <conv.chunks.Comment object at 0x1019fb440>
+    // branch if carry not set again
+    // otherwise move third sprite offscreen
     sta(((Sprite_Y_Position) + (8)), y);
     JMP(M2FOfs);
 }
 
 int M2FOfs() {
-    // <conv.chunks.Comment object at 0x1019fb740>
+    // get bits from stack again
     pla();
     lsr();
-    // <conv.chunks.Comment object at 0x1019fb890>
+    // move d2 to carry and move bits back to stack again
     pha();
     BCC(M1FOfs);
     lda(0xf8);
-    // <conv.chunks.Comment object at 0x1019fb9b0>
-    // <conv.chunks.Comment object at 0x1019fbb00>
+    // branch if carry not set yet again
+    // otherwise move second sprite offscreen
     sta(((Sprite_Y_Position) + (4)), y);
     JMP(M1FOfs);
 }
 
 int M1FOfs() {
-    // <conv.chunks.Comment object at 0x1019fbe00>
+    // get bits from stack one last time
     pla();
     lsr();
     BCC(ExFlmeD);
-    // <conv.chunks.Comment object at 0x1019fbf50>
-    // <conv.chunks.Comment object at 0x1019fbfe0>
+    // move d3 to carry
+    // branch if carry not set one last time
     lda(0xf8);
     sta(Sprite_Y_Position, y);
     JMP(ExFlmeD);
 }
 
 int ExFlmeD() {
-    // <conv.chunks.Comment object at 0x101a001d0>
-    // <conv.chunks.Comment object at 0x101a003e0>
+    // otherwise move first sprite offscreen
+    // leave
     return 0;
     JMP(RunFireworks);
 }
@@ -14816,13 +14816,13 @@ int ExFlmeD() {
 int RunFireworks() {
     dec(ExplosionTimerCounter, x);
     BNE(SetupExpl);
-    // <conv.chunks.Comment object at 0x101a00560>
-    // <conv.chunks.Comment object at 0x101a006b0>
+    // decrement explosion timing counter here
+    // if not expired, skip this part
     lda(0x8);
     sta(ExplosionTimerCounter, x);
     inc(ExplosionGfxCounter, x);
-    // <conv.chunks.Comment object at 0x101a00830>
-    // <conv.chunks.Comment object at 0x101a00a10>
+    // reset counter
+    // increment explosion graphics counter
     lda(ExplosionGfxCounter, x);
     cmp(0x3);
     BCS(FireworksSoundScore);
@@ -14830,36 +14830,36 @@ int RunFireworks() {
 }
 
 int SetupExpl() {
-    // <conv.chunks.Comment object at 0x101a00c80>
-    // <conv.chunks.Comment object at 0x101a00d10>
-    // <conv.chunks.Comment object at 0x101a00ec0>
+    // check explosion graphics counter
+    // if at a certain point, branch to kill this object
+    // get relative coordinates of explosion
     JSR(RelativeEnemyPosition);
     lda(Enemy_Rel_YPos);
     sta(Fireball_Rel_YPos);
     lda(Enemy_Rel_XPos);
-    // <conv.chunks.Comment object at 0x101a01010>
-    // <conv.chunks.Comment object at 0x101a01130>
-    // <conv.chunks.Comment object at 0x101a01250>
+    // copy relative coordinates
+    // from the enemy object to the fireball object
+    // first vertical, then horizontal
     sta(Fireball_Rel_XPos);
     ldy(Enemy_SprDataOffset, x);
     lda(ExplosionGfxCounter, x);
     JSR(DrawExplosion_Fireworks);
-    // <conv.chunks.Comment object at 0x101a01460>
-    // <conv.chunks.Comment object at 0x101a015b0>
-    // <conv.chunks.Comment object at 0x101a01700>
+    // get OAM data offset
+    // get explosion graphics counter
+    // do a sub to draw the explosion then leave
     return 0;
     JMP(FireworksSoundScore);
 }
 
 int FireworksSoundScore() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x101a018e0>
+    // disable enemy buffer flag
     sta(Enemy_Flag, x);
     lda(Sfx_Blast);
-    // <conv.chunks.Comment object at 0x101a01b20>
+    // play fireworks/gunfire sound
     sta(Square2SoundQueue);
     lda(0x5);
-    // <conv.chunks.Comment object at 0x101a01d30>
+    // set part of score modifier for 500 points
     sta(((DigitModifier) + (4)));
     JMP(EndAreaPoints);
     JMP(RunStarFlagObj);
@@ -14867,12 +14867,12 @@ int FireworksSoundScore() {
 
 int RunStarFlagObj() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x101a02270>
+    // initialize enemy frenzy buffer
     sta(EnemyFrenzyBuffer);
     lda(StarFlagTaskControl);
     cmp(0x5);
-    // <conv.chunks.Comment object at 0x101a02ae0>
-    // <conv.chunks.Comment object at 0x101a02c00>
+    // check star flag object task number here
+    // if greater than 5, branch to exit
     BCS(StarFlagExit);
     JMP(GameTimerFireworks);
 }
@@ -14880,18 +14880,18 @@ int RunStarFlagObj() {
 int GameTimerFireworks() {
     ldy(0x5);
     lda(((GameTimerDisplay) + (2)));
-    // <conv.chunks.Comment object at 0x101a02f60>
-    // <conv.chunks.Comment object at 0x101a032c0>
+    // set default state for star flag object
+    // get game timer's last digit
     cmp(0x1);
     BEQ(SetFWC);
     ldy(0x3);
-    // <conv.chunks.Comment object at 0x101a03590>
-    // <conv.chunks.Comment object at 0x101a03770>
+    // if last digit of game timer set to 1, skip ahead
+    // otherwise load new value for state
     cmp(0x3);
     BEQ(SetFWC);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x101a038f0>
-    // <conv.chunks.Comment object at 0x101a03ad0>
+    // if last digit of game timer set to 3, skip ahead
+    // otherwise load one more potential value for state
     cmp(0x6);
     BEQ(SetFWC);
     lda(0xff);
@@ -14899,9 +14899,9 @@ int GameTimerFireworks() {
 }
 
 int SetFWC() {
-    // <conv.chunks.Comment object at 0x101a03c50>
-    // <conv.chunks.Comment object at 0x101a03e30>
-    // <conv.chunks.Comment object at 0x101a03ec0>
+    // if last digit of game timer set to 6, skip ahead
+    // otherwise set value for no fireworks
+    // set fireworks counter here
     sta(FireworksCounter);
     sty(Enemy_State, x);
     JMP(IncrementSFTask1);
@@ -14919,24 +14919,24 @@ int StarFlagExit() {
 
 int AwardGameTimerPoints() {
     lda(GameTimerDisplay);
-    // <conv.chunks.Comment object at 0x101a04500>
+    // check all game timer digits for any intervals left
     ora(((GameTimerDisplay) + (1)));
     ora(((GameTimerDisplay) + (2)));
     BEQ(IncrementSFTask1);
-    // <conv.chunks.Comment object at 0x101a04980>
+    // if no time left on game timer at all, branch to next task
     lda(FrameCounter);
     anda(0b100);
     BEQ(NoTTick);
-    // <conv.chunks.Comment object at 0x101a04b90>
-    // <conv.chunks.Comment object at 0x101a04cb0>
+    // check frame counter for d2 set (skip ahead
+    // for four frames every four frames) branch if not set
     lda(Sfx_TimerTick);
     sta(Square2SoundQueue);
     JMP(NoTTick);
 }
 
 int NoTTick() {
-    // <conv.chunks.Comment object at 0x101a04ef0>
-    // <conv.chunks.Comment object at 0x101a05010>
+    // load timer tick sound
+    // set offset here to subtract from game timer's last digit
     ldy(0x23);
     lda(0xff);
     sta(((DigitModifier) + (5)));
@@ -14955,18 +14955,18 @@ int EndAreaPoints() {
 }
 
 int ELPGive() {
-    // <conv.chunks.Comment object at 0x101a058e0>
-    // <conv.chunks.Comment object at 0x101a05970>
-    // <conv.chunks.Comment object at 0x101a05b20>
-    // <conv.chunks.Comment object at 0x101a05c70>
-    // <conv.chunks.Comment object at 0x101a05d00>
+    // load offset for mario's score by default
+    // check player on the screen
+    // if mario, do not change
+    // otherwise load offset for luigi's score
+    // award 50 points per game timer interval
     JSR(DigitsMathRoutine);
     lda(CurrentPlayer);
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x101a05f10>
-    // <conv.chunks.Comment object at 0x101a06060>
-    // <conv.chunks.Comment object at 0x101a06120>
+    // get player on the screen (or 500 points per
+    // fireworks explosion if branched here from there)
+    // shift to high nybble
     asl();
     asl();
     ora(0b100);
@@ -14984,17 +14984,17 @@ int RaiseFlagSetoffFWorks() {
 }
 
 int SetoffF() {
-    // <conv.chunks.Comment object at 0x101a06540>
-    // <conv.chunks.Comment object at 0x101a06690>
-    // <conv.chunks.Comment object at 0x101a06720>
-    // <conv.chunks.Comment object at 0x101a06900>
-    // <conv.chunks.Comment object at 0x101a06a50>
-    // <conv.chunks.Comment object at 0x101a06b70>
+    // check star flag's vertical position
+    // against preset value
+    // if star flag higher vertically, branch to other code
+    // otherwise, raise star flag by one pixel
+    // and skip this part here
+    // check fireworks counter
     lda(FireworksCounter);
     BEQ(DrawFlagSetTimer);
     BMI(DrawFlagSetTimer);
-    // <conv.chunks.Comment object at 0x101a06cf0>
-    // <conv.chunks.Comment object at 0x101a06e10>
+    // if no fireworks left to go off, skip this part
+    // if no fireworks set to go off, skip this part
     lda(Fireworks);
     sta(EnemyFrenzyBuffer);
     JMP(DrawStarFlag);
@@ -15008,10 +15008,10 @@ int DrawStarFlag() {
 }
 
 int DSFLoop() {
-    // <conv.chunks.Comment object at 0x101a07170>
-    // <conv.chunks.Comment object at 0x101a07290>
-    // <conv.chunks.Comment object at 0x101a073e0>
-    // <conv.chunks.Comment object at 0x101a07470>
+    // get relative coordinates of star flag
+    // get OAM data offset
+    // do four sprites
+    // get relative vertical coordinate
     lda(Enemy_Rel_YPos);
     clc();
     adc(offsetof(G, StarFlagYPosAdder), x);
@@ -15021,37 +15021,37 @@ int DSFLoop() {
     lda(0x22);
     sta(Sprite_Attributes, y);
     lda(Enemy_Rel_XPos);
-    // <conv.chunks.Comment object at 0x101a07710>
-    // <conv.chunks.Comment object at 0x101a07860>
-    // <conv.chunks.Comment object at 0x101a079b0>
-    // <conv.chunks.Comment object at 0x101a07b00>
-    // <conv.chunks.Comment object at 0x101a07c50>
-    // <conv.chunks.Comment object at 0x101a07ce0>
-    // <conv.chunks.Comment object at 0x101a07ec0>
+    // add Y coordinate adder data
+    // store as Y coordinate
+    // get tile number
+    // store as tile number
+    // set palette and background priority bits
+    // store as attributes
+    // get relative horizontal coordinate
     clc();
     adc(offsetof(G, StarFlagXPosAdder), x);
     sta(Sprite_X_Position, y);
-    // <conv.chunks.Comment object at 0x101a140b0>
-    // <conv.chunks.Comment object at 0x101a14200>
+    // add X coordinate adder data
+    // store as X coordinate
     iny();
     iny();
     iny();
-    // <conv.chunks.Comment object at 0x101a14410>
-    // <conv.chunks.Comment object at 0x101a144d0>
+    // increment OAM data offset four bytes
+    // for next sprite
     iny();
     dex();
     BPL(DSFLoop);
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x101a14620>
-    // <conv.chunks.Comment object at 0x101a146b0>
-    // <conv.chunks.Comment object at 0x101a14800>
+    // move onto next sprite
+    // do this until all sprites are done
+    // get enemy object offset and leave
     return 0;
     JMP(DrawFlagSetTimer);
 }
 
 int DrawFlagSetTimer() {
     JSR(DrawStarFlag);
-    // <conv.chunks.Comment object at 0x101a149e0>
+    // do sub to draw star flag
     lda(0x6);
     sta(EnemyIntervalTimer, x);
     JMP(IncrementSFTask2);
@@ -15059,7 +15059,7 @@ int DrawFlagSetTimer() {
 
 int IncrementSFTask2() {
     inc(StarFlagTaskControl);
-    // <conv.chunks.Comment object at 0x101a14d70>
+    // move onto next task
     return 0;
     JMP(DelayToAreaEnd);
 }
@@ -15090,22 +15090,22 @@ int MovePiranhaPlant() {
     JSR(PlayerEnemyDiff);
     BPL(ChkPlayerNearPipe);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x101a15580>
-    // <conv.chunks.Comment object at 0x101a15640>
-    // <conv.chunks.Comment object at 0x101a156a0>
-    // <conv.chunks.Comment object at 0x101a157f0>
-    // <conv.chunks.Comment object at 0x101a15910>
-    // <conv.chunks.Comment object at 0x101a15a60>
-    // <conv.chunks.Comment object at 0x101a15b80>
-    // <conv.chunks.Comment object at 0x101a15cd0>
-    // <conv.chunks.Comment object at 0x101a15df0>
-    // <conv.chunks.Comment object at 0x101a15f40>
-    // <conv.chunks.Comment object at 0x101a16060>
-    // <conv.chunks.Comment object at 0x101a16180>
-    // <conv.chunks.Comment object at 0x101a162d0>
+    // otherwise leave
+    // $00 - used to store horizontal difference between player and piranha plant
+    // check enemy state
+    // if set at all, branch to leave
+    // check enemy's timer here
+    // branch to end if not yet expired
+    // check movement flag
+    // if moving, skip to part ahead
+    // if currently rising, branch
+    // to move enemy upwards out of pipe
+    // get horizontal difference between player and
+    // piranha plant, and branch if enemy to right of player
+    // otherwise get saved horizontal difference
     eor(0xff);
     clc();
-    // <conv.chunks.Comment object at 0x101a164e0>
+    // and change to two's compliment
     adc(0x1);
     sta(0x0);
     JMP(ChkPlayerNearPipe);
@@ -15113,7 +15113,7 @@ int MovePiranhaPlant() {
 
 int ChkPlayerNearPipe() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x101a167e0>
+    // get saved horizontal difference
     cmp(0x21);
     BCC(PutinPipe);
     JMP(ReversePlantSpeed);
@@ -15121,10 +15121,10 @@ int ChkPlayerNearPipe() {
 
 int ReversePlantSpeed() {
     lda(PiranhaPlant_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x101a16b10>
+    // get vertical speed
     eor(0xff);
     clc();
-    // <conv.chunks.Comment object at 0x101a16d80>
+    // change to two's compliment
     adc(0x1);
     sta(PiranhaPlant_Y_Speed, x);
     inc(PiranhaPlant_MoveFlag, x);
@@ -15142,29 +15142,29 @@ int SetupToMovePPlant() {
 int RiseFallPiranhaPlant() {
     sta(0x0);
     lda(FrameCounter);
-    // <conv.chunks.Comment object at 0x101a17740>
-    // <conv.chunks.Comment object at 0x101a177d0>
+    // save vertical coordinate here
+    // get frame counter
     lsr();
     BCC(PutinPipe);
     lda(TimerControl);
     BNE(PutinPipe);
     lda(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x101a179e0>
-    // <conv.chunks.Comment object at 0x101a17b00>
-    // <conv.chunks.Comment object at 0x101a17c20>
-    // <conv.chunks.Comment object at 0x101a17d40>
+    // branch to leave if d0 set (execute code every other frame)
+    // get master timer control
+    // branch to leave if set (likely not necessary)
+    // get current vertical coordinate
     clc();
     adc(PiranhaPlant_Y_Speed, x);
     sta(Enemy_Y_Position, x);
     cmp(0x0);
     BNE(PutinPipe);
-    // <conv.chunks.Comment object at 0x101a17f20>
-    // <conv.chunks.Comment object at 0x101a1c0b0>
-    // <conv.chunks.Comment object at 0x101a1c230>
-    // <conv.chunks.Comment object at 0x101a1c2c0>
+    // add vertical speed to move up or down
+    // save as new vertical coordinate
+    // compare against low or high coordinate
+    // branch to leave if not yet reached
     lda(0x0);
     sta(PiranhaPlant_MoveFlag, x);
-    // <conv.chunks.Comment object at 0x101a1c4a0>
+    // otherwise clear movement flag
     lda(0x40);
     sta(EnemyFrameTimer, x);
     JMP(PutinPipe);
@@ -15182,22 +15182,22 @@ int FirebarSpin() {
     lda(FirebarSpinDirection, x);
     BNE(SpinCounterClockwise);
     ldy(0x18);
-    // <conv.chunks.Comment object at 0x101a1c8f0>
-    // <conv.chunks.Comment object at 0x101a1ca10>
-    // <conv.chunks.Comment object at 0x101a1cb90>
-    // <conv.chunks.Comment object at 0x101a1cc50>
-    // <conv.chunks.Comment object at 0x101a1cce0>
-    // <conv.chunks.Comment object at 0x101a1cd70>
-    // <conv.chunks.Comment object at 0x101a1cf20>
-    // <conv.chunks.Comment object at 0x101a1d040>
+    // set background priority bit in sprite
+    // attributes to give illusion of being inside pipe
+    // then leave
+    // $07 - spinning speed
+    // save spinning speed here
+    // check spinning direction
+    // if moving counter-clockwise, branch to other part
+    // possibly residual ldy
     lda(FirebarSpinState_Low, x);
     clc();
     adc(0x7);
-    // <conv.chunks.Comment object at 0x101a1d2b0>
-    // <conv.chunks.Comment object at 0x101a1d370>
+    // add spinning speed to what would normally be
+    // the horizontal speed
     sta(FirebarSpinState_Low, x);
     lda(FirebarSpinState_High, x);
-    // <conv.chunks.Comment object at 0x101a1d580>
+    // add carry to what would normally be the vertical speed
     adc(0x0);
     return 0;
     JMP(SpinCounterClockwise);
@@ -15205,15 +15205,15 @@ int FirebarSpin() {
 
 int SpinCounterClockwise() {
     ldy(0x8);
-    // <conv.chunks.Comment object at 0x101a1d880>
+    // possibly residual ldy
     lda(FirebarSpinState_Low, x);
     sec();
     sbc(0x7);
-    // <conv.chunks.Comment object at 0x101a1daf0>
-    // <conv.chunks.Comment object at 0x101a1dbb0>
+    // subtract spinning speed to what would normally be
+    // the horizontal speed
     sta(FirebarSpinState_Low, x);
     lda(FirebarSpinState_High, x);
-    // <conv.chunks.Comment object at 0x101a1ddc0>
+    // add carry to what would normally be the vertical speed
     sbc(0x0);
     return 0;
     JMP(BalancePlatform);
@@ -15221,9 +15221,9 @@ int SpinCounterClockwise() {
 
 int BalancePlatform() {
     lda(Enemy_Y_HighPos, x);
-    // <conv.chunks.Comment object at 0x101a1e0c0>
-    // <conv.chunks.Comment object at 0x101a1e120>
-    // <conv.chunks.Comment object at 0x101a1e180>
+    // $00 - used to hold collision flag, Y movement force + 5 or low byte of name table for rope
+    // $02 - used to hold page location of rope
+    // check high byte of vertical position
     cmp(0x3);
     BNE(DoBPl);
     JMP(EraseEnemyObject);
@@ -15231,11 +15231,11 @@ int BalancePlatform() {
 }
 
 int DoBPl() {
-    // <conv.chunks.Comment object at 0x101a1e4e0>
-    // <conv.chunks.Comment object at 0x101a1e600>
+    // if far below screen, kill the object
+    // get object's state (set to $ff or other platform offset)
     lda(Enemy_State, x);
     BPL(CheckBalPlatform);
-    // <conv.chunks.Comment object at 0x101a1e7b0>
+    // if doing other balance platform, branch to leave
     return 0;
     JMP(CheckBalPlatform);
 }
@@ -15245,10 +15245,10 @@ int CheckBalPlatform() {
     lda(PlatformCollisionFlag, x);
     sta(0x0);
     lda(Enemy_MovingDir, x);
-    // <conv.chunks.Comment object at 0x101a1e9c0>
-    // <conv.chunks.Comment object at 0x101a1ea50>
-    // <conv.chunks.Comment object at 0x101a1ebd0>
-    // <conv.chunks.Comment object at 0x101a1ec60>
+    // save offset from state as Y
+    // get collision flag of platform
+    // store here
+    // get moving direction
     BEQ(ChkForFall);
     JMP(PlatformFall);
     JMP(ChkForFall);
@@ -15256,14 +15256,14 @@ int CheckBalPlatform() {
 
 int ChkForFall() {
     lda(0x2d);
-    // <conv.chunks.Comment object at 0x101a1f050>
+    // check if platform is above a certain point
     cmp(Enemy_Y_Position, x);
     BCC(ChkOtherForFall);
     cpy(0x0);
     BEQ(MakePlatformFall);
-    // <conv.chunks.Comment object at 0x101a1f290>
-    // <conv.chunks.Comment object at 0x101a1f3e0>
-    // <conv.chunks.Comment object at 0x101a1f470>
+    // if not, branch elsewhere
+    // if collision flag is set to same value as
+    // enemy state, branch to make platforms fall
     clc();
     adc(0x2);
     sta(Enemy_Y_Position, x);
@@ -15281,10 +15281,10 @@ int ChkOtherForFall() {
     BCC(ChkToMoveBalPlat);
     cpx(0x0);
     BEQ(MakePlatformFall);
-    // <conv.chunks.Comment object at 0x101a1fb90>
-    // <conv.chunks.Comment object at 0x101a1fce0>
-    // <conv.chunks.Comment object at 0x101a1fe30>
-    // <conv.chunks.Comment object at 0x101a1fec0>
+    // check if other platform is above a certain point
+    // if not, branch elsewhere
+    // if collision flag is set to same value as
+    // enemy state, branch to make platforms fall
     clc();
     adc(0x2);
     sta(Enemy_Y_Position, y);
@@ -15294,25 +15294,25 @@ int ChkOtherForFall() {
 
 int ChkToMoveBalPlat() {
     lda(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x101a244d0>
+    // save vertical position to stack
     pha();
     lda(PlatformCollisionFlag, x);
     BPL(ColFlg);
-    // <conv.chunks.Comment object at 0x101a246b0>
-    // <conv.chunks.Comment object at 0x101a24800>
+    // get collision flag
+    // branch if collision
     lda(Enemy_Y_MoveForce, x);
     clc();
-    // <conv.chunks.Comment object at 0x101a24aa0>
+    // add $05 to contents of moveforce, whatever they be
     adc(0x5);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x101a24c50>
+    // store here
     lda(Enemy_Y_Speed, x);
     adc(0x0);
     BMI(PlatDn);
     BNE(PlatUp);
-    // <conv.chunks.Comment object at 0x101a24e60>
-    // <conv.chunks.Comment object at 0x101a24ef0>
-    // <conv.chunks.Comment object at 0x101a250d0>
+    // add carry to vertical speed
+    // branch if moving downwards
+    // branch elsewhere if moving upwards
     lda(0x0);
     cmp(0xb);
     BCC(PlatSt);
@@ -15321,34 +15321,34 @@ int ChkToMoveBalPlat() {
 }
 
 int ColFlg() {
-    // <conv.chunks.Comment object at 0x101a25220>
-    // <conv.chunks.Comment object at 0x101a253a0>
-    // <conv.chunks.Comment object at 0x101a25580>
-    // <conv.chunks.Comment object at 0x101a256d0>
+    // check if there's still a little force left
+    // if not enough, branch to stop movement
+    // otherwise keep branch to move upwards
+    // if collision flag matches
     cmp(ObjectOffset);
     BEQ(PlatDn);
     JMP(PlatUp);
 }
 
 int PlatUp() {
-    // <conv.chunks.Comment object at 0x101a25850>
-    // <conv.chunks.Comment object at 0x101a259a0>
+    // current enemy object offset, branch
+    // do a sub to move upwards
     JSR(MovePlatformUp);
     JMP(DoOtherPlatform);
     JMP(PlatSt);
 }
 
 int PlatSt() {
-    // <conv.chunks.Comment object at 0x101a25b20>
-    // <conv.chunks.Comment object at 0x101a25c40>
+    // jump ahead to remaining code
+    // do a sub to stop movement
     JSR(StopPlatforms);
     JMP(DoOtherPlatform);
     JMP(PlatDn);
 }
 
 int PlatDn() {
-    // <conv.chunks.Comment object at 0x101a25dc0>
-    // <conv.chunks.Comment object at 0x101a25ee0>
+    // jump ahead to remaining code
+    // do a sub to move downwards
     JSR(MovePlatformDown);
     JMP(DoOtherPlatform);
 }
@@ -15356,18 +15356,18 @@ int PlatDn() {
 int DoOtherPlatform() {
     ldy(Enemy_State, x);
     pla();
-    // <conv.chunks.Comment object at 0x101a26090>
-    // <conv.chunks.Comment object at 0x101a26210>
+    // get offset of other platform
+    // get old vertical coordinate from stack
     sec();
     sbc(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x101a26330>
+    // get difference of old vs. new coordinate
     clc();
     adc(Enemy_Y_Position, y);
     sta(Enemy_Y_Position, y);
     lda(PlatformCollisionFlag, x);
-    // <conv.chunks.Comment object at 0x101a26510>
-    // <conv.chunks.Comment object at 0x101a26660>
-    // <conv.chunks.Comment object at 0x101a267b0>
+    // add difference to vertical coordinate of other
+    // platform to move it in the opposite direction
+    // if no collision, skip this part here
     BMI(DrawEraseRope);
     tax();
     JSR(PositionPlayerOnVPlat);
@@ -15382,48 +15382,48 @@ int DrawEraseRope() {
     ldx(VRAM_Buffer1_Offset);
     cpx(0x20);
     BCS(ExitRp);
-    // <conv.chunks.Comment object at 0x101a26c00>
-    // <conv.chunks.Comment object at 0x101a26d20>
-    // <conv.chunks.Comment object at 0x101a26e70>
-    // <conv.chunks.Comment object at 0x101a26fc0>
-    // <conv.chunks.Comment object at 0x101a27110>
-    // <conv.chunks.Comment object at 0x101a27230>
-    // <conv.chunks.Comment object at 0x101a272c0>
+    // get enemy object offset
+    // check to see if current platform is
+    // moving at all
+    // if not, skip all of this and branch to leave
+    // get vram buffer offset
+    // if offset beyond a certain point, go ahead
+    // and skip this, branch to leave
     lda(Enemy_Y_Speed, y);
     pha();
-    // <conv.chunks.Comment object at 0x101a275f0>
+    // save two copies of vertical speed to stack
     pha();
     JSR(SetupPlatformRope);
     lda(0x1);
     sta(VRAM_Buffer1, x);
-    // <conv.chunks.Comment object at 0x101a27710>
-    // <conv.chunks.Comment object at 0x101a27860>
-    // <conv.chunks.Comment object at 0x101a278f0>
+    // do a sub to figure out where to put new bg tiles
+    // write name table address to vram buffer
+    // first the high byte, then the low
     lda(0x0);
     sta(((VRAM_Buffer1) + (1)), x);
     lda(0x2);
-    // <conv.chunks.Comment object at 0x101a27d70>
+    // set length for 2 bytes
     sta(((VRAM_Buffer1) + (2)), x);
     lda(Enemy_Y_Speed, y);
     BMI(EraseR1);
-    // <conv.chunks.Comment object at 0x101a340b0>
-    // <conv.chunks.Comment object at 0x101a34200>
+    // if platform moving upwards, branch
+    // to do something else
     lda(0xa2);
     sta(((VRAM_Buffer1) + (3)), x);
     lda(0xa3);
-    // <conv.chunks.Comment object at 0x101a343b0>
-    // <conv.chunks.Comment object at 0x101a34650>
+    // otherwise put tile numbers for left
+    // and right sides of rope in vram buffer
     sta(((VRAM_Buffer1) + (4)), x);
     JMP(OtherRope);
     JMP(EraseR1);
 }
 
 int EraseR1() {
-    // <conv.chunks.Comment object at 0x101a34950>
-    // <conv.chunks.Comment object at 0x101a34a70>
+    // jump to skip this part
+    // put blank tiles in vram buffer
     lda(0x24);
     sta(((VRAM_Buffer1) + (3)), x);
-    // <conv.chunks.Comment object at 0x101a34b60>
+    // to erase rope
     sta(((VRAM_Buffer1) + (4)), x);
     JMP(OtherRope);
 }
@@ -15437,22 +15437,22 @@ int OtherRope() {
     lda(0x1);
     sta(((VRAM_Buffer1) + (5)), x);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x101a35010>
-    // <conv.chunks.Comment object at 0x101a35190>
-    // <conv.chunks.Comment object at 0x101a35250>
-    // <conv.chunks.Comment object at 0x101a352e0>
-    // <conv.chunks.Comment object at 0x101a35370>
-    // <conv.chunks.Comment object at 0x101a35550>
-    // <conv.chunks.Comment object at 0x101a355e0>
-    // <conv.chunks.Comment object at 0x101a35880>
+    // get offset of other platform from state
+    // use as Y here
+    // pull second copy of vertical speed from stack
+    // invert bits to reverse speed
+    // do sub again to figure out where to put bg tiles
+    // write name table address to vram buffer
+    // this time we're doing putting tiles for
+    // the other platform
     sta(((VRAM_Buffer1) + (6)), x);
     lda(0x2);
     sta(((VRAM_Buffer1) + (7)), x);
     pla();
     BPL(EraseR2);
-    // <conv.chunks.Comment object at 0x101a35bb0>
-    // <conv.chunks.Comment object at 0x101a35e80>
-    // <conv.chunks.Comment object at 0x101a35f10>
+    // set length again for 2 bytes
+    // pull first copy of vertical speed from stack
+    // if moving upwards (note inversion earlier), skip this
     lda(0xa2);
     sta(((VRAM_Buffer1) + (8)), x);
     lda(0xa3);
@@ -15462,33 +15462,33 @@ int OtherRope() {
 }
 
 int EraseR2() {
-    // <conv.chunks.Comment object at 0x101a360c0>
-    // <conv.chunks.Comment object at 0x101a36360>
-    // <conv.chunks.Comment object at 0x101a363f0>
-    // <conv.chunks.Comment object at 0x101a36690>
-    // <conv.chunks.Comment object at 0x101a367e0>
+    // otherwise put tile numbers for left
+    // and right sides of rope in vram
+    // transfer buffer
+    // jump to skip this part
+    // put blank tiles in vram buffer
     lda(0x24);
     sta(((VRAM_Buffer1) + (8)), x);
-    // <conv.chunks.Comment object at 0x101a368d0>
+    // to erase rope
     sta(((VRAM_Buffer1) + (9)), x);
     JMP(EndRp);
 }
 
 int EndRp() {
-    // <conv.chunks.Comment object at 0x101a36d50>
+    // put null terminator at the end
     lda(0x0);
     sta(((VRAM_Buffer1) + (10)), x);
     lda(VRAM_Buffer1_Offset);
     clc();
-    // <conv.chunks.Comment object at 0x101a370b0>
-    // <conv.chunks.Comment object at 0x101a37200>
+    // add ten bytes to the vram buffer offset
+    // and store
     adc(10);
     sta(VRAM_Buffer1_Offset);
     JMP(ExitRp);
 }
 
 int ExitRp() {
-    // <conv.chunks.Comment object at 0x101a37470>
+    // get enemy object buffer offset and leave
     ldx(ObjectOffset);
     return 0;
     JMP(SetupPlatformRope);
@@ -15497,23 +15497,23 @@ int ExitRp() {
 int SetupPlatformRope() {
     pha();
     lda(Enemy_X_Position, y);
-    // <conv.chunks.Comment object at 0x101a376e0>
-    // <conv.chunks.Comment object at 0x101a37770>
+    // save second/third copy to stack
+    // get horizontal coordinate
     clc();
     adc(0x8);
     ldx(SecondaryHardMode);
     BNE(GetLRp);
-    // <conv.chunks.Comment object at 0x101a37950>
-    // <conv.chunks.Comment object at 0x101a379e0>
-    // <conv.chunks.Comment object at 0x101a37b90>
+    // add eight pixels
+    // if secondary hard mode flag set,
+    // use coordinate as-is
     clc();
     adc(0x10);
     JMP(GetLRp);
 }
 
 int GetLRp() {
-    // <conv.chunks.Comment object at 0x101a37d70>
-    // <conv.chunks.Comment object at 0x101a37e00>
+    // otherwise add sixteen more pixels
+    // save modified horizontal coordinate to stack
     pha();
     lda(Enemy_PageLoc, y);
     adc(0x0);
@@ -15521,21 +15521,21 @@ int GetLRp() {
     pla();
     anda(0b11110000);
     lsr();
-    // <conv.chunks.Comment object at 0x101a3c110>
-    // <conv.chunks.Comment object at 0x101a3c260>
-    // <conv.chunks.Comment object at 0x101a3c1a0>
-    // <conv.chunks.Comment object at 0x101a3c410>
-    // <conv.chunks.Comment object at 0x101a3c560>
+    // add carry to page location
+    // and save here
+    // pull modified horizontal coordinate
+    // from the stack, mask out low nybble
+    // and shift three bits to the right
     lsr();
     lsr();
     sta(0x0);
     ldx(Enemy_Y_Position, y);
     pla();
     BPL(GetHRp);
-    // <conv.chunks.Comment object at 0x101a3c740>
-    // <conv.chunks.Comment object at 0x101a3c7d0>
-    // <conv.chunks.Comment object at 0x101a3c9b0>
-    // <conv.chunks.Comment object at 0x101a3ca40>
+    // store result here as part of name table low byte
+    // get vertical coordinate
+    // get second/third copy of vertical speed from stack
+    // skip this part if moving downwards or not at all
     txa();
     clc();
     adc(0x8);
@@ -15544,12 +15544,12 @@ int GetLRp() {
 }
 
 int GetHRp() {
-    // <conv.chunks.Comment object at 0x101a3ccb0>
-    // <conv.chunks.Comment object at 0x101a3ce00>
-    // <conv.chunks.Comment object at 0x101a3ce90>
+    // add eight to vertical coordinate and
+    // save as X
+    // move vertical coordinate to A
     txa();
     ldx(VRAM_Buffer1_Offset);
-    // <conv.chunks.Comment object at 0x101a3cfb0>
+    // get vram buffer offset
     asl();
     rol();
     pha();
@@ -15559,60 +15559,60 @@ int GetHRp() {
     sta(0x1);
     lda(0x2);
     anda(0x1);
-    // <conv.chunks.Comment object at 0x101a3d190>
-    // <conv.chunks.Comment object at 0x101a3d250>
-    // <conv.chunks.Comment object at 0x101a3d310>
-    // <conv.chunks.Comment object at 0x101a3d3a0>
-    // <conv.chunks.Comment object at 0x101a3d4c0>
-    // <conv.chunks.Comment object at 0x101a3d610>
-    // <conv.chunks.Comment object at 0x101a3d5e0>
-    // <conv.chunks.Comment object at 0x101a3d7c0>
+    // rotate d7 to d0 and d6 into carry
+    // save modified vertical coordinate to stack
+    // rotate carry to d0, thus d7 and d6 are at 2 LSB
+    // mask out all bits but d7 and d6, then set
+    // d5 to get appropriate high byte of name table
+    // address, then store
+    // get saved page location from earlier
+    // mask out all but LSB
     asl();
     asl();
     ora(0x1);
     sta(0x1);
     pla();
     anda(0b11100000);
-    // <conv.chunks.Comment object at 0x101a3da00>
-    // <conv.chunks.Comment object at 0x101a3dac0>
-    // <conv.chunks.Comment object at 0x101a3da90>
-    // <conv.chunks.Comment object at 0x101a3db50>
-    // <conv.chunks.Comment object at 0x101a3dd90>
+    // shift twice to the left and save with the
+    // rest of the bits of the high byte, to get
+    // the proper name table and the right place on it
+    // get modified vertical coordinate from stack
+    // mask out low nybble and LSB of high nybble
     clc();
     adc(0x0);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x101a3df70>
-    // <conv.chunks.Comment object at 0x101a3df40>
+    // add to horizontal part saved here
+    // save as name table low byte
     lda(Enemy_Y_Position, y);
     cmp(0xe8);
     BCC(ExPRp);
-    // <conv.chunks.Comment object at 0x101a3e2a0>
-    // <conv.chunks.Comment object at 0x101a3e330>
+    // if vertical position not below the
+    // bottom of the screen, we're done, branch to leave
     lda(0x0);
     anda(0b10111111);
-    // <conv.chunks.Comment object at 0x101a3e510>
+    // mask out d6 of low byte of name table address
     sta(0x0);
     JMP(ExPRp);
 }
 
 int ExPRp() {
-    // <conv.chunks.Comment object at 0x101a3e7b0>
+    // leave!
     return 0;
     JMP(InitPlatformFall);
 }
 
 int InitPlatformFall() {
     tya();
-    // <conv.chunks.Comment object at 0x101a3e9c0>
+    // move offset of other platform from Y to X
     tax();
     JSR(GetEnemyOffscreenBits);
-    // <conv.chunks.Comment object at 0x101a3eae0>
+    // get offscreen bits
     lda(0x6);
     JSR(SetupFloateyNumber);
-    // <conv.chunks.Comment object at 0x101a3ec60>
+    // award 1000 points to player
     lda(Player_Rel_XPos);
     sta(FloateyNum_X_Pos, x);
-    // <conv.chunks.Comment object at 0x101a3ef00>
+    // put floatey number coordinates where player is
     lda(Player_Y_Position);
     sta(FloateyNum_Y_Pos, x);
     lda(0x1);
@@ -15623,8 +15623,8 @@ int InitPlatformFall() {
 int StopPlatforms() {
     JSR(InitVStf);
     sta(Enemy_Y_Speed, y);
-    // <conv.chunks.Comment object at 0x101a3f500>
-    // <conv.chunks.Comment object at 0x101a3f620>
+    // initialize vertical speed and low byte
+    // for both platforms and leave
     sta(Enemy_Y_MoveForce, y);
     return 0;
     JMP(PlatformFall);
@@ -15632,15 +15632,15 @@ int StopPlatforms() {
 
 int PlatformFall() {
     tya();
-    // <conv.chunks.Comment object at 0x101a3f980>
+    // save offset for other platform to stack
     pha();
     JSR(MoveFallingPlatform);
-    // <conv.chunks.Comment object at 0x101a3faa0>
+    // make current platform fall
     pla();
     tax();
     JSR(MoveFallingPlatform);
-    // <conv.chunks.Comment object at 0x101a3fc80>
-    // <conv.chunks.Comment object at 0x101a3fd10>
+    // pull offset from stack and save to X
+    // make other platform fall
     ldx(ObjectOffset);
     lda(PlatformCollisionFlag, x);
     BMI(ExPF);
@@ -15650,11 +15650,11 @@ int PlatformFall() {
 }
 
 int ExPF() {
-    // <conv.chunks.Comment object at 0x101a3ff20>
-    // <conv.chunks.Comment object at 0x101a480b0>
-    // <conv.chunks.Comment object at 0x101a48230>
-    // <conv.chunks.Comment object at 0x101a482c0>
-    // <conv.chunks.Comment object at 0x101a483e0>
+    // if player not standing on either platform,
+    // skip this part
+    // transfer collision flag offset as offset to X
+    // and position player appropriately
+    // get enemy object buffer offset and leave
     ldx(ObjectOffset);
     return 0;
     JMP(YMovingPlatform);
@@ -15663,27 +15663,27 @@ int ExPF() {
 int YMovingPlatform() {
     lda(Enemy_Y_Speed, x);
     ora(Enemy_Y_MoveForce, x);
-    // <conv.chunks.Comment object at 0x101a48650>
-    // <conv.chunks.Comment object at 0x101a487a0>
+    // if platform moving up or down, skip ahead to
+    // check on other position
     BNE(ChkYCenterPos);
     sta(Enemy_YMF_Dummy, x);
-    // <conv.chunks.Comment object at 0x101a489e0>
+    // initialize dummy variable
     lda(Enemy_Y_Position, x);
     cmp(YPlatformTopYPos, x);
     BCS(ChkYCenterPos);
-    // <conv.chunks.Comment object at 0x101a48c50>
-    // <conv.chunks.Comment object at 0x101a48da0>
+    // if current vertical position => top position, branch
+    // ahead of all this
     lda(FrameCounter);
     anda(0b111);
-    // <conv.chunks.Comment object at 0x101a48fb0>
+    // check for every eighth frame
     BNE(SkipIY);
     inc(Enemy_Y_Position, x);
     JMP(SkipIY);
 }
 
 int SkipIY() {
-    // <conv.chunks.Comment object at 0x101a491f0>
-    // <conv.chunks.Comment object at 0x101a49340>
+    // increase vertical position every eighth frame
+    // skip ahead to last part
     JMP(ChkYPCollision);
     JMP(ChkYCenterPos);
 }
@@ -15691,17 +15691,17 @@ int SkipIY() {
 int ChkYCenterPos() {
     lda(Enemy_Y_Position, x);
     cmp(YPlatformCenterYPos, x);
-    // <conv.chunks.Comment object at 0x101a494f0>
-    // <conv.chunks.Comment object at 0x101a49640>
+    // if current vertical position < central position, branch
+    // to slow ascent/move downwards
     BCC(YMDown);
     JSR(MovePlatformUp);
-    // <conv.chunks.Comment object at 0x101a498b0>
+    // otherwise start slowing descent/moving upwards
     JMP(ChkYPCollision);
     JMP(YMDown);
 }
 
 int YMDown() {
-    // <conv.chunks.Comment object at 0x101a49ac0>
+    // start slowing ascent/moving downwards
     JSR(MovePlatformDown);
     JMP(ChkYPCollision);
 }
@@ -15714,10 +15714,10 @@ int ChkYPCollision() {
 }
 
 int ExYPl() {
-    // <conv.chunks.Comment object at 0x101a49c70>
-    // <conv.chunks.Comment object at 0x101a49dc0>
-    // <conv.chunks.Comment object at 0x101a49f10>
-    // <conv.chunks.Comment object at 0x101a4a060>
+    // if collision flag not set here, branch
+    // to leave
+    // otherwise position player appropriately
+    // leave
     return 0;
     JMP(XMovingPlatform);
 }
@@ -15745,21 +15745,21 @@ int PositionPlayerOnHPlat() {
 }
 
 int PPHSubt() {
-    // <conv.chunks.Comment object at 0x101a4a960>
-    // <conv.chunks.Comment object at 0x101a4aa20>
-    // <conv.chunks.Comment object at 0x101a4aab0>
-    // <conv.chunks.Comment object at 0x101a4ac30>
-    // <conv.chunks.Comment object at 0x101a4ad80>
-    // <conv.chunks.Comment object at 0x101a4ae10>
-    // <conv.chunks.Comment object at 0x101a4afc0>
-    // <conv.chunks.Comment object at 0x101a4b050>
-    // <conv.chunks.Comment object at 0x101a4b230>
+    // add saved value from second subroutine to
+    // current player's position to position
+    // player accordingly in horizontal position
+    // get player's page location
+    // check to see if saved value here is positive or negative
+    // if negative, branch to subtract
+    // otherwise add carry to page location
+    // jump to skip subtraction
+    // subtract borrow from page location
     sbc(0x0);
     JMP(SetPVar);
 }
 
 int SetPVar() {
-    // <conv.chunks.Comment object at 0x101a4b320>
+    // save result to player's page location
     sta(Player_PageLoc);
     sty(Platform_X_Scroll);
     JSR(PositionPlayerOnVPlat);
@@ -15767,9 +15767,9 @@ int SetPVar() {
 }
 
 int ExXMP() {
-    // <conv.chunks.Comment object at 0x101a4b530>
-    // <conv.chunks.Comment object at 0x101a4b650>
-    // <conv.chunks.Comment object at 0x101a4b770>
+    // put saved value from second sub here to be used later
+    // position player vertically and appropriately
+    // and we are done here
     return 0;
     JMP(DropPlatform);
 }
@@ -15783,11 +15783,11 @@ int DropPlatform() {
 }
 
 int ExDPl() {
-    // <conv.chunks.Comment object at 0x101a4b8f0>
-    // <conv.chunks.Comment object at 0x101a4ba40>
-    // <conv.chunks.Comment object at 0x101a4bb90>
-    // <conv.chunks.Comment object at 0x101a4bcb0>
-    // <conv.chunks.Comment object at 0x101a4be00>
+    // if no collision between platform and player
+    // occurred, just leave without moving anything
+    // otherwise do a sub to move platform down very quickly
+    // do a sub to position player appropriately
+    // leave
     return 0;
     JMP(RightPlatform);
 }
@@ -15797,11 +15797,11 @@ int RightPlatform() {
     sta(0x0);
     lda(PlatformCollisionFlag, x);
     BMI(ExRPl);
-    // <conv.chunks.Comment object at 0x101a4bf50>
-    // <conv.chunks.Comment object at 0x101a4bfb0>
-    // <conv.chunks.Comment object at 0x101a54140>
-    // <conv.chunks.Comment object at 0x101a541d0>
-    // <conv.chunks.Comment object at 0x101a54380>
+    // $00 - residual value from sub
+    // move platform with current horizontal speed, if any
+    // store saved value here (residual code)
+    // check collision flag, if no collision between player
+    // and platform, branch ahead, leave speed unaltered
     lda(0x10);
     sta(Enemy_X_Speed, x);
     JSR(PositionPlayerOnHPlat);
@@ -15809,9 +15809,9 @@ int RightPlatform() {
 }
 
 int ExRPl() {
-    // <conv.chunks.Comment object at 0x101a54530>
-    // <conv.chunks.Comment object at 0x101a54710>
-    // <conv.chunks.Comment object at 0x101a54830>
+    // otherwise set new speed (gets moving if motionless)
+    // use saved value from earlier sub to position player
+    // then leave
     return 0;
     JMP(MoveLargeLiftPlat);
 }
@@ -15831,19 +15831,19 @@ int MoveSmallPlatform() {
 int MoveLiftPlatforms() {
     lda(TimerControl);
     BNE(ExLiftP);
-    // <conv.chunks.Comment object at 0x101a54e90>
-    // <conv.chunks.Comment object at 0x101a54fb0>
+    // if master timer control set, skip all of this
+    // and branch to leave
     lda(Enemy_YMF_Dummy, x);
     clc();
-    // <conv.chunks.Comment object at 0x101a55250>
+    // add contents of movement amount to whatever's here
     adc(Enemy_Y_MoveForce, x);
     sta(Enemy_YMF_Dummy, x);
     lda(Enemy_Y_Position, x);
     adc(Enemy_Y_Speed, x);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x101a55520>
-    // <conv.chunks.Comment object at 0x101a55670>
-    // <conv.chunks.Comment object at 0x101a557c0>
+    // add whatever vertical speed is set to current
+    // vertical position plus carry to move up or down
+    // and then leave
     return 0;
     JMP(ChkSmallPlatCollision);
 }
@@ -15856,10 +15856,10 @@ int ChkSmallPlatCollision() {
 }
 
 int ExLiftP() {
-    // <conv.chunks.Comment object at 0x101a559d0>
-    // <conv.chunks.Comment object at 0x101a55b20>
-    // <conv.chunks.Comment object at 0x101a55c70>
-    // <conv.chunks.Comment object at 0x101a55d90>
+    // get bounding box counter saved in collision flag
+    // if none found, leave player position alone
+    // use to position player correctly
+    // then leave
     return 0;
     JMP(OffscreenBoundsCheck);
 }
@@ -15867,14 +15867,14 @@ int ExLiftP() {
 int OffscreenBoundsCheck() {
     lda(Enemy_ID, x);
     cmp(FlyingCheepCheep);
-    // <conv.chunks.Comment object at 0x101a55fd0>
-    // <conv.chunks.Comment object at 0x101a56120>
+    // check for cheep-cheep object
+    // branch to leave if found
     BEQ(ExScrnBd);
     lda(ScreenLeft_X_Pos);
-    // <conv.chunks.Comment object at 0x101a56330>
+    // get horizontal coordinate for left side of screen
     ldy(Enemy_ID, x);
     cpy(HammerBro);
-    // <conv.chunks.Comment object at 0x101a56570>
+    // check for hammer bro object
     BEQ(LimitB);
     cpy(PiranhaPlant);
     BNE(ExtendLB);
@@ -15882,64 +15882,64 @@ int OffscreenBoundsCheck() {
 }
 
 int LimitB() {
-    // <conv.chunks.Comment object at 0x101a567b0>
-    // <conv.chunks.Comment object at 0x101a568d0>
-    // <conv.chunks.Comment object at 0x101a569f0>
+    // check for piranha plant object
+    // these two will be erased sooner than others if too far left
+    // add 56 pixels to coordinate if hammer bro or piranha plant
     adc(0x38);
     JMP(ExtendLB);
 }
 
 int ExtendLB() {
-    // <conv.chunks.Comment object at 0x101a56ae0>
+    // subtract 72 pixels regardless of enemy object
     sbc(0x48);
     sta(0x1);
-    // <conv.chunks.Comment object at 0x101a56cf0>
+    // store result here
     lda(ScreenLeft_PageLoc);
     sbc(0x0);
     sta(0x0);
     lda(ScreenRight_X_Pos);
-    // <conv.chunks.Comment object at 0x101a56ed0>
-    // <conv.chunks.Comment object at 0x101a57020>
-    // <conv.chunks.Comment object at 0x101a570b0>
+    // subtract borrow from page location of left side
+    // store result here
+    // add 72 pixels to the right side horizontal coordinate
     adc(0x48);
     sta(0x3);
-    // <conv.chunks.Comment object at 0x101a57350>
+    // store result here
     lda(ScreenRight_PageLoc);
     adc(0x0);
     sta(0x2);
     lda(Enemy_X_Position, x);
     cmp(0x1);
-    // <conv.chunks.Comment object at 0x101a57530>
-    // <conv.chunks.Comment object at 0x101a57680>
-    // <conv.chunks.Comment object at 0x101a57710>
-    // <conv.chunks.Comment object at 0x101a578f0>
+    // then add the carry to the page location
+    // and store result here
+    // compare horizontal coordinate of the enemy object
+    // to modified horizontal left edge coordinate to get carry
     lda(Enemy_PageLoc, x);
     sbc(0x0);
     BMI(TooFar);
     lda(Enemy_X_Position, x);
     cmp(0x3);
-    // <conv.chunks.Comment object at 0x101a57b30>
-    // <conv.chunks.Comment object at 0x101a57bc0>
-    // <conv.chunks.Comment object at 0x101a57d70>
-    // <conv.chunks.Comment object at 0x101a57ef0>
+    // then subtract it from the page coordinate of the enemy object
+    // if enemy object is too far left, branch to erase it
+    // compare horizontal coordinate of the enemy object
+    // to modified horizontal right edge coordinate to get carry
     lda(Enemy_PageLoc, x);
     sbc(0x2);
     BMI(ExScrnBd);
     lda(Enemy_State, x);
     cmp(HammerBro);
-    // <conv.chunks.Comment object at 0x101a5c170>
-    // <conv.chunks.Comment object at 0x101a5c200>
-    // <conv.chunks.Comment object at 0x101a5c380>
-    // <conv.chunks.Comment object at 0x101a5c4d0>
+    // then subtract it from the page coordinate of the enemy object
+    // if enemy object is on the screen, leave, do not erase enemy
+    // if at this point, enemy is offscreen to the right, so check
+    // if in state used by spiny's egg, do not erase
     BEQ(ExScrnBd);
     cpy(PiranhaPlant);
-    // <conv.chunks.Comment object at 0x101a5c6e0>
+    // if piranha plant, do not erase
     BEQ(ExScrnBd);
     cpy(FlagpoleFlagObject);
-    // <conv.chunks.Comment object at 0x101a5c8f0>
+    // if flagpole flag, do not erase
     BEQ(ExScrnBd);
     cpy(StarFlagObject);
-    // <conv.chunks.Comment object at 0x101a5cb00>
+    // if star flag, do not erase
     BEQ(ExScrnBd);
     cpy(JumpspringObject);
     BEQ(ExScrnBd);
@@ -15947,15 +15947,15 @@ int ExtendLB() {
 }
 
 int TooFar() {
-    // <conv.chunks.Comment object at 0x101a5cd10>
-    // <conv.chunks.Comment object at 0x101a5ce30>
-    // <conv.chunks.Comment object at 0x101a5cf50>
+    // if jumpspring, do not erase
+    // erase all others too far to the right
+    // erase object if necessary
     JSR(EraseEnemyObject);
     JMP(ExScrnBd);
 }
 
 int ExScrnBd() {
-    // <conv.chunks.Comment object at 0x101a5d100>
+    // leave
     return 0;
     JMP(FireballEnemyCollision);
 }
@@ -15963,58 +15963,58 @@ int ExScrnBd() {
 int FireballEnemyCollision() {
     lda(Fireball_State, x);
     BEQ(ExitFBallEnemy);
-    // <conv.chunks.Comment object at 0x101a5d2b0>
-    // <conv.chunks.Comment object at 0x101a5d250>
-    // <conv.chunks.Comment object at 0x101a5d5e0>
+    // $01 - enemy buffer offset
+    // check to see if fireball state is set at all
+    // branch to leave if not
     asl();
     BCS(ExitFBallEnemy);
-    // <conv.chunks.Comment object at 0x101a5d790>
+    // branch to leave also if d7 in state is set
     lda(FrameCounter);
     lsr();
     BCS(ExitFBallEnemy);
-    // <conv.chunks.Comment object at 0x101a5d9d0>
-    // <conv.chunks.Comment object at 0x101a5da60>
+    // get LSB of frame counter
+    // branch to leave if set (do routine every other frame)
     txa();
     asl();
-    // <conv.chunks.Comment object at 0x101a5dc40>
+    // multiply fireball offset by four
     asl();
     clc();
     adc(0x1c);
     tay();
-    // <conv.chunks.Comment object at 0x101a5ddf0>
-    // <conv.chunks.Comment object at 0x101a5df40>
+    // then add $1c or 28 bytes to it
+    // to use fireball's bounding box coordinates
     ldx(0x4);
     JMP(FireballEnemyCDLoop);
 }
 
 int FireballEnemyCDLoop() {
     stx(0x1);
-    // <conv.chunks.Comment object at 0x101a5e120>
+    // store enemy object offset here
     tya();
     pha();
-    // <conv.chunks.Comment object at 0x101a5e2d0>
+    // push fireball offset to the stack
     lda(Enemy_State, x);
     anda(0b100000);
     BNE(NoFToECol);
     lda(Enemy_Flag, x);
     BEQ(NoFToECol);
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x101a5e480>
-    // <conv.chunks.Comment object at 0x101a5e5a0>
-    // <conv.chunks.Comment object at 0x101a5e6c0>
-    // <conv.chunks.Comment object at 0x101a5e810>
-    // <conv.chunks.Comment object at 0x101a5e930>
+    // check to see if d5 is set in enemy state
+    // if so, skip to next enemy slot
+    // check to see if buffer flag is set
+    // if not, skip to next enemy slot
+    // check enemy identifier
     cmp(0x24);
     BCC(GoombaDie);
-    // <conv.chunks.Comment object at 0x101a5eae0>
+    // if < $24, branch to check further
     cmp(0x2b);
     BCC(NoFToECol);
     JMP(GoombaDie);
 }
 
 int GoombaDie() {
-    // <conv.chunks.Comment object at 0x101a5ecf0>
-    // <conv.chunks.Comment object at 0x101a5eea0>
+    // if in range $24-$2a, skip to next enemy slot
+    // check for goomba identifier
     cmp(Goomba);
     BNE(NotGoomba);
     lda(Enemy_State, x);
@@ -16024,17 +16024,17 @@ int GoombaDie() {
 }
 
 int NotGoomba() {
-    // <conv.chunks.Comment object at 0x101a5ef30>
-    // <conv.chunks.Comment object at 0x101a5f140>
-    // <conv.chunks.Comment object at 0x101a5f290>
-    // <conv.chunks.Comment object at 0x101a5f320>
-    // <conv.chunks.Comment object at 0x101a5f4d0>
+    // if not found, continue with code
+    // otherwise check for defeated state
+    // if stomped or otherwise defeated,
+    // skip to next enemy slot
+    // if any masked offscreen bits set,
     lda(EnemyOffscrBitsMasked, x);
     BNE(NoFToECol);
-    // <conv.chunks.Comment object at 0x101a5f650>
+    // skip to next enemy slot
     txa();
     asl();
-    // <conv.chunks.Comment object at 0x101a5f830>
+    // otherwise multiply enemy offset by four
     asl();
     clc();
     adc(0x4);
@@ -16042,11 +16042,11 @@ int NotGoomba() {
     JSR(SprObjectCollisionCore);
     ldx(ObjectOffset);
     BCC(NoFToECol);
-    // <conv.chunks.Comment object at 0x101a5f9e0>
-    // <conv.chunks.Comment object at 0x101a5fb30>
-    // <conv.chunks.Comment object at 0x101a5fbc0>
-    // <conv.chunks.Comment object at 0x101a5fce0>
-    // <conv.chunks.Comment object at 0x101a5fe00>
+    // add 4 bytes to it
+    // to use enemy's bounding box coordinates
+    // do fireball-to-enemy collision detection
+    // return fireball's original offset
+    // if carry clear, no collision, thus do next enemy slot
     lda(0b10000000);
     sta(Fireball_State, x);
     ldx(0x1);
@@ -16055,10 +16055,10 @@ int NotGoomba() {
 }
 
 int NoFToECol() {
-    // <conv.chunks.Comment object at 0x101a64050>
-    // <conv.chunks.Comment object at 0x101a641d0>
-    // <conv.chunks.Comment object at 0x101a64260>
-    // <conv.chunks.Comment object at 0x101a643e0>
+    // set d7 in enemy state
+    // get enemy offset
+    // jump to handle fireball to enemy collision
+    // pull fireball offset from stack
     pla();
     tay();
     ldx(0x1);
@@ -16069,7 +16069,7 @@ int NoFToECol() {
 
 int ExitFBallEnemy() {
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x101a648c0>
+    // get original fireball offset and leave
     return 0;
     JMP(HandleEnemyFBallCol);
 }
@@ -16081,12 +16081,12 @@ int HandleEnemyFBallCol() {
     BPL(ChkBuzzyBeetle);
     anda(0b1111);
     tax();
-    // <conv.chunks.Comment object at 0x101a64bc0>
-    // <conv.chunks.Comment object at 0x101a65190>
-    // <conv.chunks.Comment object at 0x101a65220>
-    // <conv.chunks.Comment object at 0x101a653d0>
-    // <conv.chunks.Comment object at 0x101a654f0>
-    // <conv.chunks.Comment object at 0x101a65640>
+    // get relative coordinate of enemy
+    // get current enemy object offset
+    // check buffer flag for d7 set
+    // branch if not set to continue
+    // otherwise mask out high nybble and
+    // use low nybble as enemy offset
     lda(Enemy_ID, x);
     cmp(Bowser);
     BEQ(HurtBowser);
@@ -16109,11 +16109,11 @@ int HurtBowser() {
     JSR(InitVStf);
     sta(Enemy_X_Speed, x);
     sta(EnemyFrenzyBuffer);
-    // <conv.chunks.Comment object at 0x101a661e0>
-    // <conv.chunks.Comment object at 0x101a66300>
-    // <conv.chunks.Comment object at 0x101a66450>
-    // <conv.chunks.Comment object at 0x101a66570>
-    // <conv.chunks.Comment object at 0x101a666c0>
+    // decrement bowser's hit points
+    // if bowser still has hit points, branch to leave
+    // otherwise do sub to init vertical speed and movement force
+    // initialize horizontal speed
+    // init enemy frenzy buffer
     lda(0xfe);
     sta(Enemy_Y_Speed, x);
     ldy(WorldNumber);
@@ -16127,15 +16127,15 @@ int HurtBowser() {
 }
 
 int SetDBSte() {
-    // <conv.chunks.Comment object at 0x101a66840>
-    // <conv.chunks.Comment object at 0x101a66a20>
-    // <conv.chunks.Comment object at 0x101a66b40>
-    // <conv.chunks.Comment object at 0x101a66c90>
-    // <conv.chunks.Comment object at 0x101a66de0>
-    // <conv.chunks.Comment object at 0x101a66e70>
-    // <conv.chunks.Comment object at 0x101a66f90>
-    // <conv.chunks.Comment object at 0x101a67140>
-    // <conv.chunks.Comment object at 0x101a671d0>
+    // set vertical speed to make defeated bowser jump a little
+    // use world number as offset
+    // get enemy identifier to replace bowser with
+    // set as new enemy identifier
+    // set A to use starting value for state
+    // check to see if using offset of 3 or more
+    // branch if so
+    // otherwise add 3 to enemy state
+    // set defeated enemy state
     sta(Enemy_State, x);
     lda(Sfx_BowserFall);
     sta(Square2SoundQueue);
@@ -16148,10 +16148,10 @@ int SetDBSte() {
 int ChkOtherEnemies() {
     cmp(BulletBill_FrenzyVar);
     BEQ(ExHCF);
-    // <conv.chunks.Comment object at 0x101a67a70>
+    // branch to leave if bullet bill (frenzy variant)
     cmp(Podoboo);
     BEQ(ExHCF);
-    // <conv.chunks.Comment object at 0x101a67ce0>
+    // branch to leave if podoboo
     cmp(0x15);
     BCS(ExHCF);
     JMP(ShellOrBlockDefeat);
@@ -16159,30 +16159,30 @@ int ChkOtherEnemies() {
 
 int ShellOrBlockDefeat() {
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x101a740e0>
+    // check for piranha plant
     cmp(PiranhaPlant);
     BNE(StnE);
-    // <conv.chunks.Comment object at 0x101a74320>
+    // branch if not found
     lda(Enemy_Y_Position, x);
     adc(0x18);
-    // <conv.chunks.Comment object at 0x101a74590>
+    // add 24 pixels to enemy object's vertical position
     sta(Enemy_Y_Position, x);
     JMP(StnE);
 }
 
 int StnE() {
-    // <conv.chunks.Comment object at 0x101a747d0>
+    // do yet another sub
     JSR(ChkToStunEnemies);
     lda(Enemy_State, x);
     anda(0b11111);
     ora(0b100000);
-    // <conv.chunks.Comment object at 0x101a74a70>
-    // <conv.chunks.Comment object at 0x101a74b90>
+    // mask out 2 MSB of enemy object's state
+    // set d5 to defeat enemy and save as new state
     sta(Enemy_State, x);
     lda(0x2);
     ldy(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x101a74dd0>
-    // <conv.chunks.Comment object at 0x101a74e60>
+    // award 200 points by default
+    // check for hammer bro
     cpy(HammerBro);
     BNE(GoombaPoints);
     lda(0x6);
@@ -16199,14 +16199,14 @@ int GoombaPoints() {
 int EnemySmackScore() {
     JSR(SetupFloateyNumber);
     lda(Sfx_EnemySmack);
-    // <conv.chunks.Comment object at 0x101a75760>
-    // <conv.chunks.Comment object at 0x101a75880>
+    // update necessary score variables
+    // play smack enemy sound
     sta(Square1SoundQueue);
     JMP(ExHCF);
 }
 
 int ExHCF() {
-    // <conv.chunks.Comment object at 0x101a75a90>
+    // and now let's leave
     return 0;
     JMP(PlayerHammerCollision);
 }
@@ -16218,15 +16218,15 @@ int PlayerHammerCollision() {
     lda(TimerControl);
     ora(Misc_OffscreenBits);
     BNE(ExPHC);
-    // <conv.chunks.Comment object at 0x101a75c10>
-    // <conv.chunks.Comment object at 0x101a75d60>
-    // <conv.chunks.Comment object at 0x101a75df0>
-    // <conv.chunks.Comment object at 0x101a75f40>
-    // <conv.chunks.Comment object at 0x101a76060>
-    // <conv.chunks.Comment object at 0x101a76180>
+    // get frame counter
+    // shift d0 into carry
+    // branch to leave if d0 not set to execute every other frame
+    // if either master timer control
+    // or any offscreen bits for hammer are set,
+    // branch to leave
     txa();
     asl();
-    // <conv.chunks.Comment object at 0x101a76390>
+    // multiply misc object offset by four
     asl();
     clc();
     adc(0x24);
@@ -16236,21 +16236,21 @@ int PlayerHammerCollision() {
     BCC(ClHCol);
     lda(Misc_Collision_Flag, x);
     BNE(ExPHC);
-    // <conv.chunks.Comment object at 0x101a76540>
-    // <conv.chunks.Comment object at 0x101a76690>
-    // <conv.chunks.Comment object at 0x101a76720>
-    // <conv.chunks.Comment object at 0x101a76840>
-    // <conv.chunks.Comment object at 0x101a76960>
-    // <conv.chunks.Comment object at 0x101a76ab0>
-    // <conv.chunks.Comment object at 0x101a76c00>
+    // add 36 or $24 bytes to get proper offset
+    // for misc object bounding box coordinates
+    // do player-to-hammer collision detection
+    // get misc object offset
+    // if no collision, then branch
+    // otherwise read collision flag
+    // if collision flag already set, branch to leave
     lda(0x1);
     sta(Misc_Collision_Flag, x);
-    // <conv.chunks.Comment object at 0x101a76db0>
+    // otherwise set collision flag now
     lda(Misc_X_Speed, x);
     eor(0xff);
     clc();
-    // <conv.chunks.Comment object at 0x101a770b0>
-    // <conv.chunks.Comment object at 0x101a77200>
+    // get two's compliment of
+    // hammer's horizontal speed
     adc(0x1);
     sta(Misc_X_Speed, x);
     lda(StarInvincibleTimer);
@@ -16260,11 +16260,11 @@ int PlayerHammerCollision() {
 }
 
 int ClHCol() {
-    // <conv.chunks.Comment object at 0x101a772f0>
-    // <conv.chunks.Comment object at 0x101a774d0>
-    // <conv.chunks.Comment object at 0x101a775f0>
-    // <conv.chunks.Comment object at 0x101a77740>
-    // <conv.chunks.Comment object at 0x101a77860>
+    // set to send hammer flying the opposite direction
+    // if star mario invincibility timer set,
+    // branch to leave
+    // otherwise jump to hurt player, do not return
+    // clear collision flag
     lda(0x0);
     sta(Misc_Collision_Flag, x);
     JMP(ExPHC);
@@ -16277,27 +16277,27 @@ int ExPHC() {
 
 int HandlePowerUpCollision() {
     JSR(EraseEnemyObject);
-    // <conv.chunks.Comment object at 0x101a77c50>
+    // erase the power-up object
     lda(0x6);
     JSR(SetupFloateyNumber);
-    // <conv.chunks.Comment object at 0x101a77dd0>
+    // award 1000 points to player by default
     lda(Sfx_PowerUpGrab);
     sta(Square2SoundQueue);
     lda(PowerUpType);
-    // <conv.chunks.Comment object at 0x101a7c0b0>
-    // <conv.chunks.Comment object at 0x101a7c1d0>
+    // play the power-up sound
+    // check power-up type
     cmp(0x2);
     BCC(Shroom_Flower_PUp);
-    // <conv.chunks.Comment object at 0x101a7c350>
+    // if mushroom or fire flower, branch
     cmp(0x3);
     BEQ(SetFor1Up);
     lda(0x23);
     sta(StarInvincibleTimer);
     lda(StarPowerMusic);
-    // <conv.chunks.Comment object at 0x101a7c560>
-    // <conv.chunks.Comment object at 0x101a7c710>
-    // <conv.chunks.Comment object at 0x101a7c7a0>
-    // <conv.chunks.Comment object at 0x101a7c950>
+    // if 1-up mushroom, branch
+    // otherwise set star mario invincibility
+    // timer, and load the star mario music
+    // into the area music queue, then leave
     sta(AreaMusicQueue);
     return 0;
     JMP(Shroom_Flower_PUp);
@@ -16305,15 +16305,15 @@ int HandlePowerUpCollision() {
 
 int Shroom_Flower_PUp() {
     lda(PlayerStatus);
-    // <conv.chunks.Comment object at 0x101a7cc20>
+    // if player status = small, branch
     BEQ(UpToSuper);
     cmp(0x1);
-    // <conv.chunks.Comment object at 0x101a7ce30>
+    // if player status not super, leave
     BNE(NoPUp);
     ldx(ObjectOffset);
     lda(0x2);
-    // <conv.chunks.Comment object at 0x101a7d070>
-    // <conv.chunks.Comment object at 0x101a7d190>
+    // get enemy offset, not necessary
+    // set player status to fiery
     sta(PlayerStatus);
     JSR(GetPlayerColors);
     ldx(ObjectOffset);
@@ -16325,15 +16325,15 @@ int Shroom_Flower_PUp() {
 int SetFor1Up() {
     lda(0xb);
     sta(FloateyNum_Control, x);
-    // <conv.chunks.Comment object at 0x101a7d850>
-    // <conv.chunks.Comment object at 0x101a7d8e0>
+    // change 1000 points into 1-up instead
+    // and then leave
     return 0;
     JMP(UpToSuper);
 }
 
 int UpToSuper() {
     lda(0x1);
-    // <conv.chunks.Comment object at 0x101a7db80>
+    // set player status to super
     sta(PlayerStatus);
     lda(0x9);
     JMP(UpToFiery);
@@ -16352,35 +16352,35 @@ int NoPUp() {
 
 int PlayerEnemyCollision() {
     lda(FrameCounter);
-    // <conv.chunks.Comment object at 0x101a7e450>
+    // check counter for d0 set
     lsr();
     BCS(NoPUp);
     JSR(CheckPlayerVertical);
     BCS(NoPECol);
     lda(EnemyOffscrBitsMasked, x);
     BNE(NoPECol);
-    // <conv.chunks.Comment object at 0x101a7e810>
-    // <conv.chunks.Comment object at 0x101a7e960>
-    // <conv.chunks.Comment object at 0x101a7ea80>
-    // <conv.chunks.Comment object at 0x101a7ebd0>
-    // <conv.chunks.Comment object at 0x101a7ed20>
+    // if set, branch to leave
+    // if player object is completely offscreen or
+    // if down past 224th pixel row, branch to leave
+    // if current enemy is offscreen by any amount,
+    // go ahead and branch to leave
     lda(GameEngineSubroutine);
     cmp(0x8);
     BNE(NoPECol);
-    // <conv.chunks.Comment object at 0x101a7ef60>
-    // <conv.chunks.Comment object at 0x101a7eff0>
+    // if not set to run player control routine
+    // on next frame, branch to leave
     lda(Enemy_State, x);
     anda(0b100000);
-    // <conv.chunks.Comment object at 0x101a7f2f0>
+    // if enemy state has d5 set, branch to leave
     BNE(NoPECol);
     JSR(GetEnemyBoundBoxOfs);
     JSR(PlayerCollisionCore);
     ldx(ObjectOffset);
     BCS(CheckForPUpCollision);
-    // <conv.chunks.Comment object at 0x101a7f530>
-    // <conv.chunks.Comment object at 0x101a7f650>
-    // <conv.chunks.Comment object at 0x101a7f770>
-    // <conv.chunks.Comment object at 0x101a7f890>
+    // get bounding box offset for current enemy object
+    // do collision detection on player vs. enemy
+    // get enemy object buffer offset
+    // if collision, branch past this part here
     lda(Enemy_CollisionBits, x);
     anda(0b11111110);
     sta(Enemy_CollisionBits, x);
@@ -16401,10 +16401,10 @@ int CheckForPUpCollision() {
 }
 
 int EColl() {
-    // <conv.chunks.Comment object at 0x101a7ff80>
-    // <conv.chunks.Comment object at 0x101a880e0>
-    // <conv.chunks.Comment object at 0x101a88230>
-    // <conv.chunks.Comment object at 0x101a88350>
+    // check for power-up object
+    // if not found, branch to next part
+    // otherwise, unconditional jump backwards
+    // if star mario invincibility timer expired,
     lda(StarInvincibleTimer);
     BEQ(HandlePECollisions);
     JMP(ShellOrBlockDefeat);
@@ -16414,63 +16414,63 @@ int EColl() {
 int HandlePECollisions() {
     lda(Enemy_CollisionBits, x);
     anda(0b1);
-    // <conv.chunks.Comment object at 0x101a887a0>
-    // <conv.chunks.Comment object at 0x101a88a70>
+    // check enemy collision bits for d0 set
+    // or for being offscreen at all
     ora(EnemyOffscrBitsMasked, x);
     BNE(ExPEC);
-    // <conv.chunks.Comment object at 0x101a88cb0>
+    // branch to leave if either is true
     lda(0x1);
     ora(Enemy_CollisionBits, x);
-    // <conv.chunks.Comment object at 0x101a88e60>
+    // otherwise set d0 now
     sta(Enemy_CollisionBits, x);
     cpy(Spiny);
-    // <conv.chunks.Comment object at 0x101a89160>
+    // branch if spiny
     BEQ(ChkForPlayerInjury);
     cpy(PiranhaPlant);
-    // <conv.chunks.Comment object at 0x101a893a0>
+    // branch if piranha plant
     BEQ(InjurePlayer);
     cpy(Podoboo);
-    // <conv.chunks.Comment object at 0x101a895b0>
+    // branch if podoboo
     BEQ(InjurePlayer);
     cpy(BulletBill_CannonVar);
-    // <conv.chunks.Comment object at 0x101a897f0>
+    // branch if bullet bill
     BEQ(ChkForPlayerInjury);
     cpy(0x15);
-    // <conv.chunks.Comment object at 0x101a89a00>
+    // branch if object => $15
     BCS(InjurePlayer);
     lda(AreaType);
-    // <conv.chunks.Comment object at 0x101a89c10>
+    // branch if water type level
     BEQ(InjurePlayer);
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x101a89e20>
+    // branch if d7 of enemy state was set
     asl();
     BCS(ChkForPlayerInjury);
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x101a8a0f0>
+    // mask out all but 3 LSB of enemy state
     anda(0b111);
     cmp(0x2);
-    // <conv.chunks.Comment object at 0x101a8a330>
+    // branch if enemy is in normal or falling state
     BCC(ChkForPlayerInjury);
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x101a8a540>
+    // branch to leave if goomba in defeated state
     cmp(Goomba);
     BEQ(ExPEC);
     lda(Sfx_EnemySmack);
-    // <conv.chunks.Comment object at 0x101a8a8d0>
+    // play smack enemy sound
     sta(Square1SoundQueue);
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x101a8aae0>
+    // set d7 in enemy state, thus become moving shell
     ora(0b10000000);
     sta(Enemy_State, x);
     JSR(EnemyFacePlayer);
     lda(offsetof(G, KickedShellXSpdData), y);
-    // <conv.chunks.Comment object at 0x101a8ae40>
-    // <conv.chunks.Comment object at 0x101a8af60>
+    // set moving direction and get offset
+    // load and set horizontal speed data with offset
     sta(Enemy_X_Speed, x);
     lda(0x3);
     clc();
-    // <conv.chunks.Comment object at 0x101a8b1d0>
-    // <conv.chunks.Comment object at 0x101a8b320>
+    // add three to whatever the stomp counter contains
+    // to give points for kicking the shell
     adc(StompChainCounter);
     ldy(EnemyIntervalTimer, x);
     cpy(0x3);
@@ -16480,17 +16480,17 @@ int HandlePECollisions() {
 }
 
 int KSPts() {
-    // <conv.chunks.Comment object at 0x101a8b4a0>
-    // <conv.chunks.Comment object at 0x101a8b5f0>
-    // <conv.chunks.Comment object at 0x101a8b680>
-    // <conv.chunks.Comment object at 0x101a8b860>
-    // <conv.chunks.Comment object at 0x101a8b9b0>
+    // check shell enemy's timer
+    // if above a certain point, branch using the points
+    // data obtained from the stomp counter + 3
+    // otherwise, set points based on proximity to timer expiration
+    // set values for floatey number now
     JSR(SetupFloateyNumber);
     JMP(ExPEC);
 }
 
 int ExPEC() {
-    // <conv.chunks.Comment object at 0x101a8bb30>
+    // leave!!!
     return 0;
     JMP(ChkForPlayerInjury);
 }
@@ -16503,15 +16503,15 @@ int ChkForPlayerInjury() {
 }
 
 int ChkInj() {
-    // <conv.chunks.Comment object at 0x101a8bc80>
-    // <conv.chunks.Comment object at 0x101a8bda0>
-    // <conv.chunks.Comment object at 0x101a8bef0>
-    // <conv.chunks.Comment object at 0x101a94050>
+    // check player's vertical speed
+    // perform procedure below if player moving upwards
+    // or not at all, and branch elsewhere if moving downwards
+    // branch if enemy object < $07
     lda(Enemy_ID, x);
     cmp(Bloober);
     BCC(ChkETmrs);
     lda(Player_Y_Position);
-    // <conv.chunks.Comment object at 0x101a94410>
+    // add 12 pixels to player's vertical position
     clc();
     adc(0xc);
     cmp(Enemy_Y_Position, x);
@@ -16520,16 +16520,16 @@ int ChkInj() {
 }
 
 int ChkETmrs() {
-    // <conv.chunks.Comment object at 0x101a94620>
-    // <conv.chunks.Comment object at 0x101a94800>
-    // <conv.chunks.Comment object at 0x101a94920>
+    // compare modified player's position to enemy's position
+    // branch if this player's position above (less than) enemy's
+    // check stomp timer
     lda(StompTimer);
     BNE(EnemyStomped);
     lda(InjuryTimer);
     BNE(ExInjColRoutines);
-    // <conv.chunks.Comment object at 0x101a94a70>
-    // <conv.chunks.Comment object at 0x101a94b90>
-    // <conv.chunks.Comment object at 0x101a94cb0>
+    // branch if set
+    // check to see if injured invincibility timer still
+    // counting down, and branch elsewhere to leave if so
     lda(Player_Rel_XPos);
     cmp(Enemy_Rel_XPos);
     BCC(TInjE);
@@ -16538,15 +16538,15 @@ int ChkETmrs() {
 }
 
 int TInjE() {
-    // <conv.chunks.Comment object at 0x101a94ec0>
-    // <conv.chunks.Comment object at 0x101a94fe0>
-    // <conv.chunks.Comment object at 0x101a95130>
-    // <conv.chunks.Comment object at 0x101a95250>
+    // if player's relative position to the left of enemy's
+    // relative position, branch here
+    // otherwise do a jump here
+    // if enemy moving towards the left,
     lda(Enemy_MovingDir, x);
     cmp(0x1);
     BNE(InjurePlayer);
-    // <conv.chunks.Comment object at 0x101a95400>
-    // <conv.chunks.Comment object at 0x101a95490>
+    // branch, otherwise do a jump here
+    // to turn the enemy around
     JMP(LInj);
     JMP(InjurePlayer);
 }
@@ -16561,12 +16561,12 @@ int ForceInjury() {
     ldx(PlayerStatus);
     BEQ(KillPlayer);
     sta(PlayerStatus);
-    // <conv.chunks.Comment object at 0x101a95a00>
-    // <conv.chunks.Comment object at 0x101a95b20>
-    // <conv.chunks.Comment object at 0x101a95c40>
+    // check player's status
+    // branch if small
+    // otherwise set player's status to small
     lda(0x8);
     sta(InjuryTimer);
-    // <conv.chunks.Comment object at 0x101a95dc0>
+    // set injured invincibility timer
     asl();
     sta(Square1SoundQueue);
     JSR(GetPlayerColors);
@@ -16575,22 +16575,22 @@ int ForceInjury() {
 }
 
 int SetKRout() {
-    // <conv.chunks.Comment object at 0x101a96000>
-    // <conv.chunks.Comment object at 0x101a96120>
-    // <conv.chunks.Comment object at 0x101a96240>
-    // <conv.chunks.Comment object at 0x101a962d0>
+    // play pipedown/injury sound
+    // change player's palette if necessary
+    // set subroutine to run on next frame
+    // set new player state
     ldy(0x1);
     JMP(SetPRout);
 }
 
 int SetPRout() {
-    // <conv.chunks.Comment object at 0x101a96420>
+    // load new value to run subroutine on next frame
     sta(GameEngineSubroutine);
     sty(Player_State);
-    // <conv.chunks.Comment object at 0x101a96600>
+    // store new player state
     ldy(0xff);
     sty(TimerControl);
-    // <conv.chunks.Comment object at 0x101a96780>
+    // set master timer control flag to halt timers
     iny();
     sty(ScrollAmount);
     JMP(ExInjColRoutines);
@@ -16598,17 +16598,17 @@ int SetPRout() {
 
 int ExInjColRoutines() {
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x101a96b10>
+    // get enemy offset and leave
     return 0;
     JMP(KillPlayer);
 }
 
 int KillPlayer() {
     stx(Player_X_Speed);
-    // <conv.chunks.Comment object at 0x101a96cf0>
+    // halt player's horizontal movement by initializing speed
     inx();
     stx(EventMusicQueue);
-    // <conv.chunks.Comment object at 0x101a96ea0>
+    // set event music queue to death music
     lda(0xfc);
     sta(Player_Y_Speed);
     lda(0xb);
@@ -16619,20 +16619,20 @@ int KillPlayer() {
 int EnemyStomped() {
     lda(Enemy_ID, x);
     cmp(Spiny);
-    // <conv.chunks.Comment object at 0x101a974a0>
-    // <conv.chunks.Comment object at 0x101a97800>
+    // check for spiny, branch to hurt player
+    // if found
     BEQ(InjurePlayer);
     lda(Sfx_EnemyStomp);
-    // <conv.chunks.Comment object at 0x101a97a40>
+    // otherwise play stomp/swim sound
     sta(Square1SoundQueue);
     lda(Enemy_ID, x);
     ldy(0x0);
     cmp(FlyingCheepCheep);
-    // <conv.chunks.Comment object at 0x101a97d70>
-    // <conv.chunks.Comment object at 0x101a97e00>
+    // initialize points data offset for stomped enemies
+    // branch for cheep-cheep
     BEQ(EnemyStompedPts);
     cmp(BulletBill_FrenzyVar);
-    // <conv.chunks.Comment object at 0x101aa00e0>
+    // branch for either bullet bill object
     BEQ(EnemyStompedPts);
     cmp(BulletBill_CannonVar);
     BEQ(EnemyStompedPts);
@@ -16640,20 +16640,20 @@ int EnemyStomped() {
     BEQ(EnemyStompedPts);
     iny();
     cmp(HammerBro);
-    // <conv.chunks.Comment object at 0x101aa04d0>
-    // <conv.chunks.Comment object at 0x101aa0620>
-    // <conv.chunks.Comment object at 0x101aa0770>
-    // <conv.chunks.Comment object at 0x101aa0800>
+    // branch for podoboo (this branch is logically impossible
+    // for cpu to take due to earlier checking of podoboo)
+    // increment points data offset
+    // branch for hammer bro
     BEQ(EnemyStompedPts);
     iny();
     cmp(Lakitu);
-    // <conv.chunks.Comment object at 0x101aa0a40>
-    // <conv.chunks.Comment object at 0x101aa0ad0>
+    // increment points data offset
+    // branch for lakitu
     BEQ(EnemyStompedPts);
     iny();
     cmp(Bloober);
-    // <conv.chunks.Comment object at 0x101aa0d40>
-    // <conv.chunks.Comment object at 0x101aa0dd0>
+    // increment points data offset
+    // branch if NOT bloober
     BNE(ChkForDemoteKoopa);
     JMP(EnemyStompedPts);
 }
@@ -16661,25 +16661,25 @@ int EnemyStomped() {
 int EnemyStompedPts() {
     lda(offsetof(G, StompedEnemyPtsData), y);
     JSR(SetupFloateyNumber);
-    // <conv.chunks.Comment object at 0x101aa1040>
-    // <conv.chunks.Comment object at 0x101aa1190>
+    // load points data using offset in Y
+    // run sub to set floatey number controls
     lda(Enemy_MovingDir, x);
     pha();
     JSR(SetStun);
-    // <conv.chunks.Comment object at 0x101aa1400>
-    // <conv.chunks.Comment object at 0x101aa1490>
+    // save enemy movement direction to stack
+    // run sub to kill enemy
     pla();
     sta(Enemy_MovingDir, x);
-    // <conv.chunks.Comment object at 0x101aa1670>
+    // return enemy movement direction from stack
     lda(0b100000);
     sta(Enemy_State, x);
     JSR(InitVStf);
     sta(Enemy_X_Speed, x);
     lda(0xfd);
-    // <conv.chunks.Comment object at 0x101aa18b0>
-    // <conv.chunks.Comment object at 0x101aa1a00>
-    // <conv.chunks.Comment object at 0x101aa1b20>
-    // <conv.chunks.Comment object at 0x101aa1c70>
+    // set d5 in enemy state
+    // nullify vertical speed, physics-related thing,
+    // and horizontal speed
+    // set player's vertical speed, to give bounce
     sta(Player_Y_Speed);
     return 0;
     JMP(ChkForDemoteKoopa);
@@ -16687,21 +16687,21 @@ int EnemyStompedPts() {
 
 int ChkForDemoteKoopa() {
     cmp(0x9);
-    // <conv.chunks.Comment object at 0x101aa1f40>
+    // branch elsewhere if enemy object < $09
     BCC(HandleStompedShellE);
     anda(0b1);
-    // <conv.chunks.Comment object at 0x101aa2150>
+    // demote koopa paratroopas to ordinary troopas
     sta(Enemy_ID, x);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x101aa2390>
+    // return enemy to normal state
     sty(Enemy_State, x);
     lda(0x3);
-    // <conv.chunks.Comment object at 0x101aa25d0>
+    // award 400 points to the player
     JSR(SetupFloateyNumber);
     JSR(InitVStf);
     JSR(EnemyFacePlayer);
-    // <conv.chunks.Comment object at 0x101aa27e0>
-    // <conv.chunks.Comment object at 0x101aa2900>
+    // nullify physics-related thing and vertical speed
+    // turn enemy around if necessary
     lda(offsetof(G, DemotedKoopaXSpdData), y);
     sta(Enemy_X_Speed, x);
     JMP(SBnce);
@@ -16710,14 +16710,14 @@ int ChkForDemoteKoopa() {
 
 int HandleStompedShellE() {
     lda(0x4);
-    // <conv.chunks.Comment object at 0x101aa2e70>
+    // set defeated state for enemy
     sta(Enemy_State, x);
     inc(StompChainCounter);
     lda(StompChainCounter);
     clc();
-    // <conv.chunks.Comment object at 0x101aa31a0>
-    // <conv.chunks.Comment object at 0x101aa32c0>
-    // <conv.chunks.Comment object at 0x101aa3410>
+    // increment the stomp counter
+    // add whatever is in the stomp counter
+    // to whatever is in the stomp timer
     adc(StompTimer);
     JSR(SetupFloateyNumber);
     inc(StompTimer);
@@ -16728,22 +16728,22 @@ int HandleStompedShellE() {
 }
 
 int SBnce() {
-    // <conv.chunks.Comment object at 0x101aa3590>
-    // <conv.chunks.Comment object at 0x101aa36b0>
-    // <conv.chunks.Comment object at 0x101aa37d0>
-    // <conv.chunks.Comment object at 0x101aa38f0>
-    // <conv.chunks.Comment object at 0x101aa3a40>
-    // <conv.chunks.Comment object at 0x101aa3b90>
+    // award points accordingly
+    // increment stomp timer of some sort
+    // check primary hard mode flag
+    // load timer setting according to flag
+    // set as enemy timer to revive stomped enemy
+    // set player's vertical speed for bounce
     lda(0xfc);
     sta(Player_Y_Speed);
-    // <conv.chunks.Comment object at 0x101aa3c80>
+    // and then leave!!!
     return 0;
     JMP(ChkEnemyFaceRight);
 }
 
 int ChkEnemyFaceRight() {
     lda(Enemy_MovingDir, x);
-    // <conv.chunks.Comment object at 0x101aa3ef0>
+    // check to see if enemy is moving to the right
     cmp(0x1);
     BNE(LInj);
     JMP(InjurePlayer);
@@ -16751,9 +16751,9 @@ int ChkEnemyFaceRight() {
 }
 
 int LInj() {
-    // <conv.chunks.Comment object at 0x101aac0e0>
-    // <conv.chunks.Comment object at 0x101aac2c0>
-    // <conv.chunks.Comment object at 0x101aac3e0>
+    // if not, branch
+    // otherwise go back to hurt player
+    // turn the enemy around, if necessary
     JSR(EnemyTurnAround);
     JMP(InjurePlayer);
     JMP(EnemyFacePlayer);
@@ -16768,27 +16768,27 @@ int EnemyFacePlayer() {
 }
 
 int SFcRt() {
-    // <conv.chunks.Comment object at 0x101aac6b0>
-    // <conv.chunks.Comment object at 0x101aac740>
-    // <conv.chunks.Comment object at 0x101aac8f0>
-    // <conv.chunks.Comment object at 0x101aaca70>
-    // <conv.chunks.Comment object at 0x101aacb00>
+    // set to move right by default
+    // get horizontal difference between player and enemy
+    // if enemy is to the right of player, do not increment
+    // otherwise, increment to set to move to the left
+    // set moving direction here
     sty(Enemy_MovingDir, x);
     dey();
-    // <conv.chunks.Comment object at 0x101aacce0>
+    // then decrement to use as a proper offset
     return 0;
     JMP(SetupFloateyNumber);
 }
 
 int SetupFloateyNumber() {
     sta(FloateyNum_Control, x);
-    // <conv.chunks.Comment object at 0x101aace30>
+    // set number of points control for floatey numbers
     lda(0x30);
     sta(FloateyNum_Timer, x);
-    // <conv.chunks.Comment object at 0x101aacfe0>
+    // set timer for floatey numbers
     lda(Enemy_Y_Position, x);
     sta(FloateyNum_Y_Pos, x);
-    // <conv.chunks.Comment object at 0x101aad2e0>
+    // set vertical coordinate
     lda(Enemy_Rel_XPos);
     sta(FloateyNum_X_Pos, x);
     JMP(ExSFN);
@@ -16801,25 +16801,25 @@ int ExSFN() {
 
 int EnemiesCollision() {
     lda(FrameCounter);
-    // <conv.chunks.Comment object at 0x101aadc40>
+    // check counter for d0 set
     lsr();
     BCC(ExSFN);
-    // <conv.chunks.Comment object at 0x101aae1e0>
+    // if d0 not set, leave
     lda(AreaType);
     BEQ(ExSFN);
-    // <conv.chunks.Comment object at 0x101aae420>
+    // if water area type, leave
     lda(Enemy_ID, x);
     cmp(0x15);
-    // <conv.chunks.Comment object at 0x101aae690>
+    // if enemy object => $15, branch to leave
     BCS(ExitECRoutine);
     cmp(Lakitu);
-    // <conv.chunks.Comment object at 0x101aae8a0>
+    // if lakitu, branch to leave
     BEQ(ExitECRoutine);
     cmp(PiranhaPlant);
-    // <conv.chunks.Comment object at 0x101aaeae0>
+    // if piranha plant, branch to leave
     BEQ(ExitECRoutine);
     lda(EnemyOffscrBitsMasked, x);
-    // <conv.chunks.Comment object at 0x101aaecf0>
+    // if masked offscreen bits nonzero, branch to leave
     BNE(ExitECRoutine);
     JSR(GetEnemyBoundBoxOfs);
     dex();
@@ -16828,36 +16828,36 @@ int EnemiesCollision() {
 }
 
 int ECLoop() {
-    // <conv.chunks.Comment object at 0x101aaef30>
-    // <conv.chunks.Comment object at 0x101aaf080>
-    // <conv.chunks.Comment object at 0x101aaf110>
-    // <conv.chunks.Comment object at 0x101aaf230>
+    // otherwise, do sub, get appropriate bounding box offset for
+    // first enemy we're going to compare, then decrement for second
+    // branch to leave if there are no other enemies
+    // save enemy object buffer offset for second enemy here
     stx(0x1);
     tya();
-    // <conv.chunks.Comment object at 0x101aaf290>
+    // save first enemy's bounding box offset to stack
     pha();
     lda(Enemy_Flag, x);
     BEQ(ReadyNextEnemy);
-    // <conv.chunks.Comment object at 0x101aaf500>
-    // <conv.chunks.Comment object at 0x101aaf650>
+    // check enemy object enable flag
+    // branch if flag not set
     lda(Enemy_ID, x);
     cmp(0x15);
     BCS(ReadyNextEnemy);
-    // <conv.chunks.Comment object at 0x101aaf890>
-    // <conv.chunks.Comment object at 0x101aaf920>
+    // check for enemy object => $15
+    // branch if true
     cmp(Lakitu);
     BEQ(ReadyNextEnemy);
-    // <conv.chunks.Comment object at 0x101aafb00>
+    // branch if enemy object is lakitu
     cmp(PiranhaPlant);
     BEQ(ReadyNextEnemy);
-    // <conv.chunks.Comment object at 0x101aafe00>
+    // branch if enemy object is piranha plant
     lda(EnemyOffscrBitsMasked, x);
     BNE(ReadyNextEnemy);
     txa();
     asl();
-    // <conv.chunks.Comment object at 0x101ab8080>
-    // <conv.chunks.Comment object at 0x101ab81d0>
-    // <conv.chunks.Comment object at 0x101ab8290>
+    // branch if masked offscreen bits set
+    // get second enemy object's bounding box offset
+    // multiply by four, then add four
     asl();
     clc();
     adc(0x4);
@@ -16866,32 +16866,32 @@ int ECLoop() {
     ldx(ObjectOffset);
     ldy(0x1);
     BCC(NoEnemyCollision);
-    // <conv.chunks.Comment object at 0x101ab8560>
-    // <conv.chunks.Comment object at 0x101ab85f0>
-    // <conv.chunks.Comment object at 0x101ab8710>
-    // <conv.chunks.Comment object at 0x101ab8860>
-    // <conv.chunks.Comment object at 0x101ab88f0>
+    // use as new contents of X
+    // do collision detection using the two enemies here
+    // use first enemy offset for X
+    // use second enemy offset for Y
+    // if carry clear, no collision, branch ahead of this
     lda(Enemy_State, x);
     ora(Enemy_State, y);
-    // <conv.chunks.Comment object at 0x101ab8b90>
+    // check both enemy states for d7 set
     anda(0b10000000);
     BNE(YesEC);
     lda(Enemy_CollisionBits, y);
     anda(offsetof(G, SetBitsMask), x);
     BNE(ReadyNextEnemy);
-    // <conv.chunks.Comment object at 0x101ab8dd0>
-    // <conv.chunks.Comment object at 0x101ab8f20>
-    // <conv.chunks.Comment object at 0x101ab9070>
-    // <conv.chunks.Comment object at 0x101ab91c0>
+    // branch if at least one of them is set
+    // load first enemy's collision-related bits
+    // check to see if bit connected to second enemy is
+    // already set, and move onto next enemy slot if set
     lda(Enemy_CollisionBits, y);
     ora(offsetof(G, SetBitsMask), x);
-    // <conv.chunks.Comment object at 0x101ab9400>
+    // if the bit is not set, set it now
     sta(Enemy_CollisionBits, y);
     JMP(YesEC);
 }
 
 int YesEC() {
-    // <conv.chunks.Comment object at 0x101ab9670>
+    // react according to the nature of collision
     JSR(ProcEnemyCollisions);
     JMP(ReadyNextEnemy);
     JMP(NoEnemyCollision);
@@ -16908,9 +16908,9 @@ int ReadyNextEnemy() {
     pla();
     tay();
     ldx(0x1);
-    // <conv.chunks.Comment object at 0x101ab9d90>
-    // <conv.chunks.Comment object at 0x101ab9e50>
-    // <conv.chunks.Comment object at 0x101ab9f10>
+    // get first enemy's bounding box offset from the stack
+    // use as Y again
+    // get and decrement second enemy's object buffer offset
     dex();
     BPL(ECLoop);
     JMP(ExitECRoutine);
@@ -16924,26 +16924,26 @@ int ExitECRoutine() {
 
 int ProcEnemyCollisions() {
     lda(Enemy_State, y);
-    // <conv.chunks.Comment object at 0x101aba450>
+    // check both enemy states for d5 set
     ora(Enemy_State, x);
     anda(0b100000);
     BNE(ExitProcessEColl);
-    // <conv.chunks.Comment object at 0x101aba6c0>
-    // <conv.chunks.Comment object at 0x101aba7e0>
+    // if d5 is set in either state, or both, branch
+    // to leave and do nothing else at this point
     lda(Enemy_State, x);
     cmp(0x6);
-    // <conv.chunks.Comment object at 0x101abaa20>
+    // if second enemy state < $06, branch elsewhere
     BCC(ProcSecondEnemyColl);
     lda(Enemy_ID, x);
     cmp(HammerBro);
-    // <conv.chunks.Comment object at 0x101abac30>
-    // <conv.chunks.Comment object at 0x101abad80>
+    // check second enemy identifier for hammer bro
+    // if hammer bro found in alt state, branch to leave
     BEQ(ExitProcessEColl);
     lda(Enemy_State, y);
-    // <conv.chunks.Comment object at 0x101abaf90>
+    // check first enemy state for d7 set
     asl();
     BCC(ShellCollisions);
-    // <conv.chunks.Comment object at 0x101abb170>
+    // branch if d7 is clear
     lda(0x6);
     JSR(SetupFloateyNumber);
     JSR(ShellOrBlockDefeat);
@@ -16953,16 +16953,16 @@ int ProcEnemyCollisions() {
 
 int ShellCollisions() {
     tya();
-    // <conv.chunks.Comment object at 0x101abb740>
+    // move Y to X
     tax();
     JSR(ShellOrBlockDefeat);
-    // <conv.chunks.Comment object at 0x101abb860>
+    // kill second enemy
     ldx(ObjectOffset);
     lda(ShellChainCounter, x);
-    // <conv.chunks.Comment object at 0x101abba70>
+    // get chain counter for shell
     clc();
     adc(0x4);
-    // <conv.chunks.Comment object at 0x101abbc50>
+    // add four to get appropriate point offset
     ldx(0x1);
     JSR(SetupFloateyNumber);
     ldx(ObjectOffset);
@@ -16977,22 +16977,22 @@ int ExitProcessEColl() {
 
 int ProcSecondEnemyColl() {
     lda(Enemy_State, y);
-    // <conv.chunks.Comment object at 0x101ac0350>
+    // if first enemy state < $06, branch elsewhere
     cmp(0x6);
     BCC(MoveEOfs);
     lda(Enemy_ID, y);
     cmp(HammerBro);
-    // <conv.chunks.Comment object at 0x101ac0680>
-    // <conv.chunks.Comment object at 0x101ac07d0>
+    // check first enemy identifier for hammer bro
+    // if hammer bro found in alt state, branch to leave
     BEQ(ExitProcessEColl);
     JSR(ShellOrBlockDefeat);
-    // <conv.chunks.Comment object at 0x101ac09e0>
+    // otherwise, kill first enemy
     ldy(0x1);
     lda(ShellChainCounter, y);
-    // <conv.chunks.Comment object at 0x101ac0b00>
+    // get chain counter for shell
     clc();
     adc(0x4);
-    // <conv.chunks.Comment object at 0x101ac0dd0>
+    // add four to get appropriate point offset
     ldx(ObjectOffset);
     JSR(SetupFloateyNumber);
     ldx(0x1);
@@ -17003,7 +17003,7 @@ int ProcSecondEnemyColl() {
 
 int MoveEOfs() {
     tya();
-    // <conv.chunks.Comment object at 0x101ac1490>
+    // move Y ($01) to X
     tax();
     JSR(EnemyTurnAround);
     ldx(ObjectOffset);
@@ -17012,37 +17012,37 @@ int MoveEOfs() {
 
 int EnemyTurnAround() {
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x101ac1820>
+    // check for specific enemies
     cmp(PiranhaPlant);
     BEQ(ExTA);
-    // <conv.chunks.Comment object at 0x101ac1a60>
+    // if piranha plant, leave
     cmp(Lakitu);
     BEQ(ExTA);
-    // <conv.chunks.Comment object at 0x101ac1be0>
+    // if lakitu, leave
     cmp(HammerBro);
     BEQ(ExTA);
-    // <conv.chunks.Comment object at 0x101ac1f10>
+    // if hammer bro, leave
     cmp(Spiny);
     BEQ(RXSpd);
-    // <conv.chunks.Comment object at 0x101ac20c0>
+    // if spiny, turn it around
     cmp(GreenParatroopaJump);
     BEQ(RXSpd);
-    // <conv.chunks.Comment object at 0x101ac23c0>
+    // if green paratroopa, turn it around
     cmp(0x7);
     BCS(ExTA);
     JMP(RXSpd);
 }
 
 int RXSpd() {
-    // <conv.chunks.Comment object at 0x101ac2570>
-    // <conv.chunks.Comment object at 0x101ac2750>
+    // if any OTHER enemy object => $07, leave
+    // load horizontal speed
     lda(Enemy_X_Speed, x);
     eor(0xff);
-    // <conv.chunks.Comment object at 0x101ac2900>
+    // get two's compliment for horizontal speed
     tay();
     iny();
     sty(Enemy_X_Speed, x);
-    // <conv.chunks.Comment object at 0x101ac2b40>
+    // store as new horizontal speed
     lda(Enemy_MovingDir, x);
     eor(0b11);
     sta(Enemy_MovingDir, x);
@@ -17050,31 +17050,31 @@ int RXSpd() {
 }
 
 int ExTA() {
-    // <conv.chunks.Comment object at 0x101ac2db0>
-    // <conv.chunks.Comment object at 0x101ac2ed0>
-    // <conv.chunks.Comment object at 0x101ac3020>
+    // invert moving direction and store, then leave
+    // thus effectively turning the enemy around
+    // leave!!!
     return 0;
     JMP(LargePlatformCollision);
 }
 
 int LargePlatformCollision() {
     lda(0xff);
-    // <conv.chunks.Comment object at 0x101ac3170>
-    // <conv.chunks.Comment object at 0x101ac31d0>
+    // $00 - vertical position of platform
+    // save value here
     sta(PlatformCollisionFlag, x);
     lda(TimerControl);
     BNE(ExLPC);
     lda(Enemy_State, x);
     BMI(ExLPC);
-    // <conv.chunks.Comment object at 0x101ac3410>
-    // <conv.chunks.Comment object at 0x101ac3530>
-    // <conv.chunks.Comment object at 0x101ac3680>
-    // <conv.chunks.Comment object at 0x101ac37d0>
+    // check master timer control
+    // if set, branch to leave
+    // if d7 set in object state,
+    // branch to leave
     lda(Enemy_ID, x);
     cmp(0x24);
     BNE(ChkForPlayerC_LargeP);
-    // <conv.chunks.Comment object at 0x101ac3a40>
-    // <conv.chunks.Comment object at 0x101ac3ad0>
+    // check enemy object identifier for
+    // balance platform, branch if not found
     lda(Enemy_State, x);
     tax();
     JSR(ChkForPlayerC_LargeP);
@@ -17084,22 +17084,22 @@ int LargePlatformCollision() {
 int ChkForPlayerC_LargeP() {
     JSR(CheckPlayerVertical);
     BCS(ExLPC);
-    // <conv.chunks.Comment object at 0x101ac3fb0>
-    // <conv.chunks.Comment object at 0x101ad0110>
+    // figure out if player is below a certain point
+    // or offscreen, branch to leave if true
     txa();
     JSR(GetEnemyBoundBoxOfsArg);
     lda(Enemy_Y_Position, x);
     sta(0x0);
     txa();
-    // <conv.chunks.Comment object at 0x101ad02f0>
-    // <conv.chunks.Comment object at 0x101ad0410>
-    // <conv.chunks.Comment object at 0x101ad0590>
-    // <conv.chunks.Comment object at 0x101ad0560>
+    // get bounding box offset in Y
+    // store vertical coordinate in
+    // temp variable for now
+    // send offset we're on to the stack
     pha();
     JSR(PlayerCollisionCore);
     pla();
-    // <conv.chunks.Comment object at 0x101ad07d0>
-    // <conv.chunks.Comment object at 0x101ad0920>
+    // do player-to-platform collision detection
+    // retrieve offset from the stack
     tax();
     BCC(ExLPC);
     JSR(ProcLPlatCollisions);
@@ -17107,9 +17107,9 @@ int ChkForPlayerC_LargeP() {
 }
 
 int ExLPC() {
-    // <conv.chunks.Comment object at 0x101ad0a40>
-    // <conv.chunks.Comment object at 0x101ad0b90>
-    // <conv.chunks.Comment object at 0x101ad0cb0>
+    // if no collision, branch to leave
+    // otherwise collision, perform sub
+    // get enemy object buffer offset and leave
     ldx(ObjectOffset);
     return 0;
     JMP(SmallPlatformCollision);
@@ -17121,12 +17121,12 @@ int SmallPlatformCollision() {
     sta(PlatformCollisionFlag, x);
     JSR(CheckPlayerVertical);
     BCS(ExSPC);
-    // <conv.chunks.Comment object at 0x101ad0ef0>
-    // <conv.chunks.Comment object at 0x101ad0f50>
-    // <conv.chunks.Comment object at 0x101ad1070>
-    // <conv.chunks.Comment object at 0x101ad11c0>
-    // <conv.chunks.Comment object at 0x101ad1310>
-    // <conv.chunks.Comment object at 0x101ad1430>
+    // $00 - counter for bounding boxes
+    // if master timer control set,
+    // branch to leave
+    // otherwise initialize collision flag
+    // do a sub to see if player is below a certain point
+    // or entirely offscreen, and branch to leave if true
     lda(0x2);
     sta(0x0);
     JMP(ChkSmallPlatLoop);
@@ -17148,8 +17148,8 @@ int ChkSmallPlatLoop() {
 int MoveBoundBox() {
     lda(BoundingBox_UL_YPos, y);
     clc();
-    // <conv.chunks.Comment object at 0x101ad2270>
-    // <conv.chunks.Comment object at 0x101ad23f0>
+    // move bounding box vertical coordinates
+    // 128 pixels downwards
     adc(0x80);
     sta(BoundingBox_UL_YPos, y);
     lda(BoundingBox_DR_YPos, y);
@@ -17162,9 +17162,9 @@ int MoveBoundBox() {
 }
 
 int ExSPC() {
-    // <conv.chunks.Comment object at 0x101ad2a80>
-    // <conv.chunks.Comment object at 0x101ad2b10>
-    // <conv.chunks.Comment object at 0x101ad2c90>
+    // decrement counter we set earlier
+    // loop back until both bounding boxes are checked
+    // get enemy object buffer offset, then leave
     ldx(ObjectOffset);
     return 0;
     JMP(ProcSPlatCollisions);
@@ -17192,24 +17192,24 @@ int ChkForTopCollision() {
     lda(BoundingBox_DR_YPos);
     sec();
     sbc(BoundingBox_UL_YPos, y);
-    // <conv.chunks.Comment object at 0x101ad3a70>
-    // <conv.chunks.Comment object at 0x101ad3bc0>
-    // <conv.chunks.Comment object at 0x101ad3c50>
+    // get difference by subtracting the top
+    // of the platform's bounding box from the bottom
+    // of the player's bounding box
     cmp(0x6);
     BCS(PlatformSideCollisions);
-    // <conv.chunks.Comment object at 0x101ad3e00>
+    // if difference not close enough, skip all of this
     lda(Player_Y_Speed);
     BMI(PlatformSideCollisions);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x101ad80e0>
-    // <conv.chunks.Comment object at 0x101ad8230>
+    // if player's vertical speed moving upwards, skip this
+    // get saved bounding box counter from earlier
     ldy(Enemy_ID, x);
     cpy(0x2b);
     BEQ(SetCollisionFlag);
     cpy(0x2c);
-    // <conv.chunks.Comment object at 0x101ad8440>
-    // <conv.chunks.Comment object at 0x101ad84d0>
-    // <conv.chunks.Comment object at 0x101ad8680>
+    // if either of the two small platform objects are found,
+    // regardless of which one, branch to use bounding box counter
+    // as contents of collision flag
     BEQ(SetCollisionFlag);
     txa();
     JMP(SetCollisionFlag);
@@ -17218,11 +17218,11 @@ int ChkForTopCollision() {
 int SetCollisionFlag() {
     ldx(ObjectOffset);
     sta(PlatformCollisionFlag, x);
-    // <conv.chunks.Comment object at 0x101ad8980>
-    // <conv.chunks.Comment object at 0x101ad8aa0>
+    // get enemy object buffer offset
+    // save either bounding box counter or enemy offset here
     lda(0x0);
     sta(Player_State);
-    // <conv.chunks.Comment object at 0x101ad8c50>
+    // set player state to normal then leave
     return 0;
     JMP(PlatformSideCollisions);
 }
@@ -17232,20 +17232,20 @@ int PlatformSideCollisions() {
     sta(0x0);
     lda(BoundingBox_DR_XPos);
     sec();
-    // <conv.chunks.Comment object at 0x101ad8ec0>
-    // <conv.chunks.Comment object at 0x101ad9010>
-    // <conv.chunks.Comment object at 0x101ad90a0>
-    // <conv.chunks.Comment object at 0x101ad9250>
+    // set value here to indicate possible horizontal
+    // collision on left side of platform
+    // get difference by subtracting platform's left edge
+    // from player's right edge
     sbc(BoundingBox_UL_XPos, y);
     cmp(0x8);
-    // <conv.chunks.Comment object at 0x101ad9400>
+    // if difference close enough, skip all of this
     BCC(SideC);
     inc(0x0);
     lda(BoundingBox_DR_XPos, y);
     clc();
-    // <conv.chunks.Comment object at 0x101ad9670>
-    // <conv.chunks.Comment object at 0x101ad9700>
-    // <conv.chunks.Comment object at 0x101ad98e0>
+    // otherwise increment value set here for right side collision
+    // get difference by subtracting player's left edge
+    // from platform's right edge
     sbc(BoundingBox_UL_XPos);
     cmp(0x9);
     BCS(NoSideC);
@@ -17253,15 +17253,15 @@ int PlatformSideCollisions() {
 }
 
 int SideC() {
-    // <conv.chunks.Comment object at 0x101ad9a60>
-    // <conv.chunks.Comment object at 0x101ad9af0>
-    // <conv.chunks.Comment object at 0x101ad9cd0>
+    // if difference not close enough, skip subroutine
+    // and instead branch to leave (no collision)
+    // deal with horizontal collision
     JSR(ImpedePlayerMove);
     JMP(NoSideC);
 }
 
 int NoSideC() {
-    // <conv.chunks.Comment object at 0x101ad9e50>
+    // return with enemy object buffer offset
     ldx(ObjectOffset);
     return 0;
     JMP(PositionPlayerOnS_Plat);
@@ -17277,27 +17277,27 @@ int PositionPlayerOnS_Plat() {
 
 int PositionPlayerOnVPlat() {
     lda(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x101ada780>
+    // get vertical coordinate
     ldy(GameEngineSubroutine);
     cpy(0xb);
     BEQ(ExPlPos);
-    // <conv.chunks.Comment object at 0x101adaa20>
-    // <conv.chunks.Comment object at 0x101adaab0>
+    // if certain routine being executed on this frame,
+    // skip all of this
     ldy(Enemy_Y_HighPos, x);
     cpy(0x1);
-    // <conv.chunks.Comment object at 0x101adadb0>
+    // if vertical high byte offscreen, skip this
     BNE(ExPlPos);
     sec();
     sbc(0x20);
     sta(Player_Y_Position);
-    // <conv.chunks.Comment object at 0x101adb020>
-    // <conv.chunks.Comment object at 0x101adb0b0>
-    // <conv.chunks.Comment object at 0x101adb140>
+    // subtract 32 pixels from vertical coordinate
+    // for the player object's height
+    // save as player's new vertical coordinate
     tya();
     sbc(0x0);
     sta(Player_Y_HighPos);
-    // <conv.chunks.Comment object at 0x101adb380>
-    // <conv.chunks.Comment object at 0x101adb410>
+    // subtract borrow and store as player's
+    // new vertical high byte
     lda(0x0);
     sta(Player_Y_Speed);
     sta(Player_Y_MoveForce);
@@ -17312,13 +17312,13 @@ int ExPlPos() {
 int CheckPlayerVertical() {
     lda(Player_OffscreenBits);
     cmp(0xf0);
-    // <conv.chunks.Comment object at 0x101adba40>
-    // <conv.chunks.Comment object at 0x101adbb60>
+    // if player object is completely offscreen
+    // vertically, leave this routine
     BCS(ExCPV);
     ldy(Player_Y_HighPos);
     dey();
-    // <conv.chunks.Comment object at 0x101adbda0>
-    // <conv.chunks.Comment object at 0x101adbef0>
+    // if player high vertical byte is not
+    // within the screen, leave this routine
     BNE(ExCPV);
     lda(Player_Y_Position);
     cmp(0xd0);
@@ -17338,18 +17338,18 @@ int GetEnemyBoundBoxOfs() {
 int GetEnemyBoundBoxOfsArg() {
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x101ae05f0>
-    // <conv.chunks.Comment object at 0x101ae06b0>
+    // multiply A by four, then add four
+    // to skip player's bounding box
     clc();
     adc(0x4);
     tay();
     lda(Enemy_OffscreenBits);
     anda(0b1111);
     cmp(0b1111);
-    // <conv.chunks.Comment object at 0x101ae08f0>
-    // <conv.chunks.Comment object at 0x101ae0980>
-    // <conv.chunks.Comment object at 0x101ae0aa0>
-    // <conv.chunks.Comment object at 0x101ae0bc0>
+    // send to Y
+    // get offscreen bits for enemy object
+    // save low nybble
+    // check for all bits set
     return 0;
     JMP(PlayerBGCollision);
 }
@@ -17357,13 +17357,13 @@ int GetEnemyBoundBoxOfsArg() {
 int PlayerBGCollision() {
     lda(DisableCollisionDet);
     BNE(ExPBGCol);
-    // <conv.chunks.Comment object at 0x101ae0ec0>
-    // <conv.chunks.Comment object at 0x101ae10d0>
+    // if collision detection disabled flag set,
+    // branch to leave
     lda(GameEngineSubroutine);
     cmp(0xb);
     BEQ(ExPBGCol);
-    // <conv.chunks.Comment object at 0x101ae12e0>
-    // <conv.chunks.Comment object at 0x101ae1370>
+    // if running routine #11 or $0b
+    // branch to leave
     cmp(0x4);
     BCC(ExPBGCol);
     lda(0x1);
@@ -17371,26 +17371,26 @@ int PlayerBGCollision() {
     BNE(SetPSte);
     lda(Player_State);
     BEQ(SetFallS);
-    // <conv.chunks.Comment object at 0x101ae1580>
-    // <conv.chunks.Comment object at 0x101ae1730>
-    // <conv.chunks.Comment object at 0x101ae17c0>
-    // <conv.chunks.Comment object at 0x101ae1970>
-    // <conv.chunks.Comment object at 0x101ae1ac0>
-    // <conv.chunks.Comment object at 0x101ae1be0>
+    // if running routines $00-$03 branch to leave
+    // load default player state for swimming
+    // if swimming flag set,
+    // branch ahead to set default state
+    // if player in normal state,
+    // branch to set default state for falling
     cmp(0x3);
     BNE(ChkOnScr);
     JMP(SetFallS);
 }
 
 int SetFallS() {
-    // <conv.chunks.Comment object at 0x101ae1d60>
-    // <conv.chunks.Comment object at 0x101ae1f10>
+    // if in any other state besides climbing, skip to next part
+    // load default player state for falling
     lda(0x2);
     JMP(SetPSte);
 }
 
 int SetPSte() {
-    // <conv.chunks.Comment object at 0x101ae1fd0>
+    // set whatever player state is appropriate
     sta(Player_State);
     JMP(ChkOnScr);
 }
@@ -17399,11 +17399,11 @@ int ChkOnScr() {
     lda(Player_Y_HighPos);
     cmp(0x1);
     BNE(ExPBGCol);
-    // <conv.chunks.Comment object at 0x101ae2300>
-    // <conv.chunks.Comment object at 0x101ae2390>
+    // check player's vertical high byte for still on the screen
+    // branch to leave if not
     lda(0xff);
     sta(Player_CollisionBits);
-    // <conv.chunks.Comment object at 0x101ae25a0>
+    // initialize player's collision flag
     lda(Player_Y_Position);
     cmp(0xcf);
     BCC(ChkCollSize);
@@ -17411,24 +17411,24 @@ int ChkOnScr() {
 }
 
 int ExPBGCol() {
-    // <conv.chunks.Comment object at 0x101ae2840>
-    // <conv.chunks.Comment object at 0x101ae28d0>
-    // <conv.chunks.Comment object at 0x101ae2a80>
+    // check player's vertical coordinate
+    // if not too close to the bottom of screen, continue
+    // otherwise leave
     return 0;
     JMP(ChkCollSize);
 }
 
 int ChkCollSize() {
     ldy(0x2);
-    // <conv.chunks.Comment object at 0x101ae2ba0>
+    // load default offset
     lda(CrouchingFlag);
     BNE(GBBAdr);
-    // <conv.chunks.Comment object at 0x101ae2db0>
+    // if player crouching, skip ahead
     lda(PlayerSize);
     BNE(GBBAdr);
     dey();
-    // <conv.chunks.Comment object at 0x101ae2ff0>
-    // <conv.chunks.Comment object at 0x101ae3170>
+    // if player small, skip ahead
+    // otherwise decrement offset for big player not crouching
     lda(SwimmingFlag);
     BNE(GBBAdr);
     dey();
@@ -17436,16 +17436,16 @@ int ChkCollSize() {
 }
 
 int GBBAdr() {
-    // <conv.chunks.Comment object at 0x101ae32f0>
-    // <conv.chunks.Comment object at 0x101ae3470>
-    // <conv.chunks.Comment object at 0x101ae3500>
+    // if swimming flag set, skip ahead
+    // otherwise decrement offset
+    // get value using offset
     lda(offsetof(G, BlockBufferAdderData), y);
     sta(0xeb);
     tay();
     ldx(PlayerSize);
-    // <conv.chunks.Comment object at 0x101ae36e0>
-    // <conv.chunks.Comment object at 0x101ae36b0>
-    // <conv.chunks.Comment object at 0x101ae3890>
+    // store value here
+    // put value into Y, as offset for block buffer routine
+    // get player's size as offset
     lda(CrouchingFlag);
     BEQ(HeadChk);
     inx();
@@ -17453,9 +17453,9 @@ int GBBAdr() {
 }
 
 int HeadChk() {
-    // <conv.chunks.Comment object at 0x101ae3aa0>
-    // <conv.chunks.Comment object at 0x101ae3c20>
-    // <conv.chunks.Comment object at 0x101ae3cb0>
+    // if player not crouching, branch ahead
+    // otherwise increment size as offset
+    // get player's vertical coordinate
     lda(Player_Y_Position);
     cmp(offsetof(G, PlayerBGUpperExtent), x);
     BCC(DoFootCheck);
@@ -17482,16 +17482,16 @@ int HeadChk() {
 int SolidOrClimb() {
     cmp(0x26);
     BEQ(NYSpd);
-    // <conv.chunks.Comment object at 0x101ae9490>
-    // <conv.chunks.Comment object at 0x101ae9520>
+    // if climbing metatile,
+    // branch ahead and do not play sound
     lda(Sfx_Bump);
     sta(Square1SoundQueue);
     JMP(NYSpd);
 }
 
 int NYSpd() {
-    // <conv.chunks.Comment object at 0x101ae97f0>
-    // <conv.chunks.Comment object at 0x101ae9910>
+    // otherwise load bump sound
+    // set player's vertical speed to nullify
     lda(0x1);
     sta(Player_Y_Speed);
     JMP(DoFootCheck);
@@ -17499,7 +17499,7 @@ int NYSpd() {
 
 int DoFootCheck() {
     ldy(0xeb);
-    // <conv.chunks.Comment object at 0x101ae9c10>
+    // get block buffer adder offset
     lda(Player_Y_Position);
     cmp(0xcf);
     BCS(DoPlayerSideCheck);
@@ -17509,14 +17509,14 @@ int DoFootCheck() {
     pha();
     JSR(BlockBufferColli_Feet);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x101ae9df0>
-    // <conv.chunks.Comment object at 0x101ae9e80>
-    // <conv.chunks.Comment object at 0x101aea030>
-    // <conv.chunks.Comment object at 0x101aea150>
-    // <conv.chunks.Comment object at 0x101aea270>
-    // <conv.chunks.Comment object at 0x101aea3c0>
-    // <conv.chunks.Comment object at 0x101aea450>
-    // <conv.chunks.Comment object at 0x101aea5a0>
+    // check to see how low player is
+    // if player is too far down on screen, skip all of this
+    // do player-to-bg collision detection on bottom left of player
+    // check to see if player touched coin with their left foot
+    // if so, branch to some other part of code
+    // save bottom left metatile to stack
+    // do player-to-bg collision detection on bottom right of player
+    // save bottom right metatile here
     pla();
     sta(0x1);
     BNE(ChkFootMTile);
@@ -17537,10 +17537,10 @@ int ChkFootMTile() {
     BCS(DoPlayerSideCheck);
     ldy(Player_Y_Speed);
     BMI(DoPlayerSideCheck);
-    // <conv.chunks.Comment object at 0x101aeaf60>
-    // <conv.chunks.Comment object at 0x101aeb080>
-    // <conv.chunks.Comment object at 0x101aeb1a0>
-    // <conv.chunks.Comment object at 0x101aeb2c0>
+    // check to see if player landed on climbable metatiles
+    // if so, branch
+    // check player's vertical speed
+    // if player moving upwards, branch
     cmp(0xc5);
     BNE(ContChk);
     JMP(HandleAxeMetatile);
@@ -17548,9 +17548,9 @@ int ChkFootMTile() {
 }
 
 int ContChk() {
-    // <conv.chunks.Comment object at 0x101aeb440>
-    // <conv.chunks.Comment object at 0x101aeb620>
-    // <conv.chunks.Comment object at 0x101aeb740>
+    // if player did not touch axe, skip ahead
+    // otherwise jump to set modes of operation
+    // do sub to check for hidden coin or 1-up blocks
     JSR(ChkInvisibleMTiles);
     BEQ(DoPlayerSideCheck);
     ldy(JumpspringAnimCtrl);
@@ -17558,12 +17558,12 @@ int ContChk() {
     ldy(0x4);
     cpy(0x5);
     BCC(LandPlyr);
-    // <conv.chunks.Comment object at 0x101aeb8c0>
-    // <conv.chunks.Comment object at 0x101aeb9e0>
-    // <conv.chunks.Comment object at 0x101aebb00>
-    // <conv.chunks.Comment object at 0x101aebc50>
-    // <conv.chunks.Comment object at 0x101aebce0>
-    // <conv.chunks.Comment object at 0x101aebdd0>
+    // if either found, branch
+    // if jumpspring animating right now,
+    // branch ahead
+    // check lower nybble of vertical coordinate returned
+    // from collision detection routine
+    // if lower nybble < 5, branch
     lda(Player_MovingDir);
     sta(0x0);
     JMP(ImpedePlayerMove);
@@ -17571,17 +17571,17 @@ int ContChk() {
 }
 
 int LandPlyr() {
-    // <conv.chunks.Comment object at 0x101af40e0>
-    // <conv.chunks.Comment object at 0x101af4170>
-    // <conv.chunks.Comment object at 0x101af42f0>
+    // use player's moving direction as temp variable
+    // jump to impede player's movement in that direction
+    // do sub to check for jumpspring metatiles and deal with it
     JSR(ChkForLandJumpSpring);
     lda(0xf0);
     anda(Player_Y_Position);
     sta(Player_Y_Position);
     JSR(HandlePipeEntry);
-    // <conv.chunks.Comment object at 0x101af44a0>
-    // <conv.chunks.Comment object at 0x101af4650>
-    // <conv.chunks.Comment object at 0x101af4770>
+    // mask out lower nybble of player's vertical position
+    // and store as new vertical position to land player properly
+    // do sub to process potential pipe entry
     lda(0x0);
     sta(Player_Y_Speed);
     sta(Player_Y_MoveForce);
@@ -17597,12 +17597,12 @@ int InitSteP() {
 
 int DoPlayerSideCheck() {
     ldy(0xeb);
-    // <conv.chunks.Comment object at 0x101af4f80>
+    // get block buffer adder offset
     iny();
     iny();
     lda(0x2);
-    // <conv.chunks.Comment object at 0x101af5130>
-    // <conv.chunks.Comment object at 0x101af51c0>
+    // increment offset 2 bytes to use adders for side collisions
+    // set value here to be used as counter
     sta(0x0);
     JMP(SideCheckLoop);
 }
@@ -17610,24 +17610,24 @@ int DoPlayerSideCheck() {
 int SideCheckLoop() {
     iny();
     sty(0xeb);
-    // <conv.chunks.Comment object at 0x101af5430>
-    // <conv.chunks.Comment object at 0x101af54f0>
+    // move onto the next one
+    // store it
     lda(Player_Y_Position);
     cmp(0x20);
     BCC(BHalf);
-    // <conv.chunks.Comment object at 0x101af56d0>
-    // <conv.chunks.Comment object at 0x101af5760>
+    // check player's vertical position
+    // if player is in status bar area, branch ahead to skip this part
     cmp(0xe4);
     BCS(ExSCH);
     JSR(BlockBufferColli_Side);
     BEQ(BHalf);
     cmp(0x1c);
     BEQ(BHalf);
-    // <conv.chunks.Comment object at 0x101af59a0>
-    // <conv.chunks.Comment object at 0x101af5b80>
-    // <conv.chunks.Comment object at 0x101af5ca0>
-    // <conv.chunks.Comment object at 0x101af5df0>
-    // <conv.chunks.Comment object at 0x101af5e80>
+    // branch to leave if player is too far down
+    // do player-to-bg collision detection on one half of player
+    // branch ahead if nothing found
+    // otherwise check for pipe metatiles
+    // if collided with sideways pipe (top), branch ahead
     cmp(0x6b);
     BEQ(BHalf);
     JSR(CheckForClimbMTiles);
@@ -17636,18 +17636,18 @@ int SideCheckLoop() {
 }
 
 int BHalf() {
-    // <conv.chunks.Comment object at 0x101af60c0>
-    // <conv.chunks.Comment object at 0x101af62a0>
-    // <conv.chunks.Comment object at 0x101af63c0>
-    // <conv.chunks.Comment object at 0x101af64e0>
+    // if collided with water pipe (top), branch ahead
+    // do sub to see if player bumped into anything climbable
+    // if not, branch to alternate section of code
+    // load block adder offset
     ldy(0xeb);
     iny();
     lda(Player_Y_Position);
-    // <conv.chunks.Comment object at 0x101af6540>
-    // <conv.chunks.Comment object at 0x101af6720>
+    // increment it
+    // get player's vertical position
     cmp(0x8);
     BCC(ExSCH);
-    // <conv.chunks.Comment object at 0x101af68a0>
+    // if too high, branch to leave
     cmp(0xd0);
     BCS(ExSCH);
     JSR(BlockBufferColli_Side);
@@ -17658,12 +17658,12 @@ int BHalf() {
 }
 
 int ExSCH() {
-    // <conv.chunks.Comment object at 0x101af6ae0>
-    // <conv.chunks.Comment object at 0x101af6cc0>
-    // <conv.chunks.Comment object at 0x101af6de0>
-    // <conv.chunks.Comment object at 0x101af6f30>
-    // <conv.chunks.Comment object at 0x101af6fc0>
-    // <conv.chunks.Comment object at 0x101af7170>
+    // if too low, branch to leave
+    // do player-to-bg collision detection on other half of player
+    // if something found, branch
+    // otherwise decrement counter
+    // run code until both sides of player are checked
+    // leave
     return 0;
     JMP(CheckSideMTiles);
 }
@@ -17678,12 +17678,12 @@ int CheckSideMTiles() {
 }
 
 int ContSChk() {
-    // <conv.chunks.Comment object at 0x101af72c0>
-    // <conv.chunks.Comment object at 0x101af73e0>
-    // <conv.chunks.Comment object at 0x101af7530>
-    // <conv.chunks.Comment object at 0x101af7650>
-    // <conv.chunks.Comment object at 0x101af7770>
-    // <conv.chunks.Comment object at 0x101af7890>
+    // check for hidden or coin 1-up blocks
+    // branch to leave if either found
+    // check for climbable metatiles
+    // if not found, skip and continue with code
+    // otherwise jump to handle climbing
+    // check to see if player touched coin
     JSR(CheckForCoinMTiles);
     BCS(HandleCoinMetatile);
     JSR(ChkJumpspringMetatiles);
@@ -17695,20 +17695,20 @@ int ContSChk() {
 }
 
 int ChkPBtm() {
-    // <conv.chunks.Comment object at 0x101af79e0>
-    // <conv.chunks.Comment object at 0x101af7b00>
-    // <conv.chunks.Comment object at 0x101af7c20>
-    // <conv.chunks.Comment object at 0x101af7d70>
-    // <conv.chunks.Comment object at 0x101af7e90>
-    // <conv.chunks.Comment object at 0x101af7fe0>
-    // <conv.chunks.Comment object at 0x101b00140>
+    // if so, execute code to erase coin and award to player 1 coin
+    // check for jumpspring metatiles
+    // if not found, branch ahead to continue cude
+    // otherwise check jumpspring animation control
+    // branch to leave if set
+    // otherwise jump to impede player's movement
+    // get player's state
     ldy(Player_State);
     cpy(0x0);
     BNE(StopPlayerMove);
     ldy(PlayerFacingDir);
-    // <conv.chunks.Comment object at 0x101b002c0>
-    // <conv.chunks.Comment object at 0x101b00350>
-    // <conv.chunks.Comment object at 0x101b00500>
+    // check for player's state set to normal
+    // if not, branch to impede player's movement
+    // get player's facing direction
     dey();
     BNE(StopPlayerMove);
     cmp(0x6c);
@@ -17719,15 +17719,15 @@ int ChkPBtm() {
 }
 
 int PipeDwnS() {
-    // <conv.chunks.Comment object at 0x101b006b0>
-    // <conv.chunks.Comment object at 0x101b007d0>
-    // <conv.chunks.Comment object at 0x101b00860>
-    // <conv.chunks.Comment object at 0x101b00a10>
-    // <conv.chunks.Comment object at 0x101b00aa0>
-    // <conv.chunks.Comment object at 0x101b00c50>
+    // if facing left, branch to impede movement
+    // otherwise check for pipe metatiles
+    // if collided with sideways pipe (bottom), branch
+    // if collided with water pipe (bottom), continue
+    // otherwise branch to impede player's movement
+    // check player's attributes
     lda(Player_SprAttrib);
     BNE(PlyrPipe);
-    // <conv.chunks.Comment object at 0x101b00da0>
+    // if already set, branch, do not play sound again
     ldy(Sfx_PipeDown_Injury);
     sty(Square1SoundQueue);
     JMP(PlyrPipe);
@@ -17736,7 +17736,7 @@ int PipeDwnS() {
 int PlyrPipe() {
     ora(0b100000);
     sta(Player_SprAttrib);
-    // <conv.chunks.Comment object at 0x101b011f0>
+    // set background priority bit in player attributes
     lda(Player_X_Position);
     anda(0b1111);
     BEQ(ChkGERtn);
@@ -17748,26 +17748,26 @@ int PlyrPipe() {
 }
 
 int SetCATmr() {
-    // <conv.chunks.Comment object at 0x101b01400>
-    // <conv.chunks.Comment object at 0x101b01520>
-    // <conv.chunks.Comment object at 0x101b01640>
-    // <conv.chunks.Comment object at 0x101b016d0>
-    // <conv.chunks.Comment object at 0x101b01880>
-    // <conv.chunks.Comment object at 0x101b019d0>
-    // <conv.chunks.Comment object at 0x101b01a60>
+    // get lower nybble of player's horizontal coordinate
+    // if at zero, branch ahead to skip this part
+    // set default offset for timer setting data
+    // load page location for left side of screen
+    // if at page zero, use default offset
+    // otherwise increment offset
+    // set timer for change of area as appropriate
     lda(offsetof(G, AreaChangeTimerData), y);
     sta(ChangeAreaTimer);
     JMP(ChkGERtn);
 }
 
 int ChkGERtn() {
-    // <conv.chunks.Comment object at 0x101b01cd0>
+    // get number of game engine routine running
     lda(GameEngineSubroutine);
     cmp(0x7);
     BEQ(ExCSM);
     cmp(0x8);
-    // <conv.chunks.Comment object at 0x101b01e80>
-    // <conv.chunks.Comment object at 0x101b02060>
+    // if running player entrance routine or
+    // player control routine, go ahead and branch to leave
     BNE(ExCSM);
     lda(0x2);
     sta(GameEngineSubroutine);
@@ -17781,12 +17781,12 @@ int StopPlayerMove() {
 }
 
 int ExCSM() {
-    // <conv.chunks.Comment object at 0x101b02300>
-    // <conv.chunks.Comment object at 0x101b024e0>
-    // <conv.chunks.Comment object at 0x101b025a0>
-    // <conv.chunks.Comment object at 0x101b02600>
-    // <conv.chunks.Comment object at 0x101b02660>
-    // <conv.chunks.Comment object at 0x101b027b0>
+    // otherwise set sideways pipe entry routine to run
+    // and leave
+    // $02 - high nybble of vertical coordinate from block buffer
+    // $06-$07 - block buffer address
+    // stop player's movement
+    // leave
     return 0;
     JMP(HandleCoinMetatile);
 }
@@ -17801,18 +17801,18 @@ int HandleCoinMetatile() {
 int HandleAxeMetatile() {
     lda(0x0);
     sta(OperMode_Task);
-    // <conv.chunks.Comment object at 0x101b02e70>
+    // reset secondary mode
     lda(0x2);
     sta(OperMode);
-    // <conv.chunks.Comment object at 0x101b03080>
+    // set primary mode to autoctrl mode
     lda(0x18);
     sta(Player_X_Speed);
     JMP(ErACM);
 }
 
 int ErACM() {
-    // <conv.chunks.Comment object at 0x101b03290>
-    // <conv.chunks.Comment object at 0x101b03440>
+    // set horizontal speed and continue to erase axe metatile
+    // load vertical high nybble offset for block buffer
     ldy(0x2);
     lda(0x0);
     sta((0x6), y);
@@ -17825,16 +17825,16 @@ int HandleClimbing() {
     cpy(0x6);
     BCC(ExHC);
     cpy(0xa);
-    // <conv.chunks.Comment object at 0x101b03da0>
-    // <conv.chunks.Comment object at 0x101b03b00>
-    // <conv.chunks.Comment object at 0x101b10200>
-    // <conv.chunks.Comment object at 0x101b103e0>
+    // check low nybble of horizontal coordinate returned from
+    // collision detection routine against certain values, this
+    // makes actual physical part of vine or flagpole thinner
+    // than 16 pixels
     BCC(ChkForFlagpole);
     JMP(ExHC);
 }
 
 int ExHC() {
-    // <conv.chunks.Comment object at 0x101b105f0>
+    // leave if too far left or too far right
     return 0;
     JMP(ChkForFlagpole);
 }
@@ -17842,8 +17842,8 @@ int ExHC() {
 int ChkForFlagpole() {
     cmp(0x24);
     BEQ(FlagpoleCollision);
-    // <conv.chunks.Comment object at 0x101b10740>
-    // <conv.chunks.Comment object at 0x101b107d0>
+    // check climbing metatiles
+    // branch if flagpole ball found
     cmp(0x25);
     BNE(VineCollision);
     JMP(FlagpoleCollision);
@@ -17853,30 +17853,30 @@ int FlagpoleCollision() {
     lda(GameEngineSubroutine);
     cmp(0x5);
     BEQ(PutPlayerOnVine);
-    // <conv.chunks.Comment object at 0x101b10cb0>
-    // <conv.chunks.Comment object at 0x101b10d40>
+    // check for end-of-level routine running
+    // if running, branch to end of climbing code
     lda(0x1);
     sta(PlayerFacingDir);
     inc(ScrollLock);
-    // <conv.chunks.Comment object at 0x101b10f50>
-    // <conv.chunks.Comment object at 0x101b11100>
+    // set player's facing direction to right
+    // set scroll lock flag
     lda(GameEngineSubroutine);
     cmp(0x4);
     BEQ(RunFR);
     lda(BulletBill_CannonVar);
     JSR(KillEnemies);
-    // <conv.chunks.Comment object at 0x101b11310>
-    // <conv.chunks.Comment object at 0x101b113a0>
-    // <conv.chunks.Comment object at 0x101b11580>
-    // <conv.chunks.Comment object at 0x101b116a0>
+    // check for flagpole slide routine running
+    // if running, branch to end of flagpole code here
+    // load identifier for bullet bills (cannon variant)
+    // get rid of them
     lda(Silence);
     sta(EventMusicQueue);
-    // <conv.chunks.Comment object at 0x101b118e0>
+    // silence music
     lsr();
     sta(FlagpoleSoundQueue);
     ldx(0x4);
-    // <conv.chunks.Comment object at 0x101b11a90>
-    // <conv.chunks.Comment object at 0x101b11bb0>
+    // load flagpole sound into flagpole sound queue
+    // start at end of vertical coordinate data
     lda(Player_Y_Position);
     sta(FlagpoleCollisionYPos);
     JMP(ChkFlagpoleYPosLoop);
@@ -17891,11 +17891,11 @@ int ChkFlagpoleYPosLoop() {
 }
 
 int MtchF() {
-    // <conv.chunks.Comment object at 0x101b11f10>
-    // <conv.chunks.Comment object at 0x101b12060>
-    // <conv.chunks.Comment object at 0x101b121e0>
-    // <conv.chunks.Comment object at 0x101b12270>
-    // <conv.chunks.Comment object at 0x101b12390>
+    // compare with current vertical coordinate data
+    // if player's => current, branch to use current offset
+    // otherwise decrement offset to use
+    // do this until all data is checked (use last one if all checked)
+    // store offset here to be used later
     stx(FlagpoleScore);
     JMP(RunFR);
 }
@@ -17909,14 +17909,14 @@ int RunFR() {
 
 int VineCollision() {
     cmp(0x26);
-    // <conv.chunks.Comment object at 0x101b128d0>
+    // check for climbing metatile used on vines
     BNE(PutPlayerOnVine);
     lda(Player_Y_Position);
     cmp(0x20);
     BCS(PutPlayerOnVine);
-    // <conv.chunks.Comment object at 0x101b12ae0>
-    // <conv.chunks.Comment object at 0x101b12c00>
-    // <conv.chunks.Comment object at 0x101b12c90>
+    // check player's vertical coordinate
+    // for being in status bar area
+    // branch if not that far up
     lda(0x1);
     sta(GameEngineSubroutine);
     JMP(PutPlayerOnVine);
@@ -17924,35 +17924,35 @@ int VineCollision() {
 
 int PutPlayerOnVine() {
     lda(0x3);
-    // <conv.chunks.Comment object at 0x101b13080>
+    // set player state to climbing
     sta(Player_State);
     lda(0x0);
     sta(Player_X_Speed);
-    // <conv.chunks.Comment object at 0x101b13290>
-    // <conv.chunks.Comment object at 0x101b13320>
+    // nullify player's horizontal speed
+    // and fractional horizontal movement force
     sta(Player_X_MoveForce);
     lda(Player_X_Position);
-    // <conv.chunks.Comment object at 0x101b135c0>
+    // get player's horizontal coordinate
     sec();
     sbc(ScreenLeft_X_Pos);
-    // <conv.chunks.Comment object at 0x101b13770>
+    // subtract from left side horizontal coordinate
     cmp(0x10);
     BCS(SetVXPl);
-    // <conv.chunks.Comment object at 0x101b138f0>
+    // if 16 or more pixels difference, do not alter facing direction
     lda(0x2);
     sta(PlayerFacingDir);
     JMP(SetVXPl);
 }
 
 int SetVXPl() {
-    // <conv.chunks.Comment object at 0x101b13b30>
-    // <conv.chunks.Comment object at 0x101b13ce0>
+    // otherwise force player to face left
+    // get current facing direction, use as offset
     ldy(PlayerFacingDir);
     lda(0x6);
-    // <conv.chunks.Comment object at 0x101b13e90>
+    // get low byte of block buffer address
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x101b18080>
+    // move low nybble to high
     asl();
     asl();
     clc();
@@ -17961,11 +17961,11 @@ int SetVXPl() {
     lda(0x6);
     BNE(ExPVne);
     lda(ScreenRight_PageLoc);
-    // <conv.chunks.Comment object at 0x101b182c0>
-    // <conv.chunks.Comment object at 0x101b184d0>
-    // <conv.chunks.Comment object at 0x101b18620>
-    // <conv.chunks.Comment object at 0x101b186b0>
-    // <conv.chunks.Comment object at 0x101b18860>
+    // add pixels depending on facing direction
+    // store as player's horizontal coordinate
+    // get low byte of block buffer address again
+    // if not zero, branch
+    // load page location of right side of screen
     clc();
     adc(((offsetof(G, ClimbPLocAdder)) - (1)), y);
     sta(Player_PageLoc);
@@ -17973,9 +17973,9 @@ int SetVXPl() {
 }
 
 int ExPVne() {
-    // <conv.chunks.Comment object at 0x101b18a10>
-    // <conv.chunks.Comment object at 0x101b18c20>
-    // <conv.chunks.Comment object at 0x101b18d40>
+    // add depending on facing location
+    // store as player's page location
+    // finally, we're done!
     return 0;
     JMP(ChkInvisibleMTiles);
 }
@@ -17988,10 +17988,10 @@ int ChkInvisibleMTiles() {
 }
 
 int ExCInvT() {
-    // <conv.chunks.Comment object at 0x101b18ec0>
-    // <conv.chunks.Comment object at 0x101b18f50>
-    // <conv.chunks.Comment object at 0x101b19130>
-    // <conv.chunks.Comment object at 0x101b191c0>
+    // check for hidden coin block
+    // branch to leave if found
+    // check for hidden 1-up block
+    // leave with zero flag set if either found
     return 0;
     JMP(ChkForLandJumpSpring);
 }
@@ -17999,25 +17999,25 @@ int ExCInvT() {
 int ChkForLandJumpSpring() {
     JSR(ChkJumpspringMetatiles);
     BCC(ExCJSp);
-    // <conv.chunks.Comment object at 0x101b19430>
-    // <conv.chunks.Comment object at 0x101b19550>
+    // do sub to check if player landed on jumpspring
+    // if carry not set, jumpspring not found, therefore leave
     lda(0x70);
     sta(VerticalForce);
-    // <conv.chunks.Comment object at 0x101b19700>
+    // otherwise set vertical movement force for player
     lda(0xf9);
     sta(JumpspringForce);
-    // <conv.chunks.Comment object at 0x101b19910>
+    // set default jumpspring force
     lda(0x3);
     sta(JumpspringTimer);
-    // <conv.chunks.Comment object at 0x101b19b20>
+    // set jumpspring timer to be used later
     lsr();
     sta(JumpspringAnimCtrl);
     JMP(ExCJSp);
 }
 
 int ExCJSp() {
-    // <conv.chunks.Comment object at 0x101b19d60>
-    // <conv.chunks.Comment object at 0x101b19e80>
+    // set jumpspring animation control to start animating
+    // and leave
     return 0;
     JMP(ChkJumpspringMetatiles);
 }
@@ -18032,18 +18032,18 @@ int ChkJumpspringMetatiles() {
 }
 
 int JSFnd() {
-    // <conv.chunks.Comment object at 0x101b19fd0>
-    // <conv.chunks.Comment object at 0x101b1a060>
-    // <conv.chunks.Comment object at 0x101b1a240>
-    // <conv.chunks.Comment object at 0x101b1a390>
-    // <conv.chunks.Comment object at 0x101b1a420>
-    // <conv.chunks.Comment object at 0x101b1a570>
+    // check for top jumpspring metatile
+    // branch to set carry if found
+    // check for bottom jumpspring metatile
+    // clear carry flag
+    // branch to use cleared carry if not found
+    // set carry if found
     sec();
     JMP(NoJSFnd);
 }
 
 int NoJSFnd() {
-    // <conv.chunks.Comment object at 0x101b1a6c0>
+    // leave
     return 0;
     JMP(HandlePipeEntry);
 }
@@ -18052,49 +18052,49 @@ int HandlePipeEntry() {
     lda(Up_Down_Buttons);
     anda(0b100);
     BEQ(ExPipeE);
-    // <conv.chunks.Comment object at 0x101b1a810>
-    // <conv.chunks.Comment object at 0x101b1a930>
-    // <conv.chunks.Comment object at 0x101b1aa50>
+    // check saved controller bits from earlier
+    // for pressing down
+    // if not pressing down, branch to leave
     lda(0x0);
     cmp(0x11);
     BNE(ExPipeE);
-    // <conv.chunks.Comment object at 0x101b1aba0>
-    // <conv.chunks.Comment object at 0x101b1ad20>
+    // check right foot metatile for warp pipe right metatile
+    // branch to leave if not found
     lda(0x1);
     cmp(0x10);
     BNE(ExPipeE);
-    // <conv.chunks.Comment object at 0x101b1af00>
-    // <conv.chunks.Comment object at 0x101b1b080>
+    // check left foot metatile for warp pipe left metatile
+    // branch to leave if not found
     lda(0x30);
     sta(ChangeAreaTimer);
-    // <conv.chunks.Comment object at 0x101b1b2c0>
+    // set timer for change of area
     lda(0x3);
     sta(GameEngineSubroutine);
-    // <conv.chunks.Comment object at 0x101b1b4d0>
+    // set to run vertical pipe entry routine on next frame
     lda(Sfx_PipeDown_Injury);
     sta(Square1SoundQueue);
-    // <conv.chunks.Comment object at 0x101b1b770>
+    // load pipedown/injury sound
     lda(0b100000);
     sta(Player_SprAttrib);
     lda(WarpZoneControl);
     BEQ(ExPipeE);
     anda(0b11);
-    // <conv.chunks.Comment object at 0x101b1b980>
-    // <conv.chunks.Comment object at 0x101b1baa0>
-    // <conv.chunks.Comment object at 0x101b1bbc0>
-    // <conv.chunks.Comment object at 0x101b1bd10>
+    // set background priority bit in player's attributes
+    // check warp zone control
+    // branch to leave if none found
+    // mask out all but 2 LSB
     asl();
     asl();
     tax();
     lda(Player_X_Position);
-    // <conv.chunks.Comment object at 0x101b1bef0>
-    // <conv.chunks.Comment object at 0x101b1bfb0>
-    // <conv.chunks.Comment object at 0x101b20080>
+    // multiply by four
+    // save as offset to warp zone numbers (starts at left pipe)
+    // get player's horizontal position
     cmp(0x60);
     BCC(GetWNum);
     inx();
-    // <conv.chunks.Comment object at 0x101b20200>
-    // <conv.chunks.Comment object at 0x101b20410>
+    // if player at left, not near middle, use offset and skip ahead
+    // otherwise increment for middle pipe
     cmp(0xa0);
     BCC(GetWNum);
     inx();
@@ -18102,23 +18102,23 @@ int HandlePipeEntry() {
 }
 
 int GetWNum() {
-    // <conv.chunks.Comment object at 0x101b20500>
-    // <conv.chunks.Comment object at 0x101b20710>
-    // <conv.chunks.Comment object at 0x101b207a0>
+    // if player at middle, but not too far right, use offset and skip
+    // otherwise increment for last pipe
+    // get warp zone numbers
     ldy(offsetof(G, WarpZoneNumbers), x);
     dey();
     sty(WorldNumber);
     ldx(offsetof(G, WorldAddrOffsets), y);
     lda(offsetof(G, AreaAddrOffsets), x);
     sta(AreaPointer);
-    // <conv.chunks.Comment object at 0x101b20980>
-    // <conv.chunks.Comment object at 0x101b20a10>
-    // <conv.chunks.Comment object at 0x101b20b30>
-    // <conv.chunks.Comment object at 0x101b20c80>
-    // <conv.chunks.Comment object at 0x101b20dd0>
+    // decrement for use as world number
+    // store as world number and offset
+    // get offset to where this world's area offsets are
+    // get area offset based on world offset
+    // store area offset here to be used to change areas
     lda(Silence);
     sta(EventMusicQueue);
-    // <conv.chunks.Comment object at 0x101b21010>
+    // silence music
     lda(0x0);
     sta(EntrancePage);
     sta(AreaNumber);
@@ -18130,13 +18130,13 @@ int GetWNum() {
 }
 
 int ExPipeE() {
-    // <conv.chunks.Comment object at 0x101b21190>
-    // <conv.chunks.Comment object at 0x101b21340>
-    // <conv.chunks.Comment object at 0x101b21460>
-    // <conv.chunks.Comment object at 0x101b21580>
-    // <conv.chunks.Comment object at 0x101b216a0>
-    // <conv.chunks.Comment object at 0x101b217c0>
-    // <conv.chunks.Comment object at 0x101b218e0>
+    // initialize starting page number
+    // initialize area number used for area address offset
+    // initialize level number used for world display
+    // initialize mode of entry
+    // set flag for hidden 1-up blocks
+    // set flag to load new game timer
+    // leave!!!
     return 0;
     JMP(ImpedePlayerMove);
 }
@@ -18156,17 +18156,17 @@ int ImpedePlayerMove() {
 }
 
 int RImpd() {
-    // <conv.chunks.Comment object at 0x101b21a30>
-    // <conv.chunks.Comment object at 0x101b21ac0>
-    // <conv.chunks.Comment object at 0x101b21ca0>
-    // <conv.chunks.Comment object at 0x101b21c70>
-    // <conv.chunks.Comment object at 0x101b21e50>
-    // <conv.chunks.Comment object at 0x101b21fd0>
-    // <conv.chunks.Comment object at 0x101b22060>
-    // <conv.chunks.Comment object at 0x101b220f0>
-    // <conv.chunks.Comment object at 0x101b222d0>
-    // <conv.chunks.Comment object at 0x101b22360>
-    // <conv.chunks.Comment object at 0x101b22540>
+    // initialize value here
+    // get player's horizontal speed
+    // check value set earlier for
+    // left side collision
+    // if right side collision, skip this part
+    // return value to X
+    // if player moving to the left,
+    // branch to invert bit and leave
+    // otherwise load A with value to be used later
+    // and jump to affect movement
+    // return $02 to X
     ldx(0x2);
     cpy(0x1);
     BPL(ExIPM);
@@ -18177,7 +18177,7 @@ int RImpd() {
 int NXSpd() {
     ldy(0x10);
     sty(SideCollisionTimer);
-    // <conv.chunks.Comment object at 0x101b22b10>
+    // set timer of some sort
     ldy(0x0);
     sty(Player_X_Speed);
     cmp(0x0);
@@ -18187,17 +18187,17 @@ int NXSpd() {
 }
 
 int PlatF() {
-    // <conv.chunks.Comment object at 0x101b22d20>
-    // <conv.chunks.Comment object at 0x101b22ed0>
-    // <conv.chunks.Comment object at 0x101b22f60>
-    // <conv.chunks.Comment object at 0x101b23170>
-    // <conv.chunks.Comment object at 0x101b23200>
+    // nullify player's horizontal speed
+    // if value set in A not set to $ff,
+    // branch ahead, do not decrement Y
+    // otherwise decrement Y now
+    // store Y as high bits of horizontal adder
     sty(0x0);
     clc();
     adc(Player_X_Position);
     sta(Player_X_Position);
-    // <conv.chunks.Comment object at 0x101b23410>
-    // <conv.chunks.Comment object at 0x101b23530>
+    // add contents of A to player's horizontal
+    // position to move player left or right
     lda(Player_PageLoc);
     adc(0x0);
     sta(Player_PageLoc);
@@ -18205,15 +18205,15 @@ int PlatF() {
 }
 
 int ExIPM() {
-    // <conv.chunks.Comment object at 0x101b23770>
-    // <conv.chunks.Comment object at 0x101b23800>
-    // <conv.chunks.Comment object at 0x101b23980>
+    // add high bits and carry to
+    // page location if necessary
+    // invert contents of X
     txa();
     eor(0xff);
     anda(Player_CollisionBits);
     sta(Player_CollisionBits);
-    // <conv.chunks.Comment object at 0x101b23b00>
-    // <conv.chunks.Comment object at 0x101b23cb0>
+    // mask out bit that was set here
+    // store to clear bit
     return 0;
     JMP(CheckForSolidMTiles);
 }
@@ -18221,8 +18221,8 @@ int ExIPM() {
 int CheckForSolidMTiles() {
     JSR(GetMTileAttrib);
     cmp(offsetof(G, SolidMTileUpperExt), x);
-    // <conv.chunks.Comment object at 0x101b23f20>
-    // <conv.chunks.Comment object at 0x101b2c290>
+    // find appropriate offset based on metatile's 2 MSB
+    // compare current metatile with solid metatiles
     return 0;
     JMP(CheckForClimbMTiles);
 }
@@ -18230,8 +18230,8 @@ int CheckForSolidMTiles() {
 int CheckForClimbMTiles() {
     JSR(GetMTileAttrib);
     cmp(offsetof(G, ClimbMTileUpperExt), x);
-    // <conv.chunks.Comment object at 0x101b2c500>
-    // <conv.chunks.Comment object at 0x101b2c830>
+    // find appropriate offset based on metatile's 2 MSB
+    // compare current metatile with climbable metatiles
     return 0;
     JMP(CheckForCoinMTiles);
 }
@@ -18242,11 +18242,11 @@ int CheckForCoinMTiles() {
     cmp(0xc3);
     BEQ(CoinSd);
     clc();
-    // <conv.chunks.Comment object at 0x101b2ca40>
-    // <conv.chunks.Comment object at 0x101b2cad0>
-    // <conv.chunks.Comment object at 0x101b2ccb0>
-    // <conv.chunks.Comment object at 0x101b2cd40>
-    // <conv.chunks.Comment object at 0x101b2cf50>
+    // check for regular coin
+    // branch if found
+    // check for underwater coin
+    // branch if found
+    // otherwise clear carry and leave
     return 0;
     JMP(CoinSd);
 }
@@ -18254,7 +18254,7 @@ int CheckForCoinMTiles() {
 int CoinSd() {
     lda(Sfx_CoinGrab);
     sta(Square2SoundQueue);
-    // <conv.chunks.Comment object at 0x101b2d1c0>
+    // load coin grab sound and leave
     return 0;
     JMP(GetMTileAttrib);
 }
@@ -18262,11 +18262,11 @@ int CoinSd() {
 int GetMTileAttrib() {
     tay();
     anda(0b11000000);
-    // <conv.chunks.Comment object at 0x101b2d3d0>
-    // <conv.chunks.Comment object at 0x101b2d460>
+    // save metatile value into Y
+    // mask out all but 2 MSB
     asl();
     rol();
-    // <conv.chunks.Comment object at 0x101b2d640>
+    // shift and rotate d7-d6 to d1-d0
     rol();
     tax();
     tya();
@@ -18274,30 +18274,30 @@ int GetMTileAttrib() {
 }
 
 int ExEBG() {
-    // <conv.chunks.Comment object at 0x101b2d790>
-    // <conv.chunks.Comment object at 0x101b2d850>
-    // <conv.chunks.Comment object at 0x101b2d910>
+    // use as offset for metatile data
+    // get original metatile value back
+    // leave
     return 0;
     JMP(EnemyToBGCollisionDet);
 }
 
 int EnemyToBGCollisionDet() {
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x101b2db80>
+    // check enemy state for d6 set
     anda(0b100000);
     BNE(ExEBG);
     JSR(SubtEnemyYPos);
     BCC(ExEBG);
-    // <conv.chunks.Comment object at 0x101b2e1e0>
-    // <conv.chunks.Comment object at 0x101b2e330>
-    // <conv.chunks.Comment object at 0x101b2e450>
+    // if set, branch to leave
+    // otherwise, do a subroutine here
+    // if enemy vertical coord + 62 < 68, branch to leave
     ldy(Enemy_ID, x);
     cpy(Spiny);
-    // <conv.chunks.Comment object at 0x101b2e6c0>
+    // if enemy object is not spiny, branch elsewhere
     BNE(DoIDCheckBGColl);
     lda(Enemy_Y_Position, x);
     cmp(0x25);
-    // <conv.chunks.Comment object at 0x101b2ea20>
+    // if enemy vertical coordinate < 36 branch to leave
     BCC(ExEBG);
     JMP(DoIDCheckBGColl);
 }
@@ -18310,10 +18310,10 @@ int DoIDCheckBGColl() {
 }
 
 int HBChk() {
-    // <conv.chunks.Comment object at 0x101b2ec90>
-    // <conv.chunks.Comment object at 0x101b2edb0>
-    // <conv.chunks.Comment object at 0x101b2ef00>
-    // <conv.chunks.Comment object at 0x101b2f020>
+    // check for some other enemy object
+    // branch if not found
+    // otherwise jump elsewhere
+    // check for hammer bro
     cpy(HammerBro);
     BNE(CInvu);
     JMP(HammerBroBGColl);
@@ -18321,22 +18321,22 @@ int HBChk() {
 }
 
 int CInvu() {
-    // <conv.chunks.Comment object at 0x101b2f1a0>
-    // <conv.chunks.Comment object at 0x101b2f2f0>
-    // <conv.chunks.Comment object at 0x101b2f410>
+    // branch if not found
+    // otherwise jump elsewhere
+    // if enemy object is spiny, branch
     cpy(Spiny);
     BEQ(YesIn);
     cpy(PowerUpObject);
-    // <conv.chunks.Comment object at 0x101b2f6e0>
+    // if special power-up object, branch
     BEQ(YesIn);
     cpy(0x7);
-    // <conv.chunks.Comment object at 0x101b2f920>
+    // if enemy object =>$07, branch to leave
     BCS(ExEBGChk);
     JMP(YesIn);
 }
 
 int YesIn() {
-    // <conv.chunks.Comment object at 0x101b2fb30>
+    // if enemy object < $07, or = $12 or $2e, do this sub
     JSR(ChkUnderEnemy);
     BNE(HandleEToBGCollision);
     JMP(NoEToBGCollision);
@@ -18350,25 +18350,25 @@ int NoEToBGCollision() {
 int HandleEToBGCollision() {
     JSR(ChkForNonSolids);
     BEQ(NoEToBGCollision);
-    // <conv.chunks.Comment object at 0x101b2fe00>
-    // <conv.chunks.Comment object at 0x101b2ff50>
-    // <conv.chunks.Comment object at 0x101b2ffb0>
-    // <conv.chunks.Comment object at 0x101b3c110>
+    // otherwise skip and do something else
+    // $02 - vertical coordinate from block buffer routine
+    // if something is underneath enemy, find out what
+    // if blank $26, coins, or hidden blocks, jump, enemy falls through
     cmp(0x23);
     BNE(LandEnemyProperly);
     ldy(0x2);
     lda(0x0);
     sta((0x6), y);
-    // <conv.chunks.Comment object at 0x101b3c290>
-    // <conv.chunks.Comment object at 0x101b3c470>
-    // <conv.chunks.Comment object at 0x101b3c500>
-    // <conv.chunks.Comment object at 0x101b3c5f0>
+    // check for blank metatile $23 and branch if not found
+    // get vertical coordinate used to find block
+    // store default blank metatile in that spot so we won't
+    // trigger this routine accidentally again
     lda(Enemy_ID, x);
     cmp(0x15);
-    // <conv.chunks.Comment object at 0x101b3c920>
+    // if enemy object => $15, branch ahead
     BCS(ChkToStunEnemies);
     cmp(Goomba);
-    // <conv.chunks.Comment object at 0x101b3cb30>
+    // if enemy object not goomba, branch ahead of this routine
     BNE(GiveOEPoints);
     JSR(KillEnemyAboveBlock);
     JMP(GiveOEPoints);
@@ -18376,14 +18376,14 @@ int HandleEToBGCollision() {
 
 int GiveOEPoints() {
     lda(0x1);
-    // <conv.chunks.Comment object at 0x101b3cec0>
+    // award 100 points for hitting block beneath enemy
     JSR(SetupFloateyNumber);
     JMP(ChkToStunEnemies);
 }
 
 int ChkToStunEnemies() {
     cmp(0x9);
-    // <conv.chunks.Comment object at 0x101b3d100>
+    // perform many comparisons on enemy object identifier
     BCC(SetStun);
     cmp(0x11);
     BCS(SetStun);
@@ -18395,50 +18395,50 @@ int ChkToStunEnemies() {
 }
 
 int Demote() {
-    // <conv.chunks.Comment object at 0x101b3d340>
-    // <conv.chunks.Comment object at 0x101b3d3d0>
-    // <conv.chunks.Comment object at 0x101b3d5b0>
-    // <conv.chunks.Comment object at 0x101b3d640>
-    // <conv.chunks.Comment object at 0x101b3d820>
-    // <conv.chunks.Comment object at 0x101b3d940>
-    // <conv.chunks.Comment object at 0x101b3da90>
+    // if the enemy object identifier is equal to the values
+    // $09, $0e, $0f or $10, it will be modified, and not
+    // modified if not any of those values, note that piranha plant will
+    // always fail this test because A will still have vertical
+    // coordinate from previous addition, also these comparisons
+    // are only necessary if branching from $d7a1
+    // erase all but LSB, essentially turning enemy object
     anda(0b1);
     sta(Enemy_ID, x);
     JMP(SetStun);
 }
 
 int SetStun() {
-    // <conv.chunks.Comment object at 0x101b3dc10>
-    // <conv.chunks.Comment object at 0x101b3dd60>
+    // into green or red koopa troopa to demote them
+    // load enemy state
     lda(Enemy_State, x);
     anda(0b11110000);
-    // <conv.chunks.Comment object at 0x101b3df10>
+    // save high nybble
     ora(0b10);
     sta(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x101b3e120>
+    // set d1 of enemy state
     dec(Enemy_Y_Position, x);
     dec(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x101b3e390>
+    // subtract two pixels from enemy's vertical position
     lda(Enemy_ID, x);
     cmp(Bloober);
-    // <conv.chunks.Comment object at 0x101b3e600>
+    // check for bloober object
     BEQ(SetWYSpd);
     lda(0xfd);
-    // <conv.chunks.Comment object at 0x101b3e840>
+    // set default vertical speed
     ldy(AreaType);
     BNE(SetNotW);
     JMP(SetWYSpd);
 }
 
 int SetWYSpd() {
-    // <conv.chunks.Comment object at 0x101b3ea50>
-    // <conv.chunks.Comment object at 0x101b3eba0>
+    // if area type not water, set as speed, otherwise
+    // change the vertical speed
     lda(0xff);
     JMP(SetNotW);
 }
 
 int SetNotW() {
-    // <conv.chunks.Comment object at 0x101b3ec60>
+    // set vertical speed now
     sta(Enemy_Y_Speed, x);
     ldy(0x1);
     JSR(PlayerEnemyDiff);
@@ -18450,7 +18450,7 @@ int SetNotW() {
 int ChkBBill() {
     lda(Enemy_ID, x);
     cmp(BulletBill_CannonVar);
-    // <conv.chunks.Comment object at 0x101b3f3e0>
+    // check for bullet bill (cannon variant)
     BEQ(NoCDirF);
     cmp(BulletBill_FrenzyVar);
     BEQ(NoCDirF);
@@ -18459,10 +18459,10 @@ int ChkBBill() {
 }
 
 int NoCDirF() {
-    // <conv.chunks.Comment object at 0x101b3f620>
-    // <conv.chunks.Comment object at 0x101b3f740>
-    // <conv.chunks.Comment object at 0x101b3f890>
-    // <conv.chunks.Comment object at 0x101b3f9e0>
+    // check for bullet bill (frenzy variant)
+    // branch if either found, direction does not change
+    // store as moving direction
+    // decrement and use as offset
     dey();
     lda(offsetof(G, EnemyBGCXSpdData), y);
     sta(Enemy_X_Speed, x);
@@ -18476,35 +18476,35 @@ int ExEBGChk() {
 
 int LandEnemyProperly() {
     lda(0x4);
-    // <conv.chunks.Comment object at 0x101b3fe90>
-    // <conv.chunks.Comment object at 0x101b3ff20>
+    // $04 - low nybble of vertical coordinate from block buffer routine
+    // check lower nybble of vertical coordinate saved earlier
     sec();
     sbc(0x8);
     cmp(0x5);
     BCS(ChkForRedKoopa);
-    // <conv.chunks.Comment object at 0x101b440e0>
-    // <conv.chunks.Comment object at 0x101b44170>
-    // <conv.chunks.Comment object at 0x101b44290>
+    // subtract eight pixels
+    // used to determine whether enemy landed from falling
+    // branch if lower nybble in range of $0d-$0f before subtract
     lda(Enemy_State, x);
     anda(0b1000000);
-    // <conv.chunks.Comment object at 0x101b44560>
+    // branch if d6 in enemy state is set
     BNE(LandEnemyInitState);
     lda(Enemy_State, x);
     asl();
-    // <conv.chunks.Comment object at 0x101b448c0>
+    // branch if d7 in enemy state is not set
     BCC(ChkLandedEnemyState);
     JMP(SChkA);
 }
 
 int SChkA() {
-    // <conv.chunks.Comment object at 0x101b44a40>
+    // if lower nybble < $0d, d7 set but d6 not set, jump here
     JMP(DoEnemySideCheck);
     JMP(ChkLandedEnemyState);
 }
 
 int ChkLandedEnemyState() {
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x101b44bf0>
+    // if enemy in normal state, branch back to jump here
     BEQ(SChkA);
     cmp(0x5);
     BEQ(ProcEnemyDirection);
@@ -18515,15 +18515,15 @@ int ChkLandedEnemyState() {
     BNE(ProcEnemyDirection);
     lda(0x10);
     ldy(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x101b44e60>
-    // <conv.chunks.Comment object at 0x101b44ef0>
-    // <conv.chunks.Comment object at 0x101b450a0>
-    // <conv.chunks.Comment object at 0x101b45130>
-    // <conv.chunks.Comment object at 0x101b452e0>
-    // <conv.chunks.Comment object at 0x101b45430>
-    // <conv.chunks.Comment object at 0x101b454c0>
-    // <conv.chunks.Comment object at 0x101b45670>
-    // <conv.chunks.Comment object at 0x101b45700>
+    // if in state used by spiny's egg
+    // then branch elsewhere
+    // if already in state used by koopas and buzzy beetles
+    // or in higher numbered state, branch to leave
+    // load enemy state again (why?)
+    // if not in $02 state (used by koopas and buzzy beetles)
+    // then branch elsewhere
+    // load default timer here
+    // check enemy identifier for spiny
     cpy(Spiny);
     BNE(SetForStn);
     lda(0x0);
@@ -18531,9 +18531,9 @@ int ChkLandedEnemyState() {
 }
 
 int SetForStn() {
-    // <conv.chunks.Comment object at 0x101b45940>
-    // <conv.chunks.Comment object at 0x101b45b20>
-    // <conv.chunks.Comment object at 0x101b45bb0>
+    // branch if not found
+    // set timer for $00 if spiny
+    // set timer here
     sta(EnemyIntervalTimer, x);
     lda(0x3);
     sta(Enemy_State, x);
@@ -18542,10 +18542,10 @@ int SetForStn() {
 }
 
 int ExSteChk() {
-    // <conv.chunks.Comment object at 0x101b45dc0>
-    // <conv.chunks.Comment object at 0x101b45e50>
-    // <conv.chunks.Comment object at 0x101b46030>
-    // <conv.chunks.Comment object at 0x101b46150>
+    // set state here, apparently used to render
+    // upside-down koopas and buzzy beetles
+    // then land it properly
+    // then leave
     return 0;
     JMP(ProcEnemyDirection);
 }
@@ -18553,19 +18553,19 @@ int ExSteChk() {
 int ProcEnemyDirection() {
     lda(Enemy_ID, x);
     cmp(Goomba);
-    // <conv.chunks.Comment object at 0x101b46270>
-    // <conv.chunks.Comment object at 0x101b463c0>
+    // check enemy identifier for goomba
+    // branch if found
     BEQ(LandEnemyInitState);
     cmp(Spiny);
     BNE(InvtD);
-    // <conv.chunks.Comment object at 0x101b46600>
-    // <conv.chunks.Comment object at 0x101b46690>
+    // check for spiny
+    // branch if not found
     lda(0x1);
     sta(Enemy_MovingDir, x);
-    // <conv.chunks.Comment object at 0x101b46900>
+    // send enemy moving to the right by default
     lda(0x8);
     sta(Enemy_X_Speed, x);
-    // <conv.chunks.Comment object at 0x101b46b40>
+    // set horizontal speed accordingly
     lda(FrameCounter);
     anda(0b111);
     BEQ(LandEnemyInitState);
@@ -18573,9 +18573,9 @@ int ProcEnemyDirection() {
 }
 
 int InvtD() {
-    // <conv.chunks.Comment object at 0x101b46e10>
-    // <conv.chunks.Comment object at 0x101b46f30>
-    // <conv.chunks.Comment object at 0x101b47050>
+    // if timed appropriately, spiny will skip over
+    // trying to face the player
+    // load 1 for enemy to face the left (inverted here)
     ldy(0x1);
     JSR(PlayerEnemyDiff);
     BPL(CNwCDir);
@@ -18586,7 +18586,7 @@ int InvtD() {
 int CNwCDir() {
     tya();
     cmp(Enemy_MovingDir, x);
-    // <conv.chunks.Comment object at 0x101b475f0>
+    // compare direction in A with current direction in memory
     BNE(LandEnemyInitState);
     JSR(ChkForBump_HammerBroJ);
     JMP(LandEnemyInitState);
@@ -18594,15 +18594,15 @@ int CNwCDir() {
 
 int LandEnemyInitState() {
     JSR(EnemyLanding);
-    // <conv.chunks.Comment object at 0x101b47980>
+    // land enemy properly
     lda(Enemy_State, x);
     anda(0b10000000);
-    // <conv.chunks.Comment object at 0x101b47bc0>
+    // if d7 of enemy state is set, branch
     BNE(NMovShellFallBit);
     lda(0x0);
     sta(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x101b47dd0>
-    // <conv.chunks.Comment object at 0x101b47e60>
+    // otherwise initialize enemy state and leave
+    // note this will also turn spiny's egg into spiny
     return 0;
     JMP(NMovShellFallBit);
 }
@@ -18610,8 +18610,8 @@ int LandEnemyInitState() {
 int NMovShellFallBit() {
     lda(Enemy_State, x);
     anda(0b10111111);
-    // <conv.chunks.Comment object at 0x101b4c140>
-    // <conv.chunks.Comment object at 0x101b4c290>
+    // nullify d6 of enemy state, save other bits
+    // and store, then leave
     sta(Enemy_State, x);
     return 0;
     JMP(ChkForRedKoopa);
@@ -18619,24 +18619,24 @@ int NMovShellFallBit() {
 
 int ChkForRedKoopa() {
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x101b4c5c0>
+    // check for red koopa troopa $03
     cmp(RedKoopa);
     BNE(Chk2MSBSt);
-    // <conv.chunks.Comment object at 0x101b4c800>
+    // branch if not found
     lda(Enemy_State, x);
     BEQ(ChkForBump_HammerBroJ);
     JMP(Chk2MSBSt);
 }
 
 int Chk2MSBSt() {
-    // <conv.chunks.Comment object at 0x101b4ca40>
-    // <conv.chunks.Comment object at 0x101b4cb60>
+    // if enemy found and in normal state, branch
+    // save enemy state into Y
     lda(Enemy_State, x);
     tay();
     asl();
     BCC(GetSteFromD);
-    // <conv.chunks.Comment object at 0x101b4cda0>
-    // <conv.chunks.Comment object at 0x101b4ce30>
+    // check for d7 set
+    // branch if not set
     lda(Enemy_State, x);
     ora(0b1000000);
     JMP(SetD6Ste);
@@ -18644,15 +18644,15 @@ int Chk2MSBSt() {
 }
 
 int GetSteFromD() {
-    // <conv.chunks.Comment object at 0x101b4d0a0>
-    // <conv.chunks.Comment object at 0x101b4d1c0>
-    // <conv.chunks.Comment object at 0x101b4d2e0>
+    // set d6
+    // jump ahead of this part
+    // load new enemy state with old as offset
     lda(offsetof(G, EnemyBGCStateData), y);
     JMP(SetD6Ste);
 }
 
 int SetD6Ste() {
-    // <conv.chunks.Comment object at 0x101b4d460>
+    // set as new state
     sta(Enemy_State, x);
     JMP(DoEnemySideCheck);
 }
@@ -18660,8 +18660,8 @@ int SetD6Ste() {
 int DoEnemySideCheck() {
     lda(Enemy_Y_Position, x);
     cmp(0x20);
-    // <conv.chunks.Comment object at 0x101b4d6a0>
-    // <conv.chunks.Comment object at 0x101b4d7f0>
+    // if enemy within status bar, branch to leave
+    // because there's nothing there that impedes movement
     BCC(ExESdeC);
     ldy(0x16);
     lda(0x2);
@@ -18670,10 +18670,10 @@ int DoEnemySideCheck() {
 }
 
 int SdeCLoop() {
-    // <conv.chunks.Comment object at 0x101b4da30>
-    // <conv.chunks.Comment object at 0x101b4dac0>
-    // <conv.chunks.Comment object at 0x101b4dca0>
-    // <conv.chunks.Comment object at 0x101b4dd30>
+    // start by finding block to the left of enemy ($00,$14)
+    // set value here in what is also used as
+    // OAM data offset
+    // check value
     lda(0xeb);
     cmp(Enemy_MovingDir, x);
     BNE(NextSdeC);
@@ -18686,14 +18686,14 @@ int SdeCLoop() {
 }
 
 int NextSdeC() {
-    // <conv.chunks.Comment object at 0x101b4de80>
-    // <conv.chunks.Comment object at 0x101b4e030>
-    // <conv.chunks.Comment object at 0x101b4e150>
-    // <conv.chunks.Comment object at 0x101b4e1e0>
-    // <conv.chunks.Comment object at 0x101b4e390>
-    // <conv.chunks.Comment object at 0x101b4e4b0>
-    // <conv.chunks.Comment object at 0x101b4e5d0>
-    // <conv.chunks.Comment object at 0x101b4e6f0>
+    // compare value against moving direction
+    // branch if different and do not seek block there
+    // set flag in A for save horizontal coordinate
+    // find block to left or right of enemy object
+    // if nothing found, branch
+    // check for non-solid blocks
+    // branch if not found
+    // move to the next direction
     dec(0xeb);
     iny();
     cpy(0x18);
@@ -18711,10 +18711,10 @@ int ChkForBump_HammerBroJ() {
     BEQ(NoBump);
     lda(Enemy_State, x);
     asl();
-    // <conv.chunks.Comment object at 0x101b4ec30>
-    // <conv.chunks.Comment object at 0x101b4ecc0>
-    // <conv.chunks.Comment object at 0x101b4eea0>
-    // <conv.chunks.Comment object at 0x101b4f020>
+    // check if we're on the special use slot
+    // and if so, branch ahead and do not play sound
+    // if enemy state d7 not set, branch
+    // ahead and do not play sound
     BCC(NoBump);
     lda(Sfx_Bump);
     sta(Square1SoundQueue);
@@ -18722,13 +18722,13 @@ int ChkForBump_HammerBroJ() {
 }
 
 int NoBump() {
-    // <conv.chunks.Comment object at 0x101b4f1d0>
-    // <conv.chunks.Comment object at 0x101b4f2f0>
-    // <conv.chunks.Comment object at 0x101b4f410>
+    // otherwise, play bump sound
+    // sound will never be played if branching from ChkForRedKoopa
+    // check for hammer bro
     lda(Enemy_ID, x);
     cmp(0x5);
     BNE(InvEnemyDir);
-    // <conv.chunks.Comment object at 0x101b4f620>
+    // branch if not found
     lda(0x0);
     sta(0x0);
     ldy(0xfa);
@@ -18746,29 +18746,29 @@ int PlayerEnemyDiff() {
     sec();
     sbc(Player_X_Position);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x101b4fc80>
-    // <conv.chunks.Comment object at 0x101b4fe00>
-    // <conv.chunks.Comment object at 0x101b4fe60>
-    // <conv.chunks.Comment object at 0x101b4ffe0>
-    // <conv.chunks.Comment object at 0x101b580b0>
-    // <conv.chunks.Comment object at 0x101b58200>
+    // jump to turn the enemy around
+    // $00 - used to hold horizontal difference between player and enemy
+    // get distance between enemy object's
+    // horizontal coordinate and the player's
+    // horizontal coordinate
+    // and store here
     lda(Enemy_PageLoc, x);
     sbc(Player_PageLoc);
-    // <conv.chunks.Comment object at 0x101b58410>
+    // subtract borrow, then leave
     return 0;
     JMP(EnemyLanding);
 }
 
 int EnemyLanding() {
     JSR(InitVStf);
-    // <conv.chunks.Comment object at 0x101b58620>
+    // do something here to vertical speed and something else
     lda(Enemy_Y_Position, x);
     anda(0b11110000);
     ora(0b1000);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x101b58860>
-    // <conv.chunks.Comment object at 0x101b58980>
-    // <conv.chunks.Comment object at 0x101b58aa0>
+    // save high nybble of vertical coordinate, and
+    // set d3, then store, probably used to set enemy object
+    // neatly on whatever it's landing on
     return 0;
     JMP(SubtEnemyYPos);
 }
@@ -18776,8 +18776,8 @@ int EnemyLanding() {
 int SubtEnemyYPos() {
     lda(Enemy_Y_Position, x);
     clc();
-    // <conv.chunks.Comment object at 0x101b58cb0>
-    // <conv.chunks.Comment object at 0x101b58e30>
+    // add 62 pixels to enemy object's
+    // vertical coordinate
     adc(0x3e);
     cmp(0x44);
     return 0;
@@ -18787,43 +18787,43 @@ int SubtEnemyYPos() {
 int EnemyJump() {
     JSR(SubtEnemyYPos);
     BCC(DoSide);
-    // <conv.chunks.Comment object at 0x101b591c0>
-    // <conv.chunks.Comment object at 0x101b592e0>
+    // do a sub here
+    // if enemy vertical coord + 62 < 68, branch to leave
     lda(Enemy_Y_Speed, x);
     clc();
-    // <conv.chunks.Comment object at 0x101b59580>
+    // add two to vertical speed
     adc(0x2);
     cmp(0x3);
-    // <conv.chunks.Comment object at 0x101b59670>
+    // if green paratroopa not falling, branch ahead
     BCC(DoSide);
     JSR(ChkUnderEnemy);
     BEQ(DoSide);
     JSR(ChkForNonSolids);
     BEQ(DoSide);
     JSR(EnemyLanding);
-    // <conv.chunks.Comment object at 0x101b59940>
-    // <conv.chunks.Comment object at 0x101b59a60>
-    // <conv.chunks.Comment object at 0x101b59bb0>
-    // <conv.chunks.Comment object at 0x101b59cd0>
-    // <conv.chunks.Comment object at 0x101b59e20>
+    // otherwise, check to see if green paratroopa is
+    // standing on anything, then branch to same place if not
+    // check for non-solid blocks
+    // branch if found
+    // change vertical coordinate and speed
     lda(0xfd);
     sta(Enemy_Y_Speed, x);
     JMP(DoSide);
 }
 
 int DoSide() {
-    // <conv.chunks.Comment object at 0x101b59fa0>
-    // <conv.chunks.Comment object at 0x101b5a180>
+    // make the paratroopa jump again
+    // check for horizontal blockage, then leave
     JMP(DoEnemySideCheck);
     JMP(HammerBroBGColl);
 }
 
 int HammerBroBGColl() {
     JSR(ChkUnderEnemy);
-    // <conv.chunks.Comment object at 0x101b5a360>
+    // check to see if hammer bro is standing on anything
     BEQ(NoUnderHammerBro);
     cmp(0x23);
-    // <conv.chunks.Comment object at 0x101b5a570>
+    // check for blank metatile $23 and branch if not found
     BNE(UnderHammerBro);
     JMP(KillEnemyAboveBlock);
 }
@@ -18831,8 +18831,8 @@ int HammerBroBGColl() {
 int KillEnemyAboveBlock() {
     JSR(ShellOrBlockDefeat);
     lda(0xfc);
-    // <conv.chunks.Comment object at 0x101b5a7b0>
-    // <conv.chunks.Comment object at 0x101b5a8d0>
+    // do this sub to kill enemy
+    // alter vertical speed of enemy and leave
     sta(Enemy_Y_Speed, x);
     return 0;
     JMP(UnderHammerBro);
@@ -18841,8 +18841,8 @@ int KillEnemyAboveBlock() {
 int UnderHammerBro() {
     lda(EnemyFrameTimer, x);
     BNE(NoUnderHammerBro);
-    // <conv.chunks.Comment object at 0x101b5abd0>
-    // <conv.chunks.Comment object at 0x101b5ad20>
+    // check timer used by hammer bro
+    // branch if not expired
     lda(Enemy_State, x);
     anda(0b10001000);
     sta(Enemy_State, x);
@@ -18854,8 +18854,8 @@ int UnderHammerBro() {
 int NoUnderHammerBro() {
     lda(Enemy_State, x);
     ora(0x1);
-    // <conv.chunks.Comment object at 0x101b5b440>
-    // <conv.chunks.Comment object at 0x101b5b590>
+    // if hammer bro is not standing on anything, set d0
+    // in the enemy state to indicate jumping or falling, then leave
     sta(Enemy_State, x);
     return 0;
     JMP(ChkUnderEnemy);
@@ -18870,16 +18870,16 @@ int ChkUnderEnemy() {
 
 int ChkForNonSolids() {
     cmp(0x26);
-    // <conv.chunks.Comment object at 0x101b5bc20>
+    // blank metatile used for vines?
     BEQ(NSFnd);
     cmp(0xc2);
-    // <conv.chunks.Comment object at 0x101b5be60>
+    // regular coin?
     BEQ(NSFnd);
     cmp(0xc3);
-    // <conv.chunks.Comment object at 0x101b600e0>
+    // underwater coin?
     BEQ(NSFnd);
     cmp(0x5f);
-    // <conv.chunks.Comment object at 0x101b60320>
+    // hidden coin block?
     BEQ(NSFnd);
     cmp(0x60);
     JMP(NSFnd);
@@ -18892,7 +18892,7 @@ int NSFnd() {
 
 int FireballBGCollision() {
     lda(Fireball_Y_Position, x);
-    // <conv.chunks.Comment object at 0x101b607d0>
+    // check fireball's vertical coordinate
     cmp(0x18);
     BCC(ClearBounceFlag);
     JSR(BlockBufferChk_FBall);
@@ -18903,21 +18903,21 @@ int FireballBGCollision() {
     BMI(InitFireballExplode);
     lda(FireballBouncingFlag, x);
     BNE(InitFireballExplode);
-    // <conv.chunks.Comment object at 0x101b60980>
-    // <conv.chunks.Comment object at 0x101b60b30>
-    // <conv.chunks.Comment object at 0x101b60c50>
-    // <conv.chunks.Comment object at 0x101b60d70>
-    // <conv.chunks.Comment object at 0x101b60e90>
-    // <conv.chunks.Comment object at 0x101b60fb0>
-    // <conv.chunks.Comment object at 0x101b61100>
-    // <conv.chunks.Comment object at 0x101b61220>
-    // <conv.chunks.Comment object at 0x101b61370>
+    // if within the status bar area of the screen, branch ahead
+    // do fireball to background collision detection on bottom of it
+    // if nothing underneath fireball, branch
+    // check for non-solid metatiles
+    // branch if any found
+    // if fireball's vertical speed set to move upwards,
+    // branch to set exploding bit in fireball's state
+    // if bouncing flag already set,
+    // branch to set exploding bit in fireball's state
     lda(0xfd);
     sta(Fireball_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x101b614f0>
+    // otherwise set vertical speed to move upwards (give it bounce)
     lda(0x1);
     sta(FireballBouncingFlag, x);
-    // <conv.chunks.Comment object at 0x101b61730>
+    // set bouncing flag
     lda(Fireball_Y_Position, x);
     anda(0xf8);
     sta(Fireball_Y_Position, x);
@@ -18935,7 +18935,7 @@ int ClearBounceFlag() {
 int InitFireballExplode() {
     lda(0x80);
     sta(Fireball_State, x);
-    // <conv.chunks.Comment object at 0x101b62180>
+    // set exploding flag in fireball's state
     lda(Sfx_Bump);
     sta(Square1SoundQueue);
     return 0;
@@ -18945,8 +18945,8 @@ int InitFireballExplode() {
 int GetFireballBoundBox() {
     txa();
     clc();
-    // <conv.chunks.Comment object at 0x101b62870>
-    // <conv.chunks.Comment object at 0x101b6c410>
+    // add seven bytes to offset
+    // to use in routines as offset for fireball
     adc(0x7);
     tax();
     ldy(0x2);
@@ -18957,8 +18957,8 @@ int GetFireballBoundBox() {
 int GetMiscBoundBox() {
     txa();
     clc();
-    // <conv.chunks.Comment object at 0x101b6c8f0>
-    // <conv.chunks.Comment object at 0x101b6c9b0>
+    // add nine bytes to offset
+    // to use in routines as offset for misc object
     adc(0x9);
     tax();
     ldy(0x6);
@@ -18966,8 +18966,8 @@ int GetMiscBoundBox() {
 }
 
 int FBallB() {
-    // <conv.chunks.Comment object at 0x101b6cbc0>
-    // <conv.chunks.Comment object at 0x101b6cc50>
+    // set offset for relative coordinates
+    // get bounding box coordinates
     JSR(BoundingBoxCore);
     JMP(CheckRightScreenBBox);
     JMP(GetEnemyBoundBox);
@@ -18975,17 +18975,17 @@ int FBallB() {
 
 int GetEnemyBoundBox() {
     ldy(0x48);
-    // <conv.chunks.Comment object at 0x101b6cfb0>
+    // store bitmask here for now
     sty(0x0);
     ldy(0x44);
-    // <conv.chunks.Comment object at 0x101b6d040>
+    // store another bitmask here for now and jump
     JMP(GetMaskedOffScrBits);
     JMP(SmallPlatformBoundBox);
 }
 
 int SmallPlatformBoundBox() {
     ldy(0x8);
-    // <conv.chunks.Comment object at 0x101b6d400>
+    // store bitmask here for now
     sty(0x0);
     ldy(0x4);
     JMP(GetMaskedOffScrBits);
@@ -18994,17 +18994,17 @@ int SmallPlatformBoundBox() {
 int GetMaskedOffScrBits() {
     lda(Enemy_X_Position, x);
     sec();
-    // <conv.chunks.Comment object at 0x101b6d760>
-    // <conv.chunks.Comment object at 0x101b6d8e0>
+    // get enemy object position relative
+    // to the left side of the screen
     sbc(ScreenLeft_X_Pos);
     sta(0x1);
     lda(Enemy_PageLoc, x);
     sbc(ScreenLeft_PageLoc);
     BMI(CMBits);
-    // <conv.chunks.Comment object at 0x101b6da90>
-    // <conv.chunks.Comment object at 0x101b6db20>
-    // <conv.chunks.Comment object at 0x101b6dcd0>
-    // <conv.chunks.Comment object at 0x101b6ddf0>
+    // store here
+    // subtract borrow from current page location
+    // of left side
+    // if enemy object is beyond left edge, branch
     ora(0x1);
     BEQ(CMBits);
     ldy(0x0);
@@ -19012,9 +19012,9 @@ int GetMaskedOffScrBits() {
 }
 
 int CMBits() {
-    // <conv.chunks.Comment object at 0x101b6df40>
-    // <conv.chunks.Comment object at 0x101b6e1b0>
-    // <conv.chunks.Comment object at 0x101b6e240>
+    // if precisely at the left edge, branch
+    // if to the right of left edge, use value in $00 for A
+    // otherwise use contents of Y
     tya();
     anda(Enemy_OffscreenBits);
     sta(EnemyOffscrBitsMasked, x);
@@ -19035,8 +19035,8 @@ int LargePlatformBoundBox() {
 int SetupEOffsetFBBox() {
     txa();
     clc();
-    // <conv.chunks.Comment object at 0x101b6ede0>
-    // <conv.chunks.Comment object at 0x101b6eea0>
+    // add 1 to offset to properly address
+    // the enemy object memory locations
     adc(0x1);
     tax();
     ldy(0x1);
@@ -19047,14 +19047,14 @@ int SetupEOffsetFBBox() {
 
 int MoveBoundBoxOffscreen() {
     txa();
-    // <conv.chunks.Comment object at 0x101b6f470>
+    // multiply offset by 4
     asl();
     asl();
     tay();
-    // <conv.chunks.Comment object at 0x101b6f650>
+    // use as offset here
     lda(0xff);
     sta(EnemyBoundingBoxCoord, y);
-    // <conv.chunks.Comment object at 0x101b6f740>
+    // load value into four locations here and leave
     sta(((EnemyBoundingBoxCoord) + (1)), y);
     sta(((EnemyBoundingBoxCoord) + (2)), y);
     sta(((EnemyBoundingBoxCoord) + (3)), y);
@@ -19066,47 +19066,47 @@ int BoundingBoxCore() {
     stx(0x0);
     lda(SprObject_Rel_YPos, y);
     sta(0x2);
-    // <conv.chunks.Comment object at 0x101b6ffb0>
-    // <conv.chunks.Comment object at 0x101b6ff80>
-    // <conv.chunks.Comment object at 0x101b78260>
+    // save offset here
+    // store object coordinates relative to screen
+    // vertically and horizontally, respectively
     lda(SprObject_Rel_XPos, y);
     sta(0x1);
     txa();
-    // <conv.chunks.Comment object at 0x101b78500>
+    // multiply offset by four and save to stack
     asl();
     asl();
     pha();
     tay();
     lda(SprObj_BoundBoxCtrl, x);
     asl();
-    // <conv.chunks.Comment object at 0x101b78800>
-    // <conv.chunks.Comment object at 0x101b78890>
-    // <conv.chunks.Comment object at 0x101b78a10>
+    // use as offset for Y, X is left alone
+    // load value here to be used as offset for X
+    // multiply that by four and use as X
     asl();
     tax();
     lda(0x1);
     clc();
     adc(offsetof(G, BoundBoxCtrlData), x);
     sta(BoundingBox_UL_Corner, y);
-    // <conv.chunks.Comment object at 0x101b78bf0>
-    // <conv.chunks.Comment object at 0x101b78bc0>
-    // <conv.chunks.Comment object at 0x101b78da0>
-    // <conv.chunks.Comment object at 0x101b78ef0>
+    // add the first number in the bounding box data to the
+    // relative horizontal coordinate using enemy object offset
+    // and store somewhere using same offset * 4
+    // store here
     lda(0x1);
     clc();
     adc(((offsetof(G, BoundBoxCtrlData)) + (2)), x);
     sta(BoundingBox_LR_Corner, y);
     inx();
-    // <conv.chunks.Comment object at 0x101b791c0>
-    // <conv.chunks.Comment object at 0x101b793d0>
-    // <conv.chunks.Comment object at 0x101b79550>
+    // add the third number in the bounding box data to the
+    // relative horizontal coordinate and store
+    // increment both offsets
     iny();
     lda(0x2);
     clc();
     adc(offsetof(G, BoundBoxCtrlData), x);
-    // <conv.chunks.Comment object at 0x101b796a0>
-    // <conv.chunks.Comment object at 0x101b79670>
-    // <conv.chunks.Comment object at 0x101b79850>
+    // add the second number to the relative vertical coordinate
+    // using incremented offset and store using the other
+    // incremented offset
     sta(BoundingBox_UL_Corner, y);
     lda(0x2);
     clc();
@@ -19115,11 +19115,11 @@ int BoundingBoxCore() {
     pla();
     tay();
     ldx(0x0);
-    // <conv.chunks.Comment object at 0x101b79c40>
-    // <conv.chunks.Comment object at 0x101b79e50>
-    // <conv.chunks.Comment object at 0x101b79fd0>
-    // <conv.chunks.Comment object at 0x101b7a090>
-    // <conv.chunks.Comment object at 0x101b7a150>
+    // add the fourth number to the relative vertical coordinate
+    // and store
+    // get original offset loaded into $00 * y from stack
+    // use as Y
+    // get original offset and use as X again
     return 0;
     JMP(CheckRightScreenBBox);
 }
@@ -19127,14 +19127,14 @@ int BoundingBoxCore() {
 int CheckRightScreenBBox() {
     lda(ScreenLeft_X_Pos);
     clc();
-    // <conv.chunks.Comment object at 0x101b7a300>
-    // <conv.chunks.Comment object at 0x101b7a450>
+    // add 128 pixels to left side of screen
+    // and store as horizontal coordinate of middle
     adc(0x80);
     sta(0x2);
     lda(ScreenLeft_PageLoc);
     adc(0x0);
-    // <conv.chunks.Comment object at 0x101b7a540>
-    // <conv.chunks.Comment object at 0x101b7a7e0>
+    // add carry to page location of left side of screen
+    // and store as page location of middle
     sta(0x1);
     lda(SprObject_X_Position, x);
     cmp(0x2);
@@ -19151,24 +19151,24 @@ int CheckRightScreenBBox() {
 }
 
 int SORte() {
-    // <conv.chunks.Comment object at 0x101b7a870>
-    // <conv.chunks.Comment object at 0x101b7ab70>
-    // <conv.chunks.Comment object at 0x101b7ac00>
-    // <conv.chunks.Comment object at 0x101b7ade0>
-    // <conv.chunks.Comment object at 0x101b7ae70>
-    // <conv.chunks.Comment object at 0x101b7aff0>
-    // <conv.chunks.Comment object at 0x101b7b140>
-    // <conv.chunks.Comment object at 0x101b7b290>
-    // <conv.chunks.Comment object at 0x101b7b320>
-    // <conv.chunks.Comment object at 0x101b7b500>
-    // <conv.chunks.Comment object at 0x101b7b650>
-    // <conv.chunks.Comment object at 0x101b7b7a0>
+    // get horizontal coordinate
+    // compare against middle horizontal coordinate
+    // get page location
+    // subtract from middle page location
+    // if object is on the left side of the screen, branch
+    // check right-side edge of bounding box for offscreen
+    // coordinates, branch if still on the screen
+    // load offscreen value here to use on one or both horizontal sides
+    // check left-side edge of bounding box for offscreen
+    // coordinates, and branch if still on the screen
+    // store offscreen value for left side
+    // store offscreen value for right side
     sta(BoundingBox_DR_XPos, y);
     JMP(NoOfs);
 }
 
 int NoOfs() {
-    // <conv.chunks.Comment object at 0x101b7b950>
+    // get object offset and leave
     ldx(ObjectOffset);
     return 0;
     JMP(CheckLeftScreenBBox);
@@ -19179,10 +19179,10 @@ int CheckLeftScreenBBox() {
     BPL(NoOfs2);
     cmp(0xa0);
     BCC(NoOfs2);
-    // <conv.chunks.Comment object at 0x101b7bb90>
-    // <conv.chunks.Comment object at 0x101b7bce0>
-    // <conv.chunks.Comment object at 0x101b7be30>
-    // <conv.chunks.Comment object at 0x101b7bec0>
+    // check left-side edge of bounding box for offscreen
+    // coordinates, and branch if still on the screen
+    // check to see if left-side edge is in the middle of the
+    // screen or really offscreen, and branch if still on
     lda(0x0);
     ldx(BoundingBox_DR_XPos, y);
     BPL(SOLft);
@@ -19191,16 +19191,16 @@ int CheckLeftScreenBBox() {
 }
 
 int SOLft() {
-    // <conv.chunks.Comment object at 0x101b80140>
-    // <conv.chunks.Comment object at 0x101b80320>
-    // <conv.chunks.Comment object at 0x101b80470>
-    // <conv.chunks.Comment object at 0x101b805c0>
+    // check right-side edge of bounding box for offscreen
+    // coordinates, branch if still onscreen
+    // store offscreen value for right side
+    // store offscreen value for left side
     sta(BoundingBox_UL_XPos, y);
     JMP(NoOfs2);
 }
 
 int NoOfs2() {
-    // <conv.chunks.Comment object at 0x101b80770>
+    // get object offset and leave
     ldx(ObjectOffset);
     return 0;
     JMP(PlayerCollisionCore);
@@ -19213,7 +19213,7 @@ int PlayerCollisionCore() {
 
 int SprObjectCollisionCore() {
     sty(0x6);
-    // <conv.chunks.Comment object at 0x101b80bc0>
+    // save contents of Y here
     lda(0x1);
     sta(0x7);
     JMP(CollisionCoreLoop);
@@ -19244,13 +19244,13 @@ int SecondBoxVerticalChk() {
     cmp(BoundingBox_UL_Corner, x);
     BCS(CollisionFound);
     ldy(0x6);
-    // <conv.chunks.Comment object at 0x101b81e80>
-    // <conv.chunks.Comment object at 0x101b81fd0>
-    // <conv.chunks.Comment object at 0x101b82120>
-    // <conv.chunks.Comment object at 0x101b82240>
-    // <conv.chunks.Comment object at 0x101b82390>
-    // <conv.chunks.Comment object at 0x101b824e0>
-    // <conv.chunks.Comment object at 0x101b82630>
+    // check to see if the vertical bottom of the box
+    // is greater than the vertical top
+    // if somehow less, vertical wrap collision, thus branch
+    // otherwise compare horizontal right or vertical bottom
+    // of first box with horizontal left or vertical top of second box
+    // if equal or greater, collision, thus branch
+    // otherwise return with carry clear and Y = $0006
     return 0;
     JMP(FirstBoxGreater);
 }
@@ -19263,13 +19263,13 @@ int FirstBoxGreater() {
     BEQ(CollisionFound);
     cmp(BoundingBox_LR_Corner, y);
     BCC(NoCollisionFound);
-    // <conv.chunks.Comment object at 0x101b827e0>
-    // <conv.chunks.Comment object at 0x101b82930>
-    // <conv.chunks.Comment object at 0x101b82a50>
-    // <conv.chunks.Comment object at 0x101b82ba0>
-    // <conv.chunks.Comment object at 0x101b82cc0>
-    // <conv.chunks.Comment object at 0x101b82de0>
-    // <conv.chunks.Comment object at 0x101b82f30>
+    // compare first and second box horizontal left/vertical top again
+    // if first coordinate = second, collision, thus branch
+    // if not, compare with second object right or bottom edge
+    // if left/top of first less than or equal to right/bottom of second
+    // then collision, thus branch
+    // otherwise check to see if top of first box is greater than bottom
+    // if less than or equal, no collision, branch to end
     BEQ(NoCollisionFound);
     lda(BoundingBox_LR_Corner, y);
     cmp(BoundingBox_UL_Corner, x);
@@ -19291,29 +19291,29 @@ int CollisionFound() {
     BPL(CollisionCoreLoop);
     sec();
     ldy(0x6);
-    // <conv.chunks.Comment object at 0x101b83830>
-    // <conv.chunks.Comment object at 0x101b838f0>
-    // <conv.chunks.Comment object at 0x101b839b0>
-    // <conv.chunks.Comment object at 0x101b83a40>
-    // <conv.chunks.Comment object at 0x101b83bf0>
-    // <conv.chunks.Comment object at 0x101b83cb0>
+    // increment offsets on both objects to check
+    // the vertical coordinates
+    // decrement counter to reflect this
+    // if counter not expired, branch to loop
+    // otherwise we already did both sets, therefore collision, so set carry
+    // load original value set here earlier, then leave
     return 0;
     JMP(BlockBufferChk_Enemy);
 }
 
 int BlockBufferChk_Enemy() {
     pha();
-    // <conv.chunks.Comment object at 0x101b83e60>
-    // <conv.chunks.Comment object at 0x101b83ec0>
-    // <conv.chunks.Comment object at 0x101b83f20>
-    // <conv.chunks.Comment object at 0x101b83fb0>
+    // $02 - modified y coordinate
+    // $04 - comes in with offset to block buffer adder data, goes out with low nybble x/y coordinate
+    // $06-$07 - block buffer address
+    // save contents of A to stack
     txa();
     clc();
-    // <conv.chunks.Comment object at 0x101b8c140>
+    // add 1 to X to run sub with enemy offset in mind
     adc(0x1);
     tax();
     pla();
-    // <conv.chunks.Comment object at 0x101b8c380>
+    // pull A from stack and jump elsewhere
     JMP(BBChk_E);
     JMP(ResidualMiscObjectCode);
 }
@@ -19322,8 +19322,8 @@ int ResidualMiscObjectCode() {
     txa();
     clc();
     adc(0xd);
-    // <conv.chunks.Comment object at 0x101b8c620>
-    // <conv.chunks.Comment object at 0x101b8c6b0>
+    // supposedly used once to set offset for
+    // miscellaneous objects
     tax();
     ldy(0x1b);
     JMP(ResJmpM);
@@ -19332,28 +19332,28 @@ int ResidualMiscObjectCode() {
 
 int BlockBufferChk_FBall() {
     ldy(0x1a);
-    // <conv.chunks.Comment object at 0x101b8cb00>
+    // set offset for block buffer adder data
     txa();
     clc();
     adc(0x7);
-    // <conv.chunks.Comment object at 0x101b8cd40>
+    // add seven bytes to use
     tax();
     JMP(ResJmpM);
 }
 
 int ResJmpM() {
-    // <conv.chunks.Comment object at 0x101b8cef0>
+    // set A to return vertical coordinate
     lda(0x0);
     JMP(BBChk_E);
 }
 
 int BBChk_E() {
-    // <conv.chunks.Comment object at 0x101b8cfe0>
+    // do collision detection subroutine for sprite object
     JSR(BlockBufferCollision);
     ldx(ObjectOffset);
     cmp(0x0);
-    // <conv.chunks.Comment object at 0x101b8d1f0>
-    // <conv.chunks.Comment object at 0x101b8d310>
+    // get object offset
+    // check to see if object bumped into anything
     return 0;
     JMP(BlockBufferColli_Feet);
 }
@@ -19379,13 +19379,13 @@ int BlockBufferCollision() {
     sty(0x4);
     lda(offsetof(G, BlockBuffer_X_Adder), y);
     clc();
-    // <conv.chunks.Comment object at 0x101b8fc50>
-    // <conv.chunks.Comment object at 0x101b8fd10>
-    // <conv.chunks.Comment object at 0x101b8fda0>
-    // <conv.chunks.Comment object at 0x101b8ff80>
+    // save contents of A to stack
+    // save contents of Y here
+    // add horizontal coordinate
+    // of object to value obtained using Y as offset
     adc(SprObject_X_Position, x);
     sta(0x5);
-    // <conv.chunks.Comment object at 0x101b981a0>
+    // store here
     lda(SprObject_PageLoc, x);
     adc(0x0);
     anda(0x1);
@@ -19398,22 +19398,22 @@ int BlockBufferCollision() {
     JSR(GetBlockBufferAddr);
     ldy(0x4);
     lda(SprObject_Y_Position, x);
-    // <conv.chunks.Comment object at 0x101b983b0>
-    // <conv.chunks.Comment object at 0x101b98440>
-    // <conv.chunks.Comment object at 0x101b98620>
-    // <conv.chunks.Comment object at 0x101b986e0>
-    // <conv.chunks.Comment object at 0x101b986b0>
-    // <conv.chunks.Comment object at 0x101b988c0>
-    // <conv.chunks.Comment object at 0x101b98980>
-    // <conv.chunks.Comment object at 0x101b98a40>
-    // <conv.chunks.Comment object at 0x101b98ad0>
-    // <conv.chunks.Comment object at 0x101b98c20>
-    // <conv.chunks.Comment object at 0x101b98cb0>
+    // add carry to page location
+    // get LSB, mask out all other bits
+    // move to carry
+    // get stored value
+    // rotate carry to MSB of A
+    // and effectively move high nybble to
+    // lower, LSB which became MSB will be
+    // d4 at this point
+    // get address of block buffer into $06, $07
+    // get old contents of Y
+    // get vertical coordinate of object
     clc();
     adc(offsetof(G, BlockBuffer_Y_Adder), y);
     anda(0b11110000);
-    // <conv.chunks.Comment object at 0x101b98ef0>
-    // <conv.chunks.Comment object at 0x101b99040>
+    // add it to value obtained using Y as offset
+    // mask out low nybble
     sec();
     sbc(0x20);
     sta(0x2);
@@ -19429,23 +19429,23 @@ int BlockBufferCollision() {
 }
 
 int RetXC() {
-    // <conv.chunks.Comment object at 0x101b991f0>
-    // <conv.chunks.Comment object at 0x101b99340>
-    // <conv.chunks.Comment object at 0x101b99280>
-    // <conv.chunks.Comment object at 0x101b994f0>
-    // <conv.chunks.Comment object at 0x101b996a0>
-    // <conv.chunks.Comment object at 0x101b99550>
-    // <conv.chunks.Comment object at 0x101b99730>
-    // <conv.chunks.Comment object at 0x101b99970>
-    // <conv.chunks.Comment object at 0x101b99ac0>
-    // <conv.chunks.Comment object at 0x101b99c10>
-    // <conv.chunks.Comment object at 0x101b99d60>
+    // subtract 32 pixels for the status bar
+    // store result here
+    // use as offset for block buffer
+    // check current content of block buffer
+    // and store here
+    // get old contents of Y again
+    // pull A from stack
+    // if A = 1, branch
+    // if A = 0, load vertical coordinate
+    // and jump
+    // otherwise load horizontal coordinate
     lda(SprObject_X_Position, x);
     JMP(RetYC);
 }
 
 int RetYC() {
-    // <conv.chunks.Comment object at 0x101b99f10>
+    // and mask out high nybble
     anda(0b1111);
     sta(0x4);
     lda(0x3);
@@ -19456,8 +19456,8 @@ int RetYC() {
 int DrawVine() {
     sty(0x0);
     lda(Enemy_Rel_YPos);
-    // <conv.chunks.Comment object at 0x101b9a540>
-    // <conv.chunks.Comment object at 0x101b9a750>
+    // save offset here
+    // get relative vertical coordinate
     clc();
     adc(offsetof(G, VineYPosAdder), y);
     ldx(VineObjOffset, y);
@@ -19466,33 +19466,33 @@ int DrawVine() {
     JSR(SixSpriteStacker);
     lda(Enemy_Rel_XPos);
     sta(Sprite_X_Position, y);
-    // <conv.chunks.Comment object at 0x101b9a960>
-    // <conv.chunks.Comment object at 0x101b9aab0>
-    // <conv.chunks.Comment object at 0x101b9ac00>
-    // <conv.chunks.Comment object at 0x101b9ad80>
-    // <conv.chunks.Comment object at 0x101b9ae10>
-    // <conv.chunks.Comment object at 0x101b9af90>
-    // <conv.chunks.Comment object at 0x101b9b0b0>
+    // add value using offset in Y to get value
+    // get offset to vine
+    // get sprite data offset
+    // store sprite data offset here
+    // stack six sprites on top of each other vertically
+    // get relative horizontal coordinate
+    // store in first, third and fifth sprites
     sta(((Sprite_X_Position) + (8)), y);
     sta(((Sprite_X_Position) + (16)), y);
     clc();
     adc(0x6);
     sta(((Sprite_X_Position) + (4)), y);
     sta(((Sprite_X_Position) + (12)), y);
-    // <conv.chunks.Comment object at 0x101b9b650>
-    // <conv.chunks.Comment object at 0x101b9b6e0>
-    // <conv.chunks.Comment object at 0x101b9b980>
+    // add six pixels to second, fourth and sixth sprites
+    // to give characteristic staggered vine shape to
+    // our vertical stack of sprites
     sta(((Sprite_X_Position) + (20)), y);
     lda(0b100001);
     sta(Sprite_Attributes, y);
-    // <conv.chunks.Comment object at 0x101b9bd70>
-    // <conv.chunks.Comment object at 0x101b9be90>
+    // set bg priority and palette attribute bits
+    // set in first, third and fifth sprites
     sta(((Sprite_Attributes) + (8)), y);
     sta(((Sprite_Attributes) + (16)), y);
     ora(0b1000000);
     sta(((Sprite_Attributes) + (4)), y);
-    // <conv.chunks.Comment object at 0x101ba03e0>
-    // <conv.chunks.Comment object at 0x101ba0500>
+    // additionally, set horizontal flip bit
+    // for second, fourth and sixth sprites
     sta(((Sprite_Attributes) + (12)), y);
     sta(((Sprite_Attributes) + (20)), y);
     ldx(0x5);
@@ -19500,12 +19500,12 @@ int DrawVine() {
 }
 
 int VineTL() {
-    // <conv.chunks.Comment object at 0x101ba0ad0>
-    // <conv.chunks.Comment object at 0x101ba0b60>
+    // set tiles for six sprites
+    // set tile number for sprite
     lda(0xe1);
     sta(Sprite_Tilenumber, y);
     iny();
-    // <conv.chunks.Comment object at 0x101ba0ec0>
+    // move offset to next sprite data
     iny();
     iny();
     iny();
@@ -19514,52 +19514,52 @@ int VineTL() {
     ldy(0x2);
     lda(0x0);
     BNE(SkpVTop);
-    // <conv.chunks.Comment object at 0x101ba1130>
-    // <conv.chunks.Comment object at 0x101ba11c0>
-    // <conv.chunks.Comment object at 0x101ba1340>
-    // <conv.chunks.Comment object at 0x101ba1310>
-    // <conv.chunks.Comment object at 0x101ba14f0>
+    // move onto next sprite
+    // loop until all sprites are done
+    // get original offset
+    // get offset to vine adding data
+    // if offset not zero, skip this part
     lda(0xe0);
     sta(Sprite_Tilenumber, y);
     JMP(SkpVTop);
 }
 
 int SkpVTop() {
-    // <conv.chunks.Comment object at 0x101ba1700>
-    // <conv.chunks.Comment object at 0x101ba18e0>
+    // set other tile number for top of vine
+    // start with the first sprite again
     ldx(0x0);
     JMP(ChkFTop);
 }
 
 int ChkFTop() {
-    // <conv.chunks.Comment object at 0x101ba19d0>
+    // get original starting vertical coordinate
     lda(VineStart_Y_Position);
     sec();
     sbc(Sprite_Y_Position, y);
     cmp(0x64);
     BCC(NextVSp);
-    // <conv.chunks.Comment object at 0x101ba1c70>
-    // <conv.chunks.Comment object at 0x101ba1dc0>
-    // <conv.chunks.Comment object at 0x101ba1e50>
+    // subtract top-most sprite's Y coordinate
+    // if two coordinates are less than 100/$64 pixels
+    // apart, skip this to leave sprite alone
     lda(0xf8);
     sta(Sprite_Y_Position, y);
     JMP(NextVSp);
 }
 
 int NextVSp() {
-    // <conv.chunks.Comment object at 0x101ba2090>
-    // <conv.chunks.Comment object at 0x101ba2270>
+    // otherwise move sprite offscreen
+    // move offset to next OAM data
     iny();
     iny();
     iny();
     iny();
     inx();
     cpx(0x6);
-    // <conv.chunks.Comment object at 0x101ba2570>
-    // <conv.chunks.Comment object at 0x101ba2600>
+    // move onto next sprite
+    // do this until all sprites are checked
     BNE(ChkFTop);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x101ba2870>
+    // return offset set earlier
     return 0;
     JMP(SixSpriteStacker);
 }
@@ -19570,30 +19570,30 @@ int SixSpriteStacker() {
 }
 
 int StkLp() {
-    // <conv.chunks.Comment object at 0x101ba2a20>
-    // <conv.chunks.Comment object at 0x101ba2ab0>
+    // do six sprites
+    // store X or Y coordinate into OAM data
     sta(Sprite_Data, y);
     clc();
     adc(0x8);
-    // <conv.chunks.Comment object at 0x101ba2d80>
+    // add eight pixels
     iny();
     iny();
-    // <conv.chunks.Comment object at 0x101ba2f60>
+    // move offset four bytes forward
     iny();
     iny();
     dex();
     BNE(StkLp);
     ldy(0x2);
-    // <conv.chunks.Comment object at 0x101ba3140>
-    // <conv.chunks.Comment object at 0x101ba31d0>
-    // <conv.chunks.Comment object at 0x101ba3350>
+    // do another sprite
+    // do this until all sprites are done
+    // get saved OAM data offset and leave
     return 0;
     JMP(DrawHammer);
 }
 
 int DrawHammer() {
     ldy(Misc_SprDataOffset, x);
-    // <conv.chunks.Comment object at 0x101ba3fe0>
+    // get misc object OAM data offset
     lda(TimerControl);
     BNE(ForceHPose);
     lda(Misc_State, x);
@@ -19604,23 +19604,23 @@ int DrawHammer() {
 }
 
 int ForceHPose() {
-    // <conv.chunks.Comment object at 0x101ba88c0>
-    // <conv.chunks.Comment object at 0x101ba89e0>
-    // <conv.chunks.Comment object at 0x101ba8b30>
-    // <conv.chunks.Comment object at 0x101ba8c50>
-    // <conv.chunks.Comment object at 0x101ba8ce0>
-    // <conv.chunks.Comment object at 0x101ba8e90>
+    // if master timer control set, skip this part
+    // otherwise get hammer's state
+    // mask out d7
+    // check to see if set to 1 yet
+    // if so, branch
+    // reset offset here
     ldx(0x0);
     BEQ(RenderH);
     JMP(GetHPose);
 }
 
 int GetHPose() {
-    // <conv.chunks.Comment object at 0x101ba8f50>
-    // <conv.chunks.Comment object at 0x101ba9130>
+    // do unconditional branch to rendering part
+    // get frame counter
     lda(FrameCounter);
     lsr();
-    // <conv.chunks.Comment object at 0x101ba92b0>
+    // move d3-d2 to d1-d0
     lsr();
     anda(0b11);
     tax();
@@ -19628,61 +19628,61 @@ int GetHPose() {
 }
 
 int RenderH() {
-    // <conv.chunks.Comment object at 0x101ba93d0>
-    // <conv.chunks.Comment object at 0x101ba9520>
-    // <conv.chunks.Comment object at 0x101ba95b0>
+    // mask out all but d1-d0 (changes every four frames)
+    // use as timing offset
+    // get relative vertical coordinate
     lda(Misc_Rel_YPos);
     clc();
     adc(offsetof(G, FirstSprYPos), x);
     sta(Sprite_Y_Position, y);
-    // <conv.chunks.Comment object at 0x101ba97c0>
-    // <conv.chunks.Comment object at 0x101ba9910>
+    // add first sprite vertical adder based on offset
+    // store as sprite Y coordinate for first sprite
     clc();
     adc(offsetof(G, SecondSprYPos), x);
     sta(((Sprite_Y_Position) + (4)), y);
     lda(Misc_Rel_XPos);
-    // <conv.chunks.Comment object at 0x101ba9af0>
-    // <conv.chunks.Comment object at 0x101ba9c40>
-    // <conv.chunks.Comment object at 0x101ba9e50>
+    // add second sprite vertical adder based on offset
+    // store as sprite Y coordinate for second sprite
+    // get relative horizontal coordinate
     clc();
     adc(offsetof(G, FirstSprXPos), x);
     sta(Sprite_X_Position, y);
-    // <conv.chunks.Comment object at 0x101baa000>
-    // <conv.chunks.Comment object at 0x101baa150>
+    // add first sprite horizontal adder based on offset
+    // store as sprite X coordinate for first sprite
     clc();
     adc(offsetof(G, SecondSprXPos), x);
     sta(((Sprite_X_Position) + (4)), y);
-    // <conv.chunks.Comment object at 0x101baa330>
-    // <conv.chunks.Comment object at 0x101baa480>
+    // add second sprite horizontal adder based on offset
+    // store as sprite X coordinate for second sprite
     lda(offsetof(G, FirstSprTilenum), x);
     sta(Sprite_Tilenumber, y);
-    // <conv.chunks.Comment object at 0x101baa7b0>
+    // get and store tile number of first sprite
     lda(offsetof(G, SecondSprTilenum), x);
     sta(((Sprite_Tilenumber) + (4)), y);
-    // <conv.chunks.Comment object at 0x101baaa20>
+    // get and store tile number of second sprite
     lda(offsetof(G, HammerSprAttrib), x);
     sta(Sprite_Attributes, y);
     sta(((Sprite_Attributes) + (4)), y);
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x101baad50>
-    // <conv.chunks.Comment object at 0x101baaea0>
-    // <conv.chunks.Comment object at 0x101bab0b0>
+    // get and store attribute bytes for both
+    // note in this case they use the same data
+    // get misc object offset
     lda(Misc_OffscreenBits);
     anda(0b11111100);
     BEQ(NoHOffscr);
-    // <conv.chunks.Comment object at 0x101bab2c0>
-    // <conv.chunks.Comment object at 0x101bab3e0>
+    // check offscreen bits
+    // if all bits clear, leave object alone
     lda(0x0);
     sta(Misc_State, x);
-    // <conv.chunks.Comment object at 0x101bab560>
+    // otherwise nullify misc object state
     lda(0xf8);
     JSR(DumpTwoSpr);
     JMP(NoHOffscr);
 }
 
 int NoHOffscr() {
-    // <conv.chunks.Comment object at 0x101bab7a0>
-    // <conv.chunks.Comment object at 0x101bab980>
+    // do sub to move hammer sprites offscreen
+    // leave
     return 0;
     JMP(FlagpoleGfxHandler);
 }
@@ -19691,14 +19691,14 @@ int FlagpoleGfxHandler() {
     ldy(Enemy_SprDataOffset, x);
     lda(Enemy_Rel_XPos);
     sta(Sprite_X_Position, y);
-    // <conv.chunks.Comment object at 0x101babbc0>
-    // <conv.chunks.Comment object at 0x101bb8320>
-    // <conv.chunks.Comment object at 0x101bb8440>
+    // get sprite data offset for flagpole flag
+    // get relative horizontal coordinate
+    // store as X coordinate for first sprite
     clc();
     adc(0x8);
     sta(((Sprite_X_Position) + (4)), y);
-    // <conv.chunks.Comment object at 0x101bb8620>
-    // <conv.chunks.Comment object at 0x101bb86b0>
+    // add eight pixels and store
+    // as X coordinate for second and third sprites
     sta(((Sprite_X_Position) + (8)), y);
     clc();
     adc(0xc);
@@ -19709,48 +19709,48 @@ int FlagpoleGfxHandler() {
     sta(((Sprite_Y_Position) + (8)), y);
     lda(FlagpoleFNum_Y_Pos);
     sta(0x2);
-    // <conv.chunks.Comment object at 0x101bb8bc0>
-    // <conv.chunks.Comment object at 0x101bb8d10>
-    // <conv.chunks.Comment object at 0x101bb8da0>
-    // <conv.chunks.Comment object at 0x101bb8f50>
-    // <conv.chunks.Comment object at 0x101bb9070>
-    // <conv.chunks.Comment object at 0x101bb9100>
-    // <conv.chunks.Comment object at 0x101bb93a0>
-    // <conv.chunks.Comment object at 0x101bb94f0>
+    // add twelve more pixels and
+    // store here to be used later by floatey number
+    // get vertical coordinate
+    // and do sub to dump into first and second sprites
+    // add eight pixels
+    // and store into third sprite
+    // get vertical coordinate for floatey number
+    // store it here
     lda(0x1);
     sta(0x3);
     sta(0x4);
     sta(Sprite_Attributes, y);
-    // <conv.chunks.Comment object at 0x101bb9700>
-    // <conv.chunks.Comment object at 0x101bb9640>
-    // <conv.chunks.Comment object at 0x101bb98b0>
+    // set value for flip which will not be used, and
+    // attribute byte for floatey number
+    // set attribute bytes for all three sprites
     sta(((Sprite_Attributes) + (4)), y);
     sta(((Sprite_Attributes) + (8)), y);
     lda(0x7e);
     sta(Sprite_Tilenumber, y);
     sta(((Sprite_Tilenumber) + (8)), y);
-    // <conv.chunks.Comment object at 0x101bb9e80>
-    // <conv.chunks.Comment object at 0x101bba060>
+    // put triangle shaped tile
+    // into first and third sprites
     lda(0x7f);
     sta(((Sprite_Tilenumber) + (4)), y);
     lda(FlagpoleCollisionYPos);
     BEQ(ChkFlagOffscreen);
-    // <conv.chunks.Comment object at 0x101bba2d0>
-    // <conv.chunks.Comment object at 0x101bba570>
-    // <conv.chunks.Comment object at 0x101bba690>
+    // put skull tile into second sprite
+    // get vertical coordinate at time of collision
+    // if zero, branch ahead
     tya();
     clc();
-    // <conv.chunks.Comment object at 0x101bba870>
+    // add 12 bytes to sprite data offset
     adc(0xc);
     tay();
     lda(FlagpoleScore);
     asl();
-    // <conv.chunks.Comment object at 0x101bbaa20>
-    // <conv.chunks.Comment object at 0x101bbaab0>
-    // <conv.chunks.Comment object at 0x101bbac00>
+    // put back in Y
+    // get offset used to award points for touching flagpole
+    // multiply by 2 to get proper offset here
     tax();
     lda(offsetof(G, FlagpoleScoreNumTiles), x);
-    // <conv.chunks.Comment object at 0x101bbad20>
+    // get appropriate tile data
     sta(0x0);
     lda(((offsetof(G, FlagpoleScoreNumTiles)) + (1)), x);
     JSR(DrawOneSpriteRow);
@@ -19789,7 +19789,7 @@ int DumpThreeSpr() {
 
 int DumpTwoSpr() {
     sta(((Sprite_Data) + (4)), y);
-    // <conv.chunks.Comment object at 0x101bc42f0>
+    // and into first row sprites
     sta(Sprite_Data, y);
     JMP(ExitDumpSpr);
 }
@@ -19804,23 +19804,23 @@ int DrawLargePlatform() {
     sty(0x2);
     iny();
     iny();
-    // <conv.chunks.Comment object at 0x101bc4740>
-    // <conv.chunks.Comment object at 0x101bc48c0>
-    // <conv.chunks.Comment object at 0x101bc4890>
-    // <conv.chunks.Comment object at 0x101bc4aa0>
+    // get OAM data offset
+    // store here
+    // add 3 to it for offset
+    // to X coordinate
     iny();
     lda(Enemy_Rel_XPos);
     JSR(SixSpriteStacker);
-    // <conv.chunks.Comment object at 0x101bc4bc0>
-    // <conv.chunks.Comment object at 0x101bc4ce0>
+    // get horizontal relative coordinate
+    // store X coordinates using A as base, stack horizontally
     ldx(ObjectOffset);
     lda(Enemy_Y_Position, x);
     JSR(DumpFourSpr);
-    // <conv.chunks.Comment object at 0x101bc4ef0>
-    // <conv.chunks.Comment object at 0x101bc5040>
+    // get vertical coordinate
+    // dump into first four sprites as Y coordinate
     ldy(AreaType);
     cpy(0x3);
-    // <conv.chunks.Comment object at 0x101bc5250>
+    // check for castle-type level
     BEQ(ShrinkPlatform);
     ldy(SecondaryHardMode);
     BEQ(SetLast2Platform);
@@ -19837,10 +19837,10 @@ int SetLast2Platform() {
     sta(((Sprite_Y_Position) + (16)), y);
     sta(((Sprite_Y_Position) + (20)), y);
     lda(0x5b);
-    // <conv.chunks.Comment object at 0x101bc5820>
-    // <conv.chunks.Comment object at 0x101bc5970>
-    // <conv.chunks.Comment object at 0x101bc5b80>
-    // <conv.chunks.Comment object at 0x101bc5d90>
+    // get OAM data offset
+    // store vertical coordinate or offscreen
+    // coordinate into last two sprites as Y coordinate
+    // load default tile for platform (girder)
     ldx(CloudTypeOverride);
     BEQ(SetPlatformTilenum);
     lda(0x75);
@@ -19856,102 +19856,102 @@ int SetPlatformTilenum() {
     JSR(DumpSixSpr);
     inx();
     JSR(GetXOffscreenBits);
-    // <conv.chunks.Comment object at 0x101bc6210>
-    // <conv.chunks.Comment object at 0x101bc6360>
-    // <conv.chunks.Comment object at 0x101bc63f0>
-    // <conv.chunks.Comment object at 0x101bc6510>
-    // <conv.chunks.Comment object at 0x101bc6660>
-    // <conv.chunks.Comment object at 0x101bc66f0>
-    // <conv.chunks.Comment object at 0x101bc6840>
-    // <conv.chunks.Comment object at 0x101bc68d0>
+    // get enemy object buffer offset
+    // increment Y for tile offset
+    // dump tile number into all six sprites
+    // set palette controls
+    // increment Y for sprite attributes
+    // dump attributes into all six sprites
+    // increment X for enemy objects
+    // get offscreen bits again
     dex();
     ldy(Enemy_SprDataOffset, x);
     asl();
     pha();
-    // <conv.chunks.Comment object at 0x101bc6a80>
-    // <conv.chunks.Comment object at 0x101bc6c00>
-    // <conv.chunks.Comment object at 0x101bc6cc0>
+    // get OAM data offset
+    // rotate d7 into carry, save remaining
+    // bits to the stack
     BCC(SChk2);
     lda(0xf8);
-    // <conv.chunks.Comment object at 0x101bc6e70>
+    // if d7 was set, move first sprite offscreen
     sta(Sprite_Y_Position, y);
     JMP(SChk2);
 }
 
 int SChk2() {
-    // <conv.chunks.Comment object at 0x101bc70b0>
+    // get bits from stack
     pla();
     asl();
     pha();
-    // <conv.chunks.Comment object at 0x101bc7200>
-    // <conv.chunks.Comment object at 0x101bc72c0>
+    // rotate d6 into carry
+    // save to stack
     BCC(SChk3);
     lda(0xf8);
-    // <conv.chunks.Comment object at 0x101bc7470>
+    // if d6 was set, move second sprite offscreen
     sta(((Sprite_Y_Position) + (4)), y);
     JMP(SChk3);
 }
 
 int SChk3() {
-    // <conv.chunks.Comment object at 0x101bc7770>
+    // get bits from stack
     pla();
     asl();
     pha();
-    // <conv.chunks.Comment object at 0x101bc78c0>
-    // <conv.chunks.Comment object at 0x101bc7980>
+    // rotate d5 into carry
+    // save to stack
     BCC(SChk4);
     lda(0xf8);
-    // <conv.chunks.Comment object at 0x101bc7b30>
+    // if d5 was set, move third sprite offscreen
     sta(((Sprite_Y_Position) + (8)), y);
     JMP(SChk4);
 }
 
 int SChk4() {
-    // <conv.chunks.Comment object at 0x101bc7e30>
+    // get bits from stack
     pla();
     asl();
     pha();
-    // <conv.chunks.Comment object at 0x101bc7f80>
-    // <conv.chunks.Comment object at 0x101bcc080>
+    // rotate d4 into carry
+    // save to stack
     BCC(SChk5);
     lda(0xf8);
-    // <conv.chunks.Comment object at 0x101bcc230>
+    // if d4 was set, move fourth sprite offscreen
     sta(((Sprite_Y_Position) + (12)), y);
     JMP(SChk5);
 }
 
 int SChk5() {
-    // <conv.chunks.Comment object at 0x101bcc530>
+    // get bits from stack
     pla();
     asl();
     pha();
-    // <conv.chunks.Comment object at 0x101bcc680>
-    // <conv.chunks.Comment object at 0x101bcc740>
+    // rotate d3 into carry
+    // save to stack
     BCC(SChk6);
     lda(0xf8);
-    // <conv.chunks.Comment object at 0x101bcc8f0>
+    // if d3 was set, move fifth sprite offscreen
     sta(((Sprite_Y_Position) + (16)), y);
     JMP(SChk6);
 }
 
 int SChk6() {
-    // <conv.chunks.Comment object at 0x101bccbf0>
+    // get bits from stack
     pla();
     asl();
     BCC(SLChk);
-    // <conv.chunks.Comment object at 0x101bccd40>
-    // <conv.chunks.Comment object at 0x101bccdd0>
+    // rotate d2 into carry
+    // save to stack
     lda(0xf8);
     sta(((Sprite_Y_Position) + (20)), y);
     JMP(SLChk);
 }
 
 int SLChk() {
-    // <conv.chunks.Comment object at 0x101bccf80>
-    // <conv.chunks.Comment object at 0x101bcd220>
+    // if d2 was set, move sixth sprite offscreen
+    // check d7 of offscreen bits
     lda(Enemy_OffscreenBits);
     asl();
-    // <conv.chunks.Comment object at 0x101bcd3d0>
+    // and if d7 is not set, skip sub
     BCC(ExDLPl);
     JSR(MoveSixSpritesOffscreen);
     JMP(ExDLPl);
@@ -19971,32 +19971,32 @@ int DrawFloateyNumber_Coin() {
 }
 
 int NotRsNum() {
-    // <conv.chunks.Comment object at 0x101bcd7f0>
-    // <conv.chunks.Comment object at 0x101bcd940>
-    // <conv.chunks.Comment object at 0x101bcd9d0>
-    // <conv.chunks.Comment object at 0x101bcdaf0>
-    // <conv.chunks.Comment object at 0x101bcdc40>
+    // get frame counter
+    // divide by 2
+    // branch if d0 not set to raise number every other frame
+    // otherwise, decrement vertical coordinate
+    // get vertical coordinate
     lda(Misc_Y_Position, x);
     JSR(DumpTwoSpr);
     lda(Misc_Rel_XPos);
     sta(Sprite_X_Position, y);
-    // <conv.chunks.Comment object at 0x101bcddc0>
-    // <conv.chunks.Comment object at 0x101bcdee0>
-    // <conv.chunks.Comment object at 0x101bce000>
+    // dump into both sprites
+    // get relative horizontal coordinate
+    // store as X coordinate for first sprite
     clc();
     adc(0x8);
     sta(((Sprite_X_Position) + (4)), y);
-    // <conv.chunks.Comment object at 0x101bce1e0>
-    // <conv.chunks.Comment object at 0x101bce270>
+    // add eight pixels
+    // store as X coordinate for second sprite
     lda(0x2);
     sta(Sprite_Attributes, y);
-    // <conv.chunks.Comment object at 0x101bce570>
+    // store attribute byte in both sprites
     sta(((Sprite_Attributes) + (4)), y);
     lda(0xf7);
     sta(Sprite_Tilenumber, y);
     lda(0xfb);
-    // <conv.chunks.Comment object at 0x101bce990>
-    // <conv.chunks.Comment object at 0x101bceb70>
+    // put tile numbers into both sprites
+    // that resemble "200"
     sta(((Sprite_Tilenumber) + (4)), y);
     JMP(ExJCGfx);
     JMP(JCoinGfxHandler);
@@ -20009,19 +20009,19 @@ int JCoinGfxHandler() {
     BCS(DrawFloateyNumber_Coin);
     lda(Misc_Y_Position, x);
     sta(Sprite_Y_Position, y);
-    // <conv.chunks.Comment object at 0x101bcf050>
-    // <conv.chunks.Comment object at 0x101bcf3b0>
-    // <conv.chunks.Comment object at 0x101bcf500>
-    // <conv.chunks.Comment object at 0x101bcf590>
-    // <conv.chunks.Comment object at 0x101bcf740>
-    // <conv.chunks.Comment object at 0x101bcf890>
+    // get coin/floatey number's OAM data offset
+    // get state of misc object
+    // if 2 or greater,
+    // branch to draw floatey number
+    // store vertical coordinate as
+    // Y coordinate for first sprite
     clc();
     adc(0x8);
     sta(((Sprite_Y_Position) + (4)), y);
     lda(Misc_Rel_XPos);
-    // <conv.chunks.Comment object at 0x101bcfa70>
-    // <conv.chunks.Comment object at 0x101bcfb00>
-    // <conv.chunks.Comment object at 0x101bcfda0>
+    // add eight pixels
+    // store as Y coordinate for second sprite
+    // get relative horizontal coordinate
     sta(Sprite_X_Position, y);
     sta(((Sprite_X_Position) + (4)), y);
     lda(FrameCounter);
@@ -20032,18 +20032,18 @@ int JCoinGfxHandler() {
     iny();
     JSR(DumpTwoSpr);
     dey();
-    // <conv.chunks.Comment object at 0x101bcffe0>
-    // <conv.chunks.Comment object at 0x101bd4230>
-    // <conv.chunks.Comment object at 0x101bd4380>
-    // <conv.chunks.Comment object at 0x101bd4410>
-    // <conv.chunks.Comment object at 0x101bd4560>
-    // <conv.chunks.Comment object at 0x101bd45f0>
-    // <conv.chunks.Comment object at 0x101bd4770>
-    // <conv.chunks.Comment object at 0x101bd4800>
-    // <conv.chunks.Comment object at 0x101bd4950>
+    // store as X coordinate for first and second sprites
+    // get frame counter
+    // divide by 2 to alter every other frame
+    // mask out d2-d1
+    // use as graphical offset
+    // load tile number
+    // increment OAM data offset to write tile numbers
+    // do sub to dump tile number into both sprites
+    // decrement to get old offset
     lda(0x2);
     sta(Sprite_Attributes, y);
-    // <conv.chunks.Comment object at 0x101bd4a40>
+    // set attribute byte in first sprite
     lda(0x82);
     sta(((Sprite_Attributes) + (4)), y);
     ldx(ObjectOffset);
@@ -20051,9 +20051,9 @@ int JCoinGfxHandler() {
 }
 
 int ExJCGfx() {
-    // <conv.chunks.Comment object at 0x101bd4c80>
-    // <conv.chunks.Comment object at 0x101bd4f20>
-    // <conv.chunks.Comment object at 0x101bd5070>
+    // set attribute byte with vertical flip in second sprite
+    // get misc object offset
+    // leave
     return 0;
     JMP(DrawPowerUp);
 }
@@ -20061,8 +20061,8 @@ int ExJCGfx() {
 int DrawPowerUp() {
     ldy(((Enemy_SprDataOffset) + (5)));
     lda(Enemy_Rel_YPos);
-    // <conv.chunks.Comment object at 0x101bd5970>
-    // <conv.chunks.Comment object at 0x101bd61b0>
+    // get power-up's sprite data offset
+    // get relative vertical coordinate
     clc();
     adc(0x8);
     sta(0x2);
@@ -20072,22 +20072,22 @@ int DrawPowerUp() {
     lda(offsetof(G, PowerUpAttributes), x);
     ora(((Enemy_SprAttrib) + (5)));
     sta(0x4);
-    // <conv.chunks.Comment object at 0x101bd6360>
-    // <conv.chunks.Comment object at 0x101bd64b0>
-    // <conv.chunks.Comment object at 0x101bd6540>
-    // <conv.chunks.Comment object at 0x101bd66f0>
-    // <conv.chunks.Comment object at 0x101bd6780>
-    // <conv.chunks.Comment object at 0x101bd6900>
-    // <conv.chunks.Comment object at 0x101bd6a50>
-    // <conv.chunks.Comment object at 0x101bd6c60>
+    // add eight pixels
+    // store result here
+    // get relative horizontal coordinate
+    // store here
+    // get power-up type
+    // get attribute data for power-up type
+    // add background priority bit if set
+    // store attributes here
     txa();
     pha();
-    // <conv.chunks.Comment object at 0x101bd6e10>
+    // save power-up type to the stack
     asl();
     asl();
     tax();
-    // <conv.chunks.Comment object at 0x101bd6f60>
-    // <conv.chunks.Comment object at 0x101bd7020>
+    // multiply by four to get proper offset
+    // use as X
     lda(0x1);
     sta(0x7);
     sta(0x3);
@@ -20096,7 +20096,7 @@ int DrawPowerUp() {
 
 int PUpDrawLoop() {
     lda(offsetof(G, PowerUpGfxTable), x);
-    // <conv.chunks.Comment object at 0x101bd7260>
+    // load left tile of power-up object
     sta(0x0);
     lda(((offsetof(G, PowerUpGfxTable)) + (1)), x);
     JSR(DrawOneSpriteRow);
@@ -20105,13 +20105,13 @@ int PUpDrawLoop() {
     ldy(((Enemy_SprDataOffset) + (5)));
     pla();
     BEQ(PUpOfs);
-    // <conv.chunks.Comment object at 0x101bd7560>
-    // <conv.chunks.Comment object at 0x101bd7860>
-    // <conv.chunks.Comment object at 0x101bd79b0>
-    // <conv.chunks.Comment object at 0x101bd7a40>
-    // <conv.chunks.Comment object at 0x101bd7bc0>
-    // <conv.chunks.Comment object at 0x101bd7dd0>
-    // <conv.chunks.Comment object at 0x101bd7e60>
+    // load right tile
+    // branch to draw one row of our power-up object
+    // decrement counter
+    // branch until two rows are drawn
+    // get sprite data offset again
+    // pull saved power-up type from the stack
+    // if regular mushroom, branch, do not change colors or flip
     cmp(0x3);
     BEQ(PUpOfs);
     sta(0x0);
@@ -20121,14 +20121,14 @@ int PUpDrawLoop() {
     ora(((Enemy_SprAttrib) + (5)));
     sta(Sprite_Attributes, y);
     sta(((Sprite_Attributes) + (4)), y);
-    // <conv.chunks.Comment object at 0x101be0050>
-    // <conv.chunks.Comment object at 0x101be0260>
-    // <conv.chunks.Comment object at 0x101be02f0>
-    // <conv.chunks.Comment object at 0x101be04a0>
-    // <conv.chunks.Comment object at 0x101be0530>
-    // <conv.chunks.Comment object at 0x101be0650>
-    // <conv.chunks.Comment object at 0x101be0830>
-    // <conv.chunks.Comment object at 0x101be0980>
+    // if 1-up mushroom, branch, do not change colors or flip
+    // store power-up type here now
+    // get frame counter
+    // divide by 2 to change colors every two frames
+    // mask out all but d1 and d0 (previously d2 and d1)
+    // add background priority bit if any set
+    // set as new palette bits for top left and
+    // top right sprites for fire flower and star
     ldx(0x0);
     dex();
     BEQ(FlipPUpRightSide);
@@ -20140,7 +20140,7 @@ int PUpDrawLoop() {
 int FlipPUpRightSide() {
     lda(((Sprite_Attributes) + (4)), y);
     ora(0b1000000);
-    // <conv.chunks.Comment object at 0x101be1490>
+    // set horizontal flip bit for top right sprite
     sta(((Sprite_Attributes) + (4)), y);
     lda(((Sprite_Attributes) + (12)), y);
     ora(0b1000000);
@@ -20149,41 +20149,41 @@ int FlipPUpRightSide() {
 }
 
 int PUpOfs() {
-    // <conv.chunks.Comment object at 0x101be1970>
-    // <conv.chunks.Comment object at 0x101be1a90>
-    // <conv.chunks.Comment object at 0x101be1ca0>
+    // set horizontal flip bit for bottom right sprite
+    // note these are only done for fire flower and star power-ups
+    // jump to check to see if power-up is offscreen at all, then leave
     JMP(SprObjectOffscrChk);
     JMP(EnemyGfxHandler);
 }
 
 int EnemyGfxHandler() {
     lda(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x101bf3f50>
+    // get enemy object vertical position
     sta(0x2);
     lda(Enemy_Rel_XPos);
     sta(0x5);
-    // <conv.chunks.Comment object at 0x101bfa2a0>
-    // <conv.chunks.Comment object at 0x101bfa4e0>
+    // get enemy object horizontal position
+    // relative to screen
     ldy(Enemy_SprDataOffset, x);
     sty(0xeb);
-    // <conv.chunks.Comment object at 0x101bfa720>
+    // get sprite data offset
     lda(0x0);
     sta(VerticalFlipFlag);
-    // <conv.chunks.Comment object at 0x101bfa870>
+    // initialize vertical flip flag by default
     lda(Enemy_MovingDir, x);
     sta(0x3);
-    // <conv.chunks.Comment object at 0x101bfab70>
+    // get enemy object moving direction
     lda(Enemy_SprAttrib, x);
     sta(0x4);
-    // <conv.chunks.Comment object at 0x101bfadb0>
+    // get enemy object sprite attributes
     lda(Enemy_ID, x);
     cmp(PiranhaPlant);
     BNE(CheckForRetainerObj);
-    // <conv.chunks.Comment object at 0x101bfafc0>
-    // <conv.chunks.Comment object at 0x101bfb0e0>
+    // is enemy object piranha plant?
+    // if not, branch
     ldy(PiranhaPlant_Y_Speed, x);
     BMI(CheckForRetainerObj);
-    // <conv.chunks.Comment object at 0x101bfb320>
+    // if piranha plant moving upwards, branch
     ldy(EnemyFrameTimer, x);
     BEQ(CheckForRetainerObj);
     return 0;
@@ -20192,20 +20192,20 @@ int EnemyGfxHandler() {
 
 int CheckForRetainerObj() {
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x101bfb770>
+    // store enemy state
     sta(0xed);
     anda(0b11111);
-    // <conv.chunks.Comment object at 0x101bfb8c0>
+    // nullify all but 5 LSB and use as Y
     tay();
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x101bfbb60>
+    // check for mushroom retainer/princess object
     cmp(RetainerObject);
     BNE(CheckForBulletBillCV);
     ldy(0x0);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x101bfbda0>
-    // <conv.chunks.Comment object at 0x101bfbec0>
-    // <conv.chunks.Comment object at 0x101bfbf50>
+    // if not found, branch
+    // if found, nullify saved state in Y
+    // set value that will not be used
     sta(0x3);
     lda(0x15);
     JMP(CheckForBulletBillCV);
@@ -20215,9 +20215,9 @@ int CheckForBulletBillCV() {
     cmp(BulletBill_CannonVar);
     BNE(CheckForJumpspring);
     dec(0x2);
-    // <conv.chunks.Comment object at 0x101c08380>
-    // <conv.chunks.Comment object at 0x101c084a0>
-    // <conv.chunks.Comment object at 0x101c085f0>
+    // otherwise check for bullet bill object
+    // if not found, branch again
+    // decrement saved vertical position
     lda(0x3);
     ldy(EnemyFrameTimer, x);
     BEQ(SBBAt);
@@ -20226,10 +20226,10 @@ int CheckForBulletBillCV() {
 }
 
 int SBBAt() {
-    // <conv.chunks.Comment object at 0x101c08740>
-    // <conv.chunks.Comment object at 0x101c08920>
-    // <conv.chunks.Comment object at 0x101c08a70>
-    // <conv.chunks.Comment object at 0x101c08b90>
+    // get timer for enemy object
+    // if expired, do not set priority bit
+    // otherwise do so
+    // set new sprite attributes
     sta(0x4);
     ldy(0x0);
     sty(0xed);
@@ -20239,7 +20239,7 @@ int SBBAt() {
 
 int CheckForJumpspring() {
     cmp(JumpspringObject);
-    // <conv.chunks.Comment object at 0x101c090a0>
+    // check for jumpspring object
     BNE(CheckForPodoboo);
     ldy(0x3);
     ldx(JumpspringAnimCtrl);
@@ -20254,12 +20254,12 @@ int CheckForPodoboo() {
     cmp(0xc);
     BNE(CheckBowserGfxFlag);
     lda(Enemy_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x101c096a0>
-    // <conv.chunks.Comment object at 0x101c09670>
-    // <conv.chunks.Comment object at 0x101c09850>
-    // <conv.chunks.Comment object at 0x101c099d0>
-    // <conv.chunks.Comment object at 0x101c09a60>
-    // <conv.chunks.Comment object at 0x101c09c10>
+    // store saved enemy object value here
+    // and Y here (enemy state -2 MSB if not changed)
+    // get enemy object offset
+    // check for podoboo object
+    // branch if not found
+    // if moving upwards, branch
     BMI(CheckBowserGfxFlag);
     inc(VerticalFlipFlag);
     JMP(CheckBowserGfxFlag);
@@ -20267,10 +20267,10 @@ int CheckForPodoboo() {
 
 int CheckBowserGfxFlag() {
     lda(BowserGfxFlag);
-    // <conv.chunks.Comment object at 0x101c09fa0>
+    // if not drawing bowser at all, skip to something else
     BEQ(CheckForGoomba);
     ldy(0x16);
-    // <conv.chunks.Comment object at 0x101c0a1b0>
+    // if set to 1, draw bowser's front
     cmp(0x1);
     BEQ(SBwsrGfxOfs);
     iny();
@@ -20284,31 +20284,31 @@ int SBwsrGfxOfs() {
 
 int CheckForGoomba() {
     ldy(0xef);
-    // <conv.chunks.Comment object at 0x101c0a6f0>
+    // check value for goomba object
     cpy(Goomba);
     BNE(CheckBowserFront);
-    // <conv.chunks.Comment object at 0x101c0a570>
+    // branch if not found
     lda(Enemy_State, x);
     cmp(0x2);
     BCC(GmbaAnim);
     ldx(0x4);
-    // <conv.chunks.Comment object at 0x101c0ab40>
-    // <conv.chunks.Comment object at 0x101c0abd0>
-    // <conv.chunks.Comment object at 0x101c0ad80>
+    // check for defeated state
+    // if not defeated, go ahead and animate
+    // if defeated, write new value here
     stx(0xec);
     JMP(GmbaAnim);
 }
 
 int GmbaAnim() {
-    // <conv.chunks.Comment object at 0x101c0ae10>
+    // check for d5 set in enemy object state
     anda(0b100000);
     ora(TimerControl);
     BNE(CheckBowserFront);
-    // <conv.chunks.Comment object at 0x101c0b0e0>
-    // <conv.chunks.Comment object at 0x101c0b200>
+    // or timer disable flag set
+    // if either condition true, do not animate goomba
     lda(FrameCounter);
     anda(0b1000);
-    // <conv.chunks.Comment object at 0x101c0b410>
+    // check for every eighth frame
     BNE(CheckBowserFront);
     lda(0x3);
     eor(0b11);
@@ -20319,18 +20319,18 @@ int GmbaAnim() {
 int CheckBowserFront() {
     lda(offsetof(G, EnemyAttributeData), y);
     ora(0x4);
-    // <conv.chunks.Comment object at 0x101c0b830>
-    // <conv.chunks.Comment object at 0x101c0bb00>
+    // load sprite attribute using enemy object
+    // as offset, and add to bits already loaded
     sta(0x4);
     lda(offsetof(G, EnemyGfxTableOffsets), y);
     tax();
     ldy(0xec);
-    // <conv.chunks.Comment object at 0x101c0bb90>
-    // <conv.chunks.Comment object at 0x101c0be60>
-    // <conv.chunks.Comment object at 0x101c0bf20>
+    // load value based on enemy object as offset
+    // save as X
+    // get previously saved value
     lda(BowserGfxFlag);
     BEQ(CheckForSpiny);
-    // <conv.chunks.Comment object at 0x101c10140>
+    // if not drawing bowser object at all, skip all of this
     cmp(0x1);
     BNE(CheckBowserRear);
     lda(BowserBodyControls);
@@ -20340,14 +20340,14 @@ int CheckBowserFront() {
 }
 
 int ChkFrontSte() {
-    // <conv.chunks.Comment object at 0x101c102c0>
-    // <conv.chunks.Comment object at 0x101c10470>
-    // <conv.chunks.Comment object at 0x101c10590>
-    // <conv.chunks.Comment object at 0x101c106b0>
-    // <conv.chunks.Comment object at 0x101c10740>
+    // if not drawing front part, branch to draw the rear part
+    // check bowser's body control bits
+    // branch if d7 not set (control's bowser's mouth)
+    // otherwise load offset for second frame
+    // check saved enemy state
     lda(0xed);
     anda(0b100000);
-    // <conv.chunks.Comment object at 0x101c108c0>
+    // if bowser not defeated, do not set flag
     BEQ(DrawBowser);
     JMP(FlipBowserOver);
 }
@@ -20364,7 +20364,7 @@ int DrawBowser() {
 
 int CheckBowserRear() {
     lda(BowserBodyControls);
-    // <conv.chunks.Comment object at 0x101c10e00>
+    // check bowser's body control bits
     anda(0x1);
     BEQ(ChkRearSte);
     ldx(0xe4);
@@ -20372,17 +20372,17 @@ int CheckBowserRear() {
 }
 
 int ChkRearSte() {
-    // <conv.chunks.Comment object at 0x101c10f80>
-    // <conv.chunks.Comment object at 0x101c11130>
-    // <conv.chunks.Comment object at 0x101c111c0>
+    // branch if d0 not set (control's bowser's feet)
+    // otherwise load offset for second frame
+    // check saved enemy state
     lda(0xed);
     anda(0b100000);
-    // <conv.chunks.Comment object at 0x101c11340>
+    // if bowser not defeated, do not set flag
     BEQ(DrawBowser);
     lda(0x2);
     sec();
-    // <conv.chunks.Comment object at 0x101c115e0>
-    // <conv.chunks.Comment object at 0x101c115b0>
+    // subtract 16 pixels from
+    // saved vertical coordinate
     sbc(0x10);
     sta(0x2);
     JMP(FlipBowserOver);
@@ -20395,22 +20395,22 @@ int CheckForSpiny() {
     cpy(0x5);
     BNE(NotEgg);
     ldx(0x30);
-    // <conv.chunks.Comment object at 0x101c11ac0>
-    // <conv.chunks.Comment object at 0x101c11b50>
-    // <conv.chunks.Comment object at 0x101c11d00>
-    // <conv.chunks.Comment object at 0x101c11d90>
-    // <conv.chunks.Comment object at 0x101c11f70>
+    // check if value loaded is for spiny
+    // if not found, branch
+    // if enemy state set to $05, do this,
+    // otherwise branch
+    // set to spiny egg offset
     lda(0x2);
     sta(0x3);
-    // <conv.chunks.Comment object at 0x101c121b0>
+    // set enemy direction to reverse sprites horizontally
     lda(0x5);
     sta(0xec);
     JMP(NotEgg);
 }
 
 int NotEgg() {
-    // <conv.chunks.Comment object at 0x101c123c0>
-    // <conv.chunks.Comment object at 0x101c12450>
+    // set enemy state
+    // skip a big chunk of this if we found spiny but not in egg
     JMP(CheckForHammerBro);
     JMP(CheckForLakitu);
 }
@@ -20418,13 +20418,13 @@ int NotEgg() {
 int CheckForLakitu() {
     cpx(0x90);
     BNE(CheckUpsideDownShell);
-    // <conv.chunks.Comment object at 0x101c12660>
-    // <conv.chunks.Comment object at 0x101c126f0>
+    // check value for lakitu's offset loaded
+    // branch if not loaded
     lda(0xed);
     anda(0b100000);
     BNE(NoLAFr);
-    // <conv.chunks.Comment object at 0x101c128a0>
-    // <conv.chunks.Comment object at 0x101c12ab0>
+    // check for d5 set in enemy state
+    // branch if set
     lda(FrenzyEnemyTimer);
     cmp(0x10);
     BCS(NoLAFr);
@@ -20433,28 +20433,28 @@ int CheckForLakitu() {
 }
 
 int NoLAFr() {
-    // <conv.chunks.Comment object at 0x101c12cf0>
-    // <conv.chunks.Comment object at 0x101c12d80>
-    // <conv.chunks.Comment object at 0x101c12f60>
-    // <conv.chunks.Comment object at 0x101c12ff0>
+    // check timer to see if we've reached a certain range
+    // branch if not
+    // if d6 not set and timer in range, load alt frame for lakitu
+    // skip this next part if we found lakitu but alt frame not needed
     JMP(CheckDefeatedState);
     JMP(CheckUpsideDownShell);
 }
 
 int CheckUpsideDownShell() {
     lda(0xef);
-    // <conv.chunks.Comment object at 0x101c13260>
+    // check for enemy object => $04
     cmp(0x4);
     BCS(CheckRightSideUpShell);
-    // <conv.chunks.Comment object at 0x101c133b0>
+    // branch if true
     cpy(0x2);
     BCC(CheckRightSideUpShell);
     ldx(0x5a);
-    // <conv.chunks.Comment object at 0x101c135c0>
-    // <conv.chunks.Comment object at 0x101c13770>
+    // branch if enemy state < $02
+    // set for upside-down koopa shell by default
     ldy(0xef);
     cpy(BuzzyBeetle);
-    // <conv.chunks.Comment object at 0x101c13800>
+    // check for buzzy beetle object
     BNE(CheckRightSideUpShell);
     ldx(0x7e);
     inc(0x2);
@@ -20467,11 +20467,11 @@ int CheckRightSideUpShell() {
     BNE(CheckForHammerBro);
     ldx(0x72);
     inc(0x2);
-    // <conv.chunks.Comment object at 0x101c13e30>
-    // <conv.chunks.Comment object at 0x101c13ec0>
-    // <conv.chunks.Comment object at 0x101c13fb0>
-    // <conv.chunks.Comment object at 0x101c1c1a0>
-    // <conv.chunks.Comment object at 0x101c1c2f0>
+    // check for value set here
+    // if enemy state < $02, do not change to shell, if
+    // enemy state => $02 but not = $04, leave shell upside-down
+    // set right-side up buzzy beetle shell by default
+    // increment saved vertical position by one pixel
     ldy(0xef);
     cpy(BuzzyBeetle);
     BEQ(CheckForDefdGoomba);
@@ -20495,13 +20495,13 @@ int CheckForDefdGoomba() {
 int CheckForHammerBro() {
     ldy(ObjectOffset);
     lda(0xef);
-    // <conv.chunks.Comment object at 0x101c1d400>
+    // check for hammer bro object
     cmp(HammerBro);
     BNE(CheckForBloober);
-    // <conv.chunks.Comment object at 0x101c1d5e0>
+    // branch if not found
     lda(0xed);
     BEQ(CheckToAnimateEnemy);
-    // <conv.chunks.Comment object at 0x101c1d700>
+    // branch if not in normal enemy state
     anda(0b1000);
     BEQ(CheckDefeatedState);
     ldx(0xb4);
@@ -20512,21 +20512,21 @@ int CheckForHammerBro() {
 int CheckForBloober() {
     cpx(0x48);
     BEQ(CheckToAnimateEnemy);
-    // <conv.chunks.Comment object at 0x101c1dd90>
-    // <conv.chunks.Comment object at 0x101c1de20>
+    // check for cheep-cheep offset loaded
+    // branch if found
     lda(EnemyIntervalTimer, y);
     cmp(0x5);
     BCS(CheckDefeatedState);
     cpx(0x3c);
     BNE(CheckToAnimateEnemy);
-    // <conv.chunks.Comment object at 0x101c1e150>
-    // <conv.chunks.Comment object at 0x101c1e300>
-    // <conv.chunks.Comment object at 0x101c1e390>
+    // branch if some timer is above a certain point
+    // check for bloober offset loaded
+    // branch if not found this time
     cmp(0x1);
     BEQ(CheckDefeatedState);
     inc(0x2);
-    // <conv.chunks.Comment object at 0x101c1e5a0>
-    // <conv.chunks.Comment object at 0x101c1e780>
+    // branch if timer is set to certain point
+    // increment saved vertical coordinate three pixels
     inc(0x2);
     inc(0x2);
     JMP(CheckAnimationStop);
@@ -20535,35 +20535,35 @@ int CheckForBloober() {
 
 int CheckToAnimateEnemy() {
     lda(0xef);
-    // <conv.chunks.Comment object at 0x101c1ebd0>
+    // check for specific enemy objects
     cmp(Goomba);
     BEQ(CheckDefeatedState);
-    // <conv.chunks.Comment object at 0x101c1eba0>
+    // branch if goomba
     cmp(0x8);
     BEQ(CheckDefeatedState);
-    // <conv.chunks.Comment object at 0x101c1ef60>
+    // branch if bullet bill (note both variants use $08 here)
     cmp(Podoboo);
     BEQ(CheckDefeatedState);
     cmp(0x18);
-    // <conv.chunks.Comment object at 0x101c1f230>
-    // <conv.chunks.Comment object at 0x101c1f350>
+    // branch if podoboo
+    // branch if => $18
     BCS(CheckDefeatedState);
     ldy(0x0);
     cmp(0x15);
     BNE(CheckForSecondFrame);
     iny();
     lda(WorldNumber);
-    // <conv.chunks.Comment object at 0x101c1f5c0>
-    // <conv.chunks.Comment object at 0x101c1f6e0>
-    // <conv.chunks.Comment object at 0x101c1f8c0>
-    // <conv.chunks.Comment object at 0x101c1f950>
+    // check for mushroom retainer/princess object
+    // which uses different code here, branch if not found
+    // residual instruction
+    // are we on world 8?
     cmp(World8);
     BCS(CheckDefeatedState);
     ldx(0xa2);
     lda(0x3);
-    // <conv.chunks.Comment object at 0x101c1faa0>
-    // <conv.chunks.Comment object at 0x101c1fcb0>
-    // <conv.chunks.Comment object at 0x101c1fd40>
+    // if so, leave the offset alone (use princess)
+    // otherwise, set for mushroom retainer object instead
+    // set alternate state here
     sta(0xec);
     BNE(CheckDefeatedState);
     JMP(CheckForSecondFrame);
@@ -20579,11 +20579,11 @@ int CheckForSecondFrame() {
 int CheckAnimationStop() {
     lda(0xed);
     anda(0b10100000);
-    // <conv.chunks.Comment object at 0x101c28560>
-    // <conv.chunks.Comment object at 0x101c285f0>
+    // check saved enemy state
+    // for d7 or d5, or check for timers stopped
     ora(TimerControl);
     BNE(CheckDefeatedState);
-    // <conv.chunks.Comment object at 0x101c28860>
+    // if either condition true, branch
     txa();
     clc();
     adc(0x6);
@@ -20595,17 +20595,17 @@ int CheckDefeatedState() {
     lda(0xed);
     anda(0b100000);
     BEQ(DrawEnemyObject);
-    // <conv.chunks.Comment object at 0x101c28ce0>
-    // <conv.chunks.Comment object at 0x101c28d70>
-    // <conv.chunks.Comment object at 0x101c28ef0>
+    // check saved enemy state
+    // for d5 set
+    // branch if not set
     lda(0xef);
     cmp(0x4);
     BCC(DrawEnemyObject);
-    // <conv.chunks.Comment object at 0x101c29010>
-    // <conv.chunks.Comment object at 0x101c29190>
+    // check for saved enemy object => $04
+    // branch if less
     ldy(0x1);
     sty(VerticalFlipFlag);
-    // <conv.chunks.Comment object at 0x101c293a0>
+    // set vertical flip flag
     dey();
     sty(0xec);
     JMP(DrawEnemyObject);
@@ -20615,14 +20615,14 @@ int DrawEnemyObject() {
     ldy(0xeb);
     JSR(DrawEnemyObjRow);
     JSR(DrawEnemyObjRow);
-    // <conv.chunks.Comment object at 0x101c29760>
-    // <conv.chunks.Comment object at 0x101c297f0>
-    // <conv.chunks.Comment object at 0x101c29970>
+    // load sprite data offset
+    // draw six tiles of data
+    // into sprite data
     JSR(DrawEnemyObjRow);
     ldx(ObjectOffset);
     ldy(Enemy_SprDataOffset, x);
-    // <conv.chunks.Comment object at 0x101c29b80>
-    // <conv.chunks.Comment object at 0x101c29ca0>
+    // get enemy object offset
+    // get sprite data offset
     lda(0xef);
     cmp(0x8);
     BNE(CheckForVerticalFlip);
@@ -20639,32 +20639,32 @@ int CheckForVerticalFlip() {
     BEQ(CheckForESymmetry);
     lda(Sprite_Attributes, y);
     ora(0b10000000);
-    // <conv.chunks.Comment object at 0x101c2a2a0>
-    // <conv.chunks.Comment object at 0x101c2a3c0>
-    // <conv.chunks.Comment object at 0x101c2a4e0>
-    // <conv.chunks.Comment object at 0x101c2a630>
+    // check if vertical flip flag is set here
+    // branch if not
+    // get attributes of first sprite we dealt with
+    // set bit for vertical flip
     iny();
     iny();
     JSR(DumpSixSpr);
-    // <conv.chunks.Comment object at 0x101c2a810>
-    // <conv.chunks.Comment object at 0x101c2a8a0>
+    // increment two bytes so that we store the vertical flip
+    // in attribute bytes of enemy obj sprite data
     dey();
     dey();
-    // <conv.chunks.Comment object at 0x101c2aa80>
+    // now go back to the Y coordinate offset
     tya();
     tax();
-    // <conv.chunks.Comment object at 0x101c2abd0>
+    // give offset to X
     lda(0xef);
     cmp(HammerBro);
-    // <conv.chunks.Comment object at 0x101c2ac60>
+    // check saved enemy object for hammer bro
     BEQ(FlipEnemyVertically);
     cmp(Lakitu);
     BEQ(FlipEnemyVertically);
-    // <conv.chunks.Comment object at 0x101c2af60>
-    // <conv.chunks.Comment object at 0x101c2afc0>
+    // check saved enemy object for lakitu
+    // branch for hammer bro or lakitu
     cmp(0x15);
     BCS(FlipEnemyVertically);
-    // <conv.chunks.Comment object at 0x101c2b230>
+    // also branch if enemy object => $15
     txa();
     clc();
     adc(0x8);
@@ -20675,20 +20675,20 @@ int CheckForVerticalFlip() {
 int FlipEnemyVertically() {
     lda(Sprite_Tilenumber, x);
     pha();
-    // <conv.chunks.Comment object at 0x101c2b710>
-    // <conv.chunks.Comment object at 0x101c2b890>
+    // load first or second row tiles
+    // and save tiles to the stack
     lda(((Sprite_Tilenumber) + (4)), x);
     pha();
     lda(((Sprite_Tilenumber) + (16)), y);
     sta(Sprite_Tilenumber, x);
-    // <conv.chunks.Comment object at 0x101c2bb90>
-    // <conv.chunks.Comment object at 0x101c2bda0>
+    // exchange third row tiles
+    // with first or second row tiles
     lda(((Sprite_Tilenumber) + (20)), y);
     sta(((Sprite_Tilenumber) + (4)), x);
     pla();
     sta(((Sprite_Tilenumber) + (20)), y);
-    // <conv.chunks.Comment object at 0x101c30320>
-    // <conv.chunks.Comment object at 0x101c303b0>
+    // pull first or second row tiles from stack
+    // and save in third row
     pla();
     sta(((Sprite_Tilenumber) + (16)), y);
     JMP(CheckForESymmetry);
@@ -20697,25 +20697,25 @@ int FlipEnemyVertically() {
 int CheckForESymmetry() {
     lda(BowserGfxFlag);
     BNE(SkipToOffScrChk);
-    // <conv.chunks.Comment object at 0x101c30860>
-    // <conv.chunks.Comment object at 0x101c30980>
+    // are we drawing bowser at all?
+    // branch if so
     lda(0xef);
     ldx(0xec);
     cmp(0x5);
-    // <conv.chunks.Comment object at 0x101c30b30>
-    // <conv.chunks.Comment object at 0x101c30c50>
+    // get alternate enemy state
+    // check for hammer bro object
     BNE(ContES);
     JMP(SprObjectOffscrChk);
     JMP(ContES);
 }
 
 int ContES() {
-    // <conv.chunks.Comment object at 0x101c30ef0>
-    // <conv.chunks.Comment object at 0x101c31010>
+    // jump if found
+    // check for bloober object
     cmp(Bloober);
     BEQ(MirrorEnemyGfx);
     cmp(PiranhaPlant);
-    // <conv.chunks.Comment object at 0x101c312b0>
+    // check for piranha plant object
     BEQ(MirrorEnemyGfx);
     cmp(Podoboo);
     BEQ(MirrorEnemyGfx);
@@ -20727,13 +20727,13 @@ int ContES() {
 }
 
 int ESRtnr() {
-    // <conv.chunks.Comment object at 0x101c314c0>
-    // <conv.chunks.Comment object at 0x101c31610>
-    // <conv.chunks.Comment object at 0x101c31730>
-    // <conv.chunks.Comment object at 0x101c317c0>
-    // <conv.chunks.Comment object at 0x101c319d0>
-    // <conv.chunks.Comment object at 0x101c31a60>
-    // <conv.chunks.Comment object at 0x101c31c10>
+    // check for podoboo object
+    // branch if either of three are found
+    // check for spiny object
+    // branch closer if not found
+    // check spiny's state
+    // branch if not an egg, otherwise
+    // check for princess/mushroom retainer object
     cmp(0x15);
     BNE(SpnySC);
     lda(0x42);
@@ -20742,9 +20742,9 @@ int ESRtnr() {
 }
 
 int SpnySC() {
-    // <conv.chunks.Comment object at 0x101c31eb0>
-    // <conv.chunks.Comment object at 0x101c31f40>
-    // <conv.chunks.Comment object at 0x101c321e0>
+    // set horizontal flip on bottom right sprite
+    // note that palette bits were already set earlier
+    // if alternate enemy state set to 1 or 0, branch
     cpx(0x2);
     BCC(CheckToMirrorLakitu);
     JMP(MirrorEnemyGfx);
@@ -20752,15 +20752,15 @@ int SpnySC() {
 
 int MirrorEnemyGfx() {
     lda(BowserGfxFlag);
-    // <conv.chunks.Comment object at 0x101c32480>
+    // if enemy object is bowser, skip all of this
     BNE(CheckToMirrorLakitu);
     lda(Sprite_Attributes, y);
-    // <conv.chunks.Comment object at 0x101c32690>
+    // load attribute bits of first sprite
     anda(0b10100011);
     sta(Sprite_Attributes, y);
     sta(((Sprite_Attributes) + (8)), y);
-    // <conv.chunks.Comment object at 0x101c328d0>
-    // <conv.chunks.Comment object at 0x101c32a20>
+    // save vertical flip, priority, and palette bits
+    // in left sprite column of enemy object OAM data
     sta(((Sprite_Attributes) + (16)), y);
     ora(0b1000000);
     cpx(0x5);
@@ -20770,26 +20770,26 @@ int MirrorEnemyGfx() {
 }
 
 int EggExc() {
-    // <conv.chunks.Comment object at 0x101c32e10>
-    // <conv.chunks.Comment object at 0x101c32f30>
-    // <conv.chunks.Comment object at 0x101c32fc0>
-    // <conv.chunks.Comment object at 0x101c331a0>
-    // <conv.chunks.Comment object at 0x101c332c0>
+    // set horizontal flip
+    // check for state used by spiny's egg
+    // if alternate state not set to $05, branch
+    // otherwise set vertical flip
+    // set bits of right sprite column
     sta(((Sprite_Attributes) + (4)), y);
     sta(((Sprite_Attributes) + (12)), y);
-    // <conv.chunks.Comment object at 0x101c33530>
+    // of enemy object sprite data
     sta(((Sprite_Attributes) + (20)), y);
     cpx(0x4);
     BNE(CheckToMirrorLakitu);
     lda(((Sprite_Attributes) + (8)), y);
-    // <conv.chunks.Comment object at 0x101c33920>
-    // <conv.chunks.Comment object at 0x101c339b0>
-    // <conv.chunks.Comment object at 0x101c33b60>
+    // check alternate enemy state
+    // branch if not $04
+    // get second row left sprite attributes
     ora(0b10000000);
     sta(((Sprite_Attributes) + (8)), y);
     sta(((Sprite_Attributes) + (16)), y);
-    // <conv.chunks.Comment object at 0x101c33e60>
-    // <conv.chunks.Comment object at 0x101c380b0>
+    // store bits with vertical flip in
+    // second and third row left sprites
     ora(0b1000000);
     sta(((Sprite_Attributes) + (12)), y);
     sta(((Sprite_Attributes) + (20)), y);
@@ -20798,30 +20798,30 @@ int EggExc() {
 
 int CheckToMirrorLakitu() {
     lda(0xef);
-    // <conv.chunks.Comment object at 0x101c38830>
+    // check for lakitu enemy object
     cmp(Lakitu);
     BNE(CheckToMirrorJSpring);
-    // <conv.chunks.Comment object at 0x101c38800>
+    // branch if not found
     lda(VerticalFlipFlag);
     BNE(NVFLak);
     lda(((Sprite_Attributes) + (16)), y);
     anda(0b10000001);
-    // <conv.chunks.Comment object at 0x101c38c50>
-    // <conv.chunks.Comment object at 0x101c38da0>
-    // <conv.chunks.Comment object at 0x101c38fb0>
+    // branch if vertical flip flag not set
+    // save vertical flip and palette bits
+    // in third row left sprite
     sta(((Sprite_Attributes) + (16)), y);
     lda(((Sprite_Attributes) + (20)), y);
     ora(0b1000001);
-    // <conv.chunks.Comment object at 0x101c392b0>
-    // <conv.chunks.Comment object at 0x101c394c0>
+    // set horizontal flip and palette bits
+    // in third row right sprite
     sta(((Sprite_Attributes) + (20)), y);
     ldx(FrenzyEnemyTimer);
-    // <conv.chunks.Comment object at 0x101c397c0>
+    // check timer
     cpx(0x10);
     BCS(SprObjectOffscrChk);
     sta(((Sprite_Attributes) + (12)), y);
-    // <conv.chunks.Comment object at 0x101c39940>
-    // <conv.chunks.Comment object at 0x101c39af0>
+    // branch if timer has not reached a certain range
+    // otherwise set same for second row right sprite
     anda(0b10000001);
     sta(((Sprite_Attributes) + (8)), y);
     BCC(SprObjectOffscrChk);
@@ -20829,9 +20829,9 @@ int CheckToMirrorLakitu() {
 }
 
 int NVFLak() {
-    // <conv.chunks.Comment object at 0x101c39df0>
-    // <conv.chunks.Comment object at 0x101c3a000>
-    // <conv.chunks.Comment object at 0x101c3a120>
+    // preserve vertical flip and palette bits for left sprite
+    // unconditional branch
+    // get first row left sprite attributes
     lda(Sprite_Attributes, y);
     anda(0b10000001);
     sta(Sprite_Attributes, y);
@@ -20843,15 +20843,15 @@ int NVFLak() {
 
 int CheckToMirrorJSpring() {
     lda(0xef);
-    // <conv.chunks.Comment object at 0x101c3aab0>
+    // check for jumpspring object (any frame)
     cmp(0x18);
     BCC(SprObjectOffscrChk);
-    // <conv.chunks.Comment object at 0x101c3ac00>
+    // branch if not jumpspring object at all
     lda(0x82);
     sta(((Sprite_Attributes) + (8)), y);
     sta(((Sprite_Attributes) + (16)), y);
-    // <conv.chunks.Comment object at 0x101c3ae10>
-    // <conv.chunks.Comment object at 0x101c3b0b0>
+    // set vertical flip and palette bits of
+    // second and third row left sprites
     ora(0b1000000);
     sta(((Sprite_Attributes) + (12)), y);
     sta(((Sprite_Attributes) + (20)), y);
@@ -20861,8 +20861,8 @@ int CheckToMirrorJSpring() {
 int SprObjectOffscrChk() {
     ldx(ObjectOffset);
     lda(Enemy_OffscreenBits);
-    // <conv.chunks.Comment object at 0x101c3b800>
-    // <conv.chunks.Comment object at 0x101c3b920>
+    // get enemy buffer offset
+    // check offscreen information
     lsr();
     lsr();
     lsr();
@@ -20874,13 +20874,13 @@ int SprObjectOffscrChk() {
 }
 
 int LcChk() {
-    // <conv.chunks.Comment object at 0x101c3bb00>
-    // <conv.chunks.Comment object at 0x101c3bbc0>
-    // <conv.chunks.Comment object at 0x101c3bc80>
-    // <conv.chunks.Comment object at 0x101c3bd10>
-    // <conv.chunks.Comment object at 0x101c3be60>
-    // <conv.chunks.Comment object at 0x101c3bef0>
-    // <conv.chunks.Comment object at 0x101c400e0>
+    // shift three times to the right
+    // which puts d2 into carry
+    // save to stack
+    // branch if not set
+    // set for right column sprites
+    // and move them offscreen
+    // get from stack
     pla();
     lsr();
     pha();
@@ -20891,15 +20891,15 @@ int LcChk() {
 }
 
 int Row3C() {
-    // <conv.chunks.Comment object at 0x101c40230>
-    // <conv.chunks.Comment object at 0x101c402f0>
-    // <conv.chunks.Comment object at 0x101c40380>
-    // <conv.chunks.Comment object at 0x101c404d0>
-    // <conv.chunks.Comment object at 0x101c40560>
-    // <conv.chunks.Comment object at 0x101c40710>
+    // move d3 to carry
+    // save to stack
+    // branch if not set
+    // set for left column sprites,
+    // move them offscreen
+    // get from stack again
     pla();
     lsr();
-    // <conv.chunks.Comment object at 0x101c40860>
+    // move d5 to carry this time
     lsr();
     pha();
     BCC(Row23C);
@@ -20909,16 +20909,16 @@ int Row3C() {
 }
 
 int Row23C() {
-    // <conv.chunks.Comment object at 0x101c409b0>
-    // <conv.chunks.Comment object at 0x101c40a40>
-    // <conv.chunks.Comment object at 0x101c40b90>
-    // <conv.chunks.Comment object at 0x101c40c20>
-    // <conv.chunks.Comment object at 0x101c40dd0>
+    // save to stack again
+    // branch if carry not set
+    // set for third row of sprites
+    // and move them offscreen
+    // get from stack
     pla();
     lsr();
     pha();
-    // <conv.chunks.Comment object at 0x101c40f20>
-    // <conv.chunks.Comment object at 0x101c40fe0>
+    // move d6 into carry
+    // save to stack
     BCC(AllRowC);
     lda(0x8);
     JSR(MoveESprRowOffscreen);
@@ -20926,24 +20926,24 @@ int Row23C() {
 }
 
 int AllRowC() {
-    // <conv.chunks.Comment object at 0x101c41190>
-    // <conv.chunks.Comment object at 0x101c41220>
-    // <conv.chunks.Comment object at 0x101c413d0>
+    // set for second and third rows
+    // move them offscreen
+    // get from stack once more
     pla();
     lsr();
-    // <conv.chunks.Comment object at 0x101c41520>
+    // move d7 into carry
     BCC(ExEGHandler);
     JSR(MoveESprRowOffscreen);
-    // <conv.chunks.Comment object at 0x101c416a0>
+    // move all sprites offscreen (A should be 0 by now)
     lda(Enemy_ID, x);
     cmp(Podoboo);
     BEQ(ExEGHandler);
     lda(Enemy_Y_HighPos, x);
     cmp(0x2);
-    // <conv.chunks.Comment object at 0x101c418e0>
-    // <conv.chunks.Comment object at 0x101c41a30>
-    // <conv.chunks.Comment object at 0x101c41b50>
-    // <conv.chunks.Comment object at 0x101c41ca0>
+    // check enemy identifier for podoboo
+    // skip this part if found, we do not want to erase podoboo!
+    // check high byte of vertical position
+    // if not yet past the bottom of the screen, branch
     BNE(ExEGHandler);
     JSR(EraseEnemyObject);
     JMP(ExEGHandler);
@@ -20956,7 +20956,7 @@ int ExEGHandler() {
 
 int DrawEnemyObjRow() {
     lda(offsetof(G, EnemyGraphicsTable), x);
-    // <conv.chunks.Comment object at 0x101c420c0>
+    // load two tiles of enemy graphics
     sta(0x0);
     lda(((offsetof(G, EnemyGraphicsTable)) + (1)), x);
     JMP(DrawOneSpriteRow);
@@ -20970,10 +20970,10 @@ int DrawOneSpriteRow() {
 
 int MoveESprRowOffscreen() {
     clc();
-    // <conv.chunks.Comment object at 0x101c42780>
+    // add A to enemy object OAM data offset
     adc(Enemy_SprDataOffset, x);
     tay();
-    // <conv.chunks.Comment object at 0x101c42960>
+    // use as offset
     lda(0xf8);
     JMP(DumpTwoSpr);
     JMP(MoveESprColOffscreen);
@@ -20981,14 +20981,14 @@ int MoveESprRowOffscreen() {
 
 int MoveESprColOffscreen() {
     clc();
-    // <conv.chunks.Comment object at 0x101c42c60>
+    // add A to enemy object OAM data offset
     adc(Enemy_SprDataOffset, x);
     tay();
     JSR(MoveColOffscreen);
     sta(((Sprite_Data) + (16)), y);
-    // <conv.chunks.Comment object at 0x101c42e40>
-    // <conv.chunks.Comment object at 0x101c42ed0>
-    // <conv.chunks.Comment object at 0x101c42ff0>
+    // use as offset
+    // move first and second row sprites in column offscreen
+    // move third row sprite in column offscreen
     return 0;
     JMP(DrawBlock);
 }
@@ -20998,13 +20998,13 @@ int DrawBlock() {
     sta(0x2);
     lda(Block_Rel_XPos);
     sta(0x5);
-    // <conv.chunks.Comment object at 0x101c43470>
-    // <conv.chunks.Comment object at 0x101c437d0>
-    // <conv.chunks.Comment object at 0x101c43860>
-    // <conv.chunks.Comment object at 0x101c43a10>
+    // get relative vertical coordinate of block object
+    // store here
+    // get relative horizontal coordinate of block object
+    // store here
     lda(0x3);
     sta(0x4);
-    // <conv.chunks.Comment object at 0x101c43c20>
+    // set attribute byte here
     lsr();
     sta(0x3);
     ldy(Block_SprDataOffset, x);
@@ -21013,10 +21013,10 @@ int DrawBlock() {
 }
 
 int DBlkLoop() {
-    // <conv.chunks.Comment object at 0x101c43dd0>
-    // <conv.chunks.Comment object at 0x101c43e60>
-    // <conv.chunks.Comment object at 0x101c54050>
-    // <conv.chunks.Comment object at 0x101c540e0>
+    // set horizontal flip bit here (will not be used)
+    // get sprite data offset
+    // reset X for use as offset to tile data
+    // get left tile number
     lda(offsetof(G, DefaultBlockObjTiles), x);
     sta(0x0);
     lda(((offsetof(G, DefaultBlockObjTiles)) + (1)), x);
@@ -21025,18 +21025,18 @@ int DBlkLoop() {
     BNE(DBlkLoop);
     ldx(ObjectOffset);
     ldy(Block_SprDataOffset, x);
-    // <conv.chunks.Comment object at 0x101c54320>
-    // <conv.chunks.Comment object at 0x101c543b0>
-    // <conv.chunks.Comment object at 0x101c54620>
-    // <conv.chunks.Comment object at 0x101c54740>
-    // <conv.chunks.Comment object at 0x101c547d0>
-    // <conv.chunks.Comment object at 0x101c54980>
-    // <conv.chunks.Comment object at 0x101c54aa0>
+    // set here
+    // get right tile number
+    // do sub to write tile numbers to first row of sprites
+    // check incremented offset
+    // and loop back until all four sprites are done
+    // get block object offset
+    // get sprite data offset
     lda(AreaType);
     cmp(0x1);
     BEQ(ChkRep);
-    // <conv.chunks.Comment object at 0x101c54ce0>
-    // <conv.chunks.Comment object at 0x101c54d70>
+    // check for ground level type area
+    // if found, branch to next part
     lda(0x86);
     sta(Sprite_Tilenumber, y);
     sta(((Sprite_Tilenumber) + (4)), y);
@@ -21044,9 +21044,9 @@ int DBlkLoop() {
 }
 
 int ChkRep() {
-    // <conv.chunks.Comment object at 0x101c54fb0>
-    // <conv.chunks.Comment object at 0x101c55190>
-    // <conv.chunks.Comment object at 0x101c553a0>
+    // otherwise remove brick tiles with lines
+    // and replace then with lineless brick tiles
+    // check replacement metatile
     lda(Block_Metatile, x);
     cmp(0xc4);
     BNE(BlkOffscr);
@@ -21055,13 +21055,13 @@ int ChkRep() {
     JSR(DumpFourSpr);
     dey();
     lda(0x3);
-    // <conv.chunks.Comment object at 0x101c55550>
-    // <conv.chunks.Comment object at 0x101c555e0>
-    // <conv.chunks.Comment object at 0x101c55790>
-    // <conv.chunks.Comment object at 0x101c558e0>
-    // <conv.chunks.Comment object at 0x101c55970>
-    // <conv.chunks.Comment object at 0x101c55ac0>
-    // <conv.chunks.Comment object at 0x101c55b50>
+    // if not used block metatile, then
+    // branch ahead to use current graphics
+    // set A for used block tile
+    // increment Y to write to tile bytes
+    // do sub to dump into all four sprites
+    // return Y to original offset
+    // set palette bits
     ldx(AreaType);
     dex();
     BEQ(SetBFlip);
@@ -21070,50 +21070,50 @@ int ChkRep() {
 }
 
 int SetBFlip() {
-    // <conv.chunks.Comment object at 0x101c55d90>
-    // <conv.chunks.Comment object at 0x101c55e20>
-    // <conv.chunks.Comment object at 0x101c55f70>
-    // <conv.chunks.Comment object at 0x101c56000>
+    // check for ground level type area again
+    // if found, use current palette bits
+    // otherwise set to $01
+    // put block object offset back in X
     ldx(ObjectOffset);
     sta(Sprite_Attributes, y);
-    // <conv.chunks.Comment object at 0x101c56150>
+    // store attribute byte as-is in first sprite
     ora(0b1000000);
     sta(((Sprite_Attributes) + (4)), y);
-    // <conv.chunks.Comment object at 0x101c56390>
+    // set horizontal flip bit for second sprite
     ora(0b10000000);
     sta(((Sprite_Attributes) + (12)), y);
-    // <conv.chunks.Comment object at 0x101c56690>
+    // set both flip bits for fourth sprite
     anda(0b10000011);
     sta(((Sprite_Attributes) + (8)), y);
     JMP(BlkOffscr);
 }
 
 int BlkOffscr() {
-    // <conv.chunks.Comment object at 0x101c56990>
-    // <conv.chunks.Comment object at 0x101c56ba0>
+    // set vertical flip bit for third sprite
+    // get offscreen bits for block object
     lda(Block_OffscreenBits);
     pha();
     anda(0b100);
     BEQ(PullOfsB);
     lda(0xf8);
     sta(((Sprite_Y_Position) + (4)), y);
-    // <conv.chunks.Comment object at 0x101c56d20>
-    // <conv.chunks.Comment object at 0x101c56db0>
-    // <conv.chunks.Comment object at 0x101c56ed0>
-    // <conv.chunks.Comment object at 0x101c56ff0>
-    // <conv.chunks.Comment object at 0x101c57080>
+    // save to stack
+    // check to see if d2 in offscreen bits are set
+    // if not set, branch, otherwise move sprites offscreen
+    // move offscreen two OAMs
+    // on the right side
     sta(((Sprite_Y_Position) + (12)), y);
     JMP(PullOfsB);
 }
 
 int PullOfsB() {
-    // <conv.chunks.Comment object at 0x101c57500>
+    // pull offscreen bits from stack
     pla();
     JMP(ChkLeftCo);
 }
 
 int ChkLeftCo() {
-    // <conv.chunks.Comment object at 0x101c575f0>
+    // check to see if d3 in offscreen bits are set
     anda(0b1000);
     BEQ(ExDBlk);
     JMP(MoveColOffscreen);
@@ -21133,46 +21133,46 @@ int ExDBlk() {
 
 int DrawBrickChunks() {
     lda(0x2);
-    // <conv.chunks.Comment object at 0x101c57e60>
-    // <conv.chunks.Comment object at 0x101c57ec0>
+    // $00 - used to hold palette bits for attribute byte or relative X position
+    // set palette bits here
     sta(0x0);
     lda(0x75);
-    // <conv.chunks.Comment object at 0x101c57f50>
+    // set tile number for ball (something residual, likely)
     ldy(GameEngineSubroutine);
     cpy(0x5);
     BEQ(DChunks);
     lda(0x3);
-    // <conv.chunks.Comment object at 0x101c5c320>
-    // <conv.chunks.Comment object at 0x101c5c3b0>
-    // <conv.chunks.Comment object at 0x101c5c590>
+    // if end-of-level routine running,
+    // use palette and tile number assigned
+    // otherwise set different palette bits
     sta(0x0);
     lda(0x84);
     JMP(DChunks);
 }
 
 int DChunks() {
-    // <conv.chunks.Comment object at 0x101c5c620>
-    // <conv.chunks.Comment object at 0x101c5c830>
+    // and set tile number for brick chunks
+    // get OAM data offset
     ldy(Block_SprDataOffset, x);
     iny();
     JSR(DumpFourSpr);
     lda(FrameCounter);
-    // <conv.chunks.Comment object at 0x101c5caa0>
-    // <conv.chunks.Comment object at 0x101c5cb30>
-    // <conv.chunks.Comment object at 0x101c5cc50>
+    // increment to start with tile bytes in OAM
+    // do sub to dump tile number into all four sprites
+    // get frame counter
     asl();
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x101c5cec0>
+    // move low nybble to high
     asl();
     anda(0xc0);
     ora(0x0);
     iny();
     JSR(DumpFourSpr);
-    // <conv.chunks.Comment object at 0x101c5cfe0>
-    // <conv.chunks.Comment object at 0x101c5d130>
-    // <conv.chunks.Comment object at 0x101c5d070>
-    // <conv.chunks.Comment object at 0x101c5d2e0>
+    // get what was originally d3-d2 of low nybble
+    // add palette bits
+    // increment offset for attribute bytes
+    // do sub to dump attribute data into all four sprites
     dey();
     dey();
     lda(Block_Rel_YPos);
@@ -21180,37 +21180,37 @@ int DChunks() {
     lda(Block_Rel_XPos);
     sta(Sprite_X_Position, y);
     lda(Block_Orig_XPos, x);
-    // <conv.chunks.Comment object at 0x101c5d4c0>
-    // <conv.chunks.Comment object at 0x101c5d550>
-    // <conv.chunks.Comment object at 0x101c5d670>
-    // <conv.chunks.Comment object at 0x101c5d790>
-    // <conv.chunks.Comment object at 0x101c5d8b0>
-    // <conv.chunks.Comment object at 0x101c5da00>
+    // decrement offset to Y coordinate
+    // get first block object's relative vertical coordinate
+    // do sub to dump current Y coordinate into two sprites
+    // get first block object's relative horizontal coordinate
+    // save into X coordinate of first sprite
+    // get original horizontal coordinate
     sec();
     sbc(ScreenLeft_X_Pos);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x101c5dbe0>
-    // <conv.chunks.Comment object at 0x101c5dd30>
+    // subtract coordinate of left side from original coordinate
+    // store result as relative horizontal coordinate of original
     sec();
     sbc(Block_Rel_XPos);
     adc(0x0);
     adc(0x6);
     sta(((Sprite_X_Position) + (4)), y);
     lda(((Block_Rel_YPos) + (1)));
-    // <conv.chunks.Comment object at 0x101c5deb0>
-    // <conv.chunks.Comment object at 0x101c5e000>
-    // <conv.chunks.Comment object at 0x101c5e090>
-    // <conv.chunks.Comment object at 0x101c5e180>
-    // <conv.chunks.Comment object at 0x101c5e420>
+    // get difference of relative positions of original - current
+    // add original relative position to result
+    // plus 6 pixels to position second brick chunk correctly
+    // save into X coordinate of second sprite
+    // get second block object's relative vertical coordinate
     sta(((Sprite_Y_Position) + (8)), y);
     sta(((Sprite_Y_Position) + (12)), y);
     lda(((Block_Rel_XPos) + (1)));
     sta(((Sprite_X_Position) + (8)), y);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x101c5e7e0>
-    // <conv.chunks.Comment object at 0x101c5e9f0>
-    // <conv.chunks.Comment object at 0x101c5ebd0>
-    // <conv.chunks.Comment object at 0x101c5ee10>
+    // dump into Y coordinates of third and fourth sprites
+    // get second block object's relative horizontal coordinate
+    // save into X coordinate of third sprite
+    // use original relative horizontal position
     sec();
     sbc(((Block_Rel_XPos) + (1)));
     adc(0x0);
@@ -21221,41 +21221,41 @@ int DChunks() {
     lda(Block_OffscreenBits);
     asl();
     BCC(ChnkOfs);
-    // <conv.chunks.Comment object at 0x101c5ef90>
-    // <conv.chunks.Comment object at 0x101c5f1a0>
-    // <conv.chunks.Comment object at 0x101c5f230>
-    // <conv.chunks.Comment object at 0x101c5f320>
-    // <conv.chunks.Comment object at 0x101c5f5c0>
-    // <conv.chunks.Comment object at 0x101c5f6e0>
-    // <conv.chunks.Comment object at 0x101c5f800>
-    // <conv.chunks.Comment object at 0x101c5f950>
-    // <conv.chunks.Comment object at 0x101c5f9e0>
+    // get difference of relative positions of original - current
+    // add original relative position to result
+    // plus 6 pixels to position fourth brick chunk correctly
+    // save into X coordinate of fourth sprite
+    // get offscreen bits for block object
+    // do sub to move left half of sprites offscreen if necessary
+    // get offscreen bits again
+    // shift d7 into carry
+    // if d7 not set, branch to last part
     lda(0xf8);
     JSR(DumpTwoSpr);
     JMP(ChnkOfs);
 }
 
 int ChnkOfs() {
-    // <conv.chunks.Comment object at 0x101c5fb90>
-    // <conv.chunks.Comment object at 0x101c5fd40>
+    // otherwise move top sprites offscreen
+    // if relative position on left side of screen,
     lda(0x0);
     BPL(ExBCDr);
     lda(Sprite_X_Position, y);
     cmp(((Sprite_X_Position) + (4)), y);
     BCC(ExBCDr);
     lda(0xf8);
-    // <conv.chunks.Comment object at 0x101c5fe60>
-    // <conv.chunks.Comment object at 0x101c68050>
-    // <conv.chunks.Comment object at 0x101c681a0>
-    // <conv.chunks.Comment object at 0x101c683b0>
-    // <conv.chunks.Comment object at 0x101c68500>
+    // go ahead and leave
+    // otherwise compare left-side X coordinate
+    // to right-side X coordinate
+    // branch to leave if less
+    // otherwise move right half of sprites offscreen
     sta(((Sprite_Y_Position) + (4)), y);
     sta(((Sprite_Y_Position) + (12)), y);
     JMP(ExBCDr);
 }
 
 int ExBCDr() {
-    // <conv.chunks.Comment object at 0x101c68a10>
+    // leave
     return 0;
     JMP(DrawFireball);
 }
@@ -21272,8 +21272,8 @@ int DrawFireball() {
 int DrawFirebar() {
     lda(FrameCounter);
     lsr();
-    // <conv.chunks.Comment object at 0x101c691f0>
-    // <conv.chunks.Comment object at 0x101c69340>
+    // get frame counter
+    // divide by four
     lsr();
     pha();
     anda(0x1);
@@ -21281,12 +21281,12 @@ int DrawFirebar() {
     sta(Sprite_Tilenumber, y);
     pla();
     lsr();
-    // <conv.chunks.Comment object at 0x101c69490>
-    // <conv.chunks.Comment object at 0x101c69520>
-    // <conv.chunks.Comment object at 0x101c695b0>
-    // <conv.chunks.Comment object at 0x101c696d0>
-    // <conv.chunks.Comment object at 0x101c698e0>
-    // <conv.chunks.Comment object at 0x101c699a0>
+    // save result to stack
+    // mask out all but last bit
+    // set either tile $64 or $65 as fireball tile
+    // thus tile changes every four frames
+    // get from stack
+    // divide by four again
     lsr();
     lda(0x2);
     BCC(FireA);
@@ -21295,10 +21295,10 @@ int DrawFirebar() {
 }
 
 int FireA() {
-    // <conv.chunks.Comment object at 0x101c69ac0>
-    // <conv.chunks.Comment object at 0x101c69b50>
-    // <conv.chunks.Comment object at 0x101c69d30>
-    // <conv.chunks.Comment object at 0x101c69e50>
+    // load value $02 to set palette in attrib byte
+    // if last bit shifted out was not set, skip this
+    // otherwise flip both ways every eight frames
+    // store attribute byte and leave
     sta(Sprite_Attributes, y);
     return 0;
     JMP(DrawExplosion_Fireball);
@@ -21325,47 +21325,47 @@ int DrawExplosion_Fireworks() {
     lda(Fireball_Rel_YPos);
     sec();
     sbc(0x4);
-    // <conv.chunks.Comment object at 0x101c6ab40>
-    // <conv.chunks.Comment object at 0x101c6abd0>
-    // <conv.chunks.Comment object at 0x101c6ad50>
-    // <conv.chunks.Comment object at 0x101c6ade0>
-    // <conv.chunks.Comment object at 0x101c6af30>
-    // <conv.chunks.Comment object at 0x101c6afc0>
-    // <conv.chunks.Comment object at 0x101c6b0e0>
-    // <conv.chunks.Comment object at 0x101c6b230>
-    // <conv.chunks.Comment object at 0x101c6b2c0>
+    // use whatever's in A for offset
+    // get tile number using offset
+    // increment Y (contains sprite data offset)
+    // and dump into tile number part of sprite data
+    // decrement Y so we have the proper offset again
+    // return enemy object buffer offset to X
+    // get relative vertical coordinate
+    // subtract four pixels vertically
+    // for first and third sprites
     sta(Sprite_Y_Position, y);
     sta(((Sprite_Y_Position) + (8)), y);
     clc();
     adc(0x8);
-    // <conv.chunks.Comment object at 0x101c6b710>
-    // <conv.chunks.Comment object at 0x101c6b7a0>
+    // add eight pixels vertically
+    // for second and fourth sprites
     sta(((Sprite_Y_Position) + (4)), y);
     sta(((Sprite_Y_Position) + (12)), y);
     lda(Fireball_Rel_XPos);
     sec();
     sbc(0x4);
-    // <conv.chunks.Comment object at 0x101c6bc80>
-    // <conv.chunks.Comment object at 0x101c6bdd0>
-    // <conv.chunks.Comment object at 0x101c6be60>
+    // get relative horizontal coordinate
+    // subtract four pixels horizontally
+    // for first and second sprites
     sta(Sprite_X_Position, y);
     sta(((Sprite_X_Position) + (4)), y);
     clc();
     adc(0x8);
-    // <conv.chunks.Comment object at 0x101c742f0>
-    // <conv.chunks.Comment object at 0x101c74380>
+    // add eight pixels horizontally
+    // for third and fourth sprites
     sta(((Sprite_X_Position) + (8)), y);
     sta(((Sprite_X_Position) + (12)), y);
     lda(0x2);
     sta(Sprite_Attributes, y);
-    // <conv.chunks.Comment object at 0x101c74860>
-    // <conv.chunks.Comment object at 0x101c748f0>
+    // set palette attributes for all sprites, but
+    // set no flip at all for first sprite
     lda(0x82);
     sta(((Sprite_Attributes) + (4)), y);
-    // <conv.chunks.Comment object at 0x101c74b30>
+    // set vertical flip for second sprite
     lda(0x42);
     sta(((Sprite_Attributes) + (8)), y);
-    // <conv.chunks.Comment object at 0x101c74e30>
+    // set horizontal flip for third sprite
     lda(0xc2);
     sta(((Sprite_Attributes) + (12)), y);
     return 0;
@@ -21374,7 +21374,7 @@ int DrawExplosion_Fireworks() {
 
 int KillFireBall() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x101c754c0>
+    // clear fireball state to kill it
     sta(Fireball_State, x);
     return 0;
     JMP(DrawSmallPlatform);
@@ -21389,34 +21389,34 @@ int DrawSmallPlatform() {
     lda(0x2);
     JSR(DumpSixSpr);
     dey();
-    // <conv.chunks.Comment object at 0x101c757f0>
-    // <conv.chunks.Comment object at 0x101c75940>
-    // <conv.chunks.Comment object at 0x101c75a90>
-    // <conv.chunks.Comment object at 0x101c75b20>
-    // <conv.chunks.Comment object at 0x101c75c70>
-    // <conv.chunks.Comment object at 0x101c75d00>
-    // <conv.chunks.Comment object at 0x101c75d90>
-    // <conv.chunks.Comment object at 0x101c75f70>
+    // get OAM data offset
+    // load tile number for small platforms
+    // increment offset for tile numbers
+    // dump tile number into all six sprites
+    // increment offset for attributes
+    // load palette controls
+    // dump attributes into all six sprites
+    // decrement for original offset
     dey();
     lda(Enemy_Rel_XPos);
-    // <conv.chunks.Comment object at 0x101c76090>
+    // get relative horizontal coordinate
     sta(Sprite_X_Position, y);
     sta(((Sprite_X_Position) + (12)), y);
-    // <conv.chunks.Comment object at 0x101c762d0>
+    // dump as X coordinate into first and fourth sprites
     clc();
     adc(0x8);
     sta(((Sprite_X_Position) + (4)), y);
-    // <conv.chunks.Comment object at 0x101c76570>
-    // <conv.chunks.Comment object at 0x101c76600>
+    // add eight pixels
+    // dump into second and fifth sprites
     sta(((Sprite_X_Position) + (16)), y);
     clc();
     adc(0x8);
     sta(((Sprite_X_Position) + (8)), y);
-    // <conv.chunks.Comment object at 0x101c76b10>
-    // <conv.chunks.Comment object at 0x101c76ba0>
+    // add eight more pixels
+    // dump into third and sixth sprites
     sta(((Sprite_X_Position) + (20)), y);
     lda(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x101c77020>
+    // get vertical coordinate
     tax();
     pha();
     cpx(0x20);
@@ -21426,17 +21426,17 @@ int DrawSmallPlatform() {
 }
 
 int TopSP() {
-    // <conv.chunks.Comment object at 0x101c77230>
-    // <conv.chunks.Comment object at 0x101c772c0>
-    // <conv.chunks.Comment object at 0x101c77350>
-    // <conv.chunks.Comment object at 0x101c77530>
-    // <conv.chunks.Comment object at 0x101c775c0>
+    // save to stack
+    // if vertical coordinate below status bar,
+    // do not mess with it
+    // otherwise move first three sprites offscreen
+    // dump vertical coordinate into Y coordinates
     JSR(DumpThreeSpr);
     pla();
-    // <conv.chunks.Comment object at 0x101c77800>
+    // pull from stack
     clc();
     adc(0x80);
-    // <conv.chunks.Comment object at 0x101c77920>
+    // add 128 pixels
     tax();
     cpx(0x20);
     BCS(BotSP);
@@ -21445,60 +21445,60 @@ int TopSP() {
 }
 
 int BotSP() {
-    // <conv.chunks.Comment object at 0x101c77ad0>
-    // <conv.chunks.Comment object at 0x101c77b60>
-    // <conv.chunks.Comment object at 0x101c77d40>
-    // <conv.chunks.Comment object at 0x101c77dd0>
+    // if below status bar (taking wrap into account)
+    // then do not change altered coordinate
+    // otherwise move last three sprites offscreen
+    // dump vertical coordinate + 128 pixels
     sta(((Sprite_Y_Position) + (12)), y);
     sta(((Sprite_Y_Position) + (16)), y);
-    // <conv.chunks.Comment object at 0x101c7c110>
+    // into Y coordinates
     sta(((Sprite_Y_Position) + (20)), y);
     lda(Enemy_OffscreenBits);
     pha();
     anda(0b1000);
-    // <conv.chunks.Comment object at 0x101c7c500>
-    // <conv.chunks.Comment object at 0x101c7c650>
-    // <conv.chunks.Comment object at 0x101c7c6e0>
+    // get offscreen bits
+    // save to stack
+    // check d3
     BEQ(SOfs);
     lda(0xf8);
     sta(Sprite_Y_Position, y);
-    // <conv.chunks.Comment object at 0x101c7c920>
-    // <conv.chunks.Comment object at 0x101c7c9b0>
+    // if d3 was set, move first and
+    // fourth sprites offscreen
     sta(((Sprite_Y_Position) + (12)), y);
     JMP(SOfs);
 }
 
 int SOfs() {
-    // <conv.chunks.Comment object at 0x101c7cd70>
+    // move out and back into stack
     pla();
     pha();
     anda(0b100);
-    // <conv.chunks.Comment object at 0x101c7cf20>
+    // check d2
     BEQ(SOfs2);
     lda(0xf8);
     sta(((Sprite_Y_Position) + (4)), y);
-    // <conv.chunks.Comment object at 0x101c7d160>
-    // <conv.chunks.Comment object at 0x101c7d1f0>
+    // if d2 was set, move second and
+    // fifth sprites offscreen
     sta(((Sprite_Y_Position) + (16)), y);
     JMP(SOfs2);
 }
 
 int SOfs2() {
-    // <conv.chunks.Comment object at 0x101c7d670>
+    // get from stack
     pla();
     anda(0b10);
-    // <conv.chunks.Comment object at 0x101c7d790>
+    // check d1
     BEQ(ExSPl);
     lda(0xf8);
     sta(((Sprite_Y_Position) + (8)), y);
-    // <conv.chunks.Comment object at 0x101c7d9d0>
-    // <conv.chunks.Comment object at 0x101c7da60>
+    // if d1 was set, move third and
+    // sixth sprites offscreen
     sta(((Sprite_Y_Position) + (20)), y);
     JMP(ExSPl);
 }
 
 int ExSPl() {
-    // <conv.chunks.Comment object at 0x101c7dee0>
+    // get enemy object offset and leave
     ldx(ObjectOffset);
     return 0;
     JMP(DrawBubble);
@@ -21507,11 +21507,11 @@ int ExSPl() {
 int DrawBubble() {
     ldy(Player_Y_HighPos);
     dey();
-    // <conv.chunks.Comment object at 0x101c7e150>
-    // <conv.chunks.Comment object at 0x101c7e2a0>
+    // if player's vertical high position
+    // not within screen, skip all of this
     BNE(ExDBub);
     lda(Bubble_OffscreenBits);
-    // <conv.chunks.Comment object at 0x101c7e450>
+    // check air bubble's offscreen bits
     anda(0b1000);
     BNE(ExDBub);
     ldy(Bubble_SprDataOffset, x);
@@ -21519,23 +21519,23 @@ int DrawBubble() {
     sta(Sprite_X_Position, y);
     lda(Bubble_Rel_YPos);
     sta(Sprite_Y_Position, y);
-    // <conv.chunks.Comment object at 0x101c7e660>
-    // <conv.chunks.Comment object at 0x101c7e7b0>
-    // <conv.chunks.Comment object at 0x101c7e900>
-    // <conv.chunks.Comment object at 0x101c7ea20>
-    // <conv.chunks.Comment object at 0x101c7eb70>
-    // <conv.chunks.Comment object at 0x101c7ec90>
+    // if bit set, branch to leave
+    // get air bubble's OAM data offset
+    // get relative horizontal coordinate
+    // store as X coordinate here
+    // get relative vertical coordinate
+    // store as Y coordinate here
     lda(0x74);
     sta(Sprite_Tilenumber, y);
-    // <conv.chunks.Comment object at 0x101c7ee40>
+    // put air bubble tile into OAM data
     lda(0x2);
     sta(Sprite_Attributes, y);
     JMP(ExDBub);
 }
 
 int ExDBub() {
-    // <conv.chunks.Comment object at 0x101c7f080>
-    // <conv.chunks.Comment object at 0x101c7f290>
+    // set attribute byte
+    // leave
     return 0;
     JMP(PlayerGfxHandler);
 }
@@ -21543,8 +21543,8 @@ int ExDBub() {
 int PlayerGfxHandler() {
     lda(InjuryTimer);
     BEQ(CntPl);
-    // <conv.chunks.Comment object at 0x101c8eea0>
-    // <conv.chunks.Comment object at 0x101c8fda0>
+    // if player's injured invincibility timer
+    // not set, skip checkpoint and continue code
     lda(FrameCounter);
     lsr();
     BCS(ExPGH);
@@ -21552,52 +21552,52 @@ int PlayerGfxHandler() {
 }
 
 int CntPl() {
-    // <conv.chunks.Comment object at 0x101c98050>
-    // <conv.chunks.Comment object at 0x101c980e0>
-    // <conv.chunks.Comment object at 0x101c98230>
+    // otherwise check frame counter and branch
+    // to leave on every other frame (when d0 is set)
+    // if executing specific game engine routine,
     lda(GameEngineSubroutine);
     cmp(0xb);
-    // <conv.chunks.Comment object at 0x101c983b0>
+    // branch ahead to some other part
     BEQ(PlayerKilled);
     lda(PlayerChangeSizeFlag);
     BNE(DoChangeSize);
     ldy(SwimmingFlag);
     BEQ(FindPlayerAction);
-    // <conv.chunks.Comment object at 0x101c985c0>
-    // <conv.chunks.Comment object at 0x101c986e0>
-    // <conv.chunks.Comment object at 0x101c98800>
-    // <conv.chunks.Comment object at 0x101c98920>
+    // if grow/shrink flag set
+    // then branch to some other code
+    // if swimming flag set, branch to
+    // different part, do not return
     lda(Player_State);
     cmp(0x0);
     BEQ(FindPlayerAction);
     JSR(FindPlayerAction);
-    // <conv.chunks.Comment object at 0x101c98b30>
-    // <conv.chunks.Comment object at 0x101c98bc0>
-    // <conv.chunks.Comment object at 0x101c98d70>
+    // if player status normal,
+    // branch and do not return
+    // otherwise jump and return
     lda(FrameCounter);
     anda(0b100);
     BNE(ExPGH);
     tax();
     ldy(Player_SprDataOffset);
     lda(PlayerFacingDir);
-    // <conv.chunks.Comment object at 0x101c98f80>
-    // <conv.chunks.Comment object at 0x101c990a0>
-    // <conv.chunks.Comment object at 0x101c99220>
-    // <conv.chunks.Comment object at 0x101c992b0>
-    // <conv.chunks.Comment object at 0x101c993d0>
+    // check frame counter for d2 set (8 frames every
+    // eighth frame), and branch if set to leave
+    // initialize X to zero
+    // get player sprite data offset
+    // get player's facing direction
     lsr();
     BCS(SwimKT);
-    // <conv.chunks.Comment object at 0x101c99580>
+    // if player facing to the right, use current offset
     iny();
     iny();
-    // <conv.chunks.Comment object at 0x101c99790>
+    // otherwise move to next OAM data
     iny();
     iny();
     JMP(SwimKT);
 }
 
 int SwimKT() {
-    // <conv.chunks.Comment object at 0x101c99940>
+    // check player's size
     lda(PlayerSize);
     BEQ(BigKTS);
     lda(((Sprite_Tilenumber) + (24)), y);
@@ -21608,20 +21608,20 @@ int SwimKT() {
 }
 
 int BigKTS() {
-    // <conv.chunks.Comment object at 0x101c99ac0>
-    // <conv.chunks.Comment object at 0x101c99c10>
-    // <conv.chunks.Comment object at 0x101c99e20>
-    // <conv.chunks.Comment object at 0x101c99f40>
-    // <conv.chunks.Comment object at 0x101c9a0c0>
-    // <conv.chunks.Comment object at 0x101c9a150>
+    // if big, use first tile
+    // check tile number of seventh/eighth sprite
+    // against tile number in player graphics table
+    // if spr7/spr8 tile number = value, branch to leave
+    // otherwise increment X for second tile
+    // overwrite tile number in sprite 7/8
     lda(offsetof(G, SwimKickTileNum), x);
     sta(((Sprite_Tilenumber) + (24)), y);
     JMP(ExPGH);
 }
 
 int ExPGH() {
-    // <conv.chunks.Comment object at 0x101c9a300>
-    // <conv.chunks.Comment object at 0x101c9a510>
+    // to animate player's feet when swimming
+    // then leave
     return 0;
     JMP(FindPlayerAction);
 }
@@ -21646,12 +21646,12 @@ int PlayerKilled() {
 
 int PlayerGfxProcessing() {
     sta(PlayerGfxOffset);
-    // <conv.chunks.Comment object at 0x101c9ade0>
+    // store offset to graphics table here
     lda(0x4);
     JSR(RenderPlayerSub);
     JSR(ChkForPlayerAttrib);
-    // <conv.chunks.Comment object at 0x101c9af60>
-    // <conv.chunks.Comment object at 0x101c9b110>
+    // draw player based on offset loaded
+    // set horizontal flip bits as necessary
     lda(FireballThrowingTimer);
     BEQ(PlayerOffscreenChk);
     ldy(0x0);
@@ -21664,17 +21664,17 @@ int PlayerGfxProcessing() {
     lda(offsetof(G, PlayerGfxTblOffsets), y);
     sta(PlayerGfxOffset);
     ldy(0x4);
-    // <conv.chunks.Comment object at 0x101c9b320>
-    // <conv.chunks.Comment object at 0x101c9b440>
-    // <conv.chunks.Comment object at 0x101c9b4d0>
-    // <conv.chunks.Comment object at 0x101c9b680>
-    // <conv.chunks.Comment object at 0x101c9b7a0>
-    // <conv.chunks.Comment object at 0x101c9b8c0>
-    // <conv.chunks.Comment object at 0x101c9b9e0>
-    // <conv.chunks.Comment object at 0x101c9bb00>
-    // <conv.chunks.Comment object at 0x101c9bb90>
-    // <conv.chunks.Comment object at 0x101c9bd70>
-    // <conv.chunks.Comment object at 0x101c9be90>
+    // if fireball throw timer not set, skip to the end
+    // set value to initialize by default
+    // get animation frame timer
+    // compare to fireball throw timer
+    // initialize fireball throw timer
+    // if animation frame timer => fireball throw timer skip to end
+    // otherwise store animation timer into fireball throw timer
+    // load offset for throwing
+    // get offset to graphics table
+    // store it for use later
+    // set to update four sprite rows by default
     lda(Player_X_Speed);
     ora(Left_Right_Buttons);
     BEQ(SUpdR);
@@ -21683,10 +21683,10 @@ int PlayerGfxProcessing() {
 }
 
 int SUpdR() {
-    // <conv.chunks.Comment object at 0x101ca00e0>
-    // <conv.chunks.Comment object at 0x101ca0200>
-    // <conv.chunks.Comment object at 0x101ca0380>
-    // <conv.chunks.Comment object at 0x101ca0410>
+    // check for horizontal speed or left/right button press
+    // if no speed or button press, branch using set value in Y
+    // otherwise set to update only three sprite rows
+    // save in A for use
     tya();
     JSR(RenderPlayerSub);
     JMP(PlayerOffscreenChk);
@@ -21694,18 +21694,18 @@ int SUpdR() {
 
 int PlayerOffscreenChk() {
     lda(Player_OffscreenBits);
-    // <conv.chunks.Comment object at 0x101ca0680>
+    // get player's offscreen bits
     lsr();
     lsr();
-    // <conv.chunks.Comment object at 0x101ca0860>
+    // move vertical bits to low nybble
     lsr();
     lsr();
     sta(0x0);
     ldx(0x3);
     lda(Player_SprDataOffset);
-    // <conv.chunks.Comment object at 0x101ca0a40>
-    // <conv.chunks.Comment object at 0x101ca0ad0>
-    // <conv.chunks.Comment object at 0x101ca0bc0>
+    // store here
+    // check all four rows of player sprites
+    // get player's sprite data offset
     clc();
     adc(0x18);
     tay();
@@ -21713,9 +21713,9 @@ int PlayerOffscreenChk() {
 }
 
 int PROfsLoop() {
-    // <conv.chunks.Comment object at 0x101ca0e00>
-    // <conv.chunks.Comment object at 0x101ca0f50>
-    // <conv.chunks.Comment object at 0x101ca0fe0>
+    // add 24 bytes to start at bottom row
+    // set as offset here
+    // load offscreen Y coordinate just in case
     lda(0xf8);
     lsr(0x0);
     BCC(NPROffscr);
@@ -21727,8 +21727,8 @@ int NPROffscr() {
     tya();
     sec();
     sbc(0x8);
-    // <conv.chunks.Comment object at 0x101ca1580>
-    // <conv.chunks.Comment object at 0x101ca1610>
+    // subtract eight bytes to do
+    // next row up
     tay();
     dex();
     BPL(PROfsLoop);
@@ -21742,11 +21742,11 @@ int DrawPlayer_Intermediate() {
 }
 
 int PIntLoop() {
-    // <conv.chunks.Comment object at 0x101ca1b20>
-    // <conv.chunks.Comment object at 0x101ca1bb0>
+    // store data into zero page memory
+    // load data to display player as he always
     lda(offsetof(G, IntermediatePlayerData), x);
     sta(0x2, x);
-    // <conv.chunks.Comment object at 0x101ca20f0>
+    // appears on world/lives display
     dex();
     BPL(PIntLoop);
     ldx(0xb8);
@@ -21755,35 +21755,35 @@ int PIntLoop() {
     lda(((Sprite_Attributes) + (36)));
     ora(0b1000000);
     sta(((Sprite_Attributes) + (32)));
-    // <conv.chunks.Comment object at 0x101ca22d0>
-    // <conv.chunks.Comment object at 0x101ca23f0>
-    // <conv.chunks.Comment object at 0x101ca2480>
-    // <conv.chunks.Comment object at 0x101ca25a0>
-    // <conv.chunks.Comment object at 0x101ca2750>
-    // <conv.chunks.Comment object at 0x101ca2930>
-    // <conv.chunks.Comment object at 0x101ca2a50>
+    // do this until all data is loaded
+    // load offset for small standing
+    // load sprite data offset
+    // draw player accordingly
+    // get empty sprite attributes
+    // set horizontal flip bit for bottom-right sprite
+    // store and leave
     return 0;
     JMP(RenderPlayerSub);
 }
 
 int RenderPlayerSub() {
     sta(0x7);
-    // <conv.chunks.Comment object at 0x101ca2cf0>
-    // <conv.chunks.Comment object at 0x101ca2d50>
-    // <conv.chunks.Comment object at 0x101ca2db0>
-    // <conv.chunks.Comment object at 0x101ca2e10>
-    // <conv.chunks.Comment object at 0x101ca2ea0>
+    // $00-$01 - used to hold tile numbers, $00 also used to hold upper extent of animation frames
+    // $03 - facing direction, used as horizontal flip control
+    // $05 - horizontal position
+    // these also used in IntermediatePlayerData
+    // store number of rows of sprites to draw
     lda(Player_Rel_XPos);
     sta(Player_Pos_ForScroll);
     sta(0x5);
-    // <conv.chunks.Comment object at 0x101ca3080>
-    // <conv.chunks.Comment object at 0x101ca31d0>
+    // store player's relative horizontal position
+    // store it here also
     lda(Player_Rel_YPos);
     sta(0x2);
-    // <conv.chunks.Comment object at 0x101ca33e0>
+    // store player's vertical position
     lda(PlayerFacingDir);
     sta(0x3);
-    // <conv.chunks.Comment object at 0x101ca35f0>
+    // store player's facing direction
     lda(Player_SprAttrib);
     sta(0x4);
     ldx(PlayerGfxOffset);
@@ -21793,31 +21793,31 @@ int RenderPlayerSub() {
 
 int DrawPlayerLoop() {
     lda(offsetof(G, PlayerGraphicsTable), x);
-    // <conv.chunks.Comment object at 0x101ca3b60>
+    // load player's left side
     sta(0x0);
     lda(((offsetof(G, PlayerGraphicsTable)) + (1)), x);
-    // <conv.chunks.Comment object at 0x101ca3cb0>
+    // now load right side
     JSR(DrawOneSpriteRow);
     dec(0x7);
     BNE(DrawPlayerLoop);
-    // <conv.chunks.Comment object at 0x101cac110>
-    // <conv.chunks.Comment object at 0x101cac1a0>
+    // decrement rows of sprites to draw
+    // do this until all rows are drawn
     return 0;
     JMP(ProcessPlayerAction);
 }
 
 int ProcessPlayerAction() {
     lda(Player_State);
-    // <conv.chunks.Comment object at 0x101cac3e0>
+    // get player's state
     cmp(0x3);
     BEQ(ActionClimbing);
-    // <conv.chunks.Comment object at 0x101cac560>
+    // if climbing, branch here
     cmp(0x2);
     BEQ(ActionFalling);
-    // <conv.chunks.Comment object at 0x101cac770>
+    // if falling, branch here
     cmp(0x1);
     BNE(ProcOnGroundActs);
-    // <conv.chunks.Comment object at 0x101cac980>
+    // if not jumping, branch here
     lda(SwimmingFlag);
     BNE(ActionSwimming);
     ldy(0x6);
@@ -21837,14 +21837,14 @@ int ProcOnGroundActs() {
     ora(Left_Right_Buttons);
     BEQ(NonAnimatedActs);
     lda(Player_XSpeedAbsolute);
-    // <conv.chunks.Comment object at 0x101cad310>
-    // <conv.chunks.Comment object at 0x101cad3a0>
-    // <conv.chunks.Comment object at 0x101cad550>
-    // <conv.chunks.Comment object at 0x101cad670>
-    // <conv.chunks.Comment object at 0x101cad700>
-    // <conv.chunks.Comment object at 0x101cad8b0>
-    // <conv.chunks.Comment object at 0x101cad9d0>
-    // <conv.chunks.Comment object at 0x101cadaf0>
+    // load offset for crouching
+    // get crouching flag
+    // if set, branch to get offset for graphics table
+    // load offset for standing
+    // check player's horizontal speed
+    // and left/right controller bits
+    // if no speed or buttons pressed, use standing offset
+    // load walking/running speed
     cmp(0x9);
     BCC(ActionWalkRun);
     lda(Player_MovingDir);
@@ -21856,12 +21856,12 @@ int ProcOnGroundActs() {
 
 int NonAnimatedActs() {
     JSR(GetGfxOffsetAdder);
-    // <conv.chunks.Comment object at 0x101cae270>
+    // do a sub here to get offset adder for graphics table
     lda(0x0);
     sta(PlayerAnimCtrl);
     lda(offsetof(G, PlayerGfxTblOffsets), y);
-    // <conv.chunks.Comment object at 0x101cae3f0>
-    // <conv.chunks.Comment object at 0x101cae5a0>
+    // initialize animation frame control
+    // load offset to graphics table using size as offset
     return 0;
     JMP(ActionFalling);
 }
@@ -21891,14 +21891,14 @@ int ActionClimbing() {
 
 int ActionSwimming() {
     ldy(0x1);
-    // <conv.chunks.Comment object at 0x101caf4a0>
+    // load offset for swimming
     JSR(GetGfxOffsetAdder);
     lda(JumpSwimTimer);
     ora(PlayerAnimCtrl);
     BNE(FourFrameExtent);
-    // <conv.chunks.Comment object at 0x101caf6b0>
-    // <conv.chunks.Comment object at 0x101caf7d0>
-    // <conv.chunks.Comment object at 0x101caf8f0>
+    // check jump/swim timer
+    // and animation frame control
+    // if any one of these set, branch ahead
     lda(A_B_Buttons);
     asl();
     BCS(FourFrameExtent);
@@ -21930,16 +21930,16 @@ int AnimationControl() {
     BNE(ExAnimC);
     lda(PlayerAnimTimerSet);
     sta(PlayerAnimTimer);
-    // <conv.chunks.Comment object at 0x101cb83b0>
-    // <conv.chunks.Comment object at 0x101cb8440>
-    // <conv.chunks.Comment object at 0x101cb85f0>
-    // <conv.chunks.Comment object at 0x101cb8680>
-    // <conv.chunks.Comment object at 0x101cb87a0>
-    // <conv.chunks.Comment object at 0x101cb88f0>
-    // <conv.chunks.Comment object at 0x101cb8a10>
+    // store upper extent here
+    // get proper offset to graphics table
+    // save offset to stack
+    // load animation frame timer
+    // branch if not expired
+    // get animation frame timer amount
+    // and set timer accordingly
     lda(PlayerAnimCtrl);
     clc();
-    // <conv.chunks.Comment object at 0x101cb8c50>
+    // add one to animation frame control
     adc(0x1);
     cmp(0x0);
     BCC(SetAnimC);
@@ -21948,16 +21948,16 @@ int AnimationControl() {
 }
 
 int SetAnimC() {
-    // <conv.chunks.Comment object at 0x101cb8e00>
-    // <conv.chunks.Comment object at 0x101cb8e90>
-    // <conv.chunks.Comment object at 0x101cb9010>
-    // <conv.chunks.Comment object at 0x101cb90a0>
+    // compare to upper extent
+    // if frame control + 1 < upper extent, use as next
+    // otherwise initialize frame control
+    // store as new animation frame control
     sta(PlayerAnimCtrl);
     JMP(ExAnimC);
 }
 
 int ExAnimC() {
-    // <conv.chunks.Comment object at 0x101cb9280>
+    // get offset to graphics table from stack and leave
     pla();
     return 0;
     JMP(GetGfxOffsetAdder);
@@ -21969,24 +21969,24 @@ int GetGfxOffsetAdder() {
     tya();
     clc();
     adc(0x8);
-    // <conv.chunks.Comment object at 0x101cb9460>
-    // <conv.chunks.Comment object at 0x101cb9580>
-    // <conv.chunks.Comment object at 0x101cb9700>
-    // <conv.chunks.Comment object at 0x101cb97c0>
-    // <conv.chunks.Comment object at 0x101cb9850>
+    // get player's size
+    // if player big, use current offset as-is
+    // for big player
+    // otherwise add eight bytes to offset
+    // for small player
     tay();
     JMP(SzOfs);
 }
 
 int SzOfs() {
-    // <conv.chunks.Comment object at 0x101cb9a30>
+    // go back
     return 0;
     JMP(HandleChangeSize);
 }
 
 int HandleChangeSize() {
     ldy(PlayerAnimCtrl);
-    // <conv.chunks.Comment object at 0x101cb9c10>
+    // get animation frame control
     lda(FrameCounter);
     anda(0b11);
     BNE(GorSLog);
@@ -21999,20 +21999,20 @@ int HandleChangeSize() {
 }
 
 int CSzNext() {
-    // <conv.chunks.Comment object at 0x101cba900>
-    // <conv.chunks.Comment object at 0x101cbaa20>
-    // <conv.chunks.Comment object at 0x101cbaba0>
-    // <conv.chunks.Comment object at 0x101cbac30>
-    // <conv.chunks.Comment object at 0x101cbacc0>
-    // <conv.chunks.Comment object at 0x101cbaea0>
-    // <conv.chunks.Comment object at 0x101cbaf30>
-    // <conv.chunks.Comment object at 0x101cbb0e0>
+    // get frame counter and execute this code every
+    // fourth frame, otherwise branch ahead
+    // increment frame control
+    // check for preset upper extent
+    // if not there yet, skip ahead to use
+    // otherwise initialize both grow/shrink flag
+    // and animation frame control
+    // store proper frame control
     sty(PlayerAnimCtrl);
     JMP(GorSLog);
 }
 
 int GorSLog() {
-    // <conv.chunks.Comment object at 0x101cbb260>
+    // get player's size
     lda(PlayerSize);
     BNE(ShrinkPlayer);
     lda(offsetof(G, ChangeSizeOffsetAdder), y);
@@ -22031,7 +22031,7 @@ int GetOffsetFromAnimCtrl() {
 
 int ShrinkPlayer() {
     tya();
-    // <conv.chunks.Comment object at 0x101cbbc50>
+    // add ten bytes to frame control as offset
     clc();
     adc(0xa);
     tax();
@@ -22043,13 +22043,13 @@ int ShrinkPlayer() {
 }
 
 int ShrPlF() {
-    // <conv.chunks.Comment object at 0x101cbbd70>
-    // <conv.chunks.Comment object at 0x101cbbec0>
-    // <conv.chunks.Comment object at 0x101cbbf50>
-    // <conv.chunks.Comment object at 0x101cbbfe0>
-    // <conv.chunks.Comment object at 0x101cc0200>
-    // <conv.chunks.Comment object at 0x101cc0350>
-    // <conv.chunks.Comment object at 0x101cc03e0>
+    // this thing apparently uses two of the swimming frames
+    // to draw the player shrinking
+    // load offset for small player swimming
+    // get what would normally be offset adder
+    // and branch to use offset if nonzero
+    // otherwise load offset for big player swimming
+    // get offset to graphics table based on offset loaded
     lda(offsetof(G, PlayerGfxTblOffsets), y);
     return 0;
     JMP(ChkForPlayerAttrib);
@@ -22057,23 +22057,23 @@ int ShrPlF() {
 
 int ChkForPlayerAttrib() {
     ldy(Player_SprDataOffset);
-    // <conv.chunks.Comment object at 0x101cc0710>
+    // get sprite data offset
     lda(GameEngineSubroutine);
     cmp(0xb);
     BEQ(KilledAtt);
     lda(PlayerGfxOffset);
-    // <conv.chunks.Comment object at 0x101cc0920>
-    // <conv.chunks.Comment object at 0x101cc09b0>
-    // <conv.chunks.Comment object at 0x101cc0b60>
+    // if executing specific game engine routine,
+    // branch to change third and fourth row OAM attributes
+    // get graphics table offset
     cmp(0x50);
     BEQ(C_S_IGAtt);
     cmp(0xb8);
     BEQ(C_S_IGAtt);
     cmp(0xc0);
-    // <conv.chunks.Comment object at 0x101cc0ce0>
-    // <conv.chunks.Comment object at 0x101cc0e90>
-    // <conv.chunks.Comment object at 0x101cc0f20>
-    // <conv.chunks.Comment object at 0x101cc10d0>
+    // if crouch offset, either standing offset,
+    // or intermediate growing offset,
+    // go ahead and execute code to change
+    // fourth row OAM attributes only
     BEQ(C_S_IGAtt);
     cmp(0xc8);
     BNE(ExPlyrAt);
@@ -22084,8 +22084,8 @@ int KilledAtt() {
     lda(((Sprite_Attributes) + (16)), y);
     anda(0b111111);
     sta(((Sprite_Attributes) + (16)), y);
-    // <conv.chunks.Comment object at 0x101cc1700>
-    // <conv.chunks.Comment object at 0x101cc1820>
+    // mask out horizontal and vertical flip bits
+    // for third row sprites and save
     lda(((Sprite_Attributes) + (20)), y);
     anda(0b111111);
     ora(0b1000000);
@@ -22097,8 +22097,8 @@ int C_S_IGAtt() {
     lda(((Sprite_Attributes) + (24)), y);
     anda(0b111111);
     sta(((Sprite_Attributes) + (24)), y);
-    // <conv.chunks.Comment object at 0x101cc2240>
-    // <conv.chunks.Comment object at 0x101cc2360>
+    // mask out horizontal and vertical flip bits
+    // for fourth row sprites and save
     lda(((Sprite_Attributes) + (28)), y);
     anda(0b111111);
     ora(0b1000000);
@@ -22107,9 +22107,9 @@ int C_S_IGAtt() {
 }
 
 int ExPlyrAt() {
-    // <conv.chunks.Comment object at 0x101cc2840>
-    // <conv.chunks.Comment object at 0x101cc2960>
-    // <conv.chunks.Comment object at 0x101cc2ba0>
+    // set horizontal flip bit for second
+    // sprite in the fourth row
+    // leave
     return 0;
     JMP(RelativePlayerPosition);
 }
@@ -22124,8 +22124,8 @@ int RelativePlayerPosition() {
 int RelativeBubblePosition() {
     ldy(0x1);
     JSR(GetProperObjOffset);
-    // <conv.chunks.Comment object at 0x101cc30e0>
-    // <conv.chunks.Comment object at 0x101cc3170>
+    // set for air bubble offsets
+    // modify X to get proper air bubble offset
     ldy(0x3);
     JMP(RelWOfs);
     JMP(RelativeFireballPosition);
@@ -22134,14 +22134,14 @@ int RelativeBubblePosition() {
 int RelativeFireballPosition() {
     ldy(0x0);
     JSR(GetProperObjOffset);
-    // <conv.chunks.Comment object at 0x101cc3590>
-    // <conv.chunks.Comment object at 0x101cc3620>
+    // set for fireball offsets
+    // modify X to get proper fireball offset
     ldy(0x2);
     JMP(RelWOfs);
 }
 
 int RelWOfs() {
-    // <conv.chunks.Comment object at 0x101cc3830>
+    // get the coordinates
     JSR(GetObjRelativePosition);
     ldx(ObjectOffset);
     return 0;
@@ -22151,8 +22151,8 @@ int RelWOfs() {
 int RelativeMiscPosition() {
     ldy(0x2);
     JSR(GetProperObjOffset);
-    // <conv.chunks.Comment object at 0x101cc3c80>
-    // <conv.chunks.Comment object at 0x101cc3d10>
+    // set for misc object offsets
+    // modify X to get proper misc object offset
     ldy(0x6);
     JMP(RelWOfs);
     JMP(RelativeEnemyPosition);
@@ -22161,8 +22161,8 @@ int RelativeMiscPosition() {
 int RelativeEnemyPosition() {
     lda(0x1);
     ldy(0x1);
-    // <conv.chunks.Comment object at 0x101ccc170>
-    // <conv.chunks.Comment object at 0x101ccc200>
+    // get coordinates of enemy object
+    // relative to the screen
     JMP(VariableObjOfsRelPos);
     JMP(RelativeBlockPosition);
 }
@@ -22170,11 +22170,11 @@ int RelativeEnemyPosition() {
 int RelativeBlockPosition() {
     lda(0x9);
     ldy(0x4);
-    // <conv.chunks.Comment object at 0x101ccc4d0>
-    // <conv.chunks.Comment object at 0x101ccc560>
+    // get coordinates of one block object
+    // relative to the screen
     JSR(VariableObjOfsRelPos);
     inx();
-    // <conv.chunks.Comment object at 0x101ccc830>
+    // adjust offset for other block object if any
     inx();
     lda(0x9);
     iny();
@@ -22183,15 +22183,15 @@ int RelativeBlockPosition() {
 
 int VariableObjOfsRelPos() {
     stx(0x0);
-    // <conv.chunks.Comment object at 0x101cccb60>
+    // store value to add to A here
     clc();
     adc(0x0);
     tax();
-    // <conv.chunks.Comment object at 0x101cccd10>
-    // <conv.chunks.Comment object at 0x101cccce0>
+    // add A to value stored
+    // use as enemy offset
     JSR(GetObjRelativePosition);
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x101cccfb0>
+    // reload old object offset and leave
     return 0;
     JMP(GetObjRelativePosition);
 }
@@ -22201,13 +22201,13 @@ int GetObjRelativePosition() {
     sta(SprObject_Rel_YPos, y);
     lda(SprObject_X_Position, x);
     sec();
-    // <conv.chunks.Comment object at 0x101ccd190>
-    // <conv.chunks.Comment object at 0x101ccd2e0>
-    // <conv.chunks.Comment object at 0x101ccd430>
-    // <conv.chunks.Comment object at 0x101ccd5b0>
+    // load vertical coordinate low
+    // store here
+    // load horizontal coordinate
+    // subtract left edge coordinate
     sbc(ScreenLeft_X_Pos);
     sta(SprObject_Rel_XPos, y);
-    // <conv.chunks.Comment object at 0x101ccd730>
+    // store result here
     return 0;
     JMP(GetPlayerOffscreenBits);
 }
@@ -22215,9 +22215,9 @@ int GetObjRelativePosition() {
 int GetPlayerOffscreenBits() {
     ldx(0x0);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x101ccd940>
-    // <conv.chunks.Comment object at 0x101ccd9a0>
-    // <conv.chunks.Comment object at 0x101ccda30>
+    // $00 - used as temp variable to hold offscreen bits
+    // set offsets for player-specific variables
+    // and get offscreen information about player
     JMP(GetOffScreenBitsSet);
     JMP(GetFireballOffscreenBits);
 }
@@ -22248,12 +22248,12 @@ int GetMiscOffscreenBits() {
 
 int GetProperObjOffset() {
     txa();
-    // <conv.chunks.Comment object at 0x101cceba0>
+    // move offset to A
     clc();
     adc(offsetof(G, ObjOffsetData), y);
     tax();
-    // <conv.chunks.Comment object at 0x101ccee40>
-    // <conv.chunks.Comment object at 0x101ccefc0>
+    // add amount of bytes to offset depending on setting in Y
+    // put back in X and leave
     return 0;
     JMP(GetEnemyOffscreenBits);
 }
@@ -22261,8 +22261,8 @@ int GetProperObjOffset() {
 int GetEnemyOffscreenBits() {
     lda(0x1);
     ldy(0x1);
-    // <conv.chunks.Comment object at 0x101ccf110>
-    // <conv.chunks.Comment object at 0x101ccf1a0>
+    // set A to add 1 byte in order to get enemy offset
+    // set Y to put offscreen bits in Enemy_OffscreenBits
     JMP(SetOffscrBitsOffset);
     JMP(GetBlockOffscreenBits);
 }
@@ -22277,31 +22277,31 @@ int SetOffscrBitsOffset() {
     stx(0x0);
     clc();
     adc(0x0);
-    // <conv.chunks.Comment object at 0x101ccf770>
-    // <conv.chunks.Comment object at 0x101ccf8c0>
+    // add contents of X to A to get
+    // appropriate offset, then give back to X
     tax();
     JMP(GetOffScreenBitsSet);
 }
 
 int GetOffScreenBitsSet() {
     tya();
-    // <conv.chunks.Comment object at 0x101ccfaa0>
+    // save offscreen bits offset to stack for now
     pha();
     JSR(RunOffscrBitsSubs);
     asl();
-    // <conv.chunks.Comment object at 0x101ccfce0>
+    // move low nybble to high nybble
     asl();
     asl();
     asl();
     ora(0x0);
     sta(0x0);
     pla();
-    // <conv.chunks.Comment object at 0x101ccff50>
-    // <conv.chunks.Comment object at 0x101ccff20>
-    // <conv.chunks.Comment object at 0x101cd4140>
+    // mask together with previously saved low nybble
+    // store both here
+    // get offscreen bits offset from stack
     tay();
     lda(0x0);
-    // <conv.chunks.Comment object at 0x101cd4320>
+    // get value here and store elsewhere
     sta(SprObject_OffscrBits, y);
     ldx(ObjectOffset);
     return 0;
@@ -22311,13 +22311,13 @@ int GetOffScreenBitsSet() {
 int RunOffscrBitsSubs() {
     JSR(GetXOffscreenBits);
     lsr();
-    // <conv.chunks.Comment object at 0x101cd46e0>
-    // <conv.chunks.Comment object at 0x101cd4830>
+    // do subroutine here
+    // move high nybble to low
     lsr();
     lsr();
     lsr();
     sta(0x0);
-    // <conv.chunks.Comment object at 0x101cd4aa0>
+    // store here
     JMP(GetYOffscreenBits);
     JMP(GetXOffscreenBits);
 }
@@ -22329,9 +22329,9 @@ int GetXOffscreenBits() {
 }
 
 int XOfsLoop() {
-    // <conv.chunks.Comment object at 0x101cd4ef0>
-    // <conv.chunks.Comment object at 0x101cd59a0>
-    // <conv.chunks.Comment object at 0x101cd5a90>
+    // save position in buffer to here
+    // start with right side of screen
+    // get pixel coordinate of edge
     lda(ScreenEdge_X_Pos, y);
     sec();
     sbc(SprObject_X_Position, x);
@@ -22339,36 +22339,36 @@ int XOfsLoop() {
     lda(ScreenEdge_PageLoc, y);
     sbc(SprObject_PageLoc, x);
     ldx(offsetof(G, DefaultXOnscreenOfs), y);
-    // <conv.chunks.Comment object at 0x101cd5cd0>
-    // <conv.chunks.Comment object at 0x101cd5d60>
-    // <conv.chunks.Comment object at 0x101cd5ee0>
-    // <conv.chunks.Comment object at 0x101cd5f70>
-    // <conv.chunks.Comment object at 0x101cd6120>
-    // <conv.chunks.Comment object at 0x101cd6270>
+    // get difference between pixel coordinate of edge
+    // and pixel coordinate of object position
+    // store here
+    // get page location of edge
+    // subtract from page location of object position
+    // load offset value here
     cmp(0x0);
     BMI(XLdBData);
     ldx(((offsetof(G, DefaultXOnscreenOfs)) + (1)), y);
-    // <conv.chunks.Comment object at 0x101cd6420>
-    // <conv.chunks.Comment object at 0x101cd65d0>
+    // if beyond right edge or in front of left edge, branch
+    // if not, load alternate offset value here
     cmp(0x1);
     BPL(XLdBData);
     lda(0x38);
-    // <conv.chunks.Comment object at 0x101cd6840>
-    // <conv.chunks.Comment object at 0x101cd69f0>
+    // if one page or more to the left of either edge, branch
+    // if no branching, load value here and store
     sta(0x6);
     lda(0x8);
-    // <conv.chunks.Comment object at 0x101cd6a80>
+    // load some other value and execute subroutine
     JSR(DividePDiff);
     JMP(XLdBData);
 }
 
 int XLdBData() {
-    // <conv.chunks.Comment object at 0x101cd6e10>
+    // get bits here
     lda(offsetof(G, XOffscreenBitsData), x);
     ldx(0x4);
     cmp(0x0);
-    // <conv.chunks.Comment object at 0x101cd6fc0>
-    // <conv.chunks.Comment object at 0x101cd7050>
+    // reobtain position in buffer
+    // if bits not zero, branch to leave
     BNE(ExXOfsBS);
     dey();
     BPL(XOfsLoop);
@@ -22387,47 +22387,47 @@ int GetYOffscreenBits() {
 }
 
 int YOfsLoop() {
-    // <conv.chunks.Comment object at 0x101cd75f0>
-    // <conv.chunks.Comment object at 0x101cd7ef0>
-    // <conv.chunks.Comment object at 0x101cd7fe0>
+    // save position in buffer to here
+    // start with top of screen
+    // load coordinate for edge of vertical unit
     lda(offsetof(G, HighPosUnitData), y);
     sec();
     sbc(SprObject_Y_Position, x);
     sta(0x7);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x101ce42c0>
-    // <conv.chunks.Comment object at 0x101ce4440>
-    // <conv.chunks.Comment object at 0x101ce44d0>
+    // subtract from vertical coordinate of object
+    // store here
+    // subtract one from vertical high byte of object
     sbc(SprObject_Y_HighPos, x);
     ldx(offsetof(G, DefaultYOnscreenOfs), y);
-    // <conv.chunks.Comment object at 0x101ce4770>
+    // load offset value here
     cmp(0x0);
     BMI(YLdBData);
     ldx(((offsetof(G, DefaultYOnscreenOfs)) + (1)), y);
-    // <conv.chunks.Comment object at 0x101ce4920>
-    // <conv.chunks.Comment object at 0x101ce4ad0>
+    // if under top of the screen or beyond bottom, branch
+    // if not, load alternate offset value here
     cmp(0x1);
     BPL(YLdBData);
     lda(0x20);
-    // <conv.chunks.Comment object at 0x101ce4d40>
-    // <conv.chunks.Comment object at 0x101ce4ef0>
+    // if one vertical unit or more above the screen, branch
+    // if no branching, load value here and store
     sta(0x6);
     lda(0x4);
-    // <conv.chunks.Comment object at 0x101ce4f80>
+    // load some other value and execute subroutine
     JSR(DividePDiff);
     JMP(YLdBData);
 }
 
 int YLdBData() {
-    // <conv.chunks.Comment object at 0x101ce5310>
+    // get offscreen data bits using offset
     lda(offsetof(G, YOffscreenBitsData), x);
     ldx(0x4);
-    // <conv.chunks.Comment object at 0x101ce54c0>
+    // reobtain position in buffer
     cmp(0x0);
     BNE(ExYOfsBS);
     dey();
-    // <conv.chunks.Comment object at 0x101ce5610>
-    // <conv.chunks.Comment object at 0x101ce57f0>
+    // if bits not zero, branch to leave
+    // otherwise, do bottom of the screen now
     BPL(YOfsLoop);
     JMP(ExYOfsBS);
 }
@@ -22443,11 +22443,11 @@ int DividePDiff() {
     cmp(0x6);
     BCS(ExDivPD);
     lsr();
-    // <conv.chunks.Comment object at 0x101ce5ac0>
-    // <conv.chunks.Comment object at 0x101ce5a90>
-    // <conv.chunks.Comment object at 0x101ce5b50>
-    // <conv.chunks.Comment object at 0x101ce5d90>
-    // <conv.chunks.Comment object at 0x101ce5f70>
+    // store current value in A here
+    // get pixel difference
+    // compare to preset value
+    // if pixel difference >= preset value, branch
+    // divide by eight
     lsr();
     lsr();
     anda(0x7);
@@ -22458,37 +22458,37 @@ int DividePDiff() {
 }
 
 int SetOscrO() {
-    // <conv.chunks.Comment object at 0x101ce6120>
-    // <conv.chunks.Comment object at 0x101ce61b0>
-    // <conv.chunks.Comment object at 0x101ce62d0>
-    // <conv.chunks.Comment object at 0x101ce64b0>
-    // <conv.chunks.Comment object at 0x101ce6540>
+    // mask out all but 3 LSB
+    // right side of the screen or top?
+    // if so, branch, use difference / 8 as offset
+    // if not, add value to difference / 8
+    // use as offset
     tax();
     JMP(ExDivPD);
 }
 
 int ExDivPD() {
-    // <conv.chunks.Comment object at 0x101ce66c0>
+    // leave
     return 0;
     JMP(DrawSpriteObject);
 }
 
 int DrawSpriteObject() {
     lda(0x3);
-    // <conv.chunks.Comment object at 0x101ce6810>
-    // <conv.chunks.Comment object at 0x101ce6870>
-    // <conv.chunks.Comment object at 0x101ce68d0>
-    // <conv.chunks.Comment object at 0x101ce6960>
+    // $00-$01 - tile numbers
+    // $03 - flip control
+    // $05 - X coordinate
+    // get saved flip control bits
     lsr();
     lsr();
-    // <conv.chunks.Comment object at 0x101ce6b10>
+    // move d1 into carry
     lda(0x0);
     BCC(NoHFlip);
     sta(((Sprite_Tilenumber) + (4)), y);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x101ce6ba0>
-    // <conv.chunks.Comment object at 0x101ce6de0>
-    // <conv.chunks.Comment object at 0x101ce7020>
+    // if d1 not set, branch
+    // store first tile into second sprite
+    // and second into first sprite
     sta(Sprite_Tilenumber, y);
     lda(0x40);
     BNE(SetHFAt);
@@ -22496,64 +22496,64 @@ int DrawSpriteObject() {
 }
 
 int NoHFlip() {
-    // <conv.chunks.Comment object at 0x101ce7230>
-    // <conv.chunks.Comment object at 0x101ce72c0>
-    // <conv.chunks.Comment object at 0x101ce74a0>
+    // activate horizontal flip OAM attribute
+    // and unconditionally branch
+    // store first tile into first sprite
     sta(Sprite_Tilenumber, y);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x101ce7680>
+    // and second into second sprite
     sta(((Sprite_Tilenumber) + (4)), y);
     lda(0x0);
     JMP(SetHFAt);
 }
 
 int SetHFAt() {
-    // <conv.chunks.Comment object at 0x101ce7950>
-    // <conv.chunks.Comment object at 0x101ce79e0>
+    // clear bit for horizontal flip
+    // add other OAM attributes if necessary
     ora(0x4);
     sta(Sprite_Attributes, y);
-    // <conv.chunks.Comment object at 0x101ce7b90>
+    // store sprite attributes
     sta(((Sprite_Attributes) + (4)), y);
     lda(0x2);
     sta(Sprite_Y_Position, y);
     sta(((Sprite_Y_Position) + (4)), y);
-    // <conv.chunks.Comment object at 0x101ce7f50>
-    // <conv.chunks.Comment object at 0x101ce7fe0>
-    // <conv.chunks.Comment object at 0x101cec1d0>
+    // now the y coordinates
+    // note because they are
+    // side by side, they are the same
     lda(0x5);
     sta(Sprite_X_Position, y);
     clc();
     adc(0x8);
-    // <conv.chunks.Comment object at 0x101cec3e0>
-    // <conv.chunks.Comment object at 0x101cec650>
-    // <conv.chunks.Comment object at 0x101cec6e0>
+    // store x coordinate, then
+    // add 8 pixels and store another to
+    // put them side by side
     sta(((Sprite_X_Position) + (4)), y);
     lda(0x2);
     clc();
-    // <conv.chunks.Comment object at 0x101ceca10>
-    // <conv.chunks.Comment object at 0x101cec9e0>
+    // add eight pixels to the next y
+    // coordinate
     adc(0x8);
     sta(0x2);
     tya();
     clc();
-    // <conv.chunks.Comment object at 0x101cecd40>
-    // <conv.chunks.Comment object at 0x101cece90>
+    // add eight to the offset in Y to
+    // move to the next two sprites
     adc(0x8);
     tay();
     inx();
     inx();
-    // <conv.chunks.Comment object at 0x101ced0d0>
-    // <conv.chunks.Comment object at 0x101ced190>
+    // increment offset to return it to the
+    // routine that called this subroutine
     return 0;
     JMP(SoundEngine);
 }
 
 int SoundEngine() {
     lda(OperMode);
-    // <conv.chunks.Comment object at 0x101ced3a0>
+    // are we in title screen mode?
     BNE(SndOn);
     sta(SND_MASTERCTRL_REG);
-    // <conv.chunks.Comment object at 0x101ced910>
+    // if so, disable sound and leave
     return 0;
     JMP(SndOn);
 }
@@ -22561,34 +22561,34 @@ int SoundEngine() {
 int SndOn() {
     lda(0xff);
     sta(JOYPAD_PORT2);
-    // <conv.chunks.Comment object at 0x101cedb80>
+    // disable irqs and set frame counter mode???
     lda(0xf);
     sta(SND_MASTERCTRL_REG);
     lda(PauseModeFlag);
-    // <conv.chunks.Comment object at 0x101cedd90>
-    // <conv.chunks.Comment object at 0x101cedf40>
+    // enable first four channels
+    // is sound already in pause mode?
     BNE(InPause);
     lda(PauseSoundQueue);
-    // <conv.chunks.Comment object at 0x101cee180>
+    // if not, check pause sfx queue
     cmp(0x1);
     BNE(RunSoundSubroutines);
     JMP(InPause);
 }
 
 int InPause() {
-    // <conv.chunks.Comment object at 0x101cee300>
-    // <conv.chunks.Comment object at 0x101cee4b0>
+    // if queue is empty, skip pause mode routine
+    // check pause sfx buffer
     lda(PauseSoundBuffer);
     BNE(ContPau);
     lda(PauseSoundQueue);
-    // <conv.chunks.Comment object at 0x101cee750>
+    // check pause queue
     BEQ(SkipSoundSubroutines);
     sta(PauseSoundBuffer);
     sta(PauseModeFlag);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x101cee960>
-    // <conv.chunks.Comment object at 0x101ceea80>
-    // <conv.chunks.Comment object at 0x101ceeba0>
+    // if queue full, store in buffer and activate
+    // pause mode to interrupt game sounds
+    // disable sound and clear sfx buffers
     sta(SND_MASTERCTRL_REG);
     sta(Square1SoundBuffer);
     sta(Square2SoundBuffer);
@@ -22596,28 +22596,28 @@ int InPause() {
     lda(0xf);
     sta(SND_MASTERCTRL_REG);
     lda(0x2a);
-    // <conv.chunks.Comment object at 0x101cef0e0>
-    // <conv.chunks.Comment object at 0x101cef290>
+    // enable sound again
+    // store length of sound in pause counter
     sta(Squ1_SfxLenCounter);
     JMP(PTone1F);
 }
 
 int PTone1F() {
-    // <conv.chunks.Comment object at 0x101cef4a0>
+    // play first tone
     lda(0x44);
     BNE(PTRegC);
     JMP(ContPau);
 }
 
 int ContPau() {
-    // <conv.chunks.Comment object at 0x101cef590>
-    // <conv.chunks.Comment object at 0x101cef770>
+    // unconditional branch
+    // check pause length left
     lda(Squ1_SfxLenCounter);
     cmp(0x24);
-    // <conv.chunks.Comment object at 0x101cef8f0>
+    // time to play second?
     BEQ(PTone2F);
     cmp(0x1e);
-    // <conv.chunks.Comment object at 0x101cefb30>
+    // time to play first again?
     BEQ(PTone1F);
     cmp(0x18);
     BNE(DecPauC);
@@ -22625,9 +22625,9 @@ int ContPau() {
 }
 
 int PTone2F() {
-    // <conv.chunks.Comment object at 0x101cefd70>
-    // <conv.chunks.Comment object at 0x101cefe00>
-    // <conv.chunks.Comment object at 0x101ceffe0>
+    // time to play second again?
+    // only load regs during times, otherwise skip
+    // store reg contents and play the pause sfx
     lda(0x64);
     JMP(PTRegC);
 }
@@ -22640,26 +22640,26 @@ int PTRegC() {
 }
 
 int DecPauC() {
-    // <conv.chunks.Comment object at 0x101cf44d0>
+    // decrement pause sfx counter
     dec(Squ1_SfxLenCounter);
     BNE(SkipSoundSubroutines);
     lda(0x0);
     sta(SND_MASTERCTRL_REG);
     lda(PauseSoundBuffer);
     cmp(0x2);
-    // <conv.chunks.Comment object at 0x101cf4740>
-    // <conv.chunks.Comment object at 0x101cf47d0>
-    // <conv.chunks.Comment object at 0x101cf4980>
-    // <conv.chunks.Comment object at 0x101cf4aa0>
+    // disable sound if in pause mode and
+    // not currently playing the pause sfx
+    // if no longer playing pause sfx, check to see
+    // if we need to be playing sound again
     BNE(SkipPIn);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x101cf4ce0>
+    // clear pause mode to allow game sounds again
     sta(PauseModeFlag);
     JMP(SkipPIn);
 }
 
 int SkipPIn() {
-    // <conv.chunks.Comment object at 0x101cf4ef0>
+    // clear pause sfx buffer
     lda(0x0);
     sta(PauseSoundBuffer);
     BEQ(SkipSoundSubroutines);
@@ -22672,11 +22672,11 @@ int RunSoundSubroutines() {
     JSR(NoiseSfxHandler);
     JSR(MusicHandler);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x101cf5280>
-    // <conv.chunks.Comment object at 0x101cf53a0>
-    // <conv.chunks.Comment object at 0x101cf54c0>
-    // <conv.chunks.Comment object at 0x101cf55e0>
-    // <conv.chunks.Comment object at 0x101cf5700>
+    // play sfx on square channel 1
+    // ''  ''  '' square channel 2
+    // ''  ''  '' noise channel
+    // play music on all channels
+    // clear the music queues
     sta(AreaMusicQueue);
     sta(EventMusicQueue);
     JMP(SkipSoundSubroutines);
@@ -22684,19 +22684,19 @@ int RunSoundSubroutines() {
 
 int SkipSoundSubroutines() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x101cf5a30>
+    // clear the sound effects queues
     sta(Square1SoundQueue);
     sta(Square2SoundQueue);
     sta(NoiseSoundQueue);
     sta(PauseSoundQueue);
     ldy(DAC_Counter);
-    // <conv.chunks.Comment object at 0x101cf5f10>
+    // load some sort of counter
     lda(AreaMusicBuffer);
     anda(0b11);
-    // <conv.chunks.Comment object at 0x101cf6120>
+    // check for specific music
     BEQ(NoIncDAC);
     inc(DAC_Counter);
-    // <conv.chunks.Comment object at 0x101cf6330>
+    // increment and check counter
     cpy(0x30);
     BCC(StrWave);
     JMP(NoIncDAC);
@@ -22710,9 +22710,9 @@ int NoIncDAC() {
 }
 
 int StrWave() {
-    // <conv.chunks.Comment object at 0x101cf6750>
-    // <conv.chunks.Comment object at 0x101cf68a0>
-    // <conv.chunks.Comment object at 0x101cf69c0>
+    // if we are at zero, do not decrement
+    // decrement counter
+    // store into DMC load register (??)
     sty(((SND_DELTA_REG) + (1)));
     return 0;
     JMP(Dump_Squ1_Regs);
@@ -22720,7 +22720,7 @@ int StrWave() {
 
 int Dump_Squ1_Regs() {
     sty(((SND_SQUARE1_REG) + (1)));
-    // <conv.chunks.Comment object at 0x101cf6d20>
+    // dump the contents of X and Y into square 1's control regs
     stx(SND_SQUARE1_REG);
     return 0;
     JMP(PlaySqu1Sfx);
@@ -22743,11 +22743,11 @@ int Dump_Freq_Regs() {
     sta(((SND_REGISTER) + (2)), x);
     lda(offsetof(G, FreqRegLookupTbl), y);
     ora(0b1000);
-    // <conv.chunks.Comment object at 0x101cf73e0>
-    // <conv.chunks.Comment object at 0x101cf75f0>
-    // <conv.chunks.Comment object at 0x101cf7740>
-    // <conv.chunks.Comment object at 0x101cf7950>
-    // <conv.chunks.Comment object at 0x101cf7aa0>
+    // use previous contents of A for sound reg offset
+    // if zero, then do not load
+    // first byte goes into LSB of frequency divider
+    // second byte goes into 3 MSB plus extra bit for
+    // length counter
     sta(((SND_REGISTER) + (3)), x);
     JMP(NoTone);
 }
@@ -22759,7 +22759,7 @@ int NoTone() {
 
 int Dump_Sq2_Regs() {
     stx(SND_SQUARE2_REG);
-    // <conv.chunks.Comment object at 0x101cf7ec0>
+    // dump the contents of X and Y into square 2's control regs
     sty(((SND_SQUARE2_REG) + (1)));
     return 0;
     JMP(PlaySqu2Sfx);
@@ -22784,20 +22784,20 @@ int SetFreq_Tri() {
 
 int PlayFlagpoleSlide() {
     lda(0x40);
-    // <conv.chunks.Comment object at 0x101d00980>
+    // store length of flagpole sound
     sta(Squ1_SfxLenCounter);
     lda(0x62);
-    // <conv.chunks.Comment object at 0x101d01310>
+    // load part of reg contents for flagpole sound
     JSR(SetFreq_Squ1);
     ldx(0x99);
-    // <conv.chunks.Comment object at 0x101d01520>
+    // now load the rest
     BNE(FPS2nd);
     JMP(PlaySmallJump);
 }
 
 int PlaySmallJump() {
     lda(0x26);
-    // <conv.chunks.Comment object at 0x101d01790>
+    // branch here for small mario jumping sound
     BNE(JumpRegContents);
     JMP(PlayBigJump);
 }
@@ -22810,8 +22810,8 @@ int PlayBigJump() {
 int JumpRegContents() {
     ldx(0x82);
     ldy(0xa7);
-    // <conv.chunks.Comment object at 0x101d01b20>
-    // <conv.chunks.Comment object at 0x101d01bb0>
+    // note that small and big jump borrow each others' reg contents
+    // anyway, this loads the first part of mario's jumping sound
     JSR(PlaySqu1Sfx);
     lda(0x28);
     sta(Squ1_SfxLenCounter);
@@ -22821,19 +22821,19 @@ int JumpRegContents() {
 int ContinueSndJump() {
     lda(Squ1_SfxLenCounter);
     cmp(0x25);
-    // <conv.chunks.Comment object at 0x101d020c0>
-    // <conv.chunks.Comment object at 0x101d021e0>
+    // jumping sounds seem to be composed of three parts
+    // check for time to play second part yet
     BNE(N2Prt);
     ldx(0x5f);
-    // <conv.chunks.Comment object at 0x101d02420>
+    // load second part
     ldy(0xf6);
     BNE(DmpJpFPS);
     JMP(N2Prt);
 }
 
 int N2Prt() {
-    // <conv.chunks.Comment object at 0x101d025a0>
-    // <conv.chunks.Comment object at 0x101d02750>
+    // unconditional branch
+    // check for third part
     cmp(0x20);
     BNE(DecJpFPS);
     ldx(0x48);
@@ -22841,8 +22841,8 @@ int N2Prt() {
 }
 
 int FPS2nd() {
-    // <conv.chunks.Comment object at 0x101d029c0>
-    // <conv.chunks.Comment object at 0x101d02a50>
+    // load third part
+    // the flagpole slide sound shares part of third part
     ldy(0xbc);
     JMP(DmpJpFPS);
 }
@@ -22862,64 +22862,64 @@ int PlayFireballThrow() {
 
 int PlayBump() {
     lda(0xa);
-    // <conv.chunks.Comment object at 0x101d03260>
+    // load length of sfx and reg contents for bump sound
     ldy(0x93);
     JMP(Fthrow);
 }
 
 int Fthrow() {
-    // <conv.chunks.Comment object at 0x101d033e0>
+    // the fireball sound shares reg contents with the bump sound
     ldx(0x9e);
     sta(Squ1_SfxLenCounter);
     lda(0xc);
-    // <conv.chunks.Comment object at 0x101d036e0>
+    // load offset for bump sound
     JSR(PlaySqu1Sfx);
     JMP(ContinueBumpThrow);
 }
 
 int ContinueBumpThrow() {
     lda(Squ1_SfxLenCounter);
-    // <conv.chunks.Comment object at 0x101d03920>
+    // check for second part of bump sound
     cmp(0x6);
     BNE(DecJpFPS);
     lda(0xbb);
-    // <conv.chunks.Comment object at 0x101d03c20>
+    // load second part directly
     sta(((SND_SQUARE1_REG) + (1)));
     JMP(DecJpFPS);
 }
 
 int DecJpFPS() {
-    // <conv.chunks.Comment object at 0x101d03ef0>
+    // unconditional branch
     BNE(BranchToDecLength1);
     JMP(Square1SfxHandler);
 }
 
 int Square1SfxHandler() {
     ldy(Square1SoundQueue);
-    // <conv.chunks.Comment object at 0x101d080b0>
+    // check for sfx in queue
     BEQ(CheckSfx1Buffer);
     sty(Square1SoundBuffer);
     BMI(PlaySmallJump);
-    // <conv.chunks.Comment object at 0x101d082c0>
-    // <conv.chunks.Comment object at 0x101d083e0>
+    // if found, put in buffer
+    // small jump
     lsr(Square1SoundQueue);
     BCS(PlayBigJump);
-    // <conv.chunks.Comment object at 0x101d085f0>
+    // big jump
     lsr(Square1SoundQueue);
     BCS(PlayBump);
-    // <conv.chunks.Comment object at 0x101d08830>
+    // bump
     lsr(Square1SoundQueue);
     BCS(PlaySwimStomp);
-    // <conv.chunks.Comment object at 0x101d08a40>
+    // swim/stomp
     lsr(Square1SoundQueue);
     BCS(PlaySmackEnemy);
-    // <conv.chunks.Comment object at 0x101d08c50>
+    // smack enemy
     lsr(Square1SoundQueue);
     BCS(PlayPipeDownInj);
-    // <conv.chunks.Comment object at 0x101d08e60>
+    // pipedown/injury
     lsr(Square1SoundQueue);
     BCS(PlayFireballThrow);
-    // <conv.chunks.Comment object at 0x101d09070>
+    // fireball throw
     lsr(Square1SoundQueue);
     BCS(PlayFlagpoleSlide);
     JMP(CheckSfx1Buffer);
@@ -22929,27 +22929,27 @@ int CheckSfx1Buffer() {
     lda(Square1SoundBuffer);
     BEQ(ExS1H);
     BMI(ContinueSndJump);
-    // <conv.chunks.Comment object at 0x101d093d0>
-    // <conv.chunks.Comment object at 0x101d094f0>
-    // <conv.chunks.Comment object at 0x101d09640>
+    // check for sfx in buffer
+    // if not found, exit sub
+    // small mario jump
     lsr();
     BCS(ContinueSndJump);
-    // <conv.chunks.Comment object at 0x101d097f0>
+    // big mario jump
     lsr();
     BCS(ContinueBumpThrow);
-    // <conv.chunks.Comment object at 0x101d099d0>
+    // bump
     lsr();
     BCS(ContinueSwimStomp);
-    // <conv.chunks.Comment object at 0x101d09b80>
+    // swim/stomp
     lsr();
     BCS(ContinueSmackEnemy);
-    // <conv.chunks.Comment object at 0x101d09d30>
+    // smack enemy
     lsr();
     BCS(ContinuePipeDownInj);
-    // <conv.chunks.Comment object at 0x101d09ee0>
+    // pipedown/injury
     lsr();
     BCS(ContinueBumpThrow);
-    // <conv.chunks.Comment object at 0x101d0a090>
+    // fireball throw
     lsr();
     BCS(DecrementSfx1Length);
     JMP(ExS1H);
@@ -22962,10 +22962,10 @@ int ExS1H() {
 
 int PlaySwimStomp() {
     lda(0xe);
-    // <conv.chunks.Comment object at 0x101d0a480>
+    // store length of swim/stomp sound
     sta(Squ1_SfxLenCounter);
     ldy(0x9c);
-    // <conv.chunks.Comment object at 0x101d0a690>
+    // store reg contents for swim/stomp sound
     ldx(0x9e);
     lda(0x26);
     JSR(PlaySqu1Sfx);
@@ -22976,9 +22976,9 @@ int ContinueSwimStomp() {
     ldy(Squ1_SfxLenCounter);
     lda(((offsetof(G, SwimStompEnvelopeData)) - (1)), y);
     sta(SND_SQUARE1_REG);
-    // <conv.chunks.Comment object at 0x101d0aab0>
-    // <conv.chunks.Comment object at 0x101d0abd0>
-    // <conv.chunks.Comment object at 0x101d0ade0>
+    // look up reg contents in data section based on
+    // length of sound left, used to control sound's
+    // envelope
     cpy(0x6);
     BNE(BranchToDecLength1);
     lda(0x9e);
@@ -22993,12 +22993,12 @@ int BranchToDecLength1() {
 
 int PlaySmackEnemy() {
     lda(0xe);
-    // <conv.chunks.Comment object at 0x101d0b560>
+    // store length of smack enemy sound
     ldy(0xcb);
     ldx(0x9f);
     sta(Squ1_SfxLenCounter);
     lda(0x28);
-    // <conv.chunks.Comment object at 0x101d0b950>
+    // store reg contents for smack enemy sound
     JSR(PlaySqu1Sfx);
     BNE(DecrementSfx1Length);
     JMP(ContinueSmackEnemy);
@@ -23006,20 +23006,20 @@ int PlaySmackEnemy() {
 
 int ContinueSmackEnemy() {
     ldy(Squ1_SfxLenCounter);
-    // <conv.chunks.Comment object at 0x101d0bcb0>
+    // check about halfway through
     cpy(0x8);
     BNE(SmSpc);
     lda(0xa0);
     sta(((SND_SQUARE1_REG) + (2)));
-    // <conv.chunks.Comment object at 0x101d0bfe0>
-    // <conv.chunks.Comment object at 0x101d140b0>
+    // if we're at the about-halfway point, make the second tone
+    // in the smack enemy sound
     lda(0x9f);
     BNE(SmTick);
     JMP(SmSpc);
 }
 
 int SmSpc() {
-    // <conv.chunks.Comment object at 0x101d14530>
+    // this creates spaces in the sound, giving it its distinct noise
     lda(0x90);
     JMP(SmTick);
 }
@@ -23031,7 +23031,7 @@ int SmTick() {
 
 int DecrementSfx1Length() {
     dec(Squ1_SfxLenCounter);
-    // <conv.chunks.Comment object at 0x101d14830>
+    // decrement length of sfx
     BNE(ExSfx1);
     JMP(StopSquare1Sfx);
 }
@@ -23039,8 +23039,8 @@ int DecrementSfx1Length() {
 int StopSquare1Sfx() {
     ldx(0x0);
     stx(0xf1);
-    // <conv.chunks.Comment object at 0x101d14aa0>
-    // <conv.chunks.Comment object at 0x101d14bf0>
+    // if end of sfx reached, clear buffer
+    // and stop making the sfx
     ldx(0xe);
     stx(SND_MASTERCTRL_REG);
     ldx(0xf);
@@ -23055,7 +23055,7 @@ int ExSfx1() {
 
 int PlayPipeDownInj() {
     lda(0x2f);
-    // <conv.chunks.Comment object at 0x101d151c0>
+    // load length of pipedown sound
     sta(Squ1_SfxLenCounter);
     JMP(ContinuePipeDownInj);
 }
@@ -23064,15 +23064,15 @@ int ContinuePipeDownInj() {
     lda(Squ1_SfxLenCounter);
     lsr();
     BCS(NoPDwnL);
-    // <conv.chunks.Comment object at 0x101d15400>
-    // <conv.chunks.Comment object at 0x101d15550>
-    // <conv.chunks.Comment object at 0x101d155e0>
+    // some bitwise logic, forces the regs
+    // to be written to only during six specific times
+    // during which d3 must be set and d1-0 must be clear
     lsr();
     BCS(NoPDwnL);
     anda(0b10);
     BEQ(NoPDwnL);
     ldy(0x91);
-    // <conv.chunks.Comment object at 0x101d15af0>
+    // and this is where it actually gets written in
     ldx(0x9a);
     lda(0x44);
     JSR(PlaySqu1Sfx);
@@ -23087,8 +23087,8 @@ int NoPDwnL() {
 int PlayCoinGrab() {
     lda(0x35);
     ldx(0x8d);
-    // <conv.chunks.Comment object at 0x101d176b0>
-    // <conv.chunks.Comment object at 0x101d16570>
+    // load length of coin grab sound
+    // and part of reg contents
     BNE(CGrab_TTickRegL);
     JMP(PlayTimerTick);
 }
@@ -23103,8 +23103,8 @@ int CGrab_TTickRegL() {
     sta(Squ2_SfxLenCounter);
     ldy(0x7f);
     lda(0x42);
-    // <conv.chunks.Comment object at 0x101d1cef0>
-    // <conv.chunks.Comment object at 0x101d1cf80>
+    // load the rest of reg contents
+    // of coin grab and timer tick sound
     JSR(PlaySqu2Sfx);
     JMP(ContinueCGrabTTick);
 }
@@ -23112,11 +23112,11 @@ int CGrab_TTickRegL() {
 int ContinueCGrabTTick() {
     lda(Squ2_SfxLenCounter);
     cmp(0x30);
-    // <conv.chunks.Comment object at 0x101d1d250>
-    // <conv.chunks.Comment object at 0x101d1d370>
+    // check for time to play second tone yet
+    // timer tick sound also executes this, not sure why
     BNE(N2Tone);
     lda(0x54);
-    // <conv.chunks.Comment object at 0x101d1d5b0>
+    // if so, load the tone directly into the reg
     sta(((SND_SQUARE2_REG) + (2)));
     JMP(N2Tone);
 }
@@ -23128,10 +23128,10 @@ int N2Tone() {
 
 int PlayBlast() {
     lda(0x20);
-    // <conv.chunks.Comment object at 0x101d1da00>
+    // load length of fireworks/gunfire sound
     sta(Squ2_SfxLenCounter);
     ldy(0x94);
-    // <conv.chunks.Comment object at 0x101d1dc10>
+    // load reg contents of fireworks/gunfire sound
     lda(0x5e);
     BNE(SBlasJ);
     JMP(ContinueBlast);
@@ -23139,24 +23139,24 @@ int PlayBlast() {
 
 int ContinueBlast() {
     lda(Squ2_SfxLenCounter);
-    // <conv.chunks.Comment object at 0x101d1df70>
+    // check for time to play second part
     cmp(0x18);
     BNE(DecrementSfx2Length);
     ldy(0x93);
-    // <conv.chunks.Comment object at 0x101d1e270>
+    // load second part reg contents then
     lda(0x18);
     JMP(SBlasJ);
 }
 
 int SBlasJ() {
-    // <conv.chunks.Comment object at 0x101d1e3f0>
+    // unconditional branch to load rest of reg contents
     BNE(BlstSJp);
     JMP(PlayPowerUpGrab);
 }
 
 int PlayPowerUpGrab() {
     lda(0x36);
-    // <conv.chunks.Comment object at 0x101d1e660>
+    // load length of power-up grab sound
     sta(Squ2_SfxLenCounter);
     JMP(ContinuePowerUpGrab);
 }
@@ -23165,14 +23165,14 @@ int ContinuePowerUpGrab() {
     lda(Squ2_SfxLenCounter);
     lsr();
     BCS(DecrementSfx2Length);
-    // <conv.chunks.Comment object at 0x101d1e8a0>
-    // <conv.chunks.Comment object at 0x101d1e9f0>
-    // <conv.chunks.Comment object at 0x101d1ea80>
+    // load frequency reg based on length left over
+    // divide by 2
+    // alter frequency every other frame
     tay();
     lda(((offsetof(G, PowerUpGrabFreqData)) - (1)), y);
     ldx(0x5d);
-    // <conv.chunks.Comment object at 0x101d1ec30>
-    // <conv.chunks.Comment object at 0x101d1ee40>
+    // use length left over / 2 for frequency offset
+    // store reg contents of power-up grab sound
     ldy(0x7f);
     JMP(LoadSqu2Regs);
 }
@@ -23184,21 +23184,21 @@ int LoadSqu2Regs() {
 
 int DecrementSfx2Length() {
     dec(Squ2_SfxLenCounter);
-    // <conv.chunks.Comment object at 0x101d1f1a0>
+    // decrement length of sfx
     BNE(ExSfx2);
     JMP(EmptySfx2Buffer);
 }
 
 int EmptySfx2Buffer() {
     ldx(0x0);
-    // <conv.chunks.Comment object at 0x101d1f410>
+    // initialize square 2's sound effects buffer
     stx(Square2SoundBuffer);
     JMP(StopSquare2Sfx);
 }
 
 int StopSquare2Sfx() {
     ldx(0xd);
-    // <conv.chunks.Comment object at 0x101d1f650>
+    // stop playing the sfx
     stx(SND_MASTERCTRL_REG);
     ldx(0xf);
     stx(SND_MASTERCTRL_REG);
@@ -23213,34 +23213,34 @@ int ExSfx2() {
 int Square2SfxHandler() {
     lda(Square2SoundBuffer);
     anda(Sfx_ExtraLife);
-    // <conv.chunks.Comment object at 0x101d1fb60>
-    // <conv.chunks.Comment object at 0x101d1fc80>
+    // special handling for the 1-up sound to keep it
+    // from being interrupted by other sounds on square 2
     BNE(ContinueExtraLife);
     ldy(Square2SoundQueue);
-    // <conv.chunks.Comment object at 0x101d1fe90>
+    // check for sfx in queue
     BEQ(CheckSfx2Buffer);
     sty(Square2SoundBuffer);
     BMI(PlayBowserFall);
-    // <conv.chunks.Comment object at 0x101d280e0>
-    // <conv.chunks.Comment object at 0x101d28200>
+    // if found, put in buffer and check for the following
+    // bowser fall
     lsr(Square2SoundQueue);
     BCS(PlayCoinGrab);
-    // <conv.chunks.Comment object at 0x101d28410>
+    // coin grab
     lsr(Square2SoundQueue);
     BCS(PlayGrowPowerUp);
-    // <conv.chunks.Comment object at 0x101d28620>
+    // power-up reveal
     lsr(Square2SoundQueue);
     BCS(PlayGrowVine);
-    // <conv.chunks.Comment object at 0x101d28830>
+    // vine grow
     lsr(Square2SoundQueue);
     BCS(PlayBlast);
-    // <conv.chunks.Comment object at 0x101d28a40>
+    // fireworks/gunfire
     lsr(Square2SoundQueue);
     BCS(PlayTimerTick);
-    // <conv.chunks.Comment object at 0x101d28c50>
+    // timer tick
     lsr(Square2SoundQueue);
     BCS(PlayPowerUpGrab);
-    // <conv.chunks.Comment object at 0x101d28e60>
+    // power-up grab
     lsr(Square2SoundQueue);
     BCS(PlayExtraLife);
     JMP(CheckSfx2Buffer);
@@ -23250,27 +23250,27 @@ int CheckSfx2Buffer() {
     lda(Square2SoundBuffer);
     BEQ(ExS2H);
     BMI(ContinueBowserFall);
-    // <conv.chunks.Comment object at 0x101d291f0>
-    // <conv.chunks.Comment object at 0x101d29310>
-    // <conv.chunks.Comment object at 0x101d29460>
+    // check for sfx in buffer
+    // if not found, exit sub
+    // bowser fall
     lsr();
     BCS(Cont_CGrab_TTick);
-    // <conv.chunks.Comment object at 0x101d29610>
+    // coin grab
     lsr();
     BCS(ContinueGrowItems);
-    // <conv.chunks.Comment object at 0x101d297c0>
+    // power-up reveal
     lsr();
     BCS(ContinueGrowItems);
-    // <conv.chunks.Comment object at 0x101d29970>
+    // vine grow
     lsr();
     BCS(ContinueBlast);
-    // <conv.chunks.Comment object at 0x101d29b20>
+    // fireworks/gunfire
     lsr();
     BCS(Cont_CGrab_TTick);
-    // <conv.chunks.Comment object at 0x101d29cd0>
+    // timer tick
     lsr();
     BCS(ContinuePowerUpGrab);
-    // <conv.chunks.Comment object at 0x101d29e80>
+    // power-up grab
     lsr();
     BCS(ContinueExtraLife);
     JMP(ExS2H);
@@ -23293,10 +23293,10 @@ int JumpToDecLength2() {
 
 int PlayBowserFall() {
     lda(0x38);
-    // <conv.chunks.Comment object at 0x101d2a4e0>
+    // load length of bowser defeat sound
     sta(Squ2_SfxLenCounter);
     ldy(0xc4);
-    // <conv.chunks.Comment object at 0x101d2a6f0>
+    // load contents of reg for bowser defeat sound
     lda(0x18);
     JMP(BlstSJp);
 }
@@ -23308,30 +23308,30 @@ int BlstSJp() {
 
 int ContinueBowserFall() {
     lda(Squ2_SfxLenCounter);
-    // <conv.chunks.Comment object at 0x101d2aab0>
+    // check for almost near the end
     cmp(0x8);
     BNE(DecrementSfx2Length);
     ldy(0xa4);
-    // <conv.chunks.Comment object at 0x101d2adb0>
+    // if so, load the rest of reg contents for bowser defeat sound
     lda(0x5a);
     JMP(PBFRegs);
 }
 
 int PBFRegs() {
-    // <conv.chunks.Comment object at 0x101d2af30>
+    // the fireworks/gunfire sound shares part of reg contents here
     ldx(0x9f);
     JMP(EL_LRegs);
 }
 
 int EL_LRegs() {
-    // <conv.chunks.Comment object at 0x101d2b0b0>
+    // this is an unconditional branch outta here
     BNE(LoadSqu2Regs);
     JMP(PlayExtraLife);
 }
 
 int PlayExtraLife() {
     lda(0x30);
-    // <conv.chunks.Comment object at 0x101d2b2c0>
+    // load length of 1-up sound
     sta(Squ2_SfxLenCounter);
     JMP(ContinueExtraLife);
 }
@@ -23345,13 +23345,13 @@ int ContinueExtraLife() {
 int DivLLoop() {
     lsr();
     BCS(JumpToDecLength2);
-    // <conv.chunks.Comment object at 0x101d2b7d0>
+    // if any bits set here, branch to dec the length
     dex();
     BNE(DivLLoop);
-    // <conv.chunks.Comment object at 0x101d2b980>
+    // do this until all bits checked, if none set, continue
     tay();
     lda(((offsetof(G, ExtraLifeFreqData)) - (1)), y);
-    // <conv.chunks.Comment object at 0x101d2bb30>
+    // load our reg contents
     ldx(0x82);
     ldy(0x7f);
     BNE(EL_LRegs);
@@ -23360,7 +23360,7 @@ int DivLLoop() {
 
 int PlayGrowPowerUp() {
     lda(0x10);
-    // <conv.chunks.Comment object at 0x101d300b0>
+    // load length of power-up reveal sound
     BNE(GrowItemRegs);
     JMP(PlayGrowVine);
 }
@@ -23373,10 +23373,10 @@ int PlayGrowVine() {
 int GrowItemRegs() {
     sta(Squ2_SfxLenCounter);
     lda(0x7f);
-    // <conv.chunks.Comment object at 0x101d30530>
+    // load contents of reg for both sounds directly
     sta(((SND_SQUARE2_REG) + (1)));
     lda(0x0);
-    // <conv.chunks.Comment object at 0x101d30800>
+    // start secondary counter for both sounds
     sta(Sfx_SecondaryCounter);
     JMP(ContinueGrowItems);
 }
@@ -23385,19 +23385,19 @@ int ContinueGrowItems() {
     inc(Sfx_SecondaryCounter);
     lda(Sfx_SecondaryCounter);
     lsr();
-    // <conv.chunks.Comment object at 0x101d30a40>
-    // <conv.chunks.Comment object at 0x101d30b60>
-    // <conv.chunks.Comment object at 0x101d30cb0>
+    // increment secondary counter for both sounds
+    // this sound doesn't decrement the usual counter
+    // divide by 2 to get the offset
     tay();
     cpy(Squ2_SfxLenCounter);
     BEQ(StopGrowItems);
     lda(0x9d);
-    // <conv.chunks.Comment object at 0x101d30dd0>
-    // <conv.chunks.Comment object at 0x101d30ef0>
-    // <conv.chunks.Comment object at 0x101d31010>
+    // have we reached the end yet?
+    // if so, branch to jump, and stop playing sounds
+    // load contents of other reg directly
     sta(SND_SQUARE2_REG);
     lda(offsetof(G, PUp_VGrow_FreqData), y);
-    // <conv.chunks.Comment object at 0x101d31220>
+    // use secondary counter / 2 as offset for frequency regs
     JSR(SetFreq_Squ2);
     return 0;
     JMP(StopGrowItems);
@@ -23410,7 +23410,7 @@ int StopGrowItems() {
 
 int PlayBrickShatter() {
     lda(0x20);
-    // <conv.chunks.Comment object at 0x101d31730>
+    // load length of brick shatter sound
     sta(Noise_SfxLenCounter);
     JMP(ContinueBrickShatter);
 }
@@ -23418,18 +23418,18 @@ int PlayBrickShatter() {
 int ContinueBrickShatter() {
     lda(Noise_SfxLenCounter);
     lsr();
-    // <conv.chunks.Comment object at 0x101d32330>
+    // divide by 2 and check for bit set to use offset
     BCC(DecrementSfx3Length);
     tay();
     ldx(offsetof(G, BrickShatterFreqData), y);
-    // <conv.chunks.Comment object at 0x101d32540>
+    // load reg contents of brick shatter sound
     lda(offsetof(G, BrickShatterEnvData), y);
     JMP(PlayNoiseSfx);
 }
 
 int PlayNoiseSfx() {
     sta(SND_NOISE_REG);
-    // <conv.chunks.Comment object at 0x101d327e0>
+    // play the sfx
     stx(((SND_NOISE_REG) + (2)));
     lda(0x18);
     sta(((SND_NOISE_REG) + (3)));
@@ -23438,10 +23438,10 @@ int PlayNoiseSfx() {
 
 int DecrementSfx3Length() {
     dec(Noise_SfxLenCounter);
-    // <conv.chunks.Comment object at 0x101d32d80>
+    // decrement length of sfx
     BNE(ExSfx3);
     lda(0xf0);
-    // <conv.chunks.Comment object at 0x101d32fc0>
+    // if done, stop playing the sfx
     sta(SND_NOISE_REG);
     lda(0x0);
     sta(NoiseSoundBuffer);
@@ -23455,13 +23455,13 @@ int ExSfx3() {
 
 int NoiseSfxHandler() {
     ldy(NoiseSoundQueue);
-    // <conv.chunks.Comment object at 0x101d334d0>
+    // check for sfx in queue
     BEQ(CheckNoiseBuffer);
     sty(NoiseSoundBuffer);
-    // <conv.chunks.Comment object at 0x101d336e0>
+    // if found, put in buffer
     lsr(NoiseSoundQueue);
     BCS(PlayBrickShatter);
-    // <conv.chunks.Comment object at 0x101d338f0>
+    // brick shatter
     lsr(NoiseSoundQueue);
     BCS(PlayBowserFlame);
     JMP(CheckNoiseBuffer);
@@ -23470,11 +23470,11 @@ int NoiseSfxHandler() {
 int CheckNoiseBuffer() {
     lda(NoiseSoundBuffer);
     BEQ(ExNH);
-    // <conv.chunks.Comment object at 0x101d33c50>
-    // <conv.chunks.Comment object at 0x101d33d70>
+    // check for sfx in buffer
+    // if not found, exit sub
     lsr();
     BCS(ContinueBrickShatter);
-    // <conv.chunks.Comment object at 0x101d33f50>
+    // brick shatter
     lsr();
     BCS(ContinueBowserFlame);
     JMP(ExNH);
@@ -23487,7 +23487,7 @@ int ExNH() {
 
 int PlayBowserFlame() {
     lda(0x40);
-    // <conv.chunks.Comment object at 0x101d3c380>
+    // load length of bowser flame sound
     sta(Noise_SfxLenCounter);
     JMP(ContinueBowserFlame);
 }
@@ -23497,7 +23497,7 @@ int ContinueBowserFlame() {
     lsr();
     tay();
     ldx(0xf);
-    // <conv.chunks.Comment object at 0x101d3c7d0>
+    // load reg contents of bowser flame sound
     lda(((offsetof(G, BowserFlameEnvData)) - (1)), y);
     BNE(PlayNoiseSfx);
     JMP(ContinueMusic);
@@ -23510,13 +23510,13 @@ int ContinueMusic() {
 
 int MusicHandler() {
     lda(EventMusicQueue);
-    // <conv.chunks.Comment object at 0x101d3cda0>
+    // check event music queue
     BNE(LoadEventMusic);
     lda(AreaMusicQueue);
-    // <conv.chunks.Comment object at 0x101d3cfb0>
+    // check area music queue
     BNE(LoadAreaMusic);
     lda(EventMusicBuffer);
-    // <conv.chunks.Comment object at 0x101d3d1c0>
+    // check both buffers
     ora(AreaMusicBuffer);
     BNE(ContinueMusic);
     return 0;
@@ -23535,17 +23535,17 @@ int LoadEventMusic() {
 int NoStopSfx() {
     ldx(AreaMusicBuffer);
     stx(AreaMusicBuffer_Alt);
-    // <conv.chunks.Comment object at 0x101d3dc70>
+    // save current area music buffer to be re-obtained later
     ldy(0x0);
     sty(NoteLengthTblAdder);
     sty(AreaMusicBuffer);
     cmp(TimeRunningOutMusic);
-    // <conv.chunks.Comment object at 0x101d3ddf0>
-    // <conv.chunks.Comment object at 0x101d3dfa0>
-    // <conv.chunks.Comment object at 0x101d3e0c0>
+    // default value for additional length byte offset
+    // clear area music buffer
+    // is it time running out music?
     BNE(FindEventMusicHeader);
     ldx(0x8);
-    // <conv.chunks.Comment object at 0x101d3e2d0>
+    // load offset to be added to length byte of header
     stx(NoteLengthTblAdder);
     BNE(FindEventMusicHeader);
     JMP(LoadAreaMusic);
@@ -23554,14 +23554,14 @@ int NoStopSfx() {
 int LoadAreaMusic() {
     cmp(0x4);
     BNE(NoStop1);
-    // <conv.chunks.Comment object at 0x101d3e630>
-    // <conv.chunks.Comment object at 0x101d3e6c0>
+    // is it underground music?
+    // no, do not stop square 1 sfx
     JSR(StopSquare1Sfx);
     JMP(NoStop1);
 }
 
 int NoStop1() {
-    // <conv.chunks.Comment object at 0x101d3e990>
+    // start counter used only by ground level music
     ldy(0x10);
     JMP(GMLoopB);
 }
@@ -23573,20 +23573,20 @@ int GMLoopB() {
 
 int HandleAreaMusicLoopB() {
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x101d3ec90>
+    // clear event music buffer
     sty(EventMusicBuffer);
     sta(AreaMusicBuffer);
     cmp(0x1);
-    // <conv.chunks.Comment object at 0x101d3eea0>
-    // <conv.chunks.Comment object at 0x101d3efc0>
+    // copy area music queue contents to buffer
+    // is it ground level music?
     BNE(FindAreaMusicHeader);
     inc(GroundMusicHeaderOfs);
     ldy(GroundMusicHeaderOfs);
-    // <conv.chunks.Comment object at 0x101d3f1d0>
-    // <conv.chunks.Comment object at 0x101d3f2f0>
+    // increment but only if playing ground level music
+    // is it time to loopback ground level music?
     cpy(0x32);
     BNE(LoadHeader);
-    // <conv.chunks.Comment object at 0x101d3f470>
+    // branch ahead with alternate offset
     ldy(0x11);
     BNE(GMLoopB);
     JMP(FindAreaMusicHeader);
@@ -23601,18 +23601,18 @@ int FindAreaMusicHeader() {
 int FindEventMusicHeader() {
     iny();
     lsr();
-    // <conv.chunks.Comment object at 0x101d3fb30>
-    // <conv.chunks.Comment object at 0x101d3fbf0>
+    // increment Y pointer based on previously loaded queue contents
+    // bit shift and increment until we find a set bit for music
     BCC(FindEventMusicHeader);
     JMP(LoadHeader);
 }
 
 int LoadHeader() {
     lda(MusicHeaderOffsetData, y);
-    // <conv.chunks.Comment object at 0x101d3fda0>
+    // load offset for header
     tay();
     lda(offsetof(G, MusicHeaderData), y);
-    // <conv.chunks.Comment object at 0x101d3ff80>
+    // now load the header
     sta(NoteLenLookupTblOfs);
     lda(((offsetof(G, MusicHeaderData)) + (1)), y);
     sta(MusicDataLow);
@@ -23626,18 +23626,18 @@ int LoadHeader() {
     sta(MusicOffset_Noise);
     sta(NoiseDataLoopbackOfs);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x101d4d100>
+    // initialize music note counters
     sta(Squ2_NoteLenCounter);
     sta(Squ1_NoteLenCounter);
     sta(Tri_NoteLenCounter);
     sta(Noise_BeatLenCounter);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x101d4d5e0>
+    // initialize music data offset for square 2
     sta(MusicOffset_Square2);
     sta(AltRegContentFlag);
     lda(0xb);
-    // <conv.chunks.Comment object at 0x101d4d7f0>
-    // <conv.chunks.Comment object at 0x101d4d910>
+    // initialize alternate control reg data used by square 1
+    // disable triangle channel and reenable it
     sta(SND_MASTERCTRL_REG);
     lda(0xf);
     sta(SND_MASTERCTRL_REG);
@@ -23648,9 +23648,9 @@ int HandleSquare2Music() {
     dec(Squ2_NoteLenCounter);
     BNE(MiscSqu2MusicTasks);
     ldy(MusicOffset_Square2);
-    // <conv.chunks.Comment object at 0x101d4dd30>
-    // <conv.chunks.Comment object at 0x101d4de50>
-    // <conv.chunks.Comment object at 0x101d4df70>
+    // decrement square 2 note length
+    // is it time for more data?  if not, branch to end tasks
+    // increment square 2 music offset and fetch data
     inc(MusicOffset_Square2);
     lda((MusicData), y);
     BEQ(EndOfMusicData);
@@ -23661,7 +23661,7 @@ int HandleSquare2Music() {
 
 int EndOfMusicData() {
     lda(EventMusicBuffer);
-    // <conv.chunks.Comment object at 0x101d4e660>
+    // check secondary buffer for time running out music
     cmp(TimeRunningOutMusic);
     BNE(NotTRO);
     lda(AreaMusicBuffer_Alt);
@@ -23670,20 +23670,20 @@ int EndOfMusicData() {
 }
 
 int NotTRO() {
-    // <conv.chunks.Comment object at 0x101d4e990>
-    // <conv.chunks.Comment object at 0x101d4eab0>
-    // <conv.chunks.Comment object at 0x101d4ebd0>
+    // load previously saved contents of primary buffer
+    // and start playing the song again if there is one
+    // check for victory music (the only secondary that loops)
     anda(VictoryMusic);
     BNE(VictoryMLoopBack);
     lda(AreaMusicBuffer);
-    // <conv.chunks.Comment object at 0x101d4ee40>
+    // check primary buffer for any music except pipe intro
     anda(0b1011111);
     BNE(MusicLoopBack);
     lda(0x0);
     sta(AreaMusicBuffer);
-    // <conv.chunks.Comment object at 0x101d4f050>
-    // <conv.chunks.Comment object at 0x101d4f170>
-    // <conv.chunks.Comment object at 0x101d4f200>
+    // if any area music except pipe intro, music loops
+    // clear primary and secondary buffers and initialize
+    // control regs of square and triangle channels
     sta(EventMusicBuffer);
     sta(SND_TRIANGLE_REG);
     lda(0x90);
@@ -23705,10 +23705,10 @@ int VictoryMLoopBack() {
 
 int Squ2LengthHandler() {
     JSR(ProcessLengthData);
-    // <conv.chunks.Comment object at 0x101d4fb60>
+    // store length of note
     sta(Squ2_NoteLenBuffer);
     ldy(MusicOffset_Square2);
-    // <conv.chunks.Comment object at 0x101d4fd70>
+    // fetch another byte (MUST NOT BE LENGTH BYTE!)
     inc(MusicOffset_Square2);
     lda((MusicData), y);
     JMP(Squ2NoteHandler);
@@ -23716,7 +23716,7 @@ int Squ2LengthHandler() {
 
 int Squ2NoteHandler() {
     ldx(Square2SoundBuffer);
-    // <conv.chunks.Comment object at 0x101d54140>
+    // is there a sound playing on this channel?
     BNE(SkipFqL1);
     JSR(SetFreq_Squ2);
     BEQ(Rest);
@@ -23725,18 +23725,18 @@ int Squ2NoteHandler() {
 }
 
 int Rest() {
-    // <conv.chunks.Comment object at 0x101d54350>
-    // <conv.chunks.Comment object at 0x101d54470>
-    // <conv.chunks.Comment object at 0x101d545c0>
-    // <conv.chunks.Comment object at 0x101d546e0>
+    // no, then play the note
+    // check to see if note is rest
+    // if not, load control regs for square 2
+    // save contents of A
     sta(Squ2_EnvelopeDataCtrl);
     JSR(Dump_Sq2_Regs);
     JMP(SkipFqL1);
 }
 
 int SkipFqL1() {
-    // <conv.chunks.Comment object at 0x101d54860>
-    // <conv.chunks.Comment object at 0x101d54980>
+    // dump X and Y into square 2 control regs
+    // save length in square 2 note counter
     lda(Squ2_NoteLenBuffer);
     sta(Squ2_NoteLenCounter);
     JMP(MiscSqu2MusicTasks);
@@ -23744,28 +23744,28 @@ int SkipFqL1() {
 
 int MiscSqu2MusicTasks() {
     lda(Square2SoundBuffer);
-    // <conv.chunks.Comment object at 0x101d54bf0>
+    // is there a sound playing on square 2?
     BNE(HandleSquare1Music);
     lda(EventMusicBuffer);
     anda(0b10010001);
-    // <conv.chunks.Comment object at 0x101d54e00>
-    // <conv.chunks.Comment object at 0x101d54f20>
+    // check for death music or d4 set on secondary buffer
+    // note that regs for death music or d4 are loaded by default
     BNE(HandleSquare1Music);
     ldy(Squ2_EnvelopeDataCtrl);
-    // <conv.chunks.Comment object at 0x101d55130>
+    // check for contents saved from LoadControlRegs
     BEQ(NoDecEnv1);
     dec(Squ2_EnvelopeDataCtrl);
     JMP(NoDecEnv1);
 }
 
 int NoDecEnv1() {
-    // <conv.chunks.Comment object at 0x101d55340>
-    // <conv.chunks.Comment object at 0x101d55460>
+    // decrement unless already zero
+    // do a load of envelope data to replace default
     JSR(LoadEnvelopeData);
     sta(SND_SQUARE2_REG);
     ldx(0x7f);
-    // <conv.chunks.Comment object at 0x101d555b0>
-    // <conv.chunks.Comment object at 0x101d556d0>
+    // based on offset set by first load unless playing
+    // death music or d4 set on secondary buffer
     stx(((SND_SQUARE2_REG) + (1)));
     JMP(HandleSquare1Music);
 }
@@ -23780,18 +23780,18 @@ int HandleSquare1Music() {
 
 int FetchSqu1MusicData() {
     ldy(MusicOffset_Square1);
-    // <conv.chunks.Comment object at 0x101d55e80>
+    // increment square 1 music offset and fetch data
     inc(MusicOffset_Square1);
     lda((MusicData), y);
     BNE(Squ1NoteHandler);
-    // <conv.chunks.Comment object at 0x101d561e0>
+    // if nonzero, then skip this part
     lda(0x83);
     sta(SND_SQUARE1_REG);
     lda(0x94);
     sta(((SND_SQUARE1_REG) + (1)));
-    // <conv.chunks.Comment object at 0x101d56360>
-    // <conv.chunks.Comment object at 0x101d56510>
-    // <conv.chunks.Comment object at 0x101d565a0>
+    // store some data into control regs for square 1
+    // and fetch another byte of data, used to give
+    // death music its unique sound
     sta(AltRegContentFlag);
     BNE(FetchSqu1MusicData);
     JMP(Squ1NoteHandler);
@@ -23801,21 +23801,21 @@ int Squ1NoteHandler() {
     JSR(AlternateLengthHandler);
     sta(Squ1_NoteLenCounter);
     ldy(Square1SoundBuffer);
-    // <conv.chunks.Comment object at 0x101d56b40>
-    // <conv.chunks.Comment object at 0x101d56c60>
+    // save contents of A in square 1 note counter
+    // is there a sound playing on square 1?
     BNE(HandleTriangleMusic);
     txa();
     anda(0b111110);
     JSR(SetFreq_Squ1);
-    // <conv.chunks.Comment object at 0x101d56f00>
-    // <conv.chunks.Comment object at 0x101d57020>
+    // change saved data to appropriate note format
+    // play the note
     BEQ(SkipCtrlL);
     JSR(LoadControlRegs);
     JMP(SkipCtrlL);
 }
 
 int SkipCtrlL() {
-    // <conv.chunks.Comment object at 0x101d57320>
+    // save envelope offset
     sta(Squ1_EnvelopeDataCtrl);
     JSR(Dump_Squ1_Regs);
     JMP(MiscSqu1MusicTasks);
@@ -23823,30 +23823,30 @@ int SkipCtrlL() {
 
 int MiscSqu1MusicTasks() {
     lda(Square1SoundBuffer);
-    // <conv.chunks.Comment object at 0x101d57590>
+    // is there a sound playing on square 1?
     BNE(HandleTriangleMusic);
     lda(EventMusicBuffer);
-    // <conv.chunks.Comment object at 0x101d577a0>
+    // check for death music or d4 set on secondary buffer
     anda(0b10010001);
     BNE(DeathMAltReg);
     ldy(Squ1_EnvelopeDataCtrl);
-    // <conv.chunks.Comment object at 0x101d57aa0>
+    // check saved envelope offset
     BEQ(NoDecEnv2);
     dec(Squ1_EnvelopeDataCtrl);
     JMP(NoDecEnv2);
 }
 
 int NoDecEnv2() {
-    // <conv.chunks.Comment object at 0x101d57cb0>
-    // <conv.chunks.Comment object at 0x101d57dd0>
+    // decrement unless already zero
+    // do a load of envelope data
     JSR(LoadEnvelopeData);
     sta(SND_SQUARE1_REG);
     JMP(DeathMAltReg);
 }
 
 int DeathMAltReg() {
-    // <conv.chunks.Comment object at 0x101d57f20>
-    // <conv.chunks.Comment object at 0x101d5c080>
+    // based on offset set by first load
+    // check for alternate control reg data
     lda(AltRegContentFlag);
     BNE(DoAltLoad);
     lda(0x7f);
@@ -23854,8 +23854,8 @@ int DeathMAltReg() {
 }
 
 int DoAltLoad() {
-    // <conv.chunks.Comment object at 0x101d5c2c0>
-    // <conv.chunks.Comment object at 0x101d5c350>
+    // load this value if zero, the alternate value
+    // if nonzero, and let's move on
     sta(((SND_SQUARE1_REG) + (1)));
     JMP(HandleTriangleMusic);
 }
@@ -23865,24 +23865,24 @@ int HandleTriangleMusic() {
     dec(Tri_NoteLenCounter);
     BNE(HandleNoiseMusic);
     ldy(MusicOffset_Triangle);
-    // <conv.chunks.Comment object at 0x101d5c710>
-    // <conv.chunks.Comment object at 0x101d5c830>
-    // <conv.chunks.Comment object at 0x101d5c950>
+    // decrement triangle note length
+    // is it time for more data?
+    // increment square 1 music offset and fetch data
     inc(MusicOffset_Triangle);
     lda((MusicData), y);
     BEQ(LoadTriCtrlReg);
     BPL(TriNoteHandler);
     JSR(ProcessLengthData);
     sta(Tri_NoteLenBuffer);
-    // <conv.chunks.Comment object at 0x101d5ccb0>
-    // <conv.chunks.Comment object at 0x101d5cdd0>
-    // <conv.chunks.Comment object at 0x101d5cef0>
-    // <conv.chunks.Comment object at 0x101d5d010>
+    // if zero, skip all this and move on to noise
+    // if non-negative, data is note
+    // otherwise, it is length data
+    // save contents of A
     lda(0x1f);
     sta(SND_TRIANGLE_REG);
     ldy(MusicOffset_Triangle);
-    // <conv.chunks.Comment object at 0x101d5d190>
-    // <conv.chunks.Comment object at 0x101d5d340>
+    // load some default data for triangle control reg
+    // fetch another byte
     inc(MusicOffset_Triangle);
     lda((MusicData), y);
     BEQ(LoadTriCtrlReg);
@@ -23892,29 +23892,29 @@ int HandleTriangleMusic() {
 int TriNoteHandler() {
     JSR(SetFreq_Tri);
     ldx(Tri_NoteLenBuffer);
-    // <conv.chunks.Comment object at 0x101d5d8e0>
+    // save length in triangle note counter
     stx(Tri_NoteLenCounter);
     lda(EventMusicBuffer);
     anda(0b1101110);
     BNE(NotDOrD4);
     lda(AreaMusicBuffer);
-    // <conv.chunks.Comment object at 0x101d5dbe0>
-    // <conv.chunks.Comment object at 0x101d5dd00>
-    // <conv.chunks.Comment object at 0x101d5de20>
+    // check for death music or d4 set on secondary buffer
+    // if playing any other secondary, skip primary buffer check
+    // check primary buffer for water or castle level music
     anda(0b1010);
     BEQ(HandleNoiseMusic);
     JMP(NotDOrD4);
 }
 
 int NotDOrD4() {
-    // <conv.chunks.Comment object at 0x101d5e030>
-    // <conv.chunks.Comment object at 0x101d5e150>
+    // if playing any other primary, or death or d4, go on to noise routine
+    // if playing water or castle music or any secondary
     txa();
     cmp(0x12);
-    // <conv.chunks.Comment object at 0x101d5e240>
+    // besides death music or d4 set, check length of note
     BCS(LongN);
     lda(EventMusicBuffer);
-    // <conv.chunks.Comment object at 0x101d5e480>
+    // check for win castle music again if not playing a long note
     anda(EndOfCastleMusic);
     BEQ(MediN);
     lda(0xf);
@@ -23923,17 +23923,17 @@ int NotDOrD4() {
 }
 
 int MediN() {
-    // <conv.chunks.Comment object at 0x101d5e7b0>
-    // <conv.chunks.Comment object at 0x101d5e840>
-    // <conv.chunks.Comment object at 0x101d5e9f0>
+    // load value $0f if playing the win castle music and playing a short
+    // note, load value $1f if playing water or castle level music or any
+    // secondary besides death and d4 except win castle or win castle and playing
     lda(0x1f);
     BNE(LoadTriCtrlReg);
     JMP(LongN);
 }
 
 int LongN() {
-    // <conv.chunks.Comment object at 0x101d5eae0>
-    // <conv.chunks.Comment object at 0x101d5ec90>
+    // a short note, and load value $ff if playing a long note on water, castle
+    // or any secondary (including win castle) except death and d4
     lda(0xff);
     JMP(LoadTriCtrlReg);
 }
@@ -23945,7 +23945,7 @@ int LoadTriCtrlReg() {
 
 int HandleNoiseMusic() {
     lda(AreaMusicBuffer);
-    // <conv.chunks.Comment object at 0x101d5ef90>
+    // check if playing underground or castle music
     anda(0b11110011);
     BEQ(ExitMusicHandler);
     dec(Noise_BeatLenCounter);
@@ -23955,10 +23955,10 @@ int HandleNoiseMusic() {
 
 int FetchNoiseBeatData() {
     ldy(MusicOffset_Noise);
-    // <conv.chunks.Comment object at 0x101d5f530>
+    // increment noise beat offset and fetch data
     inc(MusicOffset_Noise);
     lda((MusicData), y);
-    // <conv.chunks.Comment object at 0x101d5f740>
+    // get noise beat data, if nonzero, branch to handle
     BNE(NoiseBeatHandler);
     lda(NoiseDataLoopbackOfs);
     sta(MusicOffset_Noise);
@@ -23969,22 +23969,22 @@ int FetchNoiseBeatData() {
 int NoiseBeatHandler() {
     JSR(AlternateLengthHandler);
     sta(Noise_BeatLenCounter);
-    // <conv.chunks.Comment object at 0x101d5fe30>
+    // store length in noise beat counter
     txa();
     anda(0b111110);
     BEQ(SilentBeat);
     cmp(0x30);
     BEQ(LongBeat);
-    // <conv.chunks.Comment object at 0x101d5ffe0>
-    // <conv.chunks.Comment object at 0x101d6c140>
-    // <conv.chunks.Comment object at 0x101d6c260>
-    // <conv.chunks.Comment object at 0x101d6c2f0>
+    // reload data and erase length bits
+    // if no beat data, silence
+    // check the beat data and play the appropriate
+    // noise accordingly
     cmp(0x20);
     BEQ(StrongBeat);
     anda(0b10000);
     BEQ(SilentBeat);
     lda(0x1c);
-    // <conv.chunks.Comment object at 0x101d6c860>
+    // short beat data
     ldx(0x3);
     ldy(0x18);
     BNE(PlayBeat);
@@ -23993,7 +23993,7 @@ int NoiseBeatHandler() {
 
 int StrongBeat() {
     lda(0x1c);
-    // <conv.chunks.Comment object at 0x101d6cc80>
+    // strong beat data
     ldx(0xc);
     ldy(0x18);
     BNE(PlayBeat);
@@ -24002,7 +24002,7 @@ int StrongBeat() {
 
 int LongBeat() {
     lda(0x1c);
-    // <conv.chunks.Comment object at 0x101d6d0a0>
+    // long beat data
     ldx(0x3);
     ldy(0x58);
     BNE(PlayBeat);
@@ -24016,7 +24016,7 @@ int SilentBeat() {
 
 int PlayBeat() {
     sta(SND_NOISE_REG);
-    // <conv.chunks.Comment object at 0x101d6d640>
+    // load beat data into noise regs
     stx(((SND_NOISE_REG) + (2)));
     sty(((SND_NOISE_REG) + (3)));
     JMP(ExitMusicHandler);
@@ -24033,33 +24033,33 @@ int AlternateLengthHandler() {
     txa();
     rol();
     rol();
-    // <conv.chunks.Comment object at 0x101d6dbe0>
-    // <conv.chunks.Comment object at 0x101d6dca0>
-    // <conv.chunks.Comment object at 0x101d6dd60>
-    // <conv.chunks.Comment object at 0x101d6de20>
-    // <conv.chunks.Comment object at 0x101d6dee0>
+    // save a copy of original byte into X
+    // save LSB from original byte into carry
+    // reload original byte and rotate three times
+    // turning xx00000x into 00000xxx, with the
+    // bit in carry as the MSB here
     rol();
     JMP(ProcessLengthData);
 }
 
 int ProcessLengthData() {
     anda(0b111);
-    // <conv.chunks.Comment object at 0x101d6e030>
+    // clear all but the three LSBs
     clc();
     adc(0xf0);
     adc(NoteLengthTblAdder);
-    // <conv.chunks.Comment object at 0x101d6e210>
-    // <conv.chunks.Comment object at 0x101d6e2a0>
+    // add offset loaded from first header byte
+    // add extra if time running out music
     tay();
     lda(offsetof(G, MusicLengthLookupTbl), y);
-    // <conv.chunks.Comment object at 0x101d6e4b0>
+    // load length
     return 0;
     JMP(LoadControlRegs);
 }
 
 int LoadControlRegs() {
     lda(EventMusicBuffer);
-    // <conv.chunks.Comment object at 0x101d6e6c0>
+    // check secondary buffer for win castle music
     anda(EndOfCastleMusic);
     BEQ(NotECstlM);
     lda(0x4);
@@ -24070,22 +24070,22 @@ int LoadControlRegs() {
 int NotECstlM() {
     lda(AreaMusicBuffer);
     anda(0b1111101);
-    // <conv.chunks.Comment object at 0x101d6ed50>
+    // check primary buffer for water music
     BEQ(WaterMus);
     lda(0x8);
-    // <conv.chunks.Comment object at 0x101d6ef60>
+    // this is the default value for all other music
     BNE(AllMus);
     JMP(WaterMus);
 }
 
 int WaterMus() {
-    // <conv.chunks.Comment object at 0x101d6f1a0>
+    // this value is used for water music and all other event music
     lda(0x28);
     JMP(AllMus);
 }
 
 int AllMus() {
-    // <conv.chunks.Comment object at 0x101d6f260>
+    // load contents of other sound regs for square 2
     ldx(0x82);
     ldy(0x7f);
     return 0;
@@ -24094,29 +24094,29 @@ int AllMus() {
 
 int LoadEnvelopeData() {
     lda(EventMusicBuffer);
-    // <conv.chunks.Comment object at 0x101d6f620>
+    // check secondary buffer for win castle music
     anda(EndOfCastleMusic);
     BEQ(LoadUsualEnvData);
     lda(offsetof(G, EndOfCastleMusicEnvData), y);
-    // <conv.chunks.Comment object at 0x101d6f920>
+    // load data from offset for win castle music
     return 0;
     JMP(LoadUsualEnvData);
 }
 
 int LoadUsualEnvData() {
     lda(AreaMusicBuffer);
-    // <conv.chunks.Comment object at 0x101d6fb30>
+    // check primary buffer for water music
     anda(0b1111101);
     BEQ(LoadWaterEventMusEnvData);
     lda(offsetof(G, AreaMusicEnvData), y);
-    // <conv.chunks.Comment object at 0x101d6fe30>
+    // load default data from offset for all other music
     return 0;
     JMP(LoadWaterEventMusEnvData);
 }
 
 int LoadWaterEventMusEnvData() {
     lda(offsetof(G, WaterEventMusEnvData), y);
-    // <conv.chunks.Comment object at 0x101d74080>
+    // load data from offset for water music and all other event music
     return 0;
 }
 
