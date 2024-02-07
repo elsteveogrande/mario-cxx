@@ -165,8 +165,6 @@ while i < len(chunks):
             labels[target.of.name].is_call_target = True
     i += 1
 
-# dump(chunks)
-
 # Drop "JumpEngine" routine
 i = 0
 while i < len(chunks):
@@ -312,13 +310,17 @@ for c in code_blocks:
         prev.inner.append(Insn(name="jmp", opds=[Ref(c.label)]))
     prev = c
 
+# dump(chunks)
+
 f = sys.stderr
 
 def p(c: Union[str, Chunk], proto=False):
     if isinstance(c, Chunk):
         s = c.render(labels, defines, proto=proto)
-    else:
+    elif isinstance(c, str):
         s = c
+    else:
+        raise Exception(str(type(c)))
     print(s, file=f)
 
 with open("main.h", "w") as h:
@@ -331,6 +333,8 @@ with open("main.h", "w") as h:
     p("struct G {")
     p("    byte space[32768];")
     for d in data_blocks:
+        for cm in d.comments:
+            p(cm)
         p(d, proto=True)
     p("} __attribute__((__packed__));")
     p("extern G g;")
@@ -338,6 +342,8 @@ with open("main.h", "w") as h:
     p("")
     for d in defs_block.inner:
         assert isinstance(d, Define)
+        for cm in d.comments:
+            p(cm)
         p(d)
 
     p("")
