@@ -1,301 +1,24 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.12
 
 from collections import deque
-from dataclasses import dataclass, field
 from typing import *
-import re
 import sys
 
-@dataclass
-class Chunk:
-    comments: list[str] = field(default_factory=lambda: [])
-
-@dataclass
-class Separator(Chunk):
-    pass
-
-@dataclass
-class Comment(Chunk):
-    text: str = None
-
-class Expr(Chunk):
-    pass
-
-@dataclass
-class Paren(Expr):
-    expr: Expr = None
-
-    def render(self):
-        return "(%s)" % (self.expr.render())
-
-@dataclass
-class Reg(Expr):
-    name: str = None
-    def render(self):
-        return self.name
-
-class Imm(Expr):
-    def __init__(self, s: str, base: int = 10):
-        self.val = int(s, base)
-        self.base = base
-    def __repr__(self):  return str(self)
-    def __str__(self):
-        if self.base == 10:
-            return str(self.val)
-        if self.base == 2:
-            return bin(self.val)
-        if self.base == 16:
-            return hex(self.val)
-    
-    def render(self):
-        return str(self)
-
-@dataclass
-class Define(Chunk):
-    name: str = None
-    expr: Expr = None
-
-@dataclass
-class Label(Chunk):
-    name: str = None
-    is_jump_target: bool = False
-    is_call_target: bool = False
-    code_block: Optional["CodeBlock"] = None
-
-    def render(self):
-        if self.is_jump_target or self.is_call_target:
-            return self.name
-        return self.name
-
-valid_ref_name = re.compile("^[A-Za-z0-9_]+$")
-@dataclass
-class Ref(Chunk):
-    name: str = None
-    def __init__(self, name):
-        self.name = name
-        self.comments = []
-        if not valid_ref_name.match(name):
-            raise Exception("bad ref: " + name)
-
-    def render(self):
-        if self.name in labels:
-            return "offsetof(G, %s)" % (self.name)
-        else:
-            return "K::%s" % (self.name)
-
-@dataclass
-class Plus(Chunk):
-    a: Expr = None
-    b: Expr = None
-
-    def render(self):
-        return "((%s) + (%s))" % (self.a.render(), self.b.render())
-
-@dataclass
-class Minus(Chunk):
-    a: Expr = None
-    b: Expr = None
-
-    def render(self):
-        return "((%s) - (%s))" % (self.a.render(), self.b.render())
-
-@dataclass
-class HiByte(Expr):
-    of: Expr = None
-    def render(self):
-        return "HI8(%s)" % (self.of.render())
-
-@dataclass
-class LoByte(Expr):
-    of: Expr = None
-    def render(self):
-        return "LO8(%s)" % (self.of.render())
-
-@dataclass
-class Directive(Chunk):
-    name: str = None
-    parts: list[Expr] = None
-
-@dataclass
-class Byte(Chunk):
-    expr: Expr = None
-
-@dataclass
-class Word(Chunk):
-    expr: Expr = None
-
-@dataclass
-class Insn(Chunk):
-    name: str = None
-    opds: list[Expr] = None
-
-    def target(self):
-        assert len(self.opds) == 1
-        assert isinstance(self.opds[0], Ref)
-        return self.opds[0].name
-    
-    def dst(self):
-        return str(self.opds)
-
-    def src(self):
-        return str(self.opds)
-
-    def srcdst(self):
-        return str(self.opds)
-
-    def render(self):
-        if self.name == "end":
-            return "return 0"
-        if self.name == "and":
-            opds = ", ".join(x.render() for x in self.opds)
-            return "%sa(%s)" % (self.name, opds)
-        if self.name in {"jmp", "jsr", "bra", "bcc", "bcs", "bmi", "bpl", "beq", "bne"}:
-            assert len(self.opds) == 1
-            target = self.opds[0].name
-            return "%s(%s)" % (self.name.upper(), target)
-
-        opds = ", ".join(x.render() for x in self.opds)
-        return "%s(%s)" % (self.name, opds)
-
-@dataclass
-class Block(Chunk):
-    inner: list[Chunk] = None
-
-@dataclass
-class BlockEnd(Chunk):
-    pass
-
-@dataclass
-class PreambleBlock(Block):
-    pass
-
-@dataclass
-class CodeBlock(Block):
-    label: Optional[Label] = None
-    next: Optional["CodeBlock"] = None
-
-    def render(self, proto=False):
-        if (proto):
-            return "int %s();" % (self.label.name)
-        ret = "int %s() {" % (self.label.name)
-        ret += "\n"
-        for x in self.inner:
-            for c in x.comments:
-                ret += "    // %s\n" % (c)
-            ret += "    "
-            ret += x.render()
-            ret += ";\n"
-        ret += "}\n"
-        return ret
-
-@dataclass
-class DispatchBlock(Block):
-    pass
-
-@dataclass
-class DataBlock(Block):
-    label: Label = None
-    def render(self, proto=False):
-        assert len(self.inner) > 0
-        dt = "byte" if isinstance(self.inner[0], Byte) else "word"
-        x = [b.expr.render() for b in self.inner]
-        x = [("%s" % (b)) for b in x]
-        x = ", ".join(x)
-        if proto:
-            return ("    %s const %s[%d];" % (dt, self.label.name, len(self.inner)))
-        return ("    {%s}," % (x))
-
-@dataclass
-class DefsBlock(Block):
-    pass
+from conv.chunks import *
+from conv.parse import *
+from conv.dump import *
 
 chunks: deque[Chunk] = deque()
-
-def parse(s: str) -> Expr:
-    try:
-        return Imm(s, 10)
-    except:
-        pass
-
-    if s.startswith("$"):
-        return Imm(s[1:], 16)
-    if s.startswith("%"):
-        return Imm(s[1:], 2)
-
-    if s.startswith("#"):
-        return parse(s[1:])
-    if s.startswith(">"):
-        return HiByte(of=parse(s[1:]))
-    if s.startswith("<"):
-        return LoByte(of=parse(s[1:]))
-
-    if s.startswith("(") and s.endswith(")"):
-        return Paren(expr=parse(s[1:-1]))
-
-    if s in ("a", "x", "y"):
-        return Reg(name=s)
-
-    if "+" in s:
-        s = [parse(p.strip()) for p in s.split("+")]
-        (a, b) = s
-        return Plus(a=a, b=b)
-    if "-" in s:
-        s = [parse(p.strip()) for p in s.split("-")]
-        (a, b) = s
-        return Minus(a=a, b=b)
-    
-    return Ref(s)
-
+lineno = 1
 with open(sys.argv[1]) as txt:
     for line in txt:
         line = line.strip()
-
-        if ";" in line:
-            (line, comment) = line.split(";", 1)
-            line = line.strip()
-            comment = comment.strip()
-            if "-------" in comment:
-                chunks.append(Separator())
-            else:
-                chunks.append(Comment(text=comment))
-
-        if "=" in line:
-            (name, text) = line.split("=")
-            name = name.strip()
-            text = text.strip()
-            # defines[name] = len(chunks)
-            chunks.append(Define(name=name, expr=parse(text)))
-            continue
-
-        if ":" in line:
-            (name, line) = line.split(":")
-            name = name.strip()
-            line = line.strip()
-            # labels[name] = len(chunks)
-            chunks.append(Label(name=name))
-
-        if not line:
-            continue
-
-        if line.startswith("."):
-            parts = [p.strip() for p in line.replace(",", " ").split()]
-            name = parts.pop(0)
-            if name in (".index", ".mem", ".org"):
-                continue
-            if name == ".db":
-                for p in parts:
-                    chunks.append(Byte(expr=parse(p)))
-            if name == ".dw":
-                for p in parts:
-                    chunks.append(Word(expr=parse(p)))
-
-            # (ignore other directives)
-            continue
-
-        parts = [p.strip() for p in line.replace(",", " ").split()]
-        opcode = parts.pop(0)
-        opds = [parse(p) for p in parts]
-        chunks.append(Insn(name=opcode, opds=opds))
+        try:
+            parse_line(chunks, line)
+            lineno += 1
+        except Exception as e:
+            print("@@@ [%d] >>>   %s" % (lineno, line), file=sys.stderr)
+            raise e
 
 for i in range(len(chunks)):
     """
@@ -344,7 +67,7 @@ for i in range(len(chunks)):
     # Identify such bit hacks: it's a "Byte" (0x2c) preceded by a comment
     # like "BIT instruction opcode".  Not 100% foolproof but works for this project.
     c = chunks[i]
-    if isinstance(c, Byte) and isinstance(c.expr, Imm) and c.expr.val == 0x2c:
+    if isinstance(c, Byte) and c.expr == Lit(0x2c, 16):
         b = chunks[i - 1]
         if isinstance(b, Comment) and "BIT" in b.text:
             # [B] Comment(text='BIT instruction opcode')
@@ -354,7 +77,7 @@ for i in range(len(chunks)):
             # [C'] Insn(name='bra', opds=[Ref(NEWLABEL)])
             tmp_name = "_bit_hack_%d" % i
             chunks[i - 1] = Comment(text="Replace '%s' hack:" % (b.text))
-            chunks[i] = Insn(name='bra', opds=[Ref(name=tmp_name)])
+            chunks[i] = Insn(name='bra', opds=[Ref(Label(tmp_name))])
             j = i + 1
             while not isinstance(chunks[j], Insn):
                 j += 1
@@ -366,8 +89,10 @@ defines: dict[str, Define] = {}
 for i in range(len(chunks)):
     c = chunks[i]
     if isinstance(c, Label):
+        assert c.name
         labels[c.name] = c
     if isinstance(c, Define):
+        assert c.name
         defines[c.name] = c
 
 def pattern(i, types: list[Type]) -> bool:
@@ -377,7 +102,7 @@ def pattern(i, types: list[Type]) -> bool:
     return True
 
 # Extract first comments into a PreambleBlock (only 1 will be produced)
-pre = PreambleBlock(inner=[])
+pre = PreambleBlock()
 chunks.insert(0, pre)
 while pattern(0, [PreambleBlock, Comment]):
     pre.inner.append(chunks[1])
@@ -385,10 +110,12 @@ while pattern(0, [PreambleBlock, Comment]):
 
 # Absorb comments into their respective things
 i = 0
-cmts: list[str] = []
+cmts: list[Comment] = []
 while i < len(chunks):
     if pattern(i, [Comment]):
-        cmts.append(chunks[i].text)
+        ch = chunks[i]
+        assert isinstance(ch, Comment)
+        cmts.append(ch)
         del chunks[i]
     elif (not pattern(i, [Separator])) and cmts:
         chunks[i].comments += cmts
@@ -402,7 +129,7 @@ while i < len(chunks):
 # "done" with the Start code (NMIs are will of course invoked periodically).
 i = 0
 while i < len(chunks):
-    if pattern(i, [Label, Insn]) and chunks[i].name == "EndlessLoop":
+    if pattern(i, [Label, Insn]) and chunks[i].name == "EndlessLoop":  # type: ignore[attr-defined]
         # Replace these two chunks with just one
         del chunks[i]
         chunks[i] = Insn(name="end", opds=[])
@@ -423,20 +150,28 @@ while i < len(chunks):
 # Transform "JumpEngine" tables
 i = 0
 while i < len(chunks):
-    if pattern(i, [Insn]) and chunks[i].name == 'jsr' and chunks[i].opds[0].name == 'JumpEngine':
-        chunks[i] = DispatchBlock(inner=[])         # replace "jsr JumpEngine"
+    if pattern(i, [Insn]) and chunks[i].name == 'jsr' and "JumpEngine" in str(chunks[i].opds[0]):  # type: ignore[attr-defined]
+        chunks[i] = DispatchBlock()                 # replace "jsr JumpEngine"
         while pattern(i, [DispatchBlock, Word]):    # absorb ".dw" 's into that
-            target = chunks[i + 1].expr
+            w = chunks[i + 1]
+            assert isinstance(w, Word)
+            target = w.expr
+            assert isinstance(target, Label)
+            assert isinstance(target.name, str)
             del chunks[i + 1]
-            chunks[i].inner.append(target)
+            db = chunks[i]
+            assert isinstance(db, DispatchBlock)
+            db.inner.append(target)
             labels[target.name].is_call_target = True
     i += 1
+
+dump(chunks)
 
 # Drop "JumpEngine" routine
 i = 0
 while i < len(chunks):
-    if pattern(i, [Label, Insn]) and chunks[i].name == 'JumpEngine':
-        while pattern(i, [Label, Insn]) and chunks[i].name == 'JumpEngine':
+    if pattern(i, [Label, Insn]) and chunks[i].name == 'JumpEngine':          # type: ignore[attr-defined]
+        while pattern(i, [Label, Insn]) and chunks[i].name == 'JumpEngine':   # type: ignore[attr-defined]
             del chunks[i + 1]
         del chunks[i]
         break
@@ -450,14 +185,14 @@ for c in chunks:
         if c.name in ("jmp", "bra", "bpl", "bmi", "bcs", "bcc", "beq", "bne"):
             (target,) = c.opds
             if isinstance(target, Ref):
-                labels[target.name].is_jump_target = True
+                labels[target.label.name].is_jump_target = True
         elif c.name == "jsr":
             (target,) = c.opds
             assert isinstance(target, Ref)
-            labels[target.name].is_call_target = True
+            labels[target.label.name].is_call_target = True
 
 # Extract defines into a DefineBlock (only 1 will be produced)
-defs = DefsBlock(inner=[])
+defs = DefsBlock()
 i = 0
 while i < len(chunks):
     if pattern(i, [Define]):
@@ -474,17 +209,22 @@ while i < len(chunks):
     if pattern(i, [Label, Byte]):
         # replace label with a new block
         label = chunks[i]
-        chunks[i] = DataBlock(label=label, inner=[])
+        assert isinstance(label, Label)
+        db = DataBlock(label)
+        chunks[i] = db
         while pattern(i, [DataBlock, Byte]):
-            chunks[i].inner.append(chunks[i + 1])
+            db.inner.append(chunks[i + 1])
             del chunks[i + 1]
         continue
     if pattern(i, [Label, Word]):
         # replace label with a new block
         label = chunks[i]
-        chunks[i] = DataBlock(label=label, inner=[])
+        assert isinstance(label, Label)
+        db = DataBlock(label)
+        chunks[i] = DataBlock(label)
+        chunks[i] = db
         while pattern(i, [DataBlock, Word]):
-            chunks[i].inner.append(chunks[i + 1])
+            db.inner.append(chunks[i + 1])
             del chunks[i + 1]
         continue
     i += 1
@@ -499,7 +239,8 @@ i = 0
 while i < len(chunks):
     if pattern(i, [Label, DataBlock]):
         label = chunks[i]
-        chunks[i] = DataBlock(label=label, inner=[Byte(expr=Imm("0"))])
+        assert isinstance(label, Label)
+        chunks[i] = DataBlock(label=label)
     i += 1
 
 # Find code blocks' start positions
@@ -507,7 +248,8 @@ i = 0
 while i < len(chunks):
     if pattern(i, [Label]):
         label = chunks[i]
-        chunks[i] = CodeBlock(label=label, inner=[])
+        assert isinstance(label, Label)
+        chunks[i] = CodeBlock(label)
     i += 1
 
 # Some subroutines just flow into the next subroutine just after it.
@@ -519,11 +261,14 @@ i = 0
 while i < len(chunks):
     if pattern(i - 1, [Insn, CodeBlock, Label]):
         b = chunks[i - 1]
+        assert isinstance(b, Insn)
         c = chunks[i]
+        assert isinstance(c, CodeBlock)
         d = chunks[i + 1]
+        assert isinstance(d, Label)
         if d.is_call_target:
             if b.name not in {"rti", "rts", "bra", "jmp"}:
-                chunks.insert(i, Insn(name="jmp", opds=[Ref(name=d.name)]))
+                chunks.insert(i, Insn(name="jmp", opds=[Ref(Label(d.name))]))
     i += 1
 
 # At this point, CodeBlocks are defined and added to their locations in the stream,
@@ -536,7 +281,10 @@ while i < len(chunks):
         i += 1
         continue
     c = chunks[i]
-    c.label = chunks[i + 1]
+    assert isinstance(c, CodeBlock)
+    d = chunks[i + 1]
+    assert isinstance(d, Label)
+    c.label = d
     c.label.code_block = c
     del chunks[i + 1]
 
@@ -546,19 +294,22 @@ while i < len(chunks):
         i += 1
         continue
     c = chunks[i]
+    assert isinstance(c, CodeBlock)
     c.inner.append(chunks[i + 1])
     del chunks[i + 1]
 
 all_blocks: list[Block] = [c for c in chunks if isinstance(c, Block)]
-pre_block: PreambleBlock = all_blocks[0]
-defs_block: DefsBlock = all_blocks[1]
+pre_block = all_blocks[0]
+assert isinstance(pre_block, PreambleBlock)
+defs_block = all_blocks[1]
+assert isinstance(defs_block, DefsBlock)
 code_blocks: list[CodeBlock] = [b for b in all_blocks if isinstance(b, CodeBlock)]
 data_blocks: list[DataBlock] = [b for b in all_blocks if isinstance(b, DataBlock)]
 
 prev: Optional[CodeBlock] = None
 for c in code_blocks:
     if prev:
-        prev.inner.append(Insn(name="jmp", opds=[Ref(c.label.name)]))
+        prev.inner.append(Insn(name="jmp", opds=[Ref(c.label)]))
     prev = c
 
 f = sys.stderr
@@ -580,15 +331,26 @@ with open("main.h", "w") as h:
     p("} __attribute__((__packed__));")
     p("extern G g;")
 
+    # p()
+    # p("struct K {")
+    # for d in defs_block.inner:
+    #     assert isinstance(d, Define)
+    #     if ((isinstance(d.expr, Lit) and d.expr.val >= 0x100) or
+    #         ("offsetof" in d.expr.render())):
+    #         p("    static constexpr word const %s = word(%s);" % (d.name, d.expr.render()))
+    #     else:
+    #         p("    static constexpr byte const %s = byte(%s);" % (d.name, d.expr.render()))
+    # p("};")
     p()
-    p("struct K {")
     for d in defs_block.inner:
-        if ((isinstance(d.expr, Imm) and d.expr.val >= 0x100) or
-            ("offsetof" in d.expr.render())):
-            p("    static constexpr word const %s = word(%s);" % (d.name, d.expr.render()))
-        else:
-            p("    static constexpr byte const %s = byte(%s);" % (d.name, d.expr.render()))
+        assert isinstance(d, Define)
+        p(d.render())
     p("};")
+
+    for c in code_blocks:
+        for cm in c.comments:
+            p(cm.render())
+        p(c.render(proto=True))
 
 
 with open("main.cc", "w") as cc:
@@ -598,13 +360,15 @@ with open("main.cc", "w") as cc:
 
     p()
     p("G g {")
-    p("    {},  // space is zeroed")
+    p("    .space={},")
     for d in data_blocks:
+        for cm in d.comments:
+            p(cm.render())
         p(d.render())
     p("};")
 
     p()
     for c in code_blocks:
-        for comment in c.comments:
-            p(c.render())
+        for cm in c.comments:
+            p(cm.render())
         p(c.render())
