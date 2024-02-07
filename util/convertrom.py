@@ -156,13 +156,13 @@ while i < len(chunks):
             w = chunks[i + 1]
             assert isinstance(w, Word)
             target = w.expr
-            assert isinstance(target, Label)
-            assert isinstance(target.name, str)
+            assert isinstance(target, Ref)
+            assert isinstance(target.of.name, str)
             del chunks[i + 1]
             db = chunks[i]
             assert isinstance(db, DispatchBlock)
             db.inner.append(target)
-            labels[target.name].is_call_target = True
+            labels[target.of.name].is_call_target = True
     i += 1
 
 # dump(chunks)

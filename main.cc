@@ -356,19 +356,19 @@ G g {
 
 int Start() {
     sei();
-    // <conv.chunks.Comment object at 0x104934ef0>
+    // <conv.chunks.Comment object at 0x102a94ef0>
     cld();
     lda(0b10000);
-    // <conv.chunks.Comment object at 0x104934fb0>
+    // <conv.chunks.Comment object at 0x102a94fb0>
     sta(PPU_CTRL_REG1);
     ldx(0xff);
-    // <conv.chunks.Comment object at 0x104935160>
+    // <conv.chunks.Comment object at 0x102a95160>
     txs();
     JMP(VBlank1);
 }
 
 int VBlank1() {
-    // <conv.chunks.Comment object at 0x1049352b0>
+    // <conv.chunks.Comment object at 0x102a952b0>
     lda(PPU_STATUS);
     BPL(VBlank1);
     JMP(VBlank2);
@@ -383,52 +383,52 @@ int VBlank2() {
 }
 
 int WBootCheck() {
-    // <conv.chunks.Comment object at 0x104935700>
-    // <conv.chunks.Comment object at 0x1049357f0>
-    // <conv.chunks.Comment object at 0x104935880>
+    // <conv.chunks.Comment object at 0x102a95700>
+    // <conv.chunks.Comment object at 0x102a957f0>
+    // <conv.chunks.Comment object at 0x102a95880>
     lda(TopScoreDisplay, x);
     cmp(10);
     BCS(ColdBoot);
-    // <conv.chunks.Comment object at 0x104935a60>
-    // <conv.chunks.Comment object at 0x104935af0>
+    // <conv.chunks.Comment object at 0x102a95a60>
+    // <conv.chunks.Comment object at 0x102a95af0>
     dex();
     BPL(WBootCheck);
     lda(WarmBootValidation);
     cmp(0xa5);
-    // <conv.chunks.Comment object at 0x104935d30>
-    // <conv.chunks.Comment object at 0x104935e20>
+    // <conv.chunks.Comment object at 0x102a95d30>
+    // <conv.chunks.Comment object at 0x102a95e20>
     BNE(ColdBoot);
     ldy(WarmBootOffset);
     JMP(ColdBoot);
 }
 
 int ColdBoot() {
-    // <conv.chunks.Comment object at 0x104935fd0>
-    // <conv.chunks.Comment object at 0x1049360c0>
+    // <conv.chunks.Comment object at 0x102a95fd0>
+    // <conv.chunks.Comment object at 0x102a960c0>
     JSR(InitializeMemory);
     sta(((SND_DELTA_REG) + (1)));
     sta(OperMode);
     lda(0xa5);
-    // <conv.chunks.Comment object at 0x1049361e0>
-    // <conv.chunks.Comment object at 0x104936360>
-    // <conv.chunks.Comment object at 0x104936450>
+    // <conv.chunks.Comment object at 0x102a961e0>
+    // <conv.chunks.Comment object at 0x102a96360>
+    // <conv.chunks.Comment object at 0x102a96450>
     sta(WarmBootValidation);
     sta(PseudoRandomBitReg);
-    // <conv.chunks.Comment object at 0x104936660>
+    // <conv.chunks.Comment object at 0x102a96660>
     lda(0b1111);
     sta(SND_MASTERCTRL_REG);
-    // <conv.chunks.Comment object at 0x104936870>
+    // <conv.chunks.Comment object at 0x102a96870>
     lda(0b110);
     sta(PPU_CTRL_REG2);
-    // <conv.chunks.Comment object at 0x104936a80>
+    // <conv.chunks.Comment object at 0x102a96a80>
     JSR(MoveAllSpritesOffscreen);
     JSR(InitializeNameTables);
     inc(DisableScreenFlag);
-    // <conv.chunks.Comment object at 0x104936c90>
-    // <conv.chunks.Comment object at 0x104936db0>
+    // <conv.chunks.Comment object at 0x102a96c90>
+    // <conv.chunks.Comment object at 0x102a96db0>
     lda(Mirror_PPU_CTRL_REG1);
     ora(0b10000000);
-    // <conv.chunks.Comment object at 0x104937080>
+    // <conv.chunks.Comment object at 0x102a97080>
     JSR(WritePPUReg1);
     return 0;
     JMP(NonMaskableInterrupt);
@@ -437,53 +437,53 @@ int ColdBoot() {
 int NonMaskableInterrupt() {
     lda(Mirror_PPU_CTRL_REG1);
     anda(0b1111111);
-    // <conv.chunks.Comment object at 0x104941250>
-    // <conv.chunks.Comment object at 0x1049414f0>
+    // <conv.chunks.Comment object at 0x102a9d250>
+    // <conv.chunks.Comment object at 0x102a9d4f0>
     sta(Mirror_PPU_CTRL_REG1);
     anda(0b1111110);
     sta(PPU_CTRL_REG1);
     lda(Mirror_PPU_CTRL_REG2);
-    // <conv.chunks.Comment object at 0x104941700>
-    // <conv.chunks.Comment object at 0x104941820>
-    // <conv.chunks.Comment object at 0x104941940>
+    // <conv.chunks.Comment object at 0x102a9d700>
+    // <conv.chunks.Comment object at 0x102a9d820>
+    // <conv.chunks.Comment object at 0x102a9d940>
     anda(0b11100110);
     ldy(DisableScreenFlag);
     BNE(ScreenOff);
     lda(Mirror_PPU_CTRL_REG2);
-    // <conv.chunks.Comment object at 0x104941b50>
-    // <conv.chunks.Comment object at 0x104941c70>
-    // <conv.chunks.Comment object at 0x104941d90>
+    // <conv.chunks.Comment object at 0x102a9db50>
+    // <conv.chunks.Comment object at 0x102a9dc70>
+    // <conv.chunks.Comment object at 0x102a9dd90>
     ora(0b11110);
     JMP(ScreenOff);
 }
 
 int ScreenOff() {
-    // <conv.chunks.Comment object at 0x104941fa0>
+    // <conv.chunks.Comment object at 0x102a9dfa0>
     sta(Mirror_PPU_CTRL_REG2);
     anda(0b11100111);
-    // <conv.chunks.Comment object at 0x1049420f0>
+    // <conv.chunks.Comment object at 0x102a9e0f0>
     sta(PPU_CTRL_REG2);
     ldx(PPU_STATUS);
-    // <conv.chunks.Comment object at 0x104942300>
+    // <conv.chunks.Comment object at 0x102a9e300>
     lda(0x0);
     JSR(InitScroll);
     sta(PPU_SPR_ADDR);
     lda(0x2);
-    // <conv.chunks.Comment object at 0x104942600>
-    // <conv.chunks.Comment object at 0x104942720>
+    // <conv.chunks.Comment object at 0x102a9e600>
+    // <conv.chunks.Comment object at 0x102a9e720>
     sta(SPR_DMA);
     ldx(VRAM_Buffer_AddrCtrl);
     lda(offsetof(G, VRAM_AddrTable_Low), x);
-    // <conv.chunks.Comment object at 0x104942960>
-    // <conv.chunks.Comment object at 0x104942a80>
+    // <conv.chunks.Comment object at 0x102a9e960>
+    // <conv.chunks.Comment object at 0x102a9ea80>
     sta(0x0);
     lda(offsetof(G, VRAM_AddrTable_High), x);
     sta(0x1);
     JSR(UpdateScreen);
-    // <conv.chunks.Comment object at 0x104942de0>
+    // <conv.chunks.Comment object at 0x102a9ede0>
     ldy(0x0);
     ldx(VRAM_Buffer_AddrCtrl);
-    // <conv.chunks.Comment object at 0x104943050>
+    // <conv.chunks.Comment object at 0x102a9f050>
     cpx(0x6);
     BNE(InitBuffer);
     iny();
@@ -493,41 +493,41 @@ int ScreenOff() {
 int InitBuffer() {
     ldx(offsetof(G, VRAM_Buffer_Offset), y);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1049435f0>
+    // <conv.chunks.Comment object at 0x102a9f5f0>
     sta(VRAM_Buffer1_Offset, x);
     sta(VRAM_Buffer1, x);
     sta(VRAM_Buffer_AddrCtrl);
     lda(Mirror_PPU_CTRL_REG2);
-    // <conv.chunks.Comment object at 0x104943950>
-    // <conv.chunks.Comment object at 0x104943a70>
+    // <conv.chunks.Comment object at 0x102a9f950>
+    // <conv.chunks.Comment object at 0x102a9fa70>
     sta(PPU_CTRL_REG2);
     JSR(SoundEngine);
     JSR(ReadJoypads);
     JSR(PauseRoutine);
-    // <conv.chunks.Comment object at 0x104943c80>
-    // <conv.chunks.Comment object at 0x104943da0>
-    // <conv.chunks.Comment object at 0x104943ec0>
+    // <conv.chunks.Comment object at 0x102a9fc80>
+    // <conv.chunks.Comment object at 0x102a9fda0>
+    // <conv.chunks.Comment object at 0x102a9fec0>
     JSR(UpdateTopScore);
     lda(GamePauseStatus);
-    // <conv.chunks.Comment object at 0x10494c110>
+    // <conv.chunks.Comment object at 0x102aa8110>
     lsr();
     BCS(PauseSkip);
     lda(TimerControl);
     BEQ(DecTimers);
-    // <conv.chunks.Comment object at 0x10494c3b0>
-    // <conv.chunks.Comment object at 0x10494c4d0>
+    // <conv.chunks.Comment object at 0x102aa83b0>
+    // <conv.chunks.Comment object at 0x102aa84d0>
     dec(TimerControl);
     BNE(NoDecTimers);
     JMP(DecTimers);
 }
 
 int DecTimers() {
-    // <conv.chunks.Comment object at 0x10494c7d0>
+    // <conv.chunks.Comment object at 0x102aa87d0>
     ldx(0x14);
     dec(IntervalTimerControl);
     BPL(DecTimersLoop);
-    // <conv.chunks.Comment object at 0x10494c890>
-    // <conv.chunks.Comment object at 0x10494ca40>
+    // <conv.chunks.Comment object at 0x102aa8890>
+    // <conv.chunks.Comment object at 0x102aa8a40>
     lda(0x14);
     sta(IntervalTimerControl);
     ldx(0x23);
@@ -535,9 +535,9 @@ int DecTimers() {
 }
 
 int DecTimersLoop() {
-    // <conv.chunks.Comment object at 0x10494cbc0>
-    // <conv.chunks.Comment object at 0x10494cd70>
-    // <conv.chunks.Comment object at 0x10494ce00>
+    // <conv.chunks.Comment object at 0x102aa8bc0>
+    // <conv.chunks.Comment object at 0x102aa8d70>
+    // <conv.chunks.Comment object at 0x102aa8e00>
     lda(Timers, x);
     BEQ(SkipExpTimer);
     dec(Timers, x);
@@ -545,17 +545,17 @@ int DecTimersLoop() {
 }
 
 int SkipExpTimer() {
-    // <conv.chunks.Comment object at 0x10494d040>
-    // <conv.chunks.Comment object at 0x10494d160>
-    // <conv.chunks.Comment object at 0x10494d2e0>
+    // <conv.chunks.Comment object at 0x102aa9040>
+    // <conv.chunks.Comment object at 0x102aa9160>
+    // <conv.chunks.Comment object at 0x102aa92e0>
     dex();
     BPL(DecTimersLoop);
     JMP(NoDecTimers);
 }
 
 int NoDecTimers() {
-    // <conv.chunks.Comment object at 0x10494d3d0>
-    // <conv.chunks.Comment object at 0x10494d4f0>
+    // <conv.chunks.Comment object at 0x102aa93d0>
+    // <conv.chunks.Comment object at 0x102aa94f0>
     inc(FrameCounter);
     JMP(PauseSkip);
 }
@@ -570,41 +570,41 @@ int PauseSkip() {
     anda(0b10);
     eor(0x0);
     clc();
-    // <conv.chunks.Comment object at 0x10494d7c0>
-    // <conv.chunks.Comment object at 0x10494d970>
-    // <conv.chunks.Comment object at 0x10494dac0>
-    // <conv.chunks.Comment object at 0x10494db50>
-    // <conv.chunks.Comment object at 0x10494dd60>
-    // <conv.chunks.Comment object at 0x10494deb0>
-    // <conv.chunks.Comment object at 0x10494de80>
+    // <conv.chunks.Comment object at 0x102aa97c0>
+    // <conv.chunks.Comment object at 0x102aa9970>
+    // <conv.chunks.Comment object at 0x102aa9ac0>
+    // <conv.chunks.Comment object at 0x102aa9b50>
+    // <conv.chunks.Comment object at 0x102aa9d60>
+    // <conv.chunks.Comment object at 0x102aa9eb0>
+    // <conv.chunks.Comment object at 0x102aa9e80>
     BEQ(RotPRandomBit);
     sec();
     JMP(RotPRandomBit);
 }
 
 int RotPRandomBit() {
-    // <conv.chunks.Comment object at 0x10494e180>
-    // <conv.chunks.Comment object at 0x10494e210>
+    // <conv.chunks.Comment object at 0x102aaa180>
+    // <conv.chunks.Comment object at 0x102aaa210>
     ror(PseudoRandomBitReg, x);
     inx();
     dey();
-    // <conv.chunks.Comment object at 0x10494e3c0>
-    // <conv.chunks.Comment object at 0x10494e480>
+    // <conv.chunks.Comment object at 0x102aaa3c0>
+    // <conv.chunks.Comment object at 0x102aaa480>
     BNE(RotPRandomBit);
     lda(Sprite0HitDetectFlag);
-    // <conv.chunks.Comment object at 0x10494e600>
+    // <conv.chunks.Comment object at 0x102aaa600>
     BEQ(SkipSprite0);
     JMP(Sprite0Clr);
 }
 
 int Sprite0Clr() {
-    // <conv.chunks.Comment object at 0x10494e810>
+    // <conv.chunks.Comment object at 0x102aaa810>
     lda(PPU_STATUS);
     anda(0b1000000);
-    // <conv.chunks.Comment object at 0x10494e960>
+    // <conv.chunks.Comment object at 0x102aaa960>
     BNE(Sprite0Clr);
     lda(GamePauseStatus);
-    // <conv.chunks.Comment object at 0x10494eb70>
+    // <conv.chunks.Comment object at 0x102aaab70>
     lsr();
     BCS(Sprite0Hit);
     JSR(MoveSpritesOffscreen);
@@ -613,7 +613,7 @@ int Sprite0Clr() {
 }
 
 int Sprite0Hit() {
-    // <conv.chunks.Comment object at 0x10494eff0>
+    // <conv.chunks.Comment object at 0x102aaaff0>
     lda(PPU_STATUS);
     anda(0b1000000);
     BEQ(Sprite0Hit);
@@ -628,17 +628,17 @@ int HBlankDelay() {
 }
 
 int SkipSprite0() {
-    // <conv.chunks.Comment object at 0x10494f5f0>
+    // <conv.chunks.Comment object at 0x102aab5f0>
     lda(HorizontalScroll);
     sta(PPU_SCROLL_REG);
     lda(VerticalScroll);
     sta(PPU_SCROLL_REG);
     lda(Mirror_PPU_CTRL_REG1);
-    // <conv.chunks.Comment object at 0x10494fa10>
+    // <conv.chunks.Comment object at 0x102aaba10>
     pha();
     sta(PPU_CTRL_REG1);
     lda(GamePauseStatus);
-    // <conv.chunks.Comment object at 0x10494fcb0>
+    // <conv.chunks.Comment object at 0x102aabcb0>
     lsr();
     BCS(SkipMainOper);
     JSR(OperModeExecutionTree);
@@ -646,75 +646,75 @@ int SkipSprite0() {
 }
 
 int SkipMainOper() {
-    // <conv.chunks.Comment object at 0x10494ff50>
-    // <conv.chunks.Comment object at 0x1049600b0>
+    // <conv.chunks.Comment object at 0x102aabf50>
+    // <conv.chunks.Comment object at 0x102abc0b0>
     lda(PPU_STATUS);
     pla();
     ora(0b10000000);
-    // <conv.chunks.Comment object at 0x104960290>
+    // <conv.chunks.Comment object at 0x102abc290>
     sta(PPU_CTRL_REG1);
-    rti();
+    return 0;
     JMP(PauseRoutine);
 }
 
 int PauseRoutine() {
     lda(OperMode);
     cmp(VictoryModeValue);
-    // <conv.chunks.Comment object at 0x1049605c0>
-    // <conv.chunks.Comment object at 0x1049606e0>
+    // <conv.chunks.Comment object at 0x102abc5c0>
+    // <conv.chunks.Comment object at 0x102abc6e0>
     BEQ(ChkPauseTimer);
     cmp(GameModeValue);
     BNE(ExitPause);
     lda(OperMode_Task);
-    // <conv.chunks.Comment object at 0x1049608f0>
-    // <conv.chunks.Comment object at 0x104960a10>
-    // <conv.chunks.Comment object at 0x104960b30>
+    // <conv.chunks.Comment object at 0x102abc8f0>
+    // <conv.chunks.Comment object at 0x102abca10>
+    // <conv.chunks.Comment object at 0x102abcb30>
     cmp(0x3);
     BNE(ExitPause);
     JMP(ChkPauseTimer);
 }
 
 int ChkPauseTimer() {
-    // <conv.chunks.Comment object at 0x104960cb0>
-    // <conv.chunks.Comment object at 0x104960e60>
+    // <conv.chunks.Comment object at 0x102abccb0>
+    // <conv.chunks.Comment object at 0x102abce60>
     lda(GamePauseTimer);
     BEQ(ChkStart);
     dec(GamePauseTimer);
-    // <conv.chunks.Comment object at 0x1049610a0>
-    rts();
+    // <conv.chunks.Comment object at 0x102abd0a0>
+    return 0;
     JMP(ChkStart);
 }
 
 int ChkStart() {
-    // <conv.chunks.Comment object at 0x104961250>
+    // <conv.chunks.Comment object at 0x102abd250>
     lda(SavedJoypad1Bits);
     anda(Start_Button);
-    // <conv.chunks.Comment object at 0x1049613a0>
+    // <conv.chunks.Comment object at 0x102abd3a0>
     BEQ(ClrPauseTimer);
     lda(GamePauseStatus);
     anda(0b10000000);
     BNE(ExitPause);
     lda(0x2b);
-    // <conv.chunks.Comment object at 0x1049615b0>
-    // <conv.chunks.Comment object at 0x1049616d0>
-    // <conv.chunks.Comment object at 0x1049617f0>
-    // <conv.chunks.Comment object at 0x104961910>
+    // <conv.chunks.Comment object at 0x102abd5b0>
+    // <conv.chunks.Comment object at 0x102abd6d0>
+    // <conv.chunks.Comment object at 0x102abd7f0>
+    // <conv.chunks.Comment object at 0x102abd910>
     sta(GamePauseTimer);
     lda(GamePauseStatus);
     tay();
     iny();
-    // <conv.chunks.Comment object at 0x104961cd0>
+    // <conv.chunks.Comment object at 0x102abdcd0>
     sty(PauseSoundQueue);
     eor(0b1);
-    // <conv.chunks.Comment object at 0x104961e50>
+    // <conv.chunks.Comment object at 0x102abde50>
     ora(0b10000000);
     BNE(SetPause);
     JMP(ClrPauseTimer);
 }
 
 int ClrPauseTimer() {
-    // <conv.chunks.Comment object at 0x104962060>
-    // <conv.chunks.Comment object at 0x104962180>
+    // <conv.chunks.Comment object at 0x102abe060>
+    // <conv.chunks.Comment object at 0x102abe180>
     lda(GamePauseStatus);
     anda(0b1111111);
     JMP(SetPause);
@@ -726,7 +726,7 @@ int SetPause() {
 }
 
 int ExitPause() {
-    rts();
+    return 0;
     JMP(SpriteShuffler);
 }
 
@@ -739,42 +739,42 @@ int SpriteShuffler() {
 }
 
 int ShuffleLoop() {
-    // <conv.chunks.Comment object at 0x104962600>
-    // <conv.chunks.Comment object at 0x104962660>
-    // <conv.chunks.Comment object at 0x104962780>
-    // <conv.chunks.Comment object at 0x1049628d0>
-    // <conv.chunks.Comment object at 0x104962960>
-    // <conv.chunks.Comment object at 0x104962a50>
+    // <conv.chunks.Comment object at 0x102abe600>
+    // <conv.chunks.Comment object at 0x102abe660>
+    // <conv.chunks.Comment object at 0x102abe780>
+    // <conv.chunks.Comment object at 0x102abe8d0>
+    // <conv.chunks.Comment object at 0x102abe960>
+    // <conv.chunks.Comment object at 0x102abea50>
     lda(SprDataOffset, x);
     cmp(0x0);
     BCC(NextSprOffset);
     ldy(SprShuffleAmtOffset);
-    // <conv.chunks.Comment object at 0x104962c90>
-    // <conv.chunks.Comment object at 0x104962d20>
-    // <conv.chunks.Comment object at 0x104962ea0>
+    // <conv.chunks.Comment object at 0x102abec90>
+    // <conv.chunks.Comment object at 0x102abed20>
+    // <conv.chunks.Comment object at 0x102abeea0>
     clc();
     adc(SprShuffleAmt, y);
     BCC(StrSprOffset);
-    // <conv.chunks.Comment object at 0x104963050>
-    // <conv.chunks.Comment object at 0x1049631a0>
+    // <conv.chunks.Comment object at 0x102abf050>
+    // <conv.chunks.Comment object at 0x102abf1a0>
     clc();
     adc(0x0);
     JMP(StrSprOffset);
 }
 
 int StrSprOffset() {
-    // <conv.chunks.Comment object at 0x104963380>
-    // <conv.chunks.Comment object at 0x104963410>
+    // <conv.chunks.Comment object at 0x102abf380>
+    // <conv.chunks.Comment object at 0x102abf410>
     sta(SprDataOffset, x);
     JMP(NextSprOffset);
 }
 
 int NextSprOffset() {
-    // <conv.chunks.Comment object at 0x1049635f0>
+    // <conv.chunks.Comment object at 0x102abf5f0>
     dex();
     BPL(ShuffleLoop);
     ldx(SprShuffleAmtOffset);
-    // <conv.chunks.Comment object at 0x1049637d0>
+    // <conv.chunks.Comment object at 0x102abf7d0>
     inx();
     cpx(0x3);
     BNE(SetAmtOffset);
@@ -785,24 +785,24 @@ int NextSprOffset() {
 int SetAmtOffset() {
     stx(SprShuffleAmtOffset);
     ldx(0x8);
-    // <conv.chunks.Comment object at 0x104963e00>
+    // <conv.chunks.Comment object at 0x102abfe00>
     ldy(0x2);
     JMP(SetMiscOffset);
 }
 
 int SetMiscOffset() {
-    // <conv.chunks.Comment object at 0x104963f80>
+    // <conv.chunks.Comment object at 0x102abff80>
     lda(((SprDataOffset) + (5)), y);
     sta(((Misc_SprDataOffset) - (2)), x);
     clc();
     adc(0x8);
     sta(((Misc_SprDataOffset) - (1)), x);
     clc();
-    // <conv.chunks.Comment object at 0x10496c260>
-    // <conv.chunks.Comment object at 0x10496c470>
-    // <conv.chunks.Comment object at 0x10496c500>
-    // <conv.chunks.Comment object at 0x10496c590>
-    // <conv.chunks.Comment object at 0x10496c830>
+    // <conv.chunks.Comment object at 0x102ac8260>
+    // <conv.chunks.Comment object at 0x102ac8470>
+    // <conv.chunks.Comment object at 0x102ac8500>
+    // <conv.chunks.Comment object at 0x102ac8590>
+    // <conv.chunks.Comment object at 0x102ac8830>
     adc(0x8);
     sta(Misc_SprDataOffset, x);
     dex();
@@ -810,14 +810,13 @@ int SetMiscOffset() {
     dex();
     dey();
     BPL(SetMiscOffset);
-    // <conv.chunks.Comment object at 0x10496cd10>
-    rts();
+    // <conv.chunks.Comment object at 0x102ac8d10>
+    return 0;
     JMP(OperModeExecutionTree);
 }
 
 int OperModeExecutionTree() {
     lda(OperMode);
-    JSR(JumpEngine);
     JMP(MoveAllSpritesOffscreen);
 }
 
@@ -833,23 +832,22 @@ int MoveSpritesOffscreen() {
 }
 
 int SprInitLoop() {
-    // <conv.chunks.Comment object at 0x10496d5b0>
-    // <conv.chunks.Comment object at 0x10496d6a0>
-    // <conv.chunks.Comment object at 0x10496d7c0>
+    // <conv.chunks.Comment object at 0x102ac95b0>
+    // <conv.chunks.Comment object at 0x102ac96a0>
+    // <conv.chunks.Comment object at 0x102ac97c0>
     sta(Sprite_Y_Position, y);
     iny();
-    // <conv.chunks.Comment object at 0x10496da00>
+    // <conv.chunks.Comment object at 0x102ac9a00>
     iny();
     iny();
     iny();
     BNE(SprInitLoop);
-    rts();
+    return 0;
     JMP(TitleScreenMode);
 }
 
 int TitleScreenMode() {
     lda(OperMode_Task);
-    JSR(JumpEngine);
     JMP(GameMenuRoutine);
 }
 
@@ -857,8 +855,8 @@ int GameMenuRoutine() {
     ldy(0x0);
     lda(SavedJoypad1Bits);
     ora(SavedJoypad2Bits);
-    // <conv.chunks.Comment object at 0x10496e360>
-    // <conv.chunks.Comment object at 0x10496e840>
+    // <conv.chunks.Comment object at 0x102aca360>
+    // <conv.chunks.Comment object at 0x102aca840>
     cmp(Start_Button);
     BEQ(StartGame);
     cmp(((A_Button) + (Start_Button)));
@@ -867,15 +865,15 @@ int GameMenuRoutine() {
 }
 
 int StartGame() {
-    // <conv.chunks.Comment object at 0x10496eb40>
-    // <conv.chunks.Comment object at 0x10496ecf0>
-    // <conv.chunks.Comment object at 0x10496ee10>
+    // <conv.chunks.Comment object at 0x102acab40>
+    // <conv.chunks.Comment object at 0x102acacf0>
+    // <conv.chunks.Comment object at 0x102acae10>
     JMP(ChkContinue);
     JMP(ChkSelect);
 }
 
 int ChkSelect() {
-    // <conv.chunks.Comment object at 0x10496ef60>
+    // <conv.chunks.Comment object at 0x102acaf60>
     cmp(Select_Button);
     BEQ(SelectBLogic);
     ldx(DemoTimer);
@@ -888,47 +886,47 @@ int ChkSelect() {
 }
 
 int ChkWorldSel() {
-    // <conv.chunks.Comment object at 0x10496f0b0>
-    // <conv.chunks.Comment object at 0x10496f1d0>
-    // <conv.chunks.Comment object at 0x10496f2f0>
-    // <conv.chunks.Comment object at 0x10496f410>
-    // <conv.chunks.Comment object at 0x10496f530>
-    // <conv.chunks.Comment object at 0x10496f650>
-    // <conv.chunks.Comment object at 0x10496f770>
-    // <conv.chunks.Comment object at 0x10496f8c0>
+    // <conv.chunks.Comment object at 0x102acb0b0>
+    // <conv.chunks.Comment object at 0x102acb1d0>
+    // <conv.chunks.Comment object at 0x102acb2f0>
+    // <conv.chunks.Comment object at 0x102acb410>
+    // <conv.chunks.Comment object at 0x102acb530>
+    // <conv.chunks.Comment object at 0x102acb650>
+    // <conv.chunks.Comment object at 0x102acb770>
+    // <conv.chunks.Comment object at 0x102acb8c0>
     ldx(WorldSelectEnableFlag);
     BEQ(NullJoypad);
     cmp(B_Button);
-    // <conv.chunks.Comment object at 0x10496fb00>
+    // <conv.chunks.Comment object at 0x102acbb00>
     BNE(NullJoypad);
     iny();
     JMP(SelectBLogic);
 }
 
 int SelectBLogic() {
-    // <conv.chunks.Comment object at 0x10496fd40>
-    // <conv.chunks.Comment object at 0x10496fdd0>
+    // <conv.chunks.Comment object at 0x102acbd40>
+    // <conv.chunks.Comment object at 0x102acbdd0>
     lda(DemoTimer);
     BEQ(ResetTitle);
     lda(0x18);
-    // <conv.chunks.Comment object at 0x10496ff20>
-    // <conv.chunks.Comment object at 0x104978080>
+    // <conv.chunks.Comment object at 0x102acbf20>
+    // <conv.chunks.Comment object at 0x102ad4080>
     sta(DemoTimer);
     lda(SelectTimer);
     BNE(NullJoypad);
     lda(0x10);
-    // <conv.chunks.Comment object at 0x104978290>
-    // <conv.chunks.Comment object at 0x1049783b0>
-    // <conv.chunks.Comment object at 0x1049784d0>
+    // <conv.chunks.Comment object at 0x102ad4290>
+    // <conv.chunks.Comment object at 0x102ad43b0>
+    // <conv.chunks.Comment object at 0x102ad44d0>
     sta(SelectTimer);
     cpy(0x1);
     BEQ(IncWorldSel);
     lda(NumberOfPlayers);
     eor(0b1);
-    // <conv.chunks.Comment object at 0x1049786e0>
-    // <conv.chunks.Comment object at 0x104978770>
-    // <conv.chunks.Comment object at 0x104978920>
-    // <conv.chunks.Comment object at 0x104978a40>
+    // <conv.chunks.Comment object at 0x102ad46e0>
+    // <conv.chunks.Comment object at 0x102ad4770>
+    // <conv.chunks.Comment object at 0x102ad4920>
+    // <conv.chunks.Comment object at 0x102ad4a40>
     sta(NumberOfPlayers);
     JSR(DrawMushroomIcon);
     JMP(NullJoypad);
@@ -936,23 +934,23 @@ int SelectBLogic() {
 }
 
 int IncWorldSel() {
-    // <conv.chunks.Comment object at 0x104978e30>
+    // <conv.chunks.Comment object at 0x102ad4e30>
     ldx(WorldSelectNumber);
     inx();
     txa();
     anda(0b111);
     sta(WorldSelectNumber);
-    // <conv.chunks.Comment object at 0x1049790a0>
-    // <conv.chunks.Comment object at 0x1049791c0>
+    // <conv.chunks.Comment object at 0x102ad50a0>
+    // <conv.chunks.Comment object at 0x102ad51c0>
     JSR(GoContinue);
     JMP(UpdateShroom);
 }
 
 int UpdateShroom() {
-    // <conv.chunks.Comment object at 0x1049793d0>
+    // <conv.chunks.Comment object at 0x102ad53d0>
     lda(offsetof(G, WSelectBufferTemplate), x);
     sta(((VRAM_Buffer1) - (1)), x);
-    // <conv.chunks.Comment object at 0x104979550>
+    // <conv.chunks.Comment object at 0x102ad5550>
     inx();
     cpx(0x6);
     BMI(UpdateShroom);
@@ -963,41 +961,41 @@ int UpdateShroom() {
 }
 
 int NullJoypad() {
-    // <conv.chunks.Comment object at 0x1049799a0>
-    // <conv.chunks.Comment object at 0x104979af0>
-    // <conv.chunks.Comment object at 0x104979b80>
-    // <conv.chunks.Comment object at 0x104979d30>
+    // <conv.chunks.Comment object at 0x102ad59a0>
+    // <conv.chunks.Comment object at 0x102ad5af0>
+    // <conv.chunks.Comment object at 0x102ad5b80>
+    // <conv.chunks.Comment object at 0x102ad5d30>
     lda(0x0);
     sta(SavedJoypad1Bits);
     JMP(RunDemo);
 }
 
 int RunDemo() {
-    // <conv.chunks.Comment object at 0x104979f70>
+    // <conv.chunks.Comment object at 0x102ad5f70>
     JSR(GameCoreRoutine);
     lda(GameEngineSubroutine);
-    // <conv.chunks.Comment object at 0x10497a0f0>
+    // <conv.chunks.Comment object at 0x102ad60f0>
     cmp(0x6);
     BNE(ExitMenu);
     JMP(ResetTitle);
 }
 
 int ResetTitle() {
-    // <conv.chunks.Comment object at 0x10497a270>
-    // <conv.chunks.Comment object at 0x10497a420>
+    // <conv.chunks.Comment object at 0x102ad6270>
+    // <conv.chunks.Comment object at 0x102ad6420>
     lda(0x0);
     sta(OperMode);
     sta(OperMode_Task);
-    // <conv.chunks.Comment object at 0x10497a4e0>
-    // <conv.chunks.Comment object at 0x10497a690>
+    // <conv.chunks.Comment object at 0x102ad64e0>
+    // <conv.chunks.Comment object at 0x102ad6690>
     sta(Sprite0HitDetectFlag);
     inc(DisableScreenFlag);
-    rts();
+    return 0;
     JMP(ChkContinue);
 }
 
 int ChkContinue() {
-    // <conv.chunks.Comment object at 0x10497aa20>
+    // <conv.chunks.Comment object at 0x102ad6a20>
     ldy(DemoTimer);
     BEQ(ResetTitle);
     asl();
@@ -1010,19 +1008,19 @@ int ChkContinue() {
 int StartWorld1() {
     JSR(LoadAreaPointer);
     inc(Hidden1UpFlag);
-    // <conv.chunks.Comment object at 0x10497b1a0>
+    // <conv.chunks.Comment object at 0x102ad71a0>
     inc(OffScr_Hidden1UpFlag);
     inc(FetchNewGameTimerFlag);
     inc(OperMode);
     lda(WorldSelectEnableFlag);
     sta(PrimaryHardMode);
-    // <conv.chunks.Comment object at 0x10497b3b0>
-    // <conv.chunks.Comment object at 0x10497b4d0>
-    // <conv.chunks.Comment object at 0x10497b5f0>
-    // <conv.chunks.Comment object at 0x10497b710>
+    // <conv.chunks.Comment object at 0x102ad73b0>
+    // <conv.chunks.Comment object at 0x102ad74d0>
+    // <conv.chunks.Comment object at 0x102ad75f0>
+    // <conv.chunks.Comment object at 0x102ad7710>
     lda(0x0);
     sta(OperMode_Task);
-    // <conv.chunks.Comment object at 0x10497b890>
+    // <conv.chunks.Comment object at 0x102ad7890>
     sta(DemoTimer);
     ldx(0x17);
     lda(0x0);
@@ -1030,7 +1028,7 @@ int StartWorld1() {
 }
 
 int InitScores() {
-    // <conv.chunks.Comment object at 0x10497bc80>
+    // <conv.chunks.Comment object at 0x102ad7c80>
     sta(ScoreAndCoinDisplay, x);
     dex();
     BPL(InitScores);
@@ -1038,21 +1036,21 @@ int InitScores() {
 }
 
 int ExitMenu() {
-    rts();
+    return 0;
     JMP(GoContinue);
 }
 
 int GoContinue() {
-    // <conv.chunks.Comment object at 0x104984110>
+    // <conv.chunks.Comment object at 0x102ae0110>
     sta(WorldNumber);
     sta(OffScr_WorldNumber);
     ldx(0x0);
     stx(AreaNumber);
-    // <conv.chunks.Comment object at 0x104984260>
-    // <conv.chunks.Comment object at 0x104984380>
-    // <conv.chunks.Comment object at 0x104984410>
+    // <conv.chunks.Comment object at 0x102ae0260>
+    // <conv.chunks.Comment object at 0x102ae0380>
+    // <conv.chunks.Comment object at 0x102ae0410>
     stx(OffScr_AreaNumber);
-    rts();
+    return 0;
     JMP(DrawMushroomIcon);
 }
 
@@ -1062,28 +1060,28 @@ int DrawMushroomIcon() {
 }
 
 int IconDataRead() {
-    // <conv.chunks.Comment object at 0x104984800>
-    // <conv.chunks.Comment object at 0x104984890>
+    // <conv.chunks.Comment object at 0x102ae0800>
+    // <conv.chunks.Comment object at 0x102ae0890>
     lda(offsetof(G, MushroomIconData), y);
     sta(((VRAM_Buffer1) - (1)), y);
-    // <conv.chunks.Comment object at 0x104984ef0>
+    // <conv.chunks.Comment object at 0x102ae0ef0>
     dey();
     BPL(IconDataRead);
     lda(NumberOfPlayers);
     BEQ(ExitIcon);
     lda(0x24);
-    // <conv.chunks.Comment object at 0x104985250>
-    // <conv.chunks.Comment object at 0x104985370>
-    // <conv.chunks.Comment object at 0x104985490>
+    // <conv.chunks.Comment object at 0x102ae1250>
+    // <conv.chunks.Comment object at 0x102ae1370>
+    // <conv.chunks.Comment object at 0x102ae1490>
     sta(((VRAM_Buffer1) + (3)));
     lda(0xce);
-    // <conv.chunks.Comment object at 0x104985730>
+    // <conv.chunks.Comment object at 0x102ae1730>
     sta(((VRAM_Buffer1) + (5)));
     JMP(ExitIcon);
 }
 
 int ExitIcon() {
-    rts();
+    return 0;
     JMP(DemoEngine);
 }
 
@@ -1091,9 +1089,9 @@ int DemoEngine() {
     ldx(DemoAction);
     lda(DemoActionTimer);
     BNE(DoAction);
-    // <conv.chunks.Comment object at 0x104985af0>
-    // <conv.chunks.Comment object at 0x104985c10>
-    // <conv.chunks.Comment object at 0x1049875c0>
+    // <conv.chunks.Comment object at 0x102ae1af0>
+    // <conv.chunks.Comment object at 0x102ae1c10>
+    // <conv.chunks.Comment object at 0x102ae35c0>
     inx();
     inc(DemoAction);
     sec();
@@ -1104,12 +1102,12 @@ int DemoEngine() {
 }
 
 int DoAction() {
-    // <conv.chunks.Comment object at 0x104987770>
-    // <conv.chunks.Comment object at 0x1049878c0>
-    // <conv.chunks.Comment object at 0x104987950>
-    // <conv.chunks.Comment object at 0x104987b30>
-    // <conv.chunks.Comment object at 0x104987c50>
-    // <conv.chunks.Comment object at 0x104987d70>
+    // <conv.chunks.Comment object at 0x102ae3770>
+    // <conv.chunks.Comment object at 0x102ae38c0>
+    // <conv.chunks.Comment object at 0x102ae3950>
+    // <conv.chunks.Comment object at 0x102ae3b30>
+    // <conv.chunks.Comment object at 0x102ae3c50>
+    // <conv.chunks.Comment object at 0x102ae3d70>
     lda(((offsetof(G, DemoActionData)) - (1)), x);
     sta(SavedJoypad1Bits);
     dec(DemoActionTimer);
@@ -1118,7 +1116,7 @@ int DoAction() {
 }
 
 int DemoOver() {
-    rts();
+    return 0;
     JMP(VictoryMode);
 }
 
@@ -1126,9 +1124,9 @@ int VictoryMode() {
     JSR(VictoryModeSubroutines);
     lda(OperMode_Task);
     BEQ(AutoPlayer);
-    // <conv.chunks.Comment object at 0x1049903b0>
-    // <conv.chunks.Comment object at 0x1049904d0>
-    // <conv.chunks.Comment object at 0x1049905f0>
+    // <conv.chunks.Comment object at 0x102aec3b0>
+    // <conv.chunks.Comment object at 0x102aec4d0>
+    // <conv.chunks.Comment object at 0x102aec5f0>
     ldx(0x0);
     stx(ObjectOffset);
     JSR(EnemiesAndLoopsCore);
@@ -1136,9 +1134,9 @@ int VictoryMode() {
 }
 
 int AutoPlayer() {
-    // <conv.chunks.Comment object at 0x104990770>
-    // <conv.chunks.Comment object at 0x104990920>
-    // <conv.chunks.Comment object at 0x104990a40>
+    // <conv.chunks.Comment object at 0x102aec770>
+    // <conv.chunks.Comment object at 0x102aec920>
+    // <conv.chunks.Comment object at 0x102aeca40>
     JSR(RelativePlayerPosition);
     JMP(PlayerGfxHandler);
     JMP(VictoryModeSubroutines);
@@ -1146,7 +1144,6 @@ int AutoPlayer() {
 
 int VictoryModeSubroutines() {
     lda(OperMode_Task);
-    JSR(JumpEngine);
     JMP(SetupVictoryMode);
 }
 
@@ -1154,9 +1151,9 @@ int SetupVictoryMode() {
     ldx(ScreenRight_PageLoc);
     inx();
     stx(DestinationPageLoc);
-    // <conv.chunks.Comment object at 0x1049911f0>
-    // <conv.chunks.Comment object at 0x104991340>
-    // <conv.chunks.Comment object at 0x1049913d0>
+    // <conv.chunks.Comment object at 0x102aed1f0>
+    // <conv.chunks.Comment object at 0x102aed340>
+    // <conv.chunks.Comment object at 0x102aed3d0>
     lda(EndOfCastleMusic);
     sta(EventMusicQueue);
     JMP(IncModeTask_B);
@@ -1165,7 +1162,7 @@ int SetupVictoryMode() {
 
 int PlayerVictoryWalk() {
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x104991880>
+    // <conv.chunks.Comment object at 0x102aed880>
     sty(VictoryWalkControl);
     lda(Player_PageLoc);
     cmp(DestinationPageLoc);
@@ -1177,33 +1174,33 @@ int PlayerVictoryWalk() {
 }
 
 int PerformWalk() {
-    // <conv.chunks.Comment object at 0x104991a90>
-    // <conv.chunks.Comment object at 0x104991bb0>
-    // <conv.chunks.Comment object at 0x104991cd0>
-    // <conv.chunks.Comment object at 0x104991df0>
-    // <conv.chunks.Comment object at 0x104991f10>
-    // <conv.chunks.Comment object at 0x104991fa0>
-    // <conv.chunks.Comment object at 0x104992150>
+    // <conv.chunks.Comment object at 0x102aeda90>
+    // <conv.chunks.Comment object at 0x102aedbb0>
+    // <conv.chunks.Comment object at 0x102aedcd0>
+    // <conv.chunks.Comment object at 0x102aeddf0>
+    // <conv.chunks.Comment object at 0x102aedf10>
+    // <conv.chunks.Comment object at 0x102aedfa0>
+    // <conv.chunks.Comment object at 0x102aee150>
     inc(VictoryWalkControl);
     iny();
     JMP(DontWalk);
 }
 
 int DontWalk() {
-    // <conv.chunks.Comment object at 0x1049922d0>
-    // <conv.chunks.Comment object at 0x104992360>
+    // <conv.chunks.Comment object at 0x102aee2d0>
+    // <conv.chunks.Comment object at 0x102aee360>
     tya();
     JSR(AutoControlPlayer);
     lda(ScreenLeft_PageLoc);
     cmp(DestinationPageLoc);
     BEQ(ExitVWalk);
-    // <conv.chunks.Comment object at 0x104992450>
-    // <conv.chunks.Comment object at 0x104992570>
-    // <conv.chunks.Comment object at 0x104992690>
-    // <conv.chunks.Comment object at 0x1049927b0>
+    // <conv.chunks.Comment object at 0x102aee450>
+    // <conv.chunks.Comment object at 0x102aee570>
+    // <conv.chunks.Comment object at 0x102aee690>
+    // <conv.chunks.Comment object at 0x102aee7b0>
     lda(ScrollFractional);
     clc();
-    // <conv.chunks.Comment object at 0x1049929f0>
+    // <conv.chunks.Comment object at 0x102aee9f0>
     adc(0x80);
     sta(ScrollFractional);
     lda(0x1);
@@ -1216,17 +1213,17 @@ int DontWalk() {
 }
 
 int ExitVWalk() {
-    // <conv.chunks.Comment object at 0x104992ae0>
-    // <conv.chunks.Comment object at 0x104992c90>
-    // <conv.chunks.Comment object at 0x104992d20>
-    // <conv.chunks.Comment object at 0x104992f00>
-    // <conv.chunks.Comment object at 0x104992f90>
-    // <conv.chunks.Comment object at 0x1049930b0>
-    // <conv.chunks.Comment object at 0x1049931d0>
-    // <conv.chunks.Comment object at 0x1049932f0>
+    // <conv.chunks.Comment object at 0x102aeeae0>
+    // <conv.chunks.Comment object at 0x102aeec90>
+    // <conv.chunks.Comment object at 0x102aeed20>
+    // <conv.chunks.Comment object at 0x102aeef00>
+    // <conv.chunks.Comment object at 0x102aeef90>
+    // <conv.chunks.Comment object at 0x102aef0b0>
+    // <conv.chunks.Comment object at 0x102aef1d0>
+    // <conv.chunks.Comment object at 0x102aef2f0>
     lda(VictoryWalkControl);
     BEQ(IncModeTask_A);
-    rts();
+    return 0;
     JMP(PrintVictoryMessages);
 }
 
@@ -1238,13 +1235,13 @@ int PrintVictoryMessages() {
     cmp(0x9);
     BCS(IncMsgCounter);
     ldy(WorldNumber);
-    // <conv.chunks.Comment object at 0x104993680>
-    // <conv.chunks.Comment object at 0x1049937a0>
-    // <conv.chunks.Comment object at 0x1049938c0>
-    // <conv.chunks.Comment object at 0x1049939e0>
-    // <conv.chunks.Comment object at 0x104993b00>
-    // <conv.chunks.Comment object at 0x104993b90>
-    // <conv.chunks.Comment object at 0x104993d40>
+    // <conv.chunks.Comment object at 0x102aef680>
+    // <conv.chunks.Comment object at 0x102aef7a0>
+    // <conv.chunks.Comment object at 0x102aef8c0>
+    // <conv.chunks.Comment object at 0x102aef9e0>
+    // <conv.chunks.Comment object at 0x102aefb00>
+    // <conv.chunks.Comment object at 0x102aefb90>
+    // <conv.chunks.Comment object at 0x102aefd40>
     cpy(World8);
     BNE(MRetainerMsg);
     cmp(0x3);
@@ -1255,20 +1252,20 @@ int PrintVictoryMessages() {
 }
 
 int MRetainerMsg() {
-    // <conv.chunks.Comment object at 0x104993e90>
-    // <conv.chunks.Comment object at 0x1049980e0>
-    // <conv.chunks.Comment object at 0x104998170>
-    // <conv.chunks.Comment object at 0x104998320>
-    // <conv.chunks.Comment object at 0x1049983b0>
-    // <conv.chunks.Comment object at 0x104998560>
+    // <conv.chunks.Comment object at 0x102aefe90>
+    // <conv.chunks.Comment object at 0x102af40e0>
+    // <conv.chunks.Comment object at 0x102af4170>
+    // <conv.chunks.Comment object at 0x102af4320>
+    // <conv.chunks.Comment object at 0x102af43b0>
+    // <conv.chunks.Comment object at 0x102af4560>
     cmp(0x2);
     BCC(IncMsgCounter);
     JMP(ThankPlayer);
 }
 
 int ThankPlayer() {
-    // <conv.chunks.Comment object at 0x104998620>
-    // <conv.chunks.Comment object at 0x1049987d0>
+    // <conv.chunks.Comment object at 0x102af4620>
+    // <conv.chunks.Comment object at 0x102af47d0>
     tay();
     BNE(SecondPartMsg);
     lda(CurrentPlayer);
@@ -1279,12 +1276,12 @@ int ThankPlayer() {
 }
 
 int SecondPartMsg() {
-    // <conv.chunks.Comment object at 0x1049988c0>
-    // <conv.chunks.Comment object at 0x1049989e0>
-    // <conv.chunks.Comment object at 0x104998b00>
-    // <conv.chunks.Comment object at 0x104998c50>
-    // <conv.chunks.Comment object at 0x104998ce0>
-    // <conv.chunks.Comment object at 0x104998e00>
+    // <conv.chunks.Comment object at 0x102af48c0>
+    // <conv.chunks.Comment object at 0x102af49e0>
+    // <conv.chunks.Comment object at 0x102af4b00>
+    // <conv.chunks.Comment object at 0x102af4c50>
+    // <conv.chunks.Comment object at 0x102af4ce0>
+    // <conv.chunks.Comment object at 0x102af4e00>
     iny();
     lda(WorldNumber);
     cmp(World8);
@@ -1298,14 +1295,14 @@ int SecondPartMsg() {
 }
 
 int EvalForMusic() {
-    // <conv.chunks.Comment object at 0x104998fe0>
-    // <conv.chunks.Comment object at 0x104999040>
-    // <conv.chunks.Comment object at 0x104999280>
-    // <conv.chunks.Comment object at 0x104999310>
-    // <conv.chunks.Comment object at 0x1049993a0>
-    // <conv.chunks.Comment object at 0x104999550>
-    // <conv.chunks.Comment object at 0x1049995e0>
-    // <conv.chunks.Comment object at 0x104999790>
+    // <conv.chunks.Comment object at 0x102af4fe0>
+    // <conv.chunks.Comment object at 0x102af5040>
+    // <conv.chunks.Comment object at 0x102af5280>
+    // <conv.chunks.Comment object at 0x102af5310>
+    // <conv.chunks.Comment object at 0x102af53a0>
+    // <conv.chunks.Comment object at 0x102af5550>
+    // <conv.chunks.Comment object at 0x102af55e0>
+    // <conv.chunks.Comment object at 0x102af5790>
     cpy(0x3);
     BNE(PrintMsg);
     lda(VictoryMusic);
@@ -1314,10 +1311,10 @@ int EvalForMusic() {
 }
 
 int PrintMsg() {
-    // <conv.chunks.Comment object at 0x104999850>
-    // <conv.chunks.Comment object at 0x104999a00>
-    // <conv.chunks.Comment object at 0x104999b20>
-    // <conv.chunks.Comment object at 0x104999c40>
+    // <conv.chunks.Comment object at 0x102af5850>
+    // <conv.chunks.Comment object at 0x102af5a00>
+    // <conv.chunks.Comment object at 0x102af5b20>
+    // <conv.chunks.Comment object at 0x102af5c40>
     tya();
     clc();
     adc(0xc);
@@ -1329,19 +1326,19 @@ int IncMsgCounter() {
     lda(SecondaryMsgCounter);
     clc();
     adc(0x4);
-    // <conv.chunks.Comment object at 0x10499a1e0>
+    // <conv.chunks.Comment object at 0x102af61e0>
     sta(SecondaryMsgCounter);
     lda(PrimaryMsgCounter);
     adc(0x0);
-    // <conv.chunks.Comment object at 0x10499a4e0>
+    // <conv.chunks.Comment object at 0x102af64e0>
     sta(PrimaryMsgCounter);
     cmp(0x7);
     JMP(SetEndTimer);
 }
 
 int SetEndTimer() {
-    // <conv.chunks.Comment object at 0x10499a6f0>
-    // <conv.chunks.Comment object at 0x10499a780>
+    // <conv.chunks.Comment object at 0x102af66f0>
+    // <conv.chunks.Comment object at 0x102af6780>
     BCC(ExitMsgs);
     lda(0x6);
     sta(WorldEndTimer);
@@ -1349,15 +1346,15 @@ int SetEndTimer() {
 }
 
 int IncModeTask_A() {
-    // <conv.chunks.Comment object at 0x10499a9c0>
-    // <conv.chunks.Comment object at 0x10499ab70>
+    // <conv.chunks.Comment object at 0x102af69c0>
+    // <conv.chunks.Comment object at 0x102af6b70>
     inc(OperMode_Task);
     JMP(ExitMsgs);
 }
 
 int ExitMsgs() {
-    // <conv.chunks.Comment object at 0x10499acf0>
-    rts();
+    // <conv.chunks.Comment object at 0x102af6cf0>
+    return 0;
     JMP(PlayerEndWorld);
 }
 
@@ -1367,11 +1364,11 @@ int PlayerEndWorld() {
     ldy(WorldNumber);
     cpy(World8);
     BCS(EndChkBButton);
-    // <conv.chunks.Comment object at 0x10499ae40>
-    // <conv.chunks.Comment object at 0x10499af60>
-    // <conv.chunks.Comment object at 0x10499b080>
-    // <conv.chunks.Comment object at 0x10499b1a0>
-    // <conv.chunks.Comment object at 0x10499b200>
+    // <conv.chunks.Comment object at 0x102af6e40>
+    // <conv.chunks.Comment object at 0x102af6f60>
+    // <conv.chunks.Comment object at 0x102af7080>
+    // <conv.chunks.Comment object at 0x102af71a0>
+    // <conv.chunks.Comment object at 0x102af7200>
     lda(0x0);
     sta(AreaNumber);
     sta(LevelNumber);
@@ -1379,21 +1376,21 @@ int PlayerEndWorld() {
     inc(WorldNumber);
     JSR(LoadAreaPointer);
     inc(FetchNewGameTimerFlag);
-    // <conv.chunks.Comment object at 0x10499b470>
-    // <conv.chunks.Comment object at 0x10499b620>
-    // <conv.chunks.Comment object at 0x10499b740>
-    // <conv.chunks.Comment object at 0x10499b860>
-    // <conv.chunks.Comment object at 0x10499b980>
-    // <conv.chunks.Comment object at 0x10499baa0>
+    // <conv.chunks.Comment object at 0x102af7470>
+    // <conv.chunks.Comment object at 0x102af7620>
+    // <conv.chunks.Comment object at 0x102af7740>
+    // <conv.chunks.Comment object at 0x102af7860>
+    // <conv.chunks.Comment object at 0x102af7980>
+    // <conv.chunks.Comment object at 0x102af7aa0>
     lda(GameModeValue);
     sta(OperMode);
     JMP(EndExitOne);
 }
 
 int EndExitOne() {
-    // <conv.chunks.Comment object at 0x10499bcb0>
-    // <conv.chunks.Comment object at 0x10499bdd0>
-    rts();
+    // <conv.chunks.Comment object at 0x102af7cb0>
+    // <conv.chunks.Comment object at 0x102af7dd0>
+    return 0;
     JMP(EndChkBButton);
 }
 
@@ -1403,22 +1400,22 @@ int EndChkBButton() {
     anda(B_Button);
     BEQ(EndExitTwo);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x10499bfe0>
-    // <conv.chunks.Comment object at 0x1049a4140>
-    // <conv.chunks.Comment object at 0x1049a4260>
-    // <conv.chunks.Comment object at 0x1049a4380>
+    // <conv.chunks.Comment object at 0x102af7fe0>
+    // <conv.chunks.Comment object at 0x102b00140>
+    // <conv.chunks.Comment object at 0x102b00260>
+    // <conv.chunks.Comment object at 0x102b00380>
     sta(WorldSelectEnableFlag);
     lda(0xff);
-    // <conv.chunks.Comment object at 0x1049a4590>
+    // <conv.chunks.Comment object at 0x102b00590>
     sta(NumberofLives);
     JSR(TerminateGame);
     JMP(EndExitTwo);
 }
 
 int EndExitTwo() {
-    // <conv.chunks.Comment object at 0x1049a47a0>
-    // <conv.chunks.Comment object at 0x1049a48f0>
-    rts();
+    // <conv.chunks.Comment object at 0x102b007a0>
+    // <conv.chunks.Comment object at 0x102b008f0>
+    return 0;
     JMP(FloateyNumbersRoutine);
 }
 
@@ -1426,9 +1423,9 @@ int FloateyNumbersRoutine() {
     lda(FloateyNum_Control, x);
     BEQ(EndExitOne);
     cmp(0xb);
-    // <conv.chunks.Comment object at 0x1049a5e50>
-    // <conv.chunks.Comment object at 0x1049a6600>
-    // <conv.chunks.Comment object at 0x1049a6720>
+    // <conv.chunks.Comment object at 0x102b01e50>
+    // <conv.chunks.Comment object at 0x102b02600>
+    // <conv.chunks.Comment object at 0x102b02720>
     BCC(ChkNumTimer);
     lda(0xb);
     sta(FloateyNum_Control, x);
@@ -1436,43 +1433,43 @@ int FloateyNumbersRoutine() {
 }
 
 int ChkNumTimer() {
-    // <conv.chunks.Comment object at 0x1049a6930>
-    // <conv.chunks.Comment object at 0x1049a69c0>
-    // <conv.chunks.Comment object at 0x1049a6bd0>
+    // <conv.chunks.Comment object at 0x102b02930>
+    // <conv.chunks.Comment object at 0x102b029c0>
+    // <conv.chunks.Comment object at 0x102b02bd0>
     tay();
     lda(FloateyNum_Timer, x);
     BNE(DecNumTimer);
     sta(FloateyNum_Control, x);
-    // <conv.chunks.Comment object at 0x1049a6cc0>
-    // <conv.chunks.Comment object at 0x1049a6e10>
-    // <conv.chunks.Comment object at 0x1049a6f30>
-    rts();
+    // <conv.chunks.Comment object at 0x102b02cc0>
+    // <conv.chunks.Comment object at 0x102b02e10>
+    // <conv.chunks.Comment object at 0x102b02f30>
+    return 0;
     JMP(DecNumTimer);
 }
 
 int DecNumTimer() {
-    // <conv.chunks.Comment object at 0x1049a7110>
+    // <conv.chunks.Comment object at 0x102b03110>
     dec(FloateyNum_Timer, x);
     cmp(0x2b);
-    // <conv.chunks.Comment object at 0x1049a7290>
+    // <conv.chunks.Comment object at 0x102b03290>
     BNE(ChkTallEnemy);
     cpy(0xb);
     BNE(LoadNumTiles);
     inc(NumberofLives);
-    // <conv.chunks.Comment object at 0x1049a74a0>
-    // <conv.chunks.Comment object at 0x1049a7530>
-    // <conv.chunks.Comment object at 0x1049a76e0>
+    // <conv.chunks.Comment object at 0x102b034a0>
+    // <conv.chunks.Comment object at 0x102b03530>
+    // <conv.chunks.Comment object at 0x102b036e0>
     lda(Sfx_ExtraLife);
     sta(Square2SoundQueue);
     JMP(LoadNumTiles);
 }
 
 int LoadNumTiles() {
-    // <conv.chunks.Comment object at 0x1049a78f0>
-    // <conv.chunks.Comment object at 0x1049a7a10>
+    // <conv.chunks.Comment object at 0x102b038f0>
+    // <conv.chunks.Comment object at 0x102b03a10>
     lda(offsetof(G, ScoreUpdateData), y);
     lsr();
-    // <conv.chunks.Comment object at 0x1049a7bc0>
+    // <conv.chunks.Comment object at 0x102b03bc0>
     lsr();
     lsr();
     lsr();
@@ -1485,32 +1482,32 @@ int LoadNumTiles() {
 }
 
 int ChkTallEnemy() {
-    // <conv.chunks.Comment object at 0x1049a7e30>
-    // <conv.chunks.Comment object at 0x1049a7ec0>
-    // <conv.chunks.Comment object at 0x1049ac050>
-    // <conv.chunks.Comment object at 0x1049ac170>
-    // <conv.chunks.Comment object at 0x1049ac2c0>
-    // <conv.chunks.Comment object at 0x1049ac3e0>
+    // <conv.chunks.Comment object at 0x102b03e30>
+    // <conv.chunks.Comment object at 0x102b03ec0>
+    // <conv.chunks.Comment object at 0x102b08050>
+    // <conv.chunks.Comment object at 0x102b08170>
+    // <conv.chunks.Comment object at 0x102b082c0>
+    // <conv.chunks.Comment object at 0x102b083e0>
     ldy(Enemy_SprDataOffset, x);
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x1049ac560>
+    // <conv.chunks.Comment object at 0x102b08560>
     cmp(Spiny);
     BEQ(FloateyPart);
-    // <conv.chunks.Comment object at 0x1049ac710>
+    // <conv.chunks.Comment object at 0x102b08710>
     cmp(PiranhaPlant);
     BEQ(FloateyPart);
-    // <conv.chunks.Comment object at 0x1049ac9e0>
+    // <conv.chunks.Comment object at 0x102b089e0>
     cmp(HammerBro);
     BEQ(GetAltOffset);
-    // <conv.chunks.Comment object at 0x1049acbf0>
+    // <conv.chunks.Comment object at 0x102b08bf0>
     cmp(GreyCheepCheep);
     BEQ(FloateyPart);
-    // <conv.chunks.Comment object at 0x1049ace00>
+    // <conv.chunks.Comment object at 0x102b08e00>
     cmp(RedCheepCheep);
     BEQ(FloateyPart);
     cmp(TallEnemy);
     BCS(GetAltOffset);
-    // <conv.chunks.Comment object at 0x1049ad1f0>
+    // <conv.chunks.Comment object at 0x102b091f0>
     lda(Enemy_State, x);
     cmp(0x2);
     BCS(FloateyPart);
@@ -1518,9 +1515,9 @@ int ChkTallEnemy() {
 }
 
 int GetAltOffset() {
-    // <conv.chunks.Comment object at 0x1049ad430>
-    // <conv.chunks.Comment object at 0x1049ad4c0>
-    // <conv.chunks.Comment object at 0x1049ad670>
+    // <conv.chunks.Comment object at 0x102b09430>
+    // <conv.chunks.Comment object at 0x102b094c0>
+    // <conv.chunks.Comment object at 0x102b09670>
     ldx(SprDataOffset_Ctrl);
     ldy(Alt_SprDataOffset, x);
     ldx(ObjectOffset);
@@ -1528,75 +1525,73 @@ int GetAltOffset() {
 }
 
 int FloateyPart() {
-    // <conv.chunks.Comment object at 0x1049ad7c0>
-    // <conv.chunks.Comment object at 0x1049ad910>
-    // <conv.chunks.Comment object at 0x1049ada30>
+    // <conv.chunks.Comment object at 0x102b097c0>
+    // <conv.chunks.Comment object at 0x102b09910>
+    // <conv.chunks.Comment object at 0x102b09a30>
     lda(FloateyNum_Y_Pos, x);
     cmp(0x18);
     BCC(SetupNumSpr);
-    // <conv.chunks.Comment object at 0x1049adbb0>
-    // <conv.chunks.Comment object at 0x1049adc40>
+    // <conv.chunks.Comment object at 0x102b09bb0>
+    // <conv.chunks.Comment object at 0x102b09c40>
     sbc(0x1);
     sta(FloateyNum_Y_Pos, x);
     JMP(SetupNumSpr);
 }
 
 int SetupNumSpr() {
-    // <conv.chunks.Comment object at 0x1049ade50>
-    // <conv.chunks.Comment object at 0x1049ae030>
+    // <conv.chunks.Comment object at 0x102b09e50>
+    // <conv.chunks.Comment object at 0x102b0a030>
     lda(FloateyNum_Y_Pos, x);
     sbc(0x8);
     JSR(DumpTwoSpr);
     lda(FloateyNum_X_Pos, x);
     sta(Sprite_X_Position, y);
-    // <conv.chunks.Comment object at 0x1049ae1b0>
-    // <conv.chunks.Comment object at 0x1049ae240>
-    // <conv.chunks.Comment object at 0x1049ae3f0>
-    // <conv.chunks.Comment object at 0x1049ae540>
+    // <conv.chunks.Comment object at 0x102b0a1b0>
+    // <conv.chunks.Comment object at 0x102b0a240>
+    // <conv.chunks.Comment object at 0x102b0a3f0>
+    // <conv.chunks.Comment object at 0x102b0a540>
     clc();
     adc(0x8);
     sta(((Sprite_X_Position) + (4)), y);
-    // <conv.chunks.Comment object at 0x1049ae720>
-    // <conv.chunks.Comment object at 0x1049ae7b0>
+    // <conv.chunks.Comment object at 0x102b0a720>
+    // <conv.chunks.Comment object at 0x102b0a7b0>
     lda(0x2);
     sta(Sprite_Attributes, y);
     sta(((Sprite_Attributes) + (4)), y);
-    // <conv.chunks.Comment object at 0x1049aea80>
-    // <conv.chunks.Comment object at 0x1049aec60>
+    // <conv.chunks.Comment object at 0x102b0aa80>
+    // <conv.chunks.Comment object at 0x102b0ac60>
     lda(FloateyNum_Control, x);
     asl();
     tax();
-    // <conv.chunks.Comment object at 0x1049aef90>
-    // <conv.chunks.Comment object at 0x1049af050>
+    // <conv.chunks.Comment object at 0x102b0af90>
+    // <conv.chunks.Comment object at 0x102b0b050>
     lda(offsetof(G, FloateyNumTileData), x);
     sta(Sprite_Tilenumber, y);
-    // <conv.chunks.Comment object at 0x1049af200>
+    // <conv.chunks.Comment object at 0x102b0b200>
     lda(((offsetof(G, FloateyNumTileData)) + (1)), x);
     sta(((Sprite_Tilenumber) + (4)), y);
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x1049af500>
-    // <conv.chunks.Comment object at 0x1049af6e0>
-    rts();
+    // <conv.chunks.Comment object at 0x102b0b500>
+    // <conv.chunks.Comment object at 0x102b0b6e0>
+    return 0;
     JMP(ScreenRoutines);
 }
 
 int ScreenRoutines() {
     lda(ScreenRoutineTask);
-    // <conv.chunks.Comment object at 0x1049af8f0>
-    JSR(JumpEngine);
     JMP(InitScreen);
 }
 
 int InitScreen() {
     JSR(MoveAllSpritesOffscreen);
     JSR(InitializeNameTables);
-    // <conv.chunks.Comment object at 0x104b48470>
-    // <conv.chunks.Comment object at 0x104b48590>
+    // <conv.chunks.Comment object at 0x102ca4470>
+    // <conv.chunks.Comment object at 0x102ca4590>
     lda(OperMode);
     BEQ(NextSubtask);
     ldx(0x3);
-    // <conv.chunks.Comment object at 0x104b487a0>
-    // <conv.chunks.Comment object at 0x104b488c0>
+    // <conv.chunks.Comment object at 0x102ca47a0>
+    // <conv.chunks.Comment object at 0x102ca48c0>
     JMP(SetVRAMAddr_A);
     JMP(SetupIntermediate);
 }
@@ -1604,18 +1599,18 @@ int InitScreen() {
 int SetupIntermediate() {
     lda(BackgroundColorCtrl);
     pha();
-    // <conv.chunks.Comment object at 0x104b48b30>
-    // <conv.chunks.Comment object at 0x104b48c80>
+    // <conv.chunks.Comment object at 0x102ca4b30>
+    // <conv.chunks.Comment object at 0x102ca4c80>
     lda(PlayerStatus);
     pha();
     lda(0x0);
     sta(PlayerStatus);
     lda(0x2);
     sta(BackgroundColorCtrl);
-    // <conv.chunks.Comment object at 0x104b48e90>
-    // <conv.chunks.Comment object at 0x104b48f20>
-    // <conv.chunks.Comment object at 0x104b490d0>
-    // <conv.chunks.Comment object at 0x104b49160>
+    // <conv.chunks.Comment object at 0x102ca4e90>
+    // <conv.chunks.Comment object at 0x102ca4f20>
+    // <conv.chunks.Comment object at 0x102ca50d0>
+    // <conv.chunks.Comment object at 0x102ca5160>
     JSR(GetPlayerColors);
     pla();
     sta(PlayerStatus);
@@ -1632,15 +1627,15 @@ int GetAreaPalette() {
 }
 
 int SetVRAMAddr_A() {
-    // <conv.chunks.Comment object at 0x104b499a0>
-    // <conv.chunks.Comment object at 0x104b49cd0>
-    // <conv.chunks.Comment object at 0x104b49e20>
+    // <conv.chunks.Comment object at 0x102ca59a0>
+    // <conv.chunks.Comment object at 0x102ca5cd0>
+    // <conv.chunks.Comment object at 0x102ca5e20>
     stx(VRAM_Buffer_AddrCtrl);
     JMP(NextSubtask);
 }
 
 int NextSubtask() {
-    // <conv.chunks.Comment object at 0x104b49f70>
+    // <conv.chunks.Comment object at 0x102ca5f70>
     JMP(IncSubtask);
     JMP(GetBackgroundColor);
 }
@@ -1654,49 +1649,49 @@ int GetBackgroundColor() {
 }
 
 int NoBGColor() {
-    // <conv.chunks.Comment object at 0x104b4a9f0>
-    // <conv.chunks.Comment object at 0x104b4b170>
-    // <conv.chunks.Comment object at 0x104b4b290>
-    // <conv.chunks.Comment object at 0x104b4b470>
-    // <conv.chunks.Comment object at 0x104b4b590>
+    // <conv.chunks.Comment object at 0x102ca69f0>
+    // <conv.chunks.Comment object at 0x102ca7170>
+    // <conv.chunks.Comment object at 0x102ca7290>
+    // <conv.chunks.Comment object at 0x102ca7470>
+    // <conv.chunks.Comment object at 0x102ca7590>
     inc(ScreenRoutineTask);
     JMP(GetPlayerColors);
 }
 
 int GetPlayerColors() {
     ldx(VRAM_Buffer1_Offset);
-    // <conv.chunks.Comment object at 0x104b4b710>
+    // <conv.chunks.Comment object at 0x102ca7710>
     ldy(0x0);
     lda(CurrentPlayer);
-    // <conv.chunks.Comment object at 0x104b4b890>
+    // <conv.chunks.Comment object at 0x102ca7890>
     BEQ(ChkFiery);
     ldy(0x4);
     JMP(ChkFiery);
 }
 
 int ChkFiery() {
-    // <conv.chunks.Comment object at 0x104b4bb30>
-    // <conv.chunks.Comment object at 0x104b4bbc0>
+    // <conv.chunks.Comment object at 0x102ca7b30>
+    // <conv.chunks.Comment object at 0x102ca7bc0>
     lda(PlayerStatus);
     cmp(0x2);
     BNE(StartClrGet);
-    // <conv.chunks.Comment object at 0x104b4be00>
+    // <conv.chunks.Comment object at 0x102ca7e00>
     ldy(0x8);
     JMP(StartClrGet);
 }
 
 int StartClrGet() {
-    // <conv.chunks.Comment object at 0x104b54050>
+    // <conv.chunks.Comment object at 0x102cb0050>
     lda(0x3);
     sta(0x0);
     JMP(ClrGetLoop);
 }
 
 int ClrGetLoop() {
-    // <conv.chunks.Comment object at 0x104b541a0>
+    // <conv.chunks.Comment object at 0x102cb01a0>
     lda(offsetof(G, PlayerColors), y);
     sta(((VRAM_Buffer1) + (3)), x);
-    // <conv.chunks.Comment object at 0x104b544a0>
+    // <conv.chunks.Comment object at 0x102cb04a0>
     iny();
     inx();
     dec(0x0);
@@ -1709,43 +1704,43 @@ int ClrGetLoop() {
 }
 
 int SetBGColor() {
-    // <conv.chunks.Comment object at 0x104b54980>
-    // <conv.chunks.Comment object at 0x104b54aa0>
-    // <conv.chunks.Comment object at 0x104b54bc0>
-    // <conv.chunks.Comment object at 0x104b54ce0>
-    // <conv.chunks.Comment object at 0x104b54e00>
+    // <conv.chunks.Comment object at 0x102cb0980>
+    // <conv.chunks.Comment object at 0x102cb0aa0>
+    // <conv.chunks.Comment object at 0x102cb0bc0>
+    // <conv.chunks.Comment object at 0x102cb0ce0>
+    // <conv.chunks.Comment object at 0x102cb0e00>
     lda(offsetof(G, BackgroundColors), y);
     sta(((VRAM_Buffer1) + (3)), x);
     lda(0x3f);
     sta(VRAM_Buffer1, x);
-    // <conv.chunks.Comment object at 0x104b55130>
-    // <conv.chunks.Comment object at 0x104b551c0>
+    // <conv.chunks.Comment object at 0x102cb1130>
+    // <conv.chunks.Comment object at 0x102cb11c0>
     lda(0x10);
     sta(((VRAM_Buffer1) + (1)), x);
     lda(0x4);
-    // <conv.chunks.Comment object at 0x104b55640>
+    // <conv.chunks.Comment object at 0x102cb1640>
     sta(((VRAM_Buffer1) + (2)), x);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x104b55910>
+    // <conv.chunks.Comment object at 0x102cb1910>
     sta(((VRAM_Buffer1) + (7)), x);
     txa();
     clc();
-    // <conv.chunks.Comment object at 0x104b55c10>
-    // <conv.chunks.Comment object at 0x104b55cd0>
+    // <conv.chunks.Comment object at 0x102cb1c10>
+    // <conv.chunks.Comment object at 0x102cb1cd0>
     adc(0x7);
     JMP(SetVRAMOffset);
 }
 
 int SetVRAMOffset() {
-    // <conv.chunks.Comment object at 0x104b55dc0>
+    // <conv.chunks.Comment object at 0x102cb1dc0>
     sta(VRAM_Buffer1_Offset);
-    rts();
+    return 0;
     JMP(GetAlternatePalette1);
 }
 
 int GetAlternatePalette1() {
     lda(AreaStyle);
-    // <conv.chunks.Comment object at 0x104b560c0>
+    // <conv.chunks.Comment object at 0x102cb20c0>
     cmp(0x1);
     BNE(NoAltPal);
     lda(0xb);
@@ -1758,7 +1753,7 @@ int SetVRAMAddr_B() {
 }
 
 int NoAltPal() {
-    // <conv.chunks.Comment object at 0x104b56600>
+    // <conv.chunks.Comment object at 0x102cb2600>
     JMP(IncSubtask);
     JMP(WriteTopStatusLine);
 }
@@ -1772,35 +1767,35 @@ int WriteTopStatusLine() {
 
 int WriteBottomStatusLine() {
     JSR(GetSBNybbles);
-    // <conv.chunks.Comment object at 0x104b56ba0>
+    // <conv.chunks.Comment object at 0x102cb2ba0>
     ldx(VRAM_Buffer1_Offset);
     lda(0x20);
-    // <conv.chunks.Comment object at 0x104b56db0>
+    // <conv.chunks.Comment object at 0x102cb2db0>
     sta(VRAM_Buffer1, x);
     lda(0x73);
     sta(((VRAM_Buffer1) + (1)), x);
     lda(0x3);
-    // <conv.chunks.Comment object at 0x104b57290>
+    // <conv.chunks.Comment object at 0x102cb3290>
     sta(((VRAM_Buffer1) + (2)), x);
     ldy(WorldNumber);
-    // <conv.chunks.Comment object at 0x104b57560>
+    // <conv.chunks.Comment object at 0x102cb3560>
     iny();
     tya();
     sta(((VRAM_Buffer1) + (3)), x);
     lda(0x28);
-    // <conv.chunks.Comment object at 0x104b57950>
+    // <conv.chunks.Comment object at 0x102cb3950>
     sta(((VRAM_Buffer1) + (4)), x);
     ldy(LevelNumber);
     iny();
-    // <conv.chunks.Comment object at 0x104b57c20>
-    // <conv.chunks.Comment object at 0x104b57d70>
+    // <conv.chunks.Comment object at 0x102cb3c20>
+    // <conv.chunks.Comment object at 0x102cb3d70>
     tya();
     sta(((VRAM_Buffer1) + (5)), x);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x104b5c080>
+    // <conv.chunks.Comment object at 0x102cb8080>
     sta(((VRAM_Buffer1) + (6)), x);
     txa();
-    // <conv.chunks.Comment object at 0x104b5c380>
+    // <conv.chunks.Comment object at 0x102cb8380>
     clc();
     adc(0x6);
     sta(VRAM_Buffer1_Offset);
@@ -1811,19 +1806,19 @@ int WriteBottomStatusLine() {
 int DisplayTimeUp() {
     lda(GameTimerExpiredFlag);
     BEQ(NoTimeUp);
-    // <conv.chunks.Comment object at 0x104b5c7d0>
-    // <conv.chunks.Comment object at 0x104b5c8f0>
+    // <conv.chunks.Comment object at 0x102cb87d0>
+    // <conv.chunks.Comment object at 0x102cb88f0>
     lda(0x0);
     sta(GameTimerExpiredFlag);
     lda(0x2);
-    // <conv.chunks.Comment object at 0x104b5ca70>
-    // <conv.chunks.Comment object at 0x104b5cc20>
+    // <conv.chunks.Comment object at 0x102cb8a70>
+    // <conv.chunks.Comment object at 0x102cb8c20>
     JMP(OutputInter);
     JMP(NoTimeUp);
 }
 
 int NoTimeUp() {
-    // <conv.chunks.Comment object at 0x104b5ce30>
+    // <conv.chunks.Comment object at 0x102cb8e30>
     inc(ScreenRoutineTask);
     JMP(IncSubtask);
     JMP(DisplayIntermediate);
@@ -1838,14 +1833,14 @@ int DisplayIntermediate() {
     BNE(NoInter);
     ldy(AreaType);
     cpy(0x3);
-    // <conv.chunks.Comment object at 0x104b5d0d0>
-    // <conv.chunks.Comment object at 0x104b5d1f0>
-    // <conv.chunks.Comment object at 0x104b5d340>
-    // <conv.chunks.Comment object at 0x104b5d460>
-    // <conv.chunks.Comment object at 0x104b5d580>
-    // <conv.chunks.Comment object at 0x104b5d6a0>
-    // <conv.chunks.Comment object at 0x104b5d7f0>
-    // <conv.chunks.Comment object at 0x104b5d910>
+    // <conv.chunks.Comment object at 0x102cb90d0>
+    // <conv.chunks.Comment object at 0x102cb91f0>
+    // <conv.chunks.Comment object at 0x102cb9340>
+    // <conv.chunks.Comment object at 0x102cb9460>
+    // <conv.chunks.Comment object at 0x102cb9580>
+    // <conv.chunks.Comment object at 0x102cb96a0>
+    // <conv.chunks.Comment object at 0x102cb97f0>
+    // <conv.chunks.Comment object at 0x102cb9910>
     BEQ(PlayerInter);
     lda(DisableIntermediate);
     BNE(NoInter);
@@ -1853,9 +1848,9 @@ int DisplayIntermediate() {
 }
 
 int PlayerInter() {
-    // <conv.chunks.Comment object at 0x104b5db20>
-    // <conv.chunks.Comment object at 0x104b5dc40>
-    // <conv.chunks.Comment object at 0x104b5dd90>
+    // <conv.chunks.Comment object at 0x102cb9b20>
+    // <conv.chunks.Comment object at 0x102cb9c40>
+    // <conv.chunks.Comment object at 0x102cb9d90>
     JSR(DrawPlayer_Intermediate);
     lda(0x1);
     JMP(OutputInter);
@@ -1866,27 +1861,27 @@ int OutputInter() {
     JSR(ResetScreenTimer);
     lda(0x0);
     sta(DisableScreenFlag);
-    // <conv.chunks.Comment object at 0x104b5e270>
-    rts();
+    // <conv.chunks.Comment object at 0x102cba270>
+    return 0;
     JMP(GameOverInter);
 }
 
 int GameOverInter() {
-    // <conv.chunks.Comment object at 0x104b5e4b0>
+    // <conv.chunks.Comment object at 0x102cba4b0>
     lda(0x12);
     sta(ScreenTimer);
     lda(0x3);
-    // <conv.chunks.Comment object at 0x104b5e6f0>
+    // <conv.chunks.Comment object at 0x102cba6f0>
     JSR(WriteGameText);
     JMP(IncModeTask_B);
     JMP(NoInter);
 }
 
 int NoInter() {
-    // <conv.chunks.Comment object at 0x104b5e9f0>
+    // <conv.chunks.Comment object at 0x102cba9f0>
     lda(0x8);
     sta(ScreenRoutineTask);
-    rts();
+    return 0;
     JMP(AreaParserTaskControl);
 }
 
@@ -1896,27 +1891,27 @@ int AreaParserTaskControl() {
 }
 
 int TaskLoop() {
-    // <conv.chunks.Comment object at 0x104b5ed50>
-    // <conv.chunks.Comment object at 0x104b5ee70>
+    // <conv.chunks.Comment object at 0x102cbad50>
+    // <conv.chunks.Comment object at 0x102cbae70>
     JSR(AreaParserTaskHandler);
     lda(AreaParserTaskNum);
     BNE(TaskLoop);
     dec(ColumnSets);
-    // <conv.chunks.Comment object at 0x104b5efc0>
-    // <conv.chunks.Comment object at 0x104b5f0e0>
-    // <conv.chunks.Comment object at 0x104b5f200>
+    // <conv.chunks.Comment object at 0x102cbafc0>
+    // <conv.chunks.Comment object at 0x102cbb0e0>
+    // <conv.chunks.Comment object at 0x102cbb200>
     BPL(OutputCol);
     inc(ScreenRoutineTask);
     JMP(OutputCol);
 }
 
 int OutputCol() {
-    // <conv.chunks.Comment object at 0x104b5f410>
-    // <conv.chunks.Comment object at 0x104b5f530>
+    // <conv.chunks.Comment object at 0x102cbb410>
+    // <conv.chunks.Comment object at 0x102cbb530>
     lda(0x6);
     sta(VRAM_Buffer_AddrCtrl);
-    // <conv.chunks.Comment object at 0x104b5f5f0>
-    rts();
+    // <conv.chunks.Comment object at 0x102cbb5f0>
+    return 0;
     JMP(DrawTitleScreen);
 }
 
@@ -1925,16 +1920,16 @@ int DrawTitleScreen() {
     BNE(IncModeTask_B);
     lda(HI8(TitleScreenDataOffset));
     sta(PPU_ADDRESS);
-    // <conv.chunks.Comment object at 0x104b5f8f0>
-    // <conv.chunks.Comment object at 0x104b5fa10>
-    // <conv.chunks.Comment object at 0x104b5fb30>
-    // <conv.chunks.Comment object at 0x104b5fc80>
+    // <conv.chunks.Comment object at 0x102cbb8f0>
+    // <conv.chunks.Comment object at 0x102cbba10>
+    // <conv.chunks.Comment object at 0x102cbbb30>
+    // <conv.chunks.Comment object at 0x102cbbc80>
     lda(LO8(TitleScreenDataOffset));
     sta(PPU_ADDRESS);
     lda(0x3);
     sta(0x1);
-    // <conv.chunks.Comment object at 0x104b5ffb0>
-    // <conv.chunks.Comment object at 0x104b68140>
+    // <conv.chunks.Comment object at 0x102cbbfb0>
+    // <conv.chunks.Comment object at 0x102cc4140>
     ldy(0x0);
     sty(0x0);
     lda(PPU_DATA);
@@ -1942,11 +1937,11 @@ int DrawTitleScreen() {
 }
 
 int OutputTScr() {
-    // <conv.chunks.Comment object at 0x104b68290>
-    // <conv.chunks.Comment object at 0x104b68530>
+    // <conv.chunks.Comment object at 0x102cc4290>
+    // <conv.chunks.Comment object at 0x102cc4530>
     lda(PPU_DATA);
     sta((0x0), y);
-    // <conv.chunks.Comment object at 0x104b68680>
+    // <conv.chunks.Comment object at 0x102cc4680>
     iny();
     BNE(ChkHiByte);
     inc(0x1);
@@ -1954,9 +1949,9 @@ int OutputTScr() {
 }
 
 int ChkHiByte() {
-    // <conv.chunks.Comment object at 0x104b68890>
-    // <conv.chunks.Comment object at 0x104b689e0>
-    // <conv.chunks.Comment object at 0x104b68a70>
+    // <conv.chunks.Comment object at 0x102cc4890>
+    // <conv.chunks.Comment object at 0x102cc49e0>
+    // <conv.chunks.Comment object at 0x102cc4a70>
     lda(0x1);
     cmp(0x4);
     BNE(OutputTScr);
@@ -1984,30 +1979,30 @@ int TScrClear() {
 }
 
 int IncSubtask() {
-    // <conv.chunks.Comment object at 0x104b69c40>
-    // <conv.chunks.Comment object at 0x104b69d60>
+    // <conv.chunks.Comment object at 0x102cc5c40>
+    // <conv.chunks.Comment object at 0x102cc5d60>
     inc(ScreenRoutineTask);
-    rts();
+    return 0;
     JMP(WriteTopScore);
 }
 
 int WriteTopScore() {
     lda(0xfa);
-    // <conv.chunks.Comment object at 0x104b69fa0>
+    // <conv.chunks.Comment object at 0x102cc5fa0>
     JSR(UpdateNumber);
     JMP(IncModeTask_B);
 }
 
 int IncModeTask_B() {
-    // <conv.chunks.Comment object at 0x104b6a1b0>
+    // <conv.chunks.Comment object at 0x102cc61b0>
     inc(OperMode_Task);
-    rts();
+    return 0;
     JMP(WriteGameText);
 }
 
 int WriteGameText() {
     pha();
-    // <conv.chunks.Comment object at 0x104b817c0>
+    // <conv.chunks.Comment object at 0x102cdd7c0>
     asl();
     tay();
     cpy(0x4);
@@ -2019,13 +2014,13 @@ int WriteGameText() {
 }
 
 int Chk2Players() {
-    // <conv.chunks.Comment object at 0x104b81910>
-    // <conv.chunks.Comment object at 0x104b819a0>
-    // <conv.chunks.Comment object at 0x104b81a30>
-    // <conv.chunks.Comment object at 0x104b81be0>
-    // <conv.chunks.Comment object at 0x104b81c70>
-    // <conv.chunks.Comment object at 0x104b81e20>
-    // <conv.chunks.Comment object at 0x104b81eb0>
+    // <conv.chunks.Comment object at 0x102cdd910>
+    // <conv.chunks.Comment object at 0x102cdd9a0>
+    // <conv.chunks.Comment object at 0x102cdda30>
+    // <conv.chunks.Comment object at 0x102cddbe0>
+    // <conv.chunks.Comment object at 0x102cddc70>
+    // <conv.chunks.Comment object at 0x102cdde20>
+    // <conv.chunks.Comment object at 0x102cddeb0>
     lda(NumberOfPlayers);
     BNE(LdGameText);
     iny();
@@ -2033,52 +2028,52 @@ int Chk2Players() {
 }
 
 int LdGameText() {
-    // <conv.chunks.Comment object at 0x104b82090>
-    // <conv.chunks.Comment object at 0x104b821e0>
-    // <conv.chunks.Comment object at 0x104b82270>
+    // <conv.chunks.Comment object at 0x102cde090>
+    // <conv.chunks.Comment object at 0x102cde1e0>
+    // <conv.chunks.Comment object at 0x102cde270>
     ldx(offsetof(G, GameTextOffsets), y);
     ldy(0x0);
     JMP(GameTextLoop);
 }
 
 int GameTextLoop() {
-    // <conv.chunks.Comment object at 0x104b82450>
+    // <conv.chunks.Comment object at 0x102cde450>
     lda(offsetof(G, GameText), x);
     cmp(0xff);
     BEQ(EndGameText);
     sta(VRAM_Buffer1, y);
     inx();
-    // <conv.chunks.Comment object at 0x104b82660>
-    // <conv.chunks.Comment object at 0x104b826f0>
-    // <conv.chunks.Comment object at 0x104b828a0>
-    // <conv.chunks.Comment object at 0x104b82a20>
+    // <conv.chunks.Comment object at 0x102cde660>
+    // <conv.chunks.Comment object at 0x102cde6f0>
+    // <conv.chunks.Comment object at 0x102cde8a0>
+    // <conv.chunks.Comment object at 0x102cdea20>
     iny();
     BNE(GameTextLoop);
     JMP(EndGameText);
 }
 
 int EndGameText() {
-    // <conv.chunks.Comment object at 0x104b82b40>
-    // <conv.chunks.Comment object at 0x104b82c60>
+    // <conv.chunks.Comment object at 0x102cdeb40>
+    // <conv.chunks.Comment object at 0x102cdec60>
     lda(0x0);
     sta(VRAM_Buffer1, y);
     pla();
-    // <conv.chunks.Comment object at 0x104b82f00>
+    // <conv.chunks.Comment object at 0x102cdef00>
     tax();
     cmp(0x4);
-    // <conv.chunks.Comment object at 0x104b83020>
+    // <conv.chunks.Comment object at 0x102cdf020>
     BCS(PrintWarpZoneNumbers);
     dex();
     BNE(CheckPlayerName);
     lda(NumberofLives);
     clc();
-    // <conv.chunks.Comment object at 0x104b83260>
-    // <conv.chunks.Comment object at 0x104b832f0>
-    // <conv.chunks.Comment object at 0x104b83410>
-    // <conv.chunks.Comment object at 0x104b83560>
+    // <conv.chunks.Comment object at 0x102cdf260>
+    // <conv.chunks.Comment object at 0x102cdf2f0>
+    // <conv.chunks.Comment object at 0x102cdf410>
+    // <conv.chunks.Comment object at 0x102cdf560>
     adc(0x1);
     cmp(10);
-    // <conv.chunks.Comment object at 0x104b83710>
+    // <conv.chunks.Comment object at 0x102cdf710>
     BCC(PutLives);
     sbc(10);
     ldy(0x9f);
@@ -2090,14 +2085,14 @@ int PutLives() {
     sta(((VRAM_Buffer1) + (8)));
     ldy(WorldNumber);
     iny();
-    // <conv.chunks.Comment object at 0x104b83ef0>
-    // <conv.chunks.Comment object at 0x104b88080>
+    // <conv.chunks.Comment object at 0x102cdfef0>
+    // <conv.chunks.Comment object at 0x102ce4080>
     sty(((VRAM_Buffer1) + (19)));
     ldy(LevelNumber);
     iny();
     sty(((VRAM_Buffer1) + (21)));
-    // <conv.chunks.Comment object at 0x104b88440>
-    rts();
+    // <conv.chunks.Comment object at 0x102ce4440>
+    return 0;
     JMP(CheckPlayerName);
 }
 
@@ -2106,13 +2101,13 @@ int CheckPlayerName() {
     BEQ(ExitChkName);
     lda(CurrentPlayer);
     dex();
-    // <conv.chunks.Comment object at 0x104b886e0>
-    // <conv.chunks.Comment object at 0x104b88800>
-    // <conv.chunks.Comment object at 0x104b88920>
-    // <conv.chunks.Comment object at 0x104b88a70>
+    // <conv.chunks.Comment object at 0x102ce46e0>
+    // <conv.chunks.Comment object at 0x102ce4800>
+    // <conv.chunks.Comment object at 0x102ce4920>
+    // <conv.chunks.Comment object at 0x102ce4a70>
     BNE(ChkLuigi);
     ldy(OperMode);
-    // <conv.chunks.Comment object at 0x104b88bf0>
+    // <conv.chunks.Comment object at 0x102ce4bf0>
     cpy(GameOverModeValue);
     BEQ(ChkLuigi);
     eor(0b1);
@@ -2122,13 +2117,13 @@ int CheckPlayerName() {
 int ChkLuigi() {
     lsr();
     BCC(ExitChkName);
-    // <conv.chunks.Comment object at 0x104b890d0>
+    // <conv.chunks.Comment object at 0x102ce50d0>
     ldy(0x4);
     JMP(NameLoop);
 }
 
 int NameLoop() {
-    // <conv.chunks.Comment object at 0x104b89250>
+    // <conv.chunks.Comment object at 0x102ce5250>
     lda(offsetof(G, LuigiName), y);
     sta(((VRAM_Buffer1) + (3)), y);
     dey();
@@ -2137,7 +2132,7 @@ int NameLoop() {
 }
 
 int ExitChkName() {
-    rts();
+    return 0;
     JMP(PrintWarpZoneNumbers);
 }
 
@@ -2145,29 +2140,29 @@ int PrintWarpZoneNumbers() {
     sbc(0x4);
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x104b898e0>
-    // <conv.chunks.Comment object at 0x104b89a30>
-    // <conv.chunks.Comment object at 0x104b89b20>
+    // <conv.chunks.Comment object at 0x102ce58e0>
+    // <conv.chunks.Comment object at 0x102ce5a30>
+    // <conv.chunks.Comment object at 0x102ce5b20>
     tax();
     ldy(0x0);
     JMP(WarpNumLoop);
 }
 
 int WarpNumLoop() {
-    // <conv.chunks.Comment object at 0x104b89ca0>
+    // <conv.chunks.Comment object at 0x102ce5ca0>
     lda(offsetof(G, WarpZoneNumbers), x);
     sta(((VRAM_Buffer1) + (27)), y);
-    // <conv.chunks.Comment object at 0x104b89eb0>
+    // <conv.chunks.Comment object at 0x102ce5eb0>
     inx();
     iny();
-    // <conv.chunks.Comment object at 0x104b8a180>
+    // <conv.chunks.Comment object at 0x102ce6180>
     iny();
     iny();
     iny();
     cpy(0xc);
     BCC(WarpNumLoop);
     lda(0x2c);
-    // <conv.chunks.Comment object at 0x104b8a5a0>
+    // <conv.chunks.Comment object at 0x102ce65a0>
     JMP(SetVRAMOffset);
     JMP(ResetSpritesAndScreenTimer);
 }
@@ -2181,46 +2176,46 @@ int ResetSpritesAndScreenTimer() {
 
 int ResetScreenTimer() {
     lda(0x7);
-    // <conv.chunks.Comment object at 0x104b8abd0>
+    // <conv.chunks.Comment object at 0x102ce6bd0>
     sta(ScreenTimer);
     inc(ScreenRoutineTask);
     JMP(NoReset);
 }
 
 int NoReset() {
-    rts();
+    return 0;
     JMP(RenderAreaGraphics);
 }
 
 int RenderAreaGraphics() {
     lda(CurrentColumnPos);
-    // <conv.chunks.Comment object at 0x104b8b1d0>
+    // <conv.chunks.Comment object at 0x102ce71d0>
     anda(0x1);
     sta(0x5);
     ldy(VRAM_Buffer2_Offset);
-    // <conv.chunks.Comment object at 0x104b8b350>
+    // <conv.chunks.Comment object at 0x102ce7350>
     sty(0x0);
     lda(CurrentNTAddr_Low);
-    // <conv.chunks.Comment object at 0x104b8b5f0>
+    // <conv.chunks.Comment object at 0x102ce75f0>
     sta(((VRAM_Buffer2) + (1)), y);
     lda(CurrentNTAddr_High);
     sta(VRAM_Buffer2, y);
     lda(0x9a);
     sta(((VRAM_Buffer2) + (2)), y);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x104b8bbf0>
-    // <conv.chunks.Comment object at 0x104b8bc80>
-    // <conv.chunks.Comment object at 0x104b8bf20>
+    // <conv.chunks.Comment object at 0x102ce7bf0>
+    // <conv.chunks.Comment object at 0x102ce7c80>
+    // <conv.chunks.Comment object at 0x102ce7f20>
     sta(0x4);
     tax();
     JMP(DrawMTLoop);
 }
 
 int DrawMTLoop() {
-    // <conv.chunks.Comment object at 0x104b90200>
+    // <conv.chunks.Comment object at 0x102cec200>
     stx(0x1);
     lda(MetatileBuffer, x);
-    // <conv.chunks.Comment object at 0x104b902f0>
+    // <conv.chunks.Comment object at 0x102cec2f0>
     anda(0b11000000);
     sta(0x3);
     asl();
@@ -2228,19 +2223,19 @@ int DrawMTLoop() {
     rol();
     tay();
     lda(offsetof(G, MetatileGraphics_Low), y);
-    // <conv.chunks.Comment object at 0x104b905c0>
-    // <conv.chunks.Comment object at 0x104b90590>
-    // <conv.chunks.Comment object at 0x104b907a0>
-    // <conv.chunks.Comment object at 0x104b90860>
-    // <conv.chunks.Comment object at 0x104b90920>
-    // <conv.chunks.Comment object at 0x104b909b0>
+    // <conv.chunks.Comment object at 0x102cec5c0>
+    // <conv.chunks.Comment object at 0x102cec590>
+    // <conv.chunks.Comment object at 0x102cec7a0>
+    // <conv.chunks.Comment object at 0x102cec860>
+    // <conv.chunks.Comment object at 0x102cec920>
+    // <conv.chunks.Comment object at 0x102cec9b0>
     sta(0x6);
     lda(offsetof(G, MetatileGraphics_High), y);
     sta(0x7);
     lda(MetatileBuffer, x);
     asl();
-    // <conv.chunks.Comment object at 0x104b90d10>
-    // <conv.chunks.Comment object at 0x104b90f80>
+    // <conv.chunks.Comment object at 0x102cecd10>
+    // <conv.chunks.Comment object at 0x102cecf80>
     asl();
     sta(0x2);
     lda(AreaParserTaskNum);
@@ -2248,51 +2243,51 @@ int DrawMTLoop() {
     eor(0b1);
     asl();
     adc(0x2);
-    // <conv.chunks.Comment object at 0x104b910a0>
-    // <conv.chunks.Comment object at 0x104b912b0>
-    // <conv.chunks.Comment object at 0x104b913d0>
-    // <conv.chunks.Comment object at 0x104b91520>
-    // <conv.chunks.Comment object at 0x104b915e0>
+    // <conv.chunks.Comment object at 0x102ced0a0>
+    // <conv.chunks.Comment object at 0x102ced2b0>
+    // <conv.chunks.Comment object at 0x102ced3d0>
+    // <conv.chunks.Comment object at 0x102ced520>
+    // <conv.chunks.Comment object at 0x102ced5e0>
     tay();
     ldx(0x0);
-    // <conv.chunks.Comment object at 0x104b91790>
+    // <conv.chunks.Comment object at 0x102ced790>
     lda((0x6), y);
     sta(((VRAM_Buffer2) + (3)), x);
-    // <conv.chunks.Comment object at 0x104b91760>
+    // <conv.chunks.Comment object at 0x102ced760>
     iny();
     lda((0x6), y);
-    // <conv.chunks.Comment object at 0x104b91c70>
+    // <conv.chunks.Comment object at 0x102cedc70>
     sta(((VRAM_Buffer2) + (4)), x);
     ldy(0x4);
     lda(0x5);
     BNE(RightCheck);
     lda(0x1);
     lsr();
-    // <conv.chunks.Comment object at 0x104b92000>
-    // <conv.chunks.Comment object at 0x104b91fd0>
-    // <conv.chunks.Comment object at 0x104b921b0>
-    // <conv.chunks.Comment object at 0x104b92360>
-    // <conv.chunks.Comment object at 0x104b92330>
+    // <conv.chunks.Comment object at 0x102cee000>
+    // <conv.chunks.Comment object at 0x102cedfd0>
+    // <conv.chunks.Comment object at 0x102cee1b0>
+    // <conv.chunks.Comment object at 0x102cee360>
+    // <conv.chunks.Comment object at 0x102cee330>
     BCS(LLeft);
     rol(0x3);
     rol(0x3);
-    // <conv.chunks.Comment object at 0x104b92660>
-    // <conv.chunks.Comment object at 0x104b92630>
+    // <conv.chunks.Comment object at 0x102cee660>
+    // <conv.chunks.Comment object at 0x102cee630>
     rol(0x3);
     JMP(SetAttrib);
     JMP(RightCheck);
 }
 
 int RightCheck() {
-    // <conv.chunks.Comment object at 0x104b92a50>
+    // <conv.chunks.Comment object at 0x102ceea50>
     lda(0x1);
     lsr();
-    // <conv.chunks.Comment object at 0x104b92a80>
+    // <conv.chunks.Comment object at 0x102ceea80>
     BCS(NextMTRow);
     lsr(0x3);
     lsr(0x3);
-    // <conv.chunks.Comment object at 0x104b92d80>
-    // <conv.chunks.Comment object at 0x104b92d50>
+    // <conv.chunks.Comment object at 0x102ceed80>
+    // <conv.chunks.Comment object at 0x102ceed50>
     lsr(0x3);
     lsr(0x3);
     JMP(SetAttrib);
@@ -2300,40 +2295,40 @@ int RightCheck() {
 }
 
 int LLeft() {
-    // <conv.chunks.Comment object at 0x104b93260>
+    // <conv.chunks.Comment object at 0x102cef260>
     lsr(0x3);
     lsr(0x3);
     JMP(NextMTRow);
 }
 
 int NextMTRow() {
-    // <conv.chunks.Comment object at 0x104b932c0>
-    // <conv.chunks.Comment object at 0x104b934a0>
+    // <conv.chunks.Comment object at 0x102cef2c0>
+    // <conv.chunks.Comment object at 0x102cef4a0>
     inc(0x4);
     JMP(SetAttrib);
 }
 
 int SetAttrib() {
-    // <conv.chunks.Comment object at 0x104b935f0>
+    // <conv.chunks.Comment object at 0x102cef5f0>
     lda(AttributeBuffer, y);
     ora(0x3);
     sta(AttributeBuffer, y);
     inc(0x0);
-    // <conv.chunks.Comment object at 0x104b93800>
-    // <conv.chunks.Comment object at 0x104b93890>
-    // <conv.chunks.Comment object at 0x104b93a70>
+    // <conv.chunks.Comment object at 0x102cef800>
+    // <conv.chunks.Comment object at 0x102cef890>
+    // <conv.chunks.Comment object at 0x102cefa70>
     inc(0x0);
     ldx(0x1);
     inx();
-    // <conv.chunks.Comment object at 0x104b93bf0>
-    // <conv.chunks.Comment object at 0x104b93b00>
+    // <conv.chunks.Comment object at 0x102cefbf0>
+    // <conv.chunks.Comment object at 0x102cefb00>
     cpx(0xd);
     BCC(DrawMTLoop);
     ldy(0x0);
     iny();
-    // <conv.chunks.Comment object at 0x104b93e90>
-    // <conv.chunks.Comment object at 0x104b9c0b0>
-    // <conv.chunks.Comment object at 0x104b9c080>
+    // <conv.chunks.Comment object at 0x102cefe90>
+    // <conv.chunks.Comment object at 0x102cf80b0>
+    // <conv.chunks.Comment object at 0x102cf8080>
     iny();
     iny();
     lda(0x0);
@@ -2342,26 +2337,26 @@ int SetAttrib() {
     inc(CurrentNTAddr_Low);
     lda(CurrentNTAddr_Low);
     anda(0b11111);
-    // <conv.chunks.Comment object at 0x104b9c3e0>
-    // <conv.chunks.Comment object at 0x104b9c5c0>
-    // <conv.chunks.Comment object at 0x104b9c6e0>
-    // <conv.chunks.Comment object at 0x104b9c800>
-    // <conv.chunks.Comment object at 0x104b9c920>
+    // <conv.chunks.Comment object at 0x102cf83e0>
+    // <conv.chunks.Comment object at 0x102cf85c0>
+    // <conv.chunks.Comment object at 0x102cf86e0>
+    // <conv.chunks.Comment object at 0x102cf8800>
+    // <conv.chunks.Comment object at 0x102cf8920>
     BNE(ExitDrawM);
     lda(0x80);
     sta(CurrentNTAddr_Low);
     lda(CurrentNTAddr_High);
     eor(0b100);
-    // <conv.chunks.Comment object at 0x104b9cb30>
-    // <conv.chunks.Comment object at 0x104b9cbc0>
-    // <conv.chunks.Comment object at 0x104b9cd70>
-    // <conv.chunks.Comment object at 0x104b9ce90>
+    // <conv.chunks.Comment object at 0x102cf8b30>
+    // <conv.chunks.Comment object at 0x102cf8bc0>
+    // <conv.chunks.Comment object at 0x102cf8d70>
+    // <conv.chunks.Comment object at 0x102cf8e90>
     sta(CurrentNTAddr_High);
     JMP(ExitDrawM);
 }
 
 int ExitDrawM() {
-    // <conv.chunks.Comment object at 0x104b9d0a0>
+    // <conv.chunks.Comment object at 0x102cf90a0>
     JMP(SetVRAMCtrl);
     JMP(RenderAttributeTables);
 }
@@ -2370,36 +2365,36 @@ int RenderAttributeTables() {
     lda(CurrentNTAddr_Low);
     anda(0b11111);
     sec();
-    // <conv.chunks.Comment object at 0x104b9d2b0>
-    // <conv.chunks.Comment object at 0x104b9d3d0>
-    // <conv.chunks.Comment object at 0x104b9d520>
+    // <conv.chunks.Comment object at 0x102cf92b0>
+    // <conv.chunks.Comment object at 0x102cf93d0>
+    // <conv.chunks.Comment object at 0x102cf9520>
     sbc(0x4);
     anda(0b11111);
-    // <conv.chunks.Comment object at 0x104b9d610>
+    // <conv.chunks.Comment object at 0x102cf9610>
     sta(0x1);
     lda(CurrentNTAddr_High);
-    // <conv.chunks.Comment object at 0x104b9d7c0>
+    // <conv.chunks.Comment object at 0x102cf97c0>
     BCS(SetATHigh);
     eor(0b100);
     JMP(SetATHigh);
 }
 
 int SetATHigh() {
-    // <conv.chunks.Comment object at 0x104b9dac0>
-    // <conv.chunks.Comment object at 0x104b9dbe0>
+    // <conv.chunks.Comment object at 0x102cf9ac0>
+    // <conv.chunks.Comment object at 0x102cf9be0>
     anda(0b100);
     ora(0x23);
-    // <conv.chunks.Comment object at 0x104b9dd30>
+    // <conv.chunks.Comment object at 0x102cf9d30>
     sta(0x0);
     lda(0x1);
     lsr();
-    // <conv.chunks.Comment object at 0x104b9dee0>
-    // <conv.chunks.Comment object at 0x104b9ddc0>
+    // <conv.chunks.Comment object at 0x102cf9ee0>
+    // <conv.chunks.Comment object at 0x102cf9dc0>
     lsr();
     adc(0xc0);
     sta(0x1);
-    // <conv.chunks.Comment object at 0x104b9e1b0>
-    // <conv.chunks.Comment object at 0x104b9e300>
+    // <conv.chunks.Comment object at 0x102cfa1b0>
+    // <conv.chunks.Comment object at 0x102cfa300>
     ldx(0x0);
     ldy(VRAM_Buffer2_Offset);
     JMP(AttribLoop);
@@ -2408,34 +2403,34 @@ int SetATHigh() {
 int AttribLoop() {
     lda(0x0);
     sta(VRAM_Buffer2, y);
-    // <conv.chunks.Comment object at 0x104b9e6c0>
+    // <conv.chunks.Comment object at 0x102cfa6c0>
     lda(0x1);
     clc();
     adc(0x8);
-    // <conv.chunks.Comment object at 0x104b9e900>
-    // <conv.chunks.Comment object at 0x104b9ea20>
+    // <conv.chunks.Comment object at 0x102cfa900>
+    // <conv.chunks.Comment object at 0x102cfaa20>
     sta(((VRAM_Buffer2) + (1)), y);
     sta(0x1);
     lda(AttributeBuffer, x);
     sta(((VRAM_Buffer2) + (3)), y);
-    // <conv.chunks.Comment object at 0x104b9ed50>
-    // <conv.chunks.Comment object at 0x104b9ede0>
-    // <conv.chunks.Comment object at 0x104b9ef90>
+    // <conv.chunks.Comment object at 0x102cfad50>
+    // <conv.chunks.Comment object at 0x102cfade0>
+    // <conv.chunks.Comment object at 0x102cfaf90>
     lda(0x1);
     sta(((VRAM_Buffer2) + (2)), y);
-    // <conv.chunks.Comment object at 0x104b9f200>
+    // <conv.chunks.Comment object at 0x102cfb200>
     lsr();
     sta(AttributeBuffer, x);
     iny();
-    // <conv.chunks.Comment object at 0x104b9f530>
-    // <conv.chunks.Comment object at 0x104b9f6b0>
+    // <conv.chunks.Comment object at 0x102cfb530>
+    // <conv.chunks.Comment object at 0x102cfb6b0>
     iny();
     iny();
     iny();
     inx();
     cpx(0x7);
-    // <conv.chunks.Comment object at 0x104b9f920>
-    // <conv.chunks.Comment object at 0x104b9f9b0>
+    // <conv.chunks.Comment object at 0x102cfb920>
+    // <conv.chunks.Comment object at 0x102cfb9b0>
     BCC(AttribLoop);
     sta(VRAM_Buffer2, y);
     sty(VRAM_Buffer2_Offset);
@@ -2445,8 +2440,8 @@ int AttribLoop() {
 int SetVRAMCtrl() {
     lda(0x6);
     sta(VRAM_Buffer_AddrCtrl);
-    // <conv.chunks.Comment object at 0x104b9fec0>
-    rts();
+    // <conv.chunks.Comment object at 0x102cfbec0>
+    return 0;
     JMP(ColorRotation);
 }
 
@@ -2455,10 +2450,10 @@ int ColorRotation() {
     anda(0x7);
     BNE(ExitColorRot);
     ldx(VRAM_Buffer1_Offset);
-    // <conv.chunks.Comment object at 0x104ba82c0>
-    // <conv.chunks.Comment object at 0x104ba9490>
-    // <conv.chunks.Comment object at 0x104ba9520>
-    // <conv.chunks.Comment object at 0x104ba96d0>
+    // <conv.chunks.Comment object at 0x102d042c0>
+    // <conv.chunks.Comment object at 0x102d05490>
+    // <conv.chunks.Comment object at 0x102d05520>
+    // <conv.chunks.Comment object at 0x102d056d0>
     cpx(0x31);
     BCS(ExitColorRot);
     tay();
@@ -2466,72 +2461,72 @@ int ColorRotation() {
 }
 
 int GetBlankPal() {
-    // <conv.chunks.Comment object at 0x104ba9850>
-    // <conv.chunks.Comment object at 0x104ba9a30>
-    // <conv.chunks.Comment object at 0x104ba9ac0>
+    // <conv.chunks.Comment object at 0x102d05850>
+    // <conv.chunks.Comment object at 0x102d05a30>
+    // <conv.chunks.Comment object at 0x102d05ac0>
     lda(offsetof(G, BlankPalette), y);
     sta(VRAM_Buffer1, x);
     inx();
-    // <conv.chunks.Comment object at 0x104ba9c40>
-    // <conv.chunks.Comment object at 0x104ba9dc0>
+    // <conv.chunks.Comment object at 0x102d05c40>
+    // <conv.chunks.Comment object at 0x102d05dc0>
     iny();
     cpy(0x8);
     BCC(GetBlankPal);
     ldx(VRAM_Buffer1_Offset);
-    // <conv.chunks.Comment object at 0x104ba9f40>
-    // <conv.chunks.Comment object at 0x104baa0f0>
+    // <conv.chunks.Comment object at 0x102d05f40>
+    // <conv.chunks.Comment object at 0x102d060f0>
     lda(0x3);
     sta(0x0);
     lda(AreaType);
     asl();
-    // <conv.chunks.Comment object at 0x104baa330>
-    // <conv.chunks.Comment object at 0x104baa3c0>
-    // <conv.chunks.Comment object at 0x104baa570>
+    // <conv.chunks.Comment object at 0x102d06330>
+    // <conv.chunks.Comment object at 0x102d063c0>
+    // <conv.chunks.Comment object at 0x102d06570>
     asl();
     tay();
     JMP(GetAreaPal);
 }
 
 int GetAreaPal() {
-    // <conv.chunks.Comment object at 0x104baa6c0>
-    // <conv.chunks.Comment object at 0x104baa750>
+    // <conv.chunks.Comment object at 0x102d066c0>
+    // <conv.chunks.Comment object at 0x102d06750>
     lda(offsetof(G, Palette3Data), y);
     sta(((VRAM_Buffer1) + (3)), x);
-    // <conv.chunks.Comment object at 0x104baa8d0>
+    // <conv.chunks.Comment object at 0x102d068d0>
     iny();
     inx();
     dec(0x0);
     BPL(GetAreaPal);
     ldx(VRAM_Buffer1_Offset);
     ldy(ColorRotateOffset);
-    // <conv.chunks.Comment object at 0x104baac30>
-    // <conv.chunks.Comment object at 0x104baacc0>
-    // <conv.chunks.Comment object at 0x104baae40>
-    // <conv.chunks.Comment object at 0x104baaf60>
+    // <conv.chunks.Comment object at 0x102d06c30>
+    // <conv.chunks.Comment object at 0x102d06cc0>
+    // <conv.chunks.Comment object at 0x102d06e40>
+    // <conv.chunks.Comment object at 0x102d06f60>
     lda(offsetof(G, ColorRotatePalette), y);
     sta(((VRAM_Buffer1) + (4)), x);
-    // <conv.chunks.Comment object at 0x104bab1a0>
+    // <conv.chunks.Comment object at 0x102d071a0>
     lda(VRAM_Buffer1_Offset);
     clc();
-    // <conv.chunks.Comment object at 0x104bab4d0>
+    // <conv.chunks.Comment object at 0x102d074d0>
     adc(0x7);
     sta(VRAM_Buffer1_Offset);
     inc(ColorRotateOffset);
-    // <conv.chunks.Comment object at 0x104bab740>
+    // <conv.chunks.Comment object at 0x102d07740>
     lda(ColorRotateOffset);
     cmp(0x6);
     BCC(ExitColorRot);
-    // <conv.chunks.Comment object at 0x104bab950>
-    // <conv.chunks.Comment object at 0x104bab9e0>
+    // <conv.chunks.Comment object at 0x102d07950>
+    // <conv.chunks.Comment object at 0x102d079e0>
     lda(0x0);
     sta(ColorRotateOffset);
     JMP(ExitColorRot);
 }
 
 int ExitColorRot() {
-    // <conv.chunks.Comment object at 0x104babbf0>
-    // <conv.chunks.Comment object at 0x104babdd0>
-    rts();
+    // <conv.chunks.Comment object at 0x102d07bf0>
+    // <conv.chunks.Comment object at 0x102d07dd0>
+    return 0;
     JMP(RemoveCoin_Axe);
 }
 
@@ -2545,17 +2540,17 @@ int RemoveCoin_Axe() {
 }
 
 int WriteBlankMT() {
-    // <conv.chunks.Comment object at 0x104bb40b0>
-    // <conv.chunks.Comment object at 0x104bb4140>
-    // <conv.chunks.Comment object at 0x104bb4da0>
-    // <conv.chunks.Comment object at 0x104bb4f50>
-    // <conv.chunks.Comment object at 0x104bb5070>
-    // <conv.chunks.Comment object at 0x104bb5100>
+    // <conv.chunks.Comment object at 0x102d100b0>
+    // <conv.chunks.Comment object at 0x102d10140>
+    // <conv.chunks.Comment object at 0x102d10da0>
+    // <conv.chunks.Comment object at 0x102d10f50>
+    // <conv.chunks.Comment object at 0x102d11070>
+    // <conv.chunks.Comment object at 0x102d11100>
     JSR(PutBlockMetatile);
     lda(0x6);
     sta(VRAM_Buffer_AddrCtrl);
-    // <conv.chunks.Comment object at 0x104bb5340>
-    rts();
+    // <conv.chunks.Comment object at 0x102d11340>
+    return 0;
     JMP(ReplaceBlockMetatile);
 }
 
@@ -2563,7 +2558,7 @@ int ReplaceBlockMetatile() {
     JSR(WriteBlockMetatile);
     inc(Block_ResidualCounter);
     dec(Block_RepFlag, x);
-    rts();
+    return 0;
     JMP(DestroyBlockMetatile);
 }
 
@@ -2577,21 +2572,21 @@ int WriteBlockMetatile() {
     cmp(0x0);
     BEQ(UseBOffset);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x104bb5bb0>
-    // <conv.chunks.Comment object at 0x104bb5c40>
-    // <conv.chunks.Comment object at 0x104bb5d60>
-    // <conv.chunks.Comment object at 0x104bb5f10>
+    // <conv.chunks.Comment object at 0x102d11bb0>
+    // <conv.chunks.Comment object at 0x102d11c40>
+    // <conv.chunks.Comment object at 0x102d11d60>
+    // <conv.chunks.Comment object at 0x102d11f10>
     cmp(0x58);
     BEQ(UseBOffset);
-    // <conv.chunks.Comment object at 0x104bb6090>
+    // <conv.chunks.Comment object at 0x102d12090>
     cmp(0x51);
     BEQ(UseBOffset);
     iny();
-    // <conv.chunks.Comment object at 0x104bb62a0>
-    // <conv.chunks.Comment object at 0x104bb6480>
+    // <conv.chunks.Comment object at 0x102d122a0>
+    // <conv.chunks.Comment object at 0x102d12480>
     cmp(0x5d);
     BEQ(UseBOffset);
-    // <conv.chunks.Comment object at 0x104bb6570>
+    // <conv.chunks.Comment object at 0x102d12570>
     cmp(0x52);
     BEQ(UseBOffset);
     iny();
@@ -2599,9 +2594,9 @@ int WriteBlockMetatile() {
 }
 
 int UseBOffset() {
-    // <conv.chunks.Comment object at 0x104bb6780>
-    // <conv.chunks.Comment object at 0x104bb6960>
-    // <conv.chunks.Comment object at 0x104bb69f0>
+    // <conv.chunks.Comment object at 0x102d12780>
+    // <conv.chunks.Comment object at 0x102d12960>
+    // <conv.chunks.Comment object at 0x102d129f0>
     tya();
     ldy(VRAM_Buffer1_Offset);
     iny();
@@ -2610,13 +2605,13 @@ int UseBOffset() {
 }
 
 int MoveVOffset() {
-    // <conv.chunks.Comment object at 0x104bb6ae0>
-    // <conv.chunks.Comment object at 0x104bb6c30>
-    // <conv.chunks.Comment object at 0x104bb6cc0>
-    // <conv.chunks.Comment object at 0x104bb6de0>
+    // <conv.chunks.Comment object at 0x102d12ae0>
+    // <conv.chunks.Comment object at 0x102d12c30>
+    // <conv.chunks.Comment object at 0x102d12cc0>
+    // <conv.chunks.Comment object at 0x102d12de0>
     dey();
     tya();
-    // <conv.chunks.Comment object at 0x104bb6f00>
+    // <conv.chunks.Comment object at 0x102d12f00>
     clc();
     adc(10);
     JMP(SetVRAMOffset);
@@ -2626,11 +2621,11 @@ int MoveVOffset() {
 int PutBlockMetatile() {
     stx(0x0);
     sty(0x1);
-    // <conv.chunks.Comment object at 0x104bb7290>
-    // <conv.chunks.Comment object at 0x104bb7260>
+    // <conv.chunks.Comment object at 0x102d13290>
+    // <conv.chunks.Comment object at 0x102d13260>
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x104bb7560>
+    // <conv.chunks.Comment object at 0x102d13560>
     tax();
     ldy(0x20);
     lda(0x6);
@@ -2641,41 +2636,41 @@ int PutBlockMetatile() {
 }
 
 int SaveHAdder() {
-    // <conv.chunks.Comment object at 0x104bb7680>
-    // <conv.chunks.Comment object at 0x104bb77d0>
-    // <conv.chunks.Comment object at 0x104bb7860>
-    // <conv.chunks.Comment object at 0x104bb7950>
-    // <conv.chunks.Comment object at 0x104bb7b00>
-    // <conv.chunks.Comment object at 0x104bb7b90>
+    // <conv.chunks.Comment object at 0x102d13680>
+    // <conv.chunks.Comment object at 0x102d137d0>
+    // <conv.chunks.Comment object at 0x102d13860>
+    // <conv.chunks.Comment object at 0x102d13950>
+    // <conv.chunks.Comment object at 0x102d13b00>
+    // <conv.chunks.Comment object at 0x102d13b90>
     sty(0x3);
     anda(0xf);
     asl();
     sta(0x4);
-    // <conv.chunks.Comment object at 0x104bb7d10>
-    // <conv.chunks.Comment object at 0x104bb7ec0>
-    // <conv.chunks.Comment object at 0x104bb7f80>
+    // <conv.chunks.Comment object at 0x102d13d10>
+    // <conv.chunks.Comment object at 0x102d13ec0>
+    // <conv.chunks.Comment object at 0x102d13f80>
     lda(0x0);
     sta(0x5);
     lda(0x2);
-    // <conv.chunks.Comment object at 0x104bc01d0>
-    // <conv.chunks.Comment object at 0x104bc0110>
+    // <conv.chunks.Comment object at 0x102d1c1d0>
+    // <conv.chunks.Comment object at 0x102d1c110>
     clc();
     adc(0x20);
-    // <conv.chunks.Comment object at 0x104bc0470>
+    // <conv.chunks.Comment object at 0x102d1c470>
     asl();
     rol(0x5);
-    // <conv.chunks.Comment object at 0x104bc0650>
+    // <conv.chunks.Comment object at 0x102d1c650>
     asl();
     rol(0x5);
     adc(0x4);
     sta(0x4);
     lda(0x5);
     adc(0x0);
-    // <conv.chunks.Comment object at 0x104bc0800>
-    // <conv.chunks.Comment object at 0x104bc07d0>
-    // <conv.chunks.Comment object at 0x104bc0890>
-    // <conv.chunks.Comment object at 0x104bc09b0>
-    // <conv.chunks.Comment object at 0x104bc0bf0>
+    // <conv.chunks.Comment object at 0x102d1c800>
+    // <conv.chunks.Comment object at 0x102d1c7d0>
+    // <conv.chunks.Comment object at 0x102d1c890>
+    // <conv.chunks.Comment object at 0x102d1c9b0>
+    // <conv.chunks.Comment object at 0x102d1cbf0>
     clc();
     adc(0x3);
     sta(0x5);
@@ -2684,21 +2679,21 @@ int SaveHAdder() {
 }
 
 int RemBridge() {
-    // <conv.chunks.Comment object at 0x104bc0e30>
-    // <conv.chunks.Comment object at 0x104bc0e00>
-    // <conv.chunks.Comment object at 0x104bc0ec0>
-    // <conv.chunks.Comment object at 0x104bc1100>
+    // <conv.chunks.Comment object at 0x102d1ce30>
+    // <conv.chunks.Comment object at 0x102d1ce00>
+    // <conv.chunks.Comment object at 0x102d1cec0>
+    // <conv.chunks.Comment object at 0x102d1d100>
     lda(offsetof(G, BlockGfxData), x);
     sta(((VRAM_Buffer1) + (2)), y);
-    // <conv.chunks.Comment object at 0x104bc12e0>
+    // <conv.chunks.Comment object at 0x102d1d2e0>
     lda(((offsetof(G, BlockGfxData)) + (1)), x);
     sta(((VRAM_Buffer1) + (3)), y);
     lda(((offsetof(G, BlockGfxData)) + (2)), x);
     sta(((VRAM_Buffer1) + (7)), y);
     lda(((offsetof(G, BlockGfxData)) + (3)), x);
-    // <conv.chunks.Comment object at 0x104bc18b0>
-    // <conv.chunks.Comment object at 0x104bc1ac0>
-    // <conv.chunks.Comment object at 0x104bc1cd0>
+    // <conv.chunks.Comment object at 0x102d1d8b0>
+    // <conv.chunks.Comment object at 0x102d1dac0>
+    // <conv.chunks.Comment object at 0x102d1dcd0>
     sta(((VRAM_Buffer1) + (8)), y);
     lda(0x4);
     sta(VRAM_Buffer1, y);
@@ -2708,22 +2703,22 @@ int RemBridge() {
     lda(0x5);
     sta(((VRAM_Buffer1) - (1)), y);
     sta(((VRAM_Buffer1) + (4)), y);
-    // <conv.chunks.Comment object at 0x104bc20c0>
-    // <conv.chunks.Comment object at 0x104bc2330>
-    // <conv.chunks.Comment object at 0x104bc23c0>
-    // <conv.chunks.Comment object at 0x104bc2450>
-    // <conv.chunks.Comment object at 0x104bc2720>
-    // <conv.chunks.Comment object at 0x104bc27b0>
-    // <conv.chunks.Comment object at 0x104bc29f0>
+    // <conv.chunks.Comment object at 0x102d1e0c0>
+    // <conv.chunks.Comment object at 0x102d1e330>
+    // <conv.chunks.Comment object at 0x102d1e3c0>
+    // <conv.chunks.Comment object at 0x102d1e450>
+    // <conv.chunks.Comment object at 0x102d1e720>
+    // <conv.chunks.Comment object at 0x102d1e7b0>
+    // <conv.chunks.Comment object at 0x102d1e9f0>
     lda(0x2);
     sta(((VRAM_Buffer1) + (1)), y);
     sta(((VRAM_Buffer1) + (6)), y);
-    // <conv.chunks.Comment object at 0x104bc2c60>
-    // <conv.chunks.Comment object at 0x104bc2f00>
+    // <conv.chunks.Comment object at 0x102d1ec60>
+    // <conv.chunks.Comment object at 0x102d1ef00>
     lda(0x0);
     sta(((VRAM_Buffer1) + (9)), y);
     ldx(0x0);
-    rts();
+    return 0;
     JMP(InitializeNameTables);
 }
 
@@ -2732,13 +2727,13 @@ int InitializeNameTables() {
     lda(Mirror_PPU_CTRL_REG1);
     ora(0b10000);
     anda(0b11110000);
-    // <conv.chunks.Comment object at 0x104c08fb0>
-    // <conv.chunks.Comment object at 0x104c090d0>
-    // <conv.chunks.Comment object at 0x104c091f0>
-    // <conv.chunks.Comment object at 0x104c09310>
+    // <conv.chunks.Comment object at 0x102d64fb0>
+    // <conv.chunks.Comment object at 0x102d650d0>
+    // <conv.chunks.Comment object at 0x102d651f0>
+    // <conv.chunks.Comment object at 0x102d65310>
     JSR(WritePPUReg1);
     lda(0x24);
-    // <conv.chunks.Comment object at 0x104c09520>
+    // <conv.chunks.Comment object at 0x102d65520>
     JSR(WriteNTAddr);
     lda(0x20);
     JMP(WriteNTAddr);
@@ -2749,21 +2744,21 @@ int WriteNTAddr() {
     lda(0x0);
     sta(PPU_ADDRESS);
     ldx(0x4);
-    // <conv.chunks.Comment object at 0x104c09b50>
+    // <conv.chunks.Comment object at 0x102d65b50>
     ldy(0xc0);
     lda(0x24);
     JMP(InitNTLoop);
 }
 
 int InitNTLoop() {
-    // <conv.chunks.Comment object at 0x104c09dc0>
+    // <conv.chunks.Comment object at 0x102d65dc0>
     sta(PPU_DATA);
     dey();
     BNE(InitNTLoop);
     dex();
     BNE(InitNTLoop);
     ldy(64);
-    // <conv.chunks.Comment object at 0x104c0a2d0>
+    // <conv.chunks.Comment object at 0x102d662d0>
     txa();
     sta(VRAM_Buffer1_Offset);
     sta(VRAM_Buffer1);
@@ -2775,7 +2770,7 @@ int InitATLoop() {
     dey();
     BNE(InitATLoop);
     sta(HorizontalScroll);
-    // <conv.chunks.Comment object at 0x104c0a930>
+    // <conv.chunks.Comment object at 0x102d66930>
     sta(VerticalScroll);
     JMP(InitScroll);
     JMP(ReadJoypads);
@@ -2783,13 +2778,13 @@ int InitATLoop() {
 
 int ReadJoypads() {
     lda(0x1);
-    // <conv.chunks.Comment object at 0x104c0ab40>
-    // <conv.chunks.Comment object at 0x104c0ac90>
-    // <conv.chunks.Comment object at 0x104c0acf0>
+    // <conv.chunks.Comment object at 0x102d66b40>
+    // <conv.chunks.Comment object at 0x102d66c90>
+    // <conv.chunks.Comment object at 0x102d66cf0>
     sta(JOYPAD_PORT);
     lsr();
     tax();
-    // <conv.chunks.Comment object at 0x104c0afc0>
+    // <conv.chunks.Comment object at 0x102d66fc0>
     sta(JOYPAD_PORT);
     JSR(ReadPortBits);
     inx();
@@ -2802,63 +2797,63 @@ int ReadPortBits() {
 }
 
 int PortLoop() {
-    // <conv.chunks.Comment object at 0x104c0b380>
+    // <conv.chunks.Comment object at 0x102d67380>
     pha();
     lda(JOYPAD_PORT, x);
     sta(0x0);
     lsr();
     ora(0x0);
-    // <conv.chunks.Comment object at 0x104c0b500>
-    // <conv.chunks.Comment object at 0x104c0b680>
-    // <conv.chunks.Comment object at 0x104c0b650>
-    // <conv.chunks.Comment object at 0x104c0b860>
+    // <conv.chunks.Comment object at 0x102d67500>
+    // <conv.chunks.Comment object at 0x102d67680>
+    // <conv.chunks.Comment object at 0x102d67650>
+    // <conv.chunks.Comment object at 0x102d67860>
     lsr();
     pla();
     rol();
-    // <conv.chunks.Comment object at 0x104c0ba10>
-    // <conv.chunks.Comment object at 0x104c0bad0>
+    // <conv.chunks.Comment object at 0x102d67a10>
+    // <conv.chunks.Comment object at 0x102d67ad0>
     dey();
     BNE(PortLoop);
     sta(SavedJoypadBits, x);
-    // <conv.chunks.Comment object at 0x104c0bbf0>
-    // <conv.chunks.Comment object at 0x104c0bd10>
+    // <conv.chunks.Comment object at 0x102d67bf0>
+    // <conv.chunks.Comment object at 0x102d67d10>
     pha();
     anda(0b110000);
     anda(JoypadBitMask, x);
     BEQ(Save8Bits);
-    // <conv.chunks.Comment object at 0x104c0bef0>
-    // <conv.chunks.Comment object at 0x104c10050>
-    // <conv.chunks.Comment object at 0x104c101a0>
+    // <conv.chunks.Comment object at 0x102d67ef0>
+    // <conv.chunks.Comment object at 0x102d6c050>
+    // <conv.chunks.Comment object at 0x102d6c1a0>
     pla();
     anda(0b11001111);
     sta(SavedJoypadBits, x);
-    // <conv.chunks.Comment object at 0x104c10350>
-    // <conv.chunks.Comment object at 0x104c10470>
-    rts();
+    // <conv.chunks.Comment object at 0x102d6c350>
+    // <conv.chunks.Comment object at 0x102d6c470>
+    return 0;
     JMP(Save8Bits);
 }
 
 int Save8Bits() {
     pla();
     sta(JoypadBitMask, x);
-    // <conv.chunks.Comment object at 0x104c10710>
-    rts();
+    // <conv.chunks.Comment object at 0x102d6c710>
+    return 0;
     JMP(WriteBufferToScreen);
 }
 
 int WriteBufferToScreen() {
     sta(PPU_ADDRESS);
-    // <conv.chunks.Comment object at 0x104c109b0>
+    // <conv.chunks.Comment object at 0x102d6c9b0>
     iny();
     lda((0x0), y);
     sta(PPU_ADDRESS);
-    // <conv.chunks.Comment object at 0x104c10b60>
-    // <conv.chunks.Comment object at 0x104c10bc0>
+    // <conv.chunks.Comment object at 0x102d6cb60>
+    // <conv.chunks.Comment object at 0x102d6cbc0>
     iny();
     lda((0x0), y);
     asl();
-    // <conv.chunks.Comment object at 0x104c10e90>
-    // <conv.chunks.Comment object at 0x104c11040>
+    // <conv.chunks.Comment object at 0x102d6ce90>
+    // <conv.chunks.Comment object at 0x102d6d040>
     pha();
     lda(Mirror_PPU_CTRL_REG1);
     ora(0b100);
@@ -2868,93 +2863,93 @@ int WriteBufferToScreen() {
 }
 
 int SetupWrites() {
-    // <conv.chunks.Comment object at 0x104c11160>
-    // <conv.chunks.Comment object at 0x104c11280>
-    // <conv.chunks.Comment object at 0x104c113a0>
-    // <conv.chunks.Comment object at 0x104c114c0>
-    // <conv.chunks.Comment object at 0x104c115e0>
+    // <conv.chunks.Comment object at 0x102d6d160>
+    // <conv.chunks.Comment object at 0x102d6d280>
+    // <conv.chunks.Comment object at 0x102d6d3a0>
+    // <conv.chunks.Comment object at 0x102d6d4c0>
+    // <conv.chunks.Comment object at 0x102d6d5e0>
     JSR(WritePPUReg1);
     pla();
-    // <conv.chunks.Comment object at 0x104c11760>
+    // <conv.chunks.Comment object at 0x102d6d760>
     asl();
     BCC(GetLength);
     ora(0b10);
-    // <conv.chunks.Comment object at 0x104c11880>
-    // <conv.chunks.Comment object at 0x104c119a0>
+    // <conv.chunks.Comment object at 0x102d6d880>
+    // <conv.chunks.Comment object at 0x102d6d9a0>
     iny();
     JMP(GetLength);
 }
 
 int GetLength() {
-    // <conv.chunks.Comment object at 0x104c11b50>
+    // <conv.chunks.Comment object at 0x102d6db50>
     lsr();
     lsr();
-    // <conv.chunks.Comment object at 0x104c11c70>
+    // <conv.chunks.Comment object at 0x102d6dc70>
     tax();
     JMP(OutputToVRAM);
 }
 
 int OutputToVRAM() {
-    // <conv.chunks.Comment object at 0x104c11d90>
+    // <conv.chunks.Comment object at 0x102d6dd90>
     BCS(RepeatByte);
     iny();
     JMP(RepeatByte);
 }
 
 int RepeatByte() {
-    // <conv.chunks.Comment object at 0x104c11f10>
-    // <conv.chunks.Comment object at 0x104c11fa0>
+    // <conv.chunks.Comment object at 0x102d6df10>
+    // <conv.chunks.Comment object at 0x102d6dfa0>
     lda((0x0), y);
     sta(PPU_DATA);
     dex();
-    // <conv.chunks.Comment object at 0x104c12270>
+    // <conv.chunks.Comment object at 0x102d6e270>
     BNE(OutputToVRAM);
     sec();
     tya();
     adc(0x0);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x104c12540>
-    // <conv.chunks.Comment object at 0x104c12510>
+    // <conv.chunks.Comment object at 0x102d6e540>
+    // <conv.chunks.Comment object at 0x102d6e510>
     lda(0x0);
     adc(0x1);
     sta(0x1);
     lda(0x3f);
-    // <conv.chunks.Comment object at 0x104c127b0>
+    // <conv.chunks.Comment object at 0x102d6e7b0>
     sta(PPU_ADDRESS);
     lda(0x0);
     sta(PPU_ADDRESS);
     sta(PPU_ADDRESS);
-    // <conv.chunks.Comment object at 0x104c12e10>
+    // <conv.chunks.Comment object at 0x102d6ee10>
     sta(PPU_ADDRESS);
     JMP(UpdateScreen);
 }
 
 int UpdateScreen() {
-    // <conv.chunks.Comment object at 0x104c13020>
+    // <conv.chunks.Comment object at 0x102d6f020>
     ldx(PPU_STATUS);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x104c13170>
+    // <conv.chunks.Comment object at 0x102d6f170>
     lda((0x0), y);
     BNE(WriteBufferToScreen);
     JMP(InitScroll);
 }
 
 int InitScroll() {
-    // <conv.chunks.Comment object at 0x104c132c0>
-    // <conv.chunks.Comment object at 0x104c13500>
+    // <conv.chunks.Comment object at 0x102d6f2c0>
+    // <conv.chunks.Comment object at 0x102d6f500>
     sta(PPU_SCROLL_REG);
     sta(PPU_SCROLL_REG);
-    // <conv.chunks.Comment object at 0x104c13650>
-    rts();
+    // <conv.chunks.Comment object at 0x102d6f650>
+    return 0;
     JMP(WritePPUReg1);
 }
 
 int WritePPUReg1() {
     sta(PPU_CTRL_REG1);
     sta(Mirror_PPU_CTRL_REG1);
-    // <conv.chunks.Comment object at 0x104c13860>
-    // <conv.chunks.Comment object at 0x104c13980>
-    rts();
+    // <conv.chunks.Comment object at 0x102d6f860>
+    // <conv.chunks.Comment object at 0x102d6f980>
+    return 0;
     JMP(PrintStatusBarNumbers);
 }
 
@@ -2963,10 +2958,10 @@ int PrintStatusBarNumbers() {
     JSR(OutputNumbers);
     lda(0x0);
     lsr();
-    // <conv.chunks.Comment object at 0x104c18380>
-    // <conv.chunks.Comment object at 0x104c18530>
-    // <conv.chunks.Comment object at 0x104c18a40>
-    // <conv.chunks.Comment object at 0x104c18a10>
+    // <conv.chunks.Comment object at 0x102d74380>
+    // <conv.chunks.Comment object at 0x102d74530>
+    // <conv.chunks.Comment object at 0x102d74a40>
+    // <conv.chunks.Comment object at 0x102d74a10>
     lsr();
     lsr();
     lsr();
@@ -2975,23 +2970,23 @@ int PrintStatusBarNumbers() {
 
 int OutputNumbers() {
     clc();
-    // <conv.chunks.Comment object at 0x104c18e00>
+    // <conv.chunks.Comment object at 0x102d74e00>
     adc(0x1);
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x104c18ef0>
+    // <conv.chunks.Comment object at 0x102d74ef0>
     cmp(0x6);
     BCS(ExitOutputN);
     pha();
     asl();
-    // <conv.chunks.Comment object at 0x104c192b0>
-    // <conv.chunks.Comment object at 0x104c19370>
+    // <conv.chunks.Comment object at 0x102d752b0>
+    // <conv.chunks.Comment object at 0x102d75370>
     tay();
     ldx(VRAM_Buffer1_Offset);
     lda(0x20);
     cpy(0x0);
-    // <conv.chunks.Comment object at 0x104c19490>
-    // <conv.chunks.Comment object at 0x104c195b0>
-    // <conv.chunks.Comment object at 0x104c19640>
+    // <conv.chunks.Comment object at 0x102d75490>
+    // <conv.chunks.Comment object at 0x102d755b0>
+    // <conv.chunks.Comment object at 0x102d75640>
     BNE(SetupNums);
     lda(0x22);
     JMP(SetupNums);
@@ -3001,42 +2996,42 @@ int SetupNums() {
     sta(VRAM_Buffer1, x);
     lda(offsetof(G, StatusBarData), y);
     sta(((VRAM_Buffer1) + (1)), x);
-    // <conv.chunks.Comment object at 0x104c19b50>
-    // <conv.chunks.Comment object at 0x104c19ca0>
+    // <conv.chunks.Comment object at 0x102d75b50>
+    // <conv.chunks.Comment object at 0x102d75ca0>
     lda(((offsetof(G, StatusBarData)) + (1)), y);
     sta(((VRAM_Buffer1) + (2)), x);
     sta(0x3);
     stx(0x2);
     pla();
-    // <conv.chunks.Comment object at 0x104c1a2a0>
-    // <conv.chunks.Comment object at 0x104c1a270>
-    // <conv.chunks.Comment object at 0x104c1a330>
+    // <conv.chunks.Comment object at 0x102d762a0>
+    // <conv.chunks.Comment object at 0x102d76270>
+    // <conv.chunks.Comment object at 0x102d76330>
     tax();
     lda(offsetof(G, StatusBarOffset), x);
-    // <conv.chunks.Comment object at 0x104c1a600>
+    // <conv.chunks.Comment object at 0x102d76600>
     sec();
     sbc(((offsetof(G, StatusBarData)) + (1)), y);
     tay();
-    // <conv.chunks.Comment object at 0x104c1a7e0>
-    // <conv.chunks.Comment object at 0x104c1aa20>
+    // <conv.chunks.Comment object at 0x102d767e0>
+    // <conv.chunks.Comment object at 0x102d76a20>
     ldx(0x2);
     JMP(DigitPLoop);
 }
 
 int DigitPLoop() {
-    // <conv.chunks.Comment object at 0x104c1aab0>
+    // <conv.chunks.Comment object at 0x102d76ab0>
     lda(DisplayDigits, y);
     sta(((VRAM_Buffer1) + (3)), x);
     inx();
     iny();
     dec(0x3);
-    // <conv.chunks.Comment object at 0x104c1b050>
+    // <conv.chunks.Comment object at 0x102d77050>
     BNE(DigitPLoop);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x104c1b230>
+    // <conv.chunks.Comment object at 0x102d77230>
     sta(((VRAM_Buffer1) + (3)), x);
     inx();
-    // <conv.chunks.Comment object at 0x104c1b560>
+    // <conv.chunks.Comment object at 0x102d77560>
     inx();
     inx();
     stx(VRAM_Buffer1_Offset);
@@ -3044,36 +3039,36 @@ int DigitPLoop() {
 }
 
 int ExitOutputN() {
-    rts();
+    return 0;
     JMP(DigitsMathRoutine);
 }
 
 int DigitsMathRoutine() {
     lda(OperMode);
-    // <conv.chunks.Comment object at 0x104c1b950>
+    // <conv.chunks.Comment object at 0x102d77950>
     cmp(TitleScreenModeValue);
     BEQ(EraseDMods);
-    // <conv.chunks.Comment object at 0x104c1bb60>
+    // <conv.chunks.Comment object at 0x102d77b60>
     ldx(0x5);
     JMP(AddModLoop);
 }
 
 int AddModLoop() {
-    // <conv.chunks.Comment object at 0x104c1bce0>
+    // <conv.chunks.Comment object at 0x102d77ce0>
     lda(DigitModifier, x);
     clc();
     adc(DisplayDigits, y);
     BMI(BorrowOne);
-    // <conv.chunks.Comment object at 0x104c1bf80>
-    // <conv.chunks.Comment object at 0x104c24110>
+    // <conv.chunks.Comment object at 0x102d77f80>
+    // <conv.chunks.Comment object at 0x102d80110>
     cmp(10);
     BCS(CarryOne);
     JMP(StoreNewD);
 }
 
 int StoreNewD() {
-    // <conv.chunks.Comment object at 0x104c24230>
-    // <conv.chunks.Comment object at 0x104c24440>
+    // <conv.chunks.Comment object at 0x102d80230>
+    // <conv.chunks.Comment object at 0x102d80440>
     sta(DisplayDigits, y);
     dey();
     dex();
@@ -3082,28 +3077,28 @@ int StoreNewD() {
 }
 
 int EraseDMods() {
-    // <conv.chunks.Comment object at 0x104c245f0>
-    // <conv.chunks.Comment object at 0x104c246b0>
-    // <conv.chunks.Comment object at 0x104c24740>
-    // <conv.chunks.Comment object at 0x104c24860>
+    // <conv.chunks.Comment object at 0x102d805f0>
+    // <conv.chunks.Comment object at 0x102d806b0>
+    // <conv.chunks.Comment object at 0x102d80740>
+    // <conv.chunks.Comment object at 0x102d80860>
     lda(0x0);
     ldx(0x6);
     JMP(EraseMLoop);
 }
 
 int EraseMLoop() {
-    // <conv.chunks.Comment object at 0x104c24920>
-    // <conv.chunks.Comment object at 0x104c24a40>
+    // <conv.chunks.Comment object at 0x102d80920>
+    // <conv.chunks.Comment object at 0x102d80a40>
     sta(((DigitModifier) - (1)), x);
     dex();
     BPL(EraseMLoop);
-    // <conv.chunks.Comment object at 0x104c24d70>
-    rts();
+    // <conv.chunks.Comment object at 0x102d80d70>
+    return 0;
     JMP(BorrowOne);
 }
 
 int BorrowOne() {
-    // <conv.chunks.Comment object at 0x104c24f20>
+    // <conv.chunks.Comment object at 0x102d80f20>
     dec(((DigitModifier) - (1)), x);
     lda(0x9);
     BNE(StoreNewD);
@@ -3111,9 +3106,9 @@ int BorrowOne() {
 }
 
 int CarryOne() {
-    // <conv.chunks.Comment object at 0x104c25130>
-    // <conv.chunks.Comment object at 0x104c251c0>
-    // <conv.chunks.Comment object at 0x104c25370>
+    // <conv.chunks.Comment object at 0x102d81130>
+    // <conv.chunks.Comment object at 0x102d811c0>
+    // <conv.chunks.Comment object at 0x102d81370>
     sec();
     sbc(10);
     inc(((DigitModifier) - (1)), x);
@@ -3123,7 +3118,7 @@ int CarryOne() {
 
 int UpdateTopScore() {
     ldx(0x5);
-    // <conv.chunks.Comment object at 0x104c258e0>
+    // <conv.chunks.Comment object at 0x102d818e0>
     JSR(TopScoreCheck);
     ldx(0xb);
     JMP(TopScoreCheck);
@@ -3131,63 +3126,63 @@ int UpdateTopScore() {
 
 int TopScoreCheck() {
     ldy(0x5);
-    // <conv.chunks.Comment object at 0x104c25c40>
+    // <conv.chunks.Comment object at 0x102d81c40>
     sec();
     JMP(GetScoreDiff);
 }
 
 int GetScoreDiff() {
-    // <conv.chunks.Comment object at 0x104c25df0>
+    // <conv.chunks.Comment object at 0x102d81df0>
     lda(PlayerScoreDisplay, x);
     sbc(TopScoreDisplay, y);
     dex();
     dey();
-    // <conv.chunks.Comment object at 0x104c25f70>
-    // <conv.chunks.Comment object at 0x104c260f0>
-    // <conv.chunks.Comment object at 0x104c261b0>
+    // <conv.chunks.Comment object at 0x102d81f70>
+    // <conv.chunks.Comment object at 0x102d820f0>
+    // <conv.chunks.Comment object at 0x102d821b0>
     BPL(GetScoreDiff);
     BCC(NoTopSc);
     inx();
-    // <conv.chunks.Comment object at 0x104c26330>
-    // <conv.chunks.Comment object at 0x104c264b0>
+    // <conv.chunks.Comment object at 0x102d82330>
+    // <conv.chunks.Comment object at 0x102d824b0>
     iny();
     JMP(CopyScore);
 }
 
 int CopyScore() {
-    // <conv.chunks.Comment object at 0x104c265d0>
+    // <conv.chunks.Comment object at 0x102d825d0>
     lda(PlayerScoreDisplay, x);
     sta(TopScoreDisplay, y);
     inx();
     iny();
     cpy(0x6);
-    // <conv.chunks.Comment object at 0x104c26990>
+    // <conv.chunks.Comment object at 0x102d82990>
     BCC(CopyScore);
     JMP(NoTopSc);
 }
 
 int NoTopSc() {
-    rts();
+    return 0;
     JMP(InitializeGame);
 }
 
 int InitializeGame() {
     ldy(0x6f);
     JSR(InitializeMemory);
-    // <conv.chunks.Comment object at 0x104c26e10>
-    // <conv.chunks.Comment object at 0x104c26e70>
+    // <conv.chunks.Comment object at 0x102d82e10>
+    // <conv.chunks.Comment object at 0x102d82e70>
     ldy(0x1f);
     JMP(ClrSndLoop);
 }
 
 int ClrSndLoop() {
-    // <conv.chunks.Comment object at 0x104c27ad0>
+    // <conv.chunks.Comment object at 0x102d83ad0>
     sta(SoundMemory, y);
     dey();
-    // <conv.chunks.Comment object at 0x104c27d10>
+    // <conv.chunks.Comment object at 0x102d83d10>
     BPL(ClrSndLoop);
     lda(0x18);
-    // <conv.chunks.Comment object at 0x104c27e90>
+    // <conv.chunks.Comment object at 0x102d83e90>
     sta(DemoTimer);
     JSR(LoadAreaPointer);
     JMP(InitializeArea);
@@ -3196,30 +3191,30 @@ int ClrSndLoop() {
 int InitializeArea() {
     ldy(0x4b);
     JSR(InitializeMemory);
-    // <conv.chunks.Comment object at 0x104c30200>
-    // <conv.chunks.Comment object at 0x104c30290>
+    // <conv.chunks.Comment object at 0x102d8c200>
+    // <conv.chunks.Comment object at 0x102d8c290>
     ldx(0x21);
     lda(0x0);
     JMP(ClrTimersLoop);
 }
 
 int ClrTimersLoop() {
-    // <conv.chunks.Comment object at 0x104c30590>
+    // <conv.chunks.Comment object at 0x102d8c590>
     sta(Timers, x);
     dex();
-    // <conv.chunks.Comment object at 0x104c30800>
+    // <conv.chunks.Comment object at 0x102d8c800>
     BPL(ClrTimersLoop);
     lda(HalfwayPage);
     ldy(AltEntranceControl);
-    // <conv.chunks.Comment object at 0x104c30a70>
+    // <conv.chunks.Comment object at 0x102d8ca70>
     BEQ(StartPage);
     lda(EntrancePage);
     JMP(StartPage);
 }
 
 int StartPage() {
-    // <conv.chunks.Comment object at 0x104c30c80>
-    // <conv.chunks.Comment object at 0x104c30da0>
+    // <conv.chunks.Comment object at 0x102d8cc80>
+    // <conv.chunks.Comment object at 0x102d8cda0>
     sta(ScreenLeft_PageLoc);
     sta(CurrentPageLoc);
     sta(BackloadingFlag);
@@ -3227,30 +3222,30 @@ int StartPage() {
     ldy(0x20);
     anda(0b1);
     BEQ(SetInitNTHigh);
-    // <conv.chunks.Comment object at 0x104c30ef0>
-    // <conv.chunks.Comment object at 0x104c31010>
-    // <conv.chunks.Comment object at 0x104c31130>
-    // <conv.chunks.Comment object at 0x104c31250>
-    // <conv.chunks.Comment object at 0x104c312e0>
-    // <conv.chunks.Comment object at 0x104c31490>
+    // <conv.chunks.Comment object at 0x102d8cef0>
+    // <conv.chunks.Comment object at 0x102d8d010>
+    // <conv.chunks.Comment object at 0x102d8d130>
+    // <conv.chunks.Comment object at 0x102d8d250>
+    // <conv.chunks.Comment object at 0x102d8d2e0>
+    // <conv.chunks.Comment object at 0x102d8d490>
     ldy(0x24);
     JMP(SetInitNTHigh);
 }
 
 int SetInitNTHigh() {
-    // <conv.chunks.Comment object at 0x104c31610>
+    // <conv.chunks.Comment object at 0x102d8d610>
     sty(CurrentNTAddr_High);
     ldy(0x80);
     sty(CurrentNTAddr_Low);
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x104c31a00>
-    // <conv.chunks.Comment object at 0x104c31ac0>
+    // <conv.chunks.Comment object at 0x102d8da00>
+    // <conv.chunks.Comment object at 0x102d8dac0>
     asl();
     asl();
     sta(BlockBufferColumnPos);
     dec(AreaObjectLength);
-    // <conv.chunks.Comment object at 0x104c31d60>
+    // <conv.chunks.Comment object at 0x102d8dd60>
     dec(((AreaObjectLength) + (1)));
     dec(((AreaObjectLength) + (2)));
     lda(0xb);
@@ -3260,26 +3255,26 @@ int SetInitNTHigh() {
     BNE(SetSecHard);
     lda(WorldNumber);
     cmp(World5);
-    // <conv.chunks.Comment object at 0x104c321e0>
-    // <conv.chunks.Comment object at 0x104c32270>
-    // <conv.chunks.Comment object at 0x104c32420>
-    // <conv.chunks.Comment object at 0x104c32540>
-    // <conv.chunks.Comment object at 0x104c32660>
-    // <conv.chunks.Comment object at 0x104c32780>
-    // <conv.chunks.Comment object at 0x104c328a0>
+    // <conv.chunks.Comment object at 0x102d8e1e0>
+    // <conv.chunks.Comment object at 0x102d8e270>
+    // <conv.chunks.Comment object at 0x102d8e420>
+    // <conv.chunks.Comment object at 0x102d8e540>
+    // <conv.chunks.Comment object at 0x102d8e660>
+    // <conv.chunks.Comment object at 0x102d8e780>
+    // <conv.chunks.Comment object at 0x102d8e8a0>
     BCC(CheckHalfway);
     BNE(SetSecHard);
     lda(LevelNumber);
     cmp(Level3);
-    // <conv.chunks.Comment object at 0x104c32ae0>
-    // <conv.chunks.Comment object at 0x104c32c00>
-    // <conv.chunks.Comment object at 0x104c32d20>
+    // <conv.chunks.Comment object at 0x102d8eae0>
+    // <conv.chunks.Comment object at 0x102d8ec00>
+    // <conv.chunks.Comment object at 0x102d8ed20>
     BCC(CheckHalfway);
     JMP(SetSecHard);
 }
 
 int SetSecHard() {
-    // <conv.chunks.Comment object at 0x104c32f60>
+    // <conv.chunks.Comment object at 0x102d8ef60>
     inc(SecondaryHardMode);
     JMP(CheckHalfway);
 }
@@ -3288,21 +3283,21 @@ int CheckHalfway() {
     lda(HalfwayPage);
     BEQ(DoneInitArea);
     lda(0x2);
-    // <conv.chunks.Comment object at 0x104c332c0>
+    // <conv.chunks.Comment object at 0x102d8f2c0>
     sta(PlayerEntranceCtrl);
     JMP(DoneInitArea);
 }
 
 int DoneInitArea() {
-    // <conv.chunks.Comment object at 0x104c334d0>
+    // <conv.chunks.Comment object at 0x102d8f4d0>
     lda(Silence);
     sta(AreaMusicQueue);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x104c33740>
+    // <conv.chunks.Comment object at 0x102d8f740>
     sta(DisableScreenFlag);
     inc(OperMode_Task);
-    // <conv.chunks.Comment object at 0x104c33950>
-    rts();
+    // <conv.chunks.Comment object at 0x102d8f950>
+    return 0;
     JMP(PrimaryGameSetup);
 }
 
@@ -3310,11 +3305,11 @@ int PrimaryGameSetup() {
     lda(0x1);
     sta(FetchNewGameTimerFlag);
     sta(PlayerSize);
-    // <conv.chunks.Comment object at 0x104c33bc0>
-    // <conv.chunks.Comment object at 0x104c33d70>
+    // <conv.chunks.Comment object at 0x102d8fbc0>
+    // <conv.chunks.Comment object at 0x102d8fd70>
     lda(0x2);
     sta(NumberofLives);
-    // <conv.chunks.Comment object at 0x104c33ef0>
+    // <conv.chunks.Comment object at 0x102d8fef0>
     sta(OffScr_NumberofLives);
     JMP(SecondaryGameSetup);
 }
@@ -3322,22 +3317,22 @@ int PrimaryGameSetup() {
 int SecondaryGameSetup() {
     lda(0x0);
     sta(DisableScreenFlag);
-    // <conv.chunks.Comment object at 0x104c3c260>
+    // <conv.chunks.Comment object at 0x102d98260>
     tay();
     JMP(ClearVRLoop);
 }
 
 int ClearVRLoop() {
-    // <conv.chunks.Comment object at 0x104c3c4a0>
+    // <conv.chunks.Comment object at 0x102d984a0>
     sta(((VRAM_Buffer1) - (1)), y);
     iny();
     BNE(ClearVRLoop);
     sta(GameTimerExpiredFlag);
     sta(DisableIntermediate);
     sta(BackloadingFlag);
-    // <conv.chunks.Comment object at 0x104c3c860>
-    // <conv.chunks.Comment object at 0x104c3c980>
-    // <conv.chunks.Comment object at 0x104c3caa0>
+    // <conv.chunks.Comment object at 0x102d98860>
+    // <conv.chunks.Comment object at 0x102d98980>
+    // <conv.chunks.Comment object at 0x102d98aa0>
     lda(0xff);
     sta(BalPlatformAlignment);
     lda(ScreenLeft_PageLoc);
@@ -3347,14 +3342,14 @@ int ClearVRLoop() {
     rol(Mirror_PPU_CTRL_REG1);
     JSR(GetAreaMusic);
     lda(0x38);
-    // <conv.chunks.Comment object at 0x104c3cc20>
-    // <conv.chunks.Comment object at 0x104c3cdd0>
-    // <conv.chunks.Comment object at 0x104c3cef0>
-    // <conv.chunks.Comment object at 0x104c3d010>
-    // <conv.chunks.Comment object at 0x104c3d160>
-    // <conv.chunks.Comment object at 0x104c3d1f0>
-    // <conv.chunks.Comment object at 0x104c3d310>
-    // <conv.chunks.Comment object at 0x104c3d430>
+    // <conv.chunks.Comment object at 0x102d98c20>
+    // <conv.chunks.Comment object at 0x102d98dd0>
+    // <conv.chunks.Comment object at 0x102d98ef0>
+    // <conv.chunks.Comment object at 0x102d99010>
+    // <conv.chunks.Comment object at 0x102d99160>
+    // <conv.chunks.Comment object at 0x102d991f0>
+    // <conv.chunks.Comment object at 0x102d99310>
+    // <conv.chunks.Comment object at 0x102d99430>
     sta(((SprShuffleAmt) + (2)));
     lda(0x48);
     sta(((SprShuffleAmt) + (1)));
@@ -3368,7 +3363,7 @@ int ShufAmtLoop() {
     lda(offsetof(G, DefaultSprOffsets), x);
     sta(SprDataOffset, x);
     dex();
-    // <conv.chunks.Comment object at 0x104c3df40>
+    // <conv.chunks.Comment object at 0x102d99f40>
     BPL(ShufAmtLoop);
     ldy(0x3);
     JMP(ISpr0Loop);
@@ -3380,21 +3375,21 @@ int ISpr0Loop() {
     dey();
     BPL(ISpr0Loop);
     JSR(DoNothing2);
-    // <conv.chunks.Comment object at 0x104c3e5d0>
+    // <conv.chunks.Comment object at 0x102d9a5d0>
     JSR(DoNothing1);
     inc(Sprite0HitDetectFlag);
     inc(OperMode_Task);
-    // <conv.chunks.Comment object at 0x104c3e7e0>
-    // <conv.chunks.Comment object at 0x104c3e900>
-    rts();
+    // <conv.chunks.Comment object at 0x102d9a7e0>
+    // <conv.chunks.Comment object at 0x102d9a900>
+    return 0;
     JMP(InitializeMemory);
 }
 
 int InitializeMemory() {
     ldx(0x7);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x104c3eb70>
-    // <conv.chunks.Comment object at 0x104c3ec00>
+    // <conv.chunks.Comment object at 0x102d9ab70>
+    // <conv.chunks.Comment object at 0x102d9ac00>
     sta(0x6);
     JMP(InitPageLoop);
 }
@@ -3405,7 +3400,7 @@ int InitPageLoop() {
 }
 
 int InitByteLoop() {
-    // <conv.chunks.Comment object at 0x104c3ef60>
+    // <conv.chunks.Comment object at 0x102d9af60>
     cpx(0x1);
     BNE(InitByte);
     cpy(0x60);
@@ -3414,10 +3409,10 @@ int InitByteLoop() {
 }
 
 int InitByte() {
-    // <conv.chunks.Comment object at 0x104c3f080>
-    // <conv.chunks.Comment object at 0x104c3f230>
-    // <conv.chunks.Comment object at 0x104c3f2c0>
-    // <conv.chunks.Comment object at 0x104c3f470>
+    // <conv.chunks.Comment object at 0x102d9b080>
+    // <conv.chunks.Comment object at 0x102d9b230>
+    // <conv.chunks.Comment object at 0x102d9b2c0>
+    // <conv.chunks.Comment object at 0x102d9b470>
     sta((0x6), y);
     JMP(SkipByte);
 }
@@ -3425,41 +3420,41 @@ int InitByte() {
 int SkipByte() {
     dey();
     cpy(0xff);
-    // <conv.chunks.Comment object at 0x104c3f6e0>
+    // <conv.chunks.Comment object at 0x102d9b6e0>
     BNE(InitByteLoop);
     dex();
     BPL(InitPageLoop);
-    // <conv.chunks.Comment object at 0x104c3f920>
-    // <conv.chunks.Comment object at 0x104c3f9b0>
-    rts();
+    // <conv.chunks.Comment object at 0x102d9b920>
+    // <conv.chunks.Comment object at 0x102d9b9b0>
+    return 0;
     JMP(GetAreaMusic);
 }
 
 int GetAreaMusic() {
     lda(OperMode);
-    // <conv.chunks.Comment object at 0x104c3fbf0>
+    // <conv.chunks.Comment object at 0x102d9bbf0>
     BEQ(ExitGetM);
     lda(AltEntranceControl);
     cmp(0x2);
     BEQ(ChkAreaType);
     ldy(0x5);
     lda(PlayerEntranceCtrl);
-    // <conv.chunks.Comment object at 0x104c441a0>
-    // <conv.chunks.Comment object at 0x104c442c0>
-    // <conv.chunks.Comment object at 0x104c44350>
-    // <conv.chunks.Comment object at 0x104c44500>
-    // <conv.chunks.Comment object at 0x104c44590>
+    // <conv.chunks.Comment object at 0x102da01a0>
+    // <conv.chunks.Comment object at 0x102da02c0>
+    // <conv.chunks.Comment object at 0x102da0350>
+    // <conv.chunks.Comment object at 0x102da0500>
+    // <conv.chunks.Comment object at 0x102da0590>
     cmp(0x6);
     BEQ(StoreMusic);
     cmp(0x7);
-    // <conv.chunks.Comment object at 0x104c447a0>
-    // <conv.chunks.Comment object at 0x104c44950>
+    // <conv.chunks.Comment object at 0x102da07a0>
+    // <conv.chunks.Comment object at 0x102da0950>
     BEQ(StoreMusic);
     JMP(ChkAreaType);
 }
 
 int ChkAreaType() {
-    // <conv.chunks.Comment object at 0x104c44b60>
+    // <conv.chunks.Comment object at 0x102da0b60>
     ldy(AreaType);
     lda(CloudTypeOverride);
     BEQ(StoreMusic);
@@ -3468,16 +3463,16 @@ int ChkAreaType() {
 }
 
 int StoreMusic() {
-    // <conv.chunks.Comment object at 0x104c44da0>
-    // <conv.chunks.Comment object at 0x104c44ec0>
-    // <conv.chunks.Comment object at 0x104c44f50>
+    // <conv.chunks.Comment object at 0x102da0da0>
+    // <conv.chunks.Comment object at 0x102da0ec0>
+    // <conv.chunks.Comment object at 0x102da0f50>
     lda(offsetof(G, MusicSelectData), y);
     sta(AreaMusicQueue);
     JMP(ExitGetM);
 }
 
 int ExitGetM() {
-    rts();
+    return 0;
     JMP(Entrance_GameTimerSetup);
 }
 
@@ -3488,25 +3483,25 @@ int Entrance_GameTimerSetup() {
     sta(VerticalForceDown);
     lda(0x1);
     sta(PlayerFacingDir);
-    // <conv.chunks.Comment object at 0x104c45850>
-    // <conv.chunks.Comment object at 0x104c46510>
-    // <conv.chunks.Comment object at 0x104c46630>
-    // <conv.chunks.Comment object at 0x104c466c0>
-    // <conv.chunks.Comment object at 0x104c46870>
-    // <conv.chunks.Comment object at 0x104c46900>
+    // <conv.chunks.Comment object at 0x102da1850>
+    // <conv.chunks.Comment object at 0x102da2510>
+    // <conv.chunks.Comment object at 0x102da2630>
+    // <conv.chunks.Comment object at 0x102da26c0>
+    // <conv.chunks.Comment object at 0x102da2870>
+    // <conv.chunks.Comment object at 0x102da2900>
     sta(Player_Y_HighPos);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x104c46ba0>
+    // <conv.chunks.Comment object at 0x102da2ba0>
     sta(Player_State);
     dec(Player_CollisionBits);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x104c46db0>
-    // <conv.chunks.Comment object at 0x104c46ed0>
+    // <conv.chunks.Comment object at 0x102da2db0>
+    // <conv.chunks.Comment object at 0x102da2ed0>
     sty(HalfwayPage);
     lda(AreaType);
     BNE(ChkStPos);
-    // <conv.chunks.Comment object at 0x104c470e0>
-    // <conv.chunks.Comment object at 0x104c47200>
+    // <conv.chunks.Comment object at 0x102da30e0>
+    // <conv.chunks.Comment object at 0x102da3200>
     iny();
     JMP(ChkStPos);
 }
@@ -3515,8 +3510,8 @@ int ChkStPos() {
     sty(SwimmingFlag);
     ldx(PlayerEntranceCtrl);
     ldy(AltEntranceControl);
-    // <conv.chunks.Comment object at 0x104c474d0>
-    // <conv.chunks.Comment object at 0x104c475f0>
+    // <conv.chunks.Comment object at 0x102da34d0>
+    // <conv.chunks.Comment object at 0x102da35f0>
     BEQ(SetStPos);
     cpy(0x1);
     BEQ(SetStPos);
@@ -3525,15 +3520,15 @@ int ChkStPos() {
 }
 
 int SetStPos() {
-    // <conv.chunks.Comment object at 0x104c479e0>
-    // <conv.chunks.Comment object at 0x104c47bf0>
+    // <conv.chunks.Comment object at 0x102da39e0>
+    // <conv.chunks.Comment object at 0x102da3bf0>
     lda(offsetof(G, PlayerStarting_X_Pos), y);
     sta(Player_X_Position);
     lda(offsetof(G, PlayerStarting_Y_Pos), x);
     sta(Player_Y_Position);
-    // <conv.chunks.Comment object at 0x104c47d70>
-    // <conv.chunks.Comment object at 0x104c47e90>
-    // <conv.chunks.Comment object at 0x104c47fe0>
+    // <conv.chunks.Comment object at 0x102da3d70>
+    // <conv.chunks.Comment object at 0x102da3e90>
+    // <conv.chunks.Comment object at 0x102da3fe0>
     lda(offsetof(G, PlayerBGPriorityData), x);
     sta(Player_SprAttrib);
     JSR(GetPlayerColors);
@@ -3543,17 +3538,17 @@ int SetStPos() {
     BEQ(ChkOverR);
     lda(offsetof(G, GameTimerData), y);
     sta(GameTimerDisplay);
-    // <conv.chunks.Comment object at 0x104c50260>
-    // <conv.chunks.Comment object at 0x104c50380>
-    // <conv.chunks.Comment object at 0x104c504a0>
-    // <conv.chunks.Comment object at 0x104c505c0>
-    // <conv.chunks.Comment object at 0x104c506e0>
-    // <conv.chunks.Comment object at 0x104c50800>
-    // <conv.chunks.Comment object at 0x104c50920>
-    // <conv.chunks.Comment object at 0x104c50a70>
+    // <conv.chunks.Comment object at 0x102dac260>
+    // <conv.chunks.Comment object at 0x102dac380>
+    // <conv.chunks.Comment object at 0x102dac4a0>
+    // <conv.chunks.Comment object at 0x102dac5c0>
+    // <conv.chunks.Comment object at 0x102dac6e0>
+    // <conv.chunks.Comment object at 0x102dac800>
+    // <conv.chunks.Comment object at 0x102dac920>
+    // <conv.chunks.Comment object at 0x102daca70>
     lda(0x1);
     sta(((GameTimerDisplay) + (2)));
-    // <conv.chunks.Comment object at 0x104c50bf0>
+    // <conv.chunks.Comment object at 0x102dacbf0>
     lsr();
     sta(((GameTimerDisplay) + (1)));
     sta(FetchNewGameTimerFlag);
@@ -3562,20 +3557,20 @@ int SetStPos() {
 }
 
 int ChkOverR() {
-    // <conv.chunks.Comment object at 0x104c50ef0>
-    // <conv.chunks.Comment object at 0x104c510d0>
-    // <conv.chunks.Comment object at 0x104c511f0>
-    // <conv.chunks.Comment object at 0x104c51310>
+    // <conv.chunks.Comment object at 0x102dacef0>
+    // <conv.chunks.Comment object at 0x102dad0d0>
+    // <conv.chunks.Comment object at 0x102dad1f0>
+    // <conv.chunks.Comment object at 0x102dad310>
     ldy(JoypadOverride);
     BEQ(ChkSwimE);
     lda(0x3);
-    // <conv.chunks.Comment object at 0x104c51550>
+    // <conv.chunks.Comment object at 0x102dad550>
     sta(Player_State);
     ldx(0x0);
-    // <conv.chunks.Comment object at 0x104c51760>
+    // <conv.chunks.Comment object at 0x102dad760>
     JSR(InitBlock_XY_Pos);
     lda(0xf0);
-    // <conv.chunks.Comment object at 0x104c51970>
+    // <conv.chunks.Comment object at 0x102dad970>
     sta(Block_Y_Position);
     ldx(0x5);
     ldy(0x0);
@@ -3584,10 +3579,10 @@ int ChkOverR() {
 }
 
 int ChkSwimE() {
-    // <conv.chunks.Comment object at 0x104c51b80>
-    // <conv.chunks.Comment object at 0x104c51c10>
-    // <conv.chunks.Comment object at 0x104c51d30>
-    // <conv.chunks.Comment object at 0x104c51ee0>
+    // <conv.chunks.Comment object at 0x102dadb80>
+    // <conv.chunks.Comment object at 0x102dadc10>
+    // <conv.chunks.Comment object at 0x102dadd30>
+    // <conv.chunks.Comment object at 0x102dadee0>
     ldy(AreaType);
     BNE(SetPESub);
     JSR(SetupBubble);
@@ -3595,75 +3590,75 @@ int ChkSwimE() {
 }
 
 int SetPESub() {
-    // <conv.chunks.Comment object at 0x104c52030>
-    // <conv.chunks.Comment object at 0x104c52150>
-    // <conv.chunks.Comment object at 0x104c52270>
+    // <conv.chunks.Comment object at 0x102dae030>
+    // <conv.chunks.Comment object at 0x102dae150>
+    // <conv.chunks.Comment object at 0x102dae270>
     lda(0x7);
     sta(GameEngineSubroutine);
-    // <conv.chunks.Comment object at 0x104c52330>
-    rts();
+    // <conv.chunks.Comment object at 0x102dae330>
+    return 0;
     JMP(PlayerLoseLife);
 }
 
 int PlayerLoseLife() {
     inc(DisableScreenFlag);
-    // <conv.chunks.Comment object at 0x104c52600>
+    // <conv.chunks.Comment object at 0x102dae600>
     lda(0x0);
     sta(Sprite0HitDetectFlag);
     lda(Silence);
-    // <conv.chunks.Comment object at 0x104c53230>
+    // <conv.chunks.Comment object at 0x102daf230>
     sta(EventMusicQueue);
     dec(NumberofLives);
     BPL(StillInGame);
-    // <conv.chunks.Comment object at 0x104c53470>
-    // <conv.chunks.Comment object at 0x104c53590>
+    // <conv.chunks.Comment object at 0x102daf470>
+    // <conv.chunks.Comment object at 0x102daf590>
     lda(0x0);
     sta(OperMode_Task);
     lda(GameOverModeValue);
     sta(OperMode);
-    // <conv.chunks.Comment object at 0x104c53710>
-    // <conv.chunks.Comment object at 0x104c538c0>
-    // <conv.chunks.Comment object at 0x104c539e0>
-    rts();
+    // <conv.chunks.Comment object at 0x102daf710>
+    // <conv.chunks.Comment object at 0x102daf8c0>
+    // <conv.chunks.Comment object at 0x102daf9e0>
+    return 0;
     JMP(StillInGame);
 }
 
 int StillInGame() {
-    // <conv.chunks.Comment object at 0x104c53b90>
+    // <conv.chunks.Comment object at 0x102dafb90>
     lda(WorldNumber);
     asl();
-    // <conv.chunks.Comment object at 0x104c53d10>
+    // <conv.chunks.Comment object at 0x102dafd10>
     tax();
     lda(LevelNumber);
     anda(0x2);
     BEQ(GetHalfway);
-    // <conv.chunks.Comment object at 0x104c53e30>
-    // <conv.chunks.Comment object at 0x104c53f50>
-    // <conv.chunks.Comment object at 0x104c53fe0>
+    // <conv.chunks.Comment object at 0x102dafe30>
+    // <conv.chunks.Comment object at 0x102daff50>
+    // <conv.chunks.Comment object at 0x102daffe0>
     inx();
     JMP(GetHalfway);
 }
 
 int GetHalfway() {
-    // <conv.chunks.Comment object at 0x104c58260>
+    // <conv.chunks.Comment object at 0x102db4260>
     ldy(offsetof(G, HalfwayPageNybbles), x);
     lda(LevelNumber);
-    // <conv.chunks.Comment object at 0x104c583e0>
+    // <conv.chunks.Comment object at 0x102db43e0>
     lsr();
     tya();
-    // <conv.chunks.Comment object at 0x104c585c0>
+    // <conv.chunks.Comment object at 0x102db45c0>
     BCS(MaskHPNyb);
     lsr();
     lsr();
-    // <conv.chunks.Comment object at 0x104c58770>
-    // <conv.chunks.Comment object at 0x104c58830>
+    // <conv.chunks.Comment object at 0x102db4770>
+    // <conv.chunks.Comment object at 0x102db4830>
     lsr();
     lsr();
     JMP(MaskHPNyb);
 }
 
 int MaskHPNyb() {
-    // <conv.chunks.Comment object at 0x104c589e0>
+    // <conv.chunks.Comment object at 0x102db49e0>
     anda(0b1111);
     cmp(ScreenLeft_PageLoc);
     BEQ(SetHalfway);
@@ -3673,10 +3668,10 @@ int MaskHPNyb() {
 }
 
 int SetHalfway() {
-    // <conv.chunks.Comment object at 0x104c58c20>
-    // <conv.chunks.Comment object at 0x104c58d40>
-    // <conv.chunks.Comment object at 0x104c58e60>
-    // <conv.chunks.Comment object at 0x104c58ef0>
+    // <conv.chunks.Comment object at 0x102db4c20>
+    // <conv.chunks.Comment object at 0x102db4d40>
+    // <conv.chunks.Comment object at 0x102db4e60>
+    // <conv.chunks.Comment object at 0x102db4ef0>
     sta(HalfwayPage);
     JSR(TransposePlayers);
     JMP(ContinueGame);
@@ -3685,7 +3680,6 @@ int SetHalfway() {
 
 int GameOverMode() {
     lda(OperMode_Task);
-    JSR(JumpEngine);
     JMP(SetupGameOver);
 }
 
@@ -3693,26 +3687,26 @@ int SetupGameOver() {
     lda(0x0);
     sta(ScreenRoutineTask);
     sta(Sprite0HitDetectFlag);
-    // <conv.chunks.Comment object at 0x104c59760>
-    // <conv.chunks.Comment object at 0x104c597f0>
-    // <conv.chunks.Comment object at 0x104c599a0>
+    // <conv.chunks.Comment object at 0x102db5760>
+    // <conv.chunks.Comment object at 0x102db57f0>
+    // <conv.chunks.Comment object at 0x102db59a0>
     lda(GameOverMusic);
     sta(EventMusicQueue);
     inc(DisableScreenFlag);
     inc(OperMode_Task);
-    // <conv.chunks.Comment object at 0x104c59bb0>
-    // <conv.chunks.Comment object at 0x104c59cd0>
-    // <conv.chunks.Comment object at 0x104c59df0>
-    rts();
+    // <conv.chunks.Comment object at 0x102db5bb0>
+    // <conv.chunks.Comment object at 0x102db5cd0>
+    // <conv.chunks.Comment object at 0x102db5df0>
+    return 0;
     JMP(RunGameOver);
 }
 
 int RunGameOver() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x104c5a000>
+    // <conv.chunks.Comment object at 0x102db6000>
     sta(DisableScreenFlag);
     lda(SavedJoypad1Bits);
-    // <conv.chunks.Comment object at 0x104c5a210>
+    // <conv.chunks.Comment object at 0x102db6210>
     anda(Start_Button);
     BNE(TerminateGame);
     lda(ScreenTimer);
@@ -3722,25 +3716,25 @@ int RunGameOver() {
 
 int TerminateGame() {
     lda(Silence);
-    // <conv.chunks.Comment object at 0x104c5a780>
+    // <conv.chunks.Comment object at 0x102db6780>
     sta(EventMusicQueue);
     JSR(TransposePlayers);
     BCC(ContinueGame);
     lda(WorldNumber);
     sta(ContinueWorld);
-    // <conv.chunks.Comment object at 0x104c5a9c0>
-    // <conv.chunks.Comment object at 0x104c5aae0>
-    // <conv.chunks.Comment object at 0x104c5ac00>
-    // <conv.chunks.Comment object at 0x104c5ad20>
+    // <conv.chunks.Comment object at 0x102db69c0>
+    // <conv.chunks.Comment object at 0x102db6ae0>
+    // <conv.chunks.Comment object at 0x102db6c00>
+    // <conv.chunks.Comment object at 0x102db6d20>
     lda(0x0);
     asl();
     sta(OperMode_Task);
     sta(ScreenTimer);
-    // <conv.chunks.Comment object at 0x104c5af60>
-    // <conv.chunks.Comment object at 0x104c5aff0>
-    // <conv.chunks.Comment object at 0x104c5b140>
+    // <conv.chunks.Comment object at 0x102db6f60>
+    // <conv.chunks.Comment object at 0x102db6ff0>
+    // <conv.chunks.Comment object at 0x102db7140>
     sta(OperMode);
-    rts();
+    return 0;
     JMP(ContinueGame);
 }
 
@@ -3751,12 +3745,12 @@ int ContinueGame() {
     inc(FetchNewGameTimerFlag);
     lda(0x0);
     sta(TimerControl);
-    // <conv.chunks.Comment object at 0x104c5b410>
-    // <conv.chunks.Comment object at 0x104c5b530>
-    // <conv.chunks.Comment object at 0x104c5b5c0>
-    // <conv.chunks.Comment object at 0x104c5b770>
-    // <conv.chunks.Comment object at 0x104c5b890>
-    // <conv.chunks.Comment object at 0x104c5b920>
+    // <conv.chunks.Comment object at 0x102db7410>
+    // <conv.chunks.Comment object at 0x102db7530>
+    // <conv.chunks.Comment object at 0x102db75c0>
+    // <conv.chunks.Comment object at 0x102db7770>
+    // <conv.chunks.Comment object at 0x102db7890>
+    // <conv.chunks.Comment object at 0x102db7920>
     sta(PlayerStatus);
     sta(GameEngineSubroutine);
     sta(OperMode_Task);
@@ -3766,36 +3760,36 @@ int ContinueGame() {
 }
 
 int GameIsOn() {
-    rts();
+    return 0;
     JMP(TransposePlayers);
 }
 
 int TransposePlayers() {
     sec();
     lda(NumberOfPlayers);
-    // <conv.chunks.Comment object at 0x104c641a0>
-    // <conv.chunks.Comment object at 0x104c64230>
+    // <conv.chunks.Comment object at 0x102dc01a0>
+    // <conv.chunks.Comment object at 0x102dc0230>
     BEQ(ExTrans);
     lda(OffScr_NumberofLives);
     BMI(ExTrans);
     lda(CurrentPlayer);
     eor(0b1);
-    // <conv.chunks.Comment object at 0x104c64470>
-    // <conv.chunks.Comment object at 0x104c64590>
-    // <conv.chunks.Comment object at 0x104c646e0>
-    // <conv.chunks.Comment object at 0x104c64800>
+    // <conv.chunks.Comment object at 0x102dc0470>
+    // <conv.chunks.Comment object at 0x102dc0590>
+    // <conv.chunks.Comment object at 0x102dc06e0>
+    // <conv.chunks.Comment object at 0x102dc0800>
     sta(CurrentPlayer);
     ldx(0x6);
     JMP(TransLoop);
 }
 
 int TransLoop() {
-    // <conv.chunks.Comment object at 0x104c64a70>
+    // <conv.chunks.Comment object at 0x102dc0a70>
     lda(OnscreenPlayerInfo, x);
     pha();
     lda(OffscreenPlayerInfo, x);
-    // <conv.chunks.Comment object at 0x104c64cb0>
-    // <conv.chunks.Comment object at 0x104c64d40>
+    // <conv.chunks.Comment object at 0x102dc0cb0>
+    // <conv.chunks.Comment object at 0x102dc0d40>
     sta(OnscreenPlayerInfo, x);
     pla();
     sta(OffscreenPlayerInfo, x);
@@ -3806,7 +3800,7 @@ int TransLoop() {
 }
 
 int ExTrans() {
-    rts();
+    return 0;
     JMP(DoNothing1);
 }
 
@@ -3817,15 +3811,15 @@ int DoNothing1() {
 }
 
 int DoNothing2() {
-    rts();
+    return 0;
     JMP(AreaParserTaskHandler);
 }
 
 int AreaParserTaskHandler() {
     ldy(AreaParserTaskNum);
     BNE(DoAPTasks);
-    // <conv.chunks.Comment object at 0x104c65850>
-    // <conv.chunks.Comment object at 0x104c65970>
+    // <conv.chunks.Comment object at 0x102dc1850>
+    // <conv.chunks.Comment object at 0x102dc1970>
     ldy(0x8);
     sty(AreaParserTaskNum);
     JMP(DoAPTasks);
@@ -3837,28 +3831,27 @@ int DoAPTasks() {
     JSR(AreaParserTasks);
     dec(AreaParserTaskNum);
     BNE(SkipATRender);
-    // <conv.chunks.Comment object at 0x104c65ee0>
-    // <conv.chunks.Comment object at 0x104c66000>
+    // <conv.chunks.Comment object at 0x102dc1ee0>
+    // <conv.chunks.Comment object at 0x102dc2000>
     JSR(RenderAttributeTables);
     JMP(SkipATRender);
 }
 
 int SkipATRender() {
-    rts();
+    return 0;
     JMP(AreaParserTasks);
 }
 
 int AreaParserTasks() {
-    JSR(JumpEngine);
     JMP(IncrementColumnPos);
 }
 
 int IncrementColumnPos() {
     inc(CurrentColumnPos);
-    // <conv.chunks.Comment object at 0x104c668d0>
+    // <conv.chunks.Comment object at 0x102dc28d0>
     lda(CurrentColumnPos);
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x104c66ae0>
+    // <conv.chunks.Comment object at 0x102dc2ae0>
     BNE(NoColWrap);
     sta(CurrentColumnPos);
     inc(CurrentPageLoc);
@@ -3866,16 +3859,16 @@ int IncrementColumnPos() {
 }
 
 int NoColWrap() {
-    // <conv.chunks.Comment object at 0x104c66cf0>
-    // <conv.chunks.Comment object at 0x104c66e10>
-    // <conv.chunks.Comment object at 0x104c66f30>
+    // <conv.chunks.Comment object at 0x102dc2cf0>
+    // <conv.chunks.Comment object at 0x102dc2e10>
+    // <conv.chunks.Comment object at 0x102dc2f30>
     inc(BlockBufferColumnPos);
     lda(BlockBufferColumnPos);
     anda(0b11111);
     sta(BlockBufferColumnPos);
-    // <conv.chunks.Comment object at 0x104c67170>
-    // <conv.chunks.Comment object at 0x104c67290>
-    rts();
+    // <conv.chunks.Comment object at 0x102dc3170>
+    // <conv.chunks.Comment object at 0x102dc3290>
+    return 0;
     JMP(AreaParserCore);
 }
 
@@ -3893,7 +3886,7 @@ int RenderSceneryTerrain() {
 }
 
 int ClrMTBuf() {
-    // <conv.chunks.Comment object at 0x104c81610>
+    // <conv.chunks.Comment object at 0x102ddd610>
     sta(MetatileBuffer, x);
     dex();
     BPL(ClrMTBuf);
@@ -3906,7 +3899,7 @@ int ClrMTBuf() {
 int ThirdP() {
     cmp(0x3);
     BMI(RendBack);
-    // <conv.chunks.Comment object at 0x104c81dc0>
+    // <conv.chunks.Comment object at 0x102ddddc0>
     sec();
     sbc(0x3);
     BPL(ThirdP);
@@ -3914,25 +3907,25 @@ int ThirdP() {
 }
 
 int RendBack() {
-    // <conv.chunks.Comment object at 0x104c82000>
-    // <conv.chunks.Comment object at 0x104c82090>
-    // <conv.chunks.Comment object at 0x104c82270>
+    // <conv.chunks.Comment object at 0x102dde000>
+    // <conv.chunks.Comment object at 0x102dde090>
+    // <conv.chunks.Comment object at 0x102dde270>
     asl();
     asl();
     asl();
     asl();
     adc(((offsetof(G, BSceneDataOffsets)) - (1)), y);
     adc(CurrentColumnPos);
-    // <conv.chunks.Comment object at 0x104c82510>
-    // <conv.chunks.Comment object at 0x104c82720>
+    // <conv.chunks.Comment object at 0x102dde510>
+    // <conv.chunks.Comment object at 0x102dde720>
     tax();
     lda(offsetof(G, BackSceneryData), x);
     BEQ(RendFore);
-    // <conv.chunks.Comment object at 0x104c828d0>
-    // <conv.chunks.Comment object at 0x104c82a20>
+    // <conv.chunks.Comment object at 0x102dde8d0>
+    // <conv.chunks.Comment object at 0x102ddea20>
     pha();
     anda(0xf);
-    // <conv.chunks.Comment object at 0x104c82bd0>
+    // <conv.chunks.Comment object at 0x102ddebd0>
     sec();
     sbc(0x1);
     sta(0x0);
@@ -3940,42 +3933,42 @@ int RendBack() {
     adc(0x0);
     tax();
     pla();
-    // <conv.chunks.Comment object at 0x104c82d80>
-    // <conv.chunks.Comment object at 0x104c82ed0>
-    // <conv.chunks.Comment object at 0x104c82e10>
-    // <conv.chunks.Comment object at 0x104c830b0>
-    // <conv.chunks.Comment object at 0x104c83080>
-    // <conv.chunks.Comment object at 0x104c83290>
+    // <conv.chunks.Comment object at 0x102dded80>
+    // <conv.chunks.Comment object at 0x102ddeed0>
+    // <conv.chunks.Comment object at 0x102ddee10>
+    // <conv.chunks.Comment object at 0x102ddf0b0>
+    // <conv.chunks.Comment object at 0x102ddf080>
+    // <conv.chunks.Comment object at 0x102ddf290>
     lsr();
     lsr();
     lsr();
     lsr();
     tay();
     lda(0x3);
-    // <conv.chunks.Comment object at 0x104c83590>
-    // <conv.chunks.Comment object at 0x104c83620>
+    // <conv.chunks.Comment object at 0x102ddf590>
+    // <conv.chunks.Comment object at 0x102ddf620>
     sta(0x0);
     JMP(SceLoop1);
 }
 
 int SceLoop1() {
-    // <conv.chunks.Comment object at 0x104c836b0>
+    // <conv.chunks.Comment object at 0x102ddf6b0>
     lda(offsetof(G, BackSceneryMetatiles), x);
     sta(MetatileBuffer, y);
-    // <conv.chunks.Comment object at 0x104c839b0>
+    // <conv.chunks.Comment object at 0x102ddf9b0>
     inx();
     iny();
     cpy(0xb);
-    // <conv.chunks.Comment object at 0x104c83c20>
+    // <conv.chunks.Comment object at 0x102ddfc20>
     BEQ(RendFore);
     dec(0x0);
-    // <conv.chunks.Comment object at 0x104c83e60>
+    // <conv.chunks.Comment object at 0x102ddfe60>
     BNE(SceLoop1);
     JMP(RendFore);
 }
 
 int RendFore() {
-    // <conv.chunks.Comment object at 0x104c88080>
+    // <conv.chunks.Comment object at 0x102de4080>
     ldx(ForegroundScenery);
     BEQ(RendTerr);
     ldy(((offsetof(G, FSceneDataOffsets)) - (1)), x);
@@ -3984,13 +3977,13 @@ int RendFore() {
 }
 
 int SceLoop2() {
-    // <conv.chunks.Comment object at 0x104c881d0>
-    // <conv.chunks.Comment object at 0x104c882f0>
-    // <conv.chunks.Comment object at 0x104c88500>
-    // <conv.chunks.Comment object at 0x104c88590>
+    // <conv.chunks.Comment object at 0x102de41d0>
+    // <conv.chunks.Comment object at 0x102de42f0>
+    // <conv.chunks.Comment object at 0x102de4500>
+    // <conv.chunks.Comment object at 0x102de4590>
     lda(offsetof(G, ForeSceneryData), y);
     BEQ(NoFore);
-    // <conv.chunks.Comment object at 0x104c887a0>
+    // <conv.chunks.Comment object at 0x102de47a0>
     sta(MetatileBuffer, x);
     JMP(NoFore);
 }
@@ -3999,20 +3992,20 @@ int NoFore() {
     iny();
     inx();
     cpx(0xd);
-    // <conv.chunks.Comment object at 0x104c88b90>
+    // <conv.chunks.Comment object at 0x102de4b90>
     BNE(SceLoop2);
     JMP(RendTerr);
 }
 
 int RendTerr() {
-    // <conv.chunks.Comment object at 0x104c88da0>
+    // <conv.chunks.Comment object at 0x102de4da0>
     ldy(AreaType);
     BNE(TerMTile);
     lda(WorldNumber);
     cmp(World8);
-    // <conv.chunks.Comment object at 0x104c88ef0>
-    // <conv.chunks.Comment object at 0x104c89010>
-    // <conv.chunks.Comment object at 0x104c89130>
+    // <conv.chunks.Comment object at 0x102de4ef0>
+    // <conv.chunks.Comment object at 0x102de5010>
+    // <conv.chunks.Comment object at 0x102de5130>
     BNE(TerMTile);
     lda(0x62);
     JMP(StoreMT);
@@ -4020,9 +4013,9 @@ int RendTerr() {
 }
 
 int TerMTile() {
-    // <conv.chunks.Comment object at 0x104c89370>
-    // <conv.chunks.Comment object at 0x104c89400>
-    // <conv.chunks.Comment object at 0x104c895e0>
+    // <conv.chunks.Comment object at 0x102de5370>
+    // <conv.chunks.Comment object at 0x102de5400>
+    // <conv.chunks.Comment object at 0x102de55e0>
     lda(offsetof(G, TerrainMetatiles), y);
     ldy(CloudTypeOverride);
     BEQ(StoreMT);
@@ -4031,97 +4024,97 @@ int TerMTile() {
 }
 
 int StoreMT() {
-    // <conv.chunks.Comment object at 0x104c89760>
-    // <conv.chunks.Comment object at 0x104c89880>
-    // <conv.chunks.Comment object at 0x104c899d0>
-    // <conv.chunks.Comment object at 0x104c89a60>
+    // <conv.chunks.Comment object at 0x102de5760>
+    // <conv.chunks.Comment object at 0x102de5880>
+    // <conv.chunks.Comment object at 0x102de59d0>
+    // <conv.chunks.Comment object at 0x102de5a60>
     sta(0x7);
     ldx(0x0);
     lda(TerrainControl);
     asl();
-    // <conv.chunks.Comment object at 0x104c89c10>
-    // <conv.chunks.Comment object at 0x104c89d00>
-    // <conv.chunks.Comment object at 0x104c89ee0>
+    // <conv.chunks.Comment object at 0x102de5c10>
+    // <conv.chunks.Comment object at 0x102de5d00>
+    // <conv.chunks.Comment object at 0x102de5ee0>
     tay();
     JMP(TerrLoop);
 }
 
 int TerrLoop() {
-    // <conv.chunks.Comment object at 0x104c8a000>
+    // <conv.chunks.Comment object at 0x102de6000>
     lda(offsetof(G, TerrainRenderBits), y);
     sta(0x0);
     iny();
-    // <conv.chunks.Comment object at 0x104c8a210>
+    // <conv.chunks.Comment object at 0x102de6210>
     sty(0x1);
     lda(CloudTypeOverride);
-    // <conv.chunks.Comment object at 0x104c8a330>
+    // <conv.chunks.Comment object at 0x102de6330>
     BEQ(NoCloud2);
     cpx(0x0);
-    // <conv.chunks.Comment object at 0x104c8a630>
+    // <conv.chunks.Comment object at 0x102de6630>
     BEQ(NoCloud2);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x104c8a870>
+    // <conv.chunks.Comment object at 0x102de6870>
     anda(0b1000);
     sta(0x0);
     JMP(NoCloud2);
 }
 
 int NoCloud2() {
-    // <conv.chunks.Comment object at 0x104c8aa50>
+    // <conv.chunks.Comment object at 0x102de6a50>
     ldy(0x0);
     JMP(TerrBChk);
 }
 
 int TerrBChk() {
-    // <conv.chunks.Comment object at 0x104c8ac00>
+    // <conv.chunks.Comment object at 0x102de6c00>
     lda(offsetof(G, Bitmasks), y);
     bit(0x0);
     BEQ(NextTBit);
-    // <conv.chunks.Comment object at 0x104c8ae10>
+    // <conv.chunks.Comment object at 0x102de6e10>
     lda(0x7);
     sta(MetatileBuffer, x);
     JMP(NextTBit);
 }
 
 int NextTBit() {
-    // <conv.chunks.Comment object at 0x104c8b020>
-    // <conv.chunks.Comment object at 0x104c8b260>
+    // <conv.chunks.Comment object at 0x102de7020>
+    // <conv.chunks.Comment object at 0x102de7260>
     inx();
     cpx(0xd);
     BEQ(RendBBuf);
     lda(AreaType);
-    // <conv.chunks.Comment object at 0x104c8b3b0>
-    // <conv.chunks.Comment object at 0x104c8b560>
+    // <conv.chunks.Comment object at 0x102de73b0>
+    // <conv.chunks.Comment object at 0x102de7560>
     cmp(0x2);
     BNE(EndUChk);
-    // <conv.chunks.Comment object at 0x104c8b6e0>
+    // <conv.chunks.Comment object at 0x102de76e0>
     cpx(0xb);
     BNE(EndUChk);
     lda(0x54);
-    // <conv.chunks.Comment object at 0x104c8b920>
-    // <conv.chunks.Comment object at 0x104c8bb00>
+    // <conv.chunks.Comment object at 0x102de7920>
+    // <conv.chunks.Comment object at 0x102de7b00>
     sta(0x7);
     JMP(EndUChk);
 }
 
 int EndUChk() {
-    // <conv.chunks.Comment object at 0x104c8bb90>
+    // <conv.chunks.Comment object at 0x102de7b90>
     iny();
     cpy(0x8);
     BNE(TerrBChk);
-    // <conv.chunks.Comment object at 0x104c8be90>
+    // <conv.chunks.Comment object at 0x102de7e90>
     ldy(0x1);
     BNE(TerrLoop);
     JMP(RendBBuf);
 }
 
 int RendBBuf() {
-    // <conv.chunks.Comment object at 0x104c98080>
-    // <conv.chunks.Comment object at 0x104c98290>
+    // <conv.chunks.Comment object at 0x102df4080>
+    // <conv.chunks.Comment object at 0x102df4290>
     JSR(ProcessAreaData);
     lda(BlockBufferColumnPos);
     JSR(GetBlockBufferAddr);
-    // <conv.chunks.Comment object at 0x104c984d0>
+    // <conv.chunks.Comment object at 0x102df44d0>
     ldx(0x0);
     ldy(0x0);
     JMP(ChkMTLow);
@@ -4131,11 +4124,11 @@ int ChkMTLow() {
     sty(0x0);
     lda(MetatileBuffer, x);
     anda(0b11000000);
-    // <conv.chunks.Comment object at 0x104c988c0>
-    // <conv.chunks.Comment object at 0x104c98a70>
+    // <conv.chunks.Comment object at 0x102df48c0>
+    // <conv.chunks.Comment object at 0x102df4a70>
     asl();
     rol();
-    // <conv.chunks.Comment object at 0x104c98c50>
+    // <conv.chunks.Comment object at 0x102df4c50>
     rol();
     tay();
     lda(MetatileBuffer, x);
@@ -4146,26 +4139,26 @@ int ChkMTLow() {
 }
 
 int StrBlock() {
-    // <conv.chunks.Comment object at 0x104c98da0>
-    // <conv.chunks.Comment object at 0x104c98e30>
-    // <conv.chunks.Comment object at 0x104c98f80>
-    // <conv.chunks.Comment object at 0x104c990d0>
-    // <conv.chunks.Comment object at 0x104c991f0>
-    // <conv.chunks.Comment object at 0x104c99280>
+    // <conv.chunks.Comment object at 0x102df4da0>
+    // <conv.chunks.Comment object at 0x102df4e30>
+    // <conv.chunks.Comment object at 0x102df4f80>
+    // <conv.chunks.Comment object at 0x102df50d0>
+    // <conv.chunks.Comment object at 0x102df51f0>
+    // <conv.chunks.Comment object at 0x102df5280>
     ldy(0x0);
     sta((0x6), y);
-    // <conv.chunks.Comment object at 0x104c99400>
+    // <conv.chunks.Comment object at 0x102df5400>
     tya();
     clc();
-    // <conv.chunks.Comment object at 0x104c996a0>
+    // <conv.chunks.Comment object at 0x102df56a0>
     adc(0x10);
     tay();
     inx();
-    // <conv.chunks.Comment object at 0x104c998e0>
+    // <conv.chunks.Comment object at 0x102df58e0>
     cpx(0xd);
     BCC(ChkMTLow);
-    // <conv.chunks.Comment object at 0x104c999d0>
-    rts();
+    // <conv.chunks.Comment object at 0x102df59d0>
+    return 0;
     JMP(ProcessAreaData);
 }
 
@@ -4177,27 +4170,27 @@ int ProcessAreaData() {
 int ProcADLoop() {
     stx(ObjectOffset);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x104c9a1e0>
+    // <conv.chunks.Comment object at 0x102df61e0>
     sta(BehindAreaParserFlag);
     ldy(AreaDataOffset);
     lda((AreaData), y);
     cmp(0xfd);
-    // <conv.chunks.Comment object at 0x104c9a3f0>
-    // <conv.chunks.Comment object at 0x104c9a510>
-    // <conv.chunks.Comment object at 0x104c9a690>
+    // <conv.chunks.Comment object at 0x102df63f0>
+    // <conv.chunks.Comment object at 0x102df6510>
+    // <conv.chunks.Comment object at 0x102df6690>
     BEQ(RdyDecode);
     lda(AreaObjectLength, x);
     BPL(RdyDecode);
-    // <conv.chunks.Comment object at 0x104c9a8a0>
-    // <conv.chunks.Comment object at 0x104c9a9f0>
+    // <conv.chunks.Comment object at 0x102df68a0>
+    // <conv.chunks.Comment object at 0x102df69f0>
     iny();
     lda((AreaData), y);
     asl();
-    // <conv.chunks.Comment object at 0x104c9aba0>
-    // <conv.chunks.Comment object at 0x104c9ad50>
+    // <conv.chunks.Comment object at 0x102df6ba0>
+    // <conv.chunks.Comment object at 0x102df6d50>
     BCC(Chk1Row13);
     lda(AreaObjectPageSel);
-    // <conv.chunks.Comment object at 0x104c9aed0>
+    // <conv.chunks.Comment object at 0x102df6ed0>
     BNE(Chk1Row13);
     inc(AreaObjectPageSel);
     inc(AreaObjectPageLoc);
@@ -4209,35 +4202,35 @@ int Chk1Row13() {
     lda((AreaData), y);
     anda(0xf);
     cmp(0xd);
-    // <conv.chunks.Comment object at 0x104c9b3e0>
-    // <conv.chunks.Comment object at 0x104c9b560>
-    // <conv.chunks.Comment object at 0x104c9b6b0>
+    // <conv.chunks.Comment object at 0x102df73e0>
+    // <conv.chunks.Comment object at 0x102df7560>
+    // <conv.chunks.Comment object at 0x102df76b0>
     BNE(Chk1Row14);
     iny();
-    // <conv.chunks.Comment object at 0x104c9b8f0>
+    // <conv.chunks.Comment object at 0x102df78f0>
     lda((AreaData), y);
     dey();
     anda(0b1000000);
-    // <conv.chunks.Comment object at 0x104c9bb00>
-    // <conv.chunks.Comment object at 0x104c9bb90>
+    // <conv.chunks.Comment object at 0x102df7b00>
+    // <conv.chunks.Comment object at 0x102df7b90>
     BNE(CheckRear);
     lda(AreaObjectPageSel);
-    // <conv.chunks.Comment object at 0x104c9bda0>
+    // <conv.chunks.Comment object at 0x102df7da0>
     BNE(CheckRear);
     iny();
-    // <conv.chunks.Comment object at 0x104c9bfe0>
+    // <conv.chunks.Comment object at 0x102df7fe0>
     lda((AreaData), y);
     anda(0b11111);
-    // <conv.chunks.Comment object at 0x104ca4200>
+    // <conv.chunks.Comment object at 0x102e00200>
     sta(AreaObjectPageLoc);
     inc(AreaObjectPageSel);
-    // <conv.chunks.Comment object at 0x104ca4410>
+    // <conv.chunks.Comment object at 0x102e00410>
     JMP(NextAObj);
     JMP(Chk1Row14);
 }
 
 int Chk1Row14() {
-    // <conv.chunks.Comment object at 0x104ca4650>
+    // <conv.chunks.Comment object at 0x102e00650>
     cmp(0xe);
     BNE(CheckRear);
     lda(BackloadingFlag);
@@ -4246,9 +4239,9 @@ int Chk1Row14() {
 }
 
 int CheckRear() {
-    // <conv.chunks.Comment object at 0x104ca4890>
-    // <conv.chunks.Comment object at 0x104ca49b0>
-    // <conv.chunks.Comment object at 0x104ca4ad0>
+    // <conv.chunks.Comment object at 0x102e00890>
+    // <conv.chunks.Comment object at 0x102e009b0>
+    // <conv.chunks.Comment object at 0x102e00ad0>
     lda(AreaObjectPageLoc);
     cmp(CurrentPageLoc);
     BCC(SetBehind);
@@ -4256,28 +4249,28 @@ int CheckRear() {
 }
 
 int RdyDecode() {
-    // <conv.chunks.Comment object at 0x104ca4c20>
-    // <conv.chunks.Comment object at 0x104ca4d40>
-    // <conv.chunks.Comment object at 0x104ca4e60>
+    // <conv.chunks.Comment object at 0x102e00c20>
+    // <conv.chunks.Comment object at 0x102e00d40>
+    // <conv.chunks.Comment object at 0x102e00e60>
     JSR(DecodeAreaData);
     JMP(ChkLength);
     JMP(SetBehind);
 }
 
 int SetBehind() {
-    // <conv.chunks.Comment object at 0x104ca50a0>
+    // <conv.chunks.Comment object at 0x102e010a0>
     inc(BehindAreaParserFlag);
     JMP(NextAObj);
 }
 
 int NextAObj() {
-    // <conv.chunks.Comment object at 0x104ca51f0>
+    // <conv.chunks.Comment object at 0x102e011f0>
     JSR(IncAreaObjOffset);
     JMP(ChkLength);
 }
 
 int ChkLength() {
-    // <conv.chunks.Comment object at 0x104ca5340>
+    // <conv.chunks.Comment object at 0x102e01340>
     ldx(ObjectOffset);
     lda(AreaObjectLength, x);
     BMI(ProcLoopb);
@@ -4286,10 +4279,10 @@ int ChkLength() {
 }
 
 int ProcLoopb() {
-    // <conv.chunks.Comment object at 0x104ca5490>
-    // <conv.chunks.Comment object at 0x104ca55e0>
-    // <conv.chunks.Comment object at 0x104ca5700>
-    // <conv.chunks.Comment object at 0x104ca5850>
+    // <conv.chunks.Comment object at 0x102e01490>
+    // <conv.chunks.Comment object at 0x102e015e0>
+    // <conv.chunks.Comment object at 0x102e01700>
+    // <conv.chunks.Comment object at 0x102e01850>
     dex();
     BPL(ProcADLoop);
     lda(BehindAreaParserFlag);
@@ -4300,35 +4293,35 @@ int ProcLoopb() {
 }
 
 int EndAParse() {
-    rts();
+    return 0;
     JMP(IncAreaObjOffset);
 }
 
 int IncAreaObjOffset() {
     inc(AreaDataOffset);
-    // <conv.chunks.Comment object at 0x104ca5fd0>
+    // <conv.chunks.Comment object at 0x102e01fd0>
     inc(AreaDataOffset);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x104ca61e0>
+    // <conv.chunks.Comment object at 0x102e021e0>
     sta(AreaObjectPageSel);
-    rts();
+    return 0;
     JMP(DecodeAreaData);
 }
 
 int DecodeAreaData() {
     lda(AreaObjectLength, x);
-    // <conv.chunks.Comment object at 0x104ca64b0>
+    // <conv.chunks.Comment object at 0x102e024b0>
     BMI(Chk1stB);
     ldy(AreaObjOffsetBuffer, x);
     JMP(Chk1stB);
 }
 
 int Chk1stB() {
-    // <conv.chunks.Comment object at 0x104ca6720>
-    // <conv.chunks.Comment object at 0x104ca6870>
+    // <conv.chunks.Comment object at 0x102e02720>
+    // <conv.chunks.Comment object at 0x102e02870>
     ldx(0x10);
     lda((AreaData), y);
-    // <conv.chunks.Comment object at 0x104ca6960>
+    // <conv.chunks.Comment object at 0x102e02960>
     cmp(0xfd);
     BEQ(EndAParse);
     anda(0xf);
@@ -4342,23 +4335,23 @@ int Chk1stB() {
 }
 
 int ChkRow14() {
-    // <conv.chunks.Comment object at 0x104ca6bd0>
-    // <conv.chunks.Comment object at 0x104ca6d80>
-    // <conv.chunks.Comment object at 0x104ca6ed0>
-    // <conv.chunks.Comment object at 0x104ca6f60>
-    // <conv.chunks.Comment object at 0x104ca7110>
-    // <conv.chunks.Comment object at 0x104ca7260>
-    // <conv.chunks.Comment object at 0x104ca72f0>
-    // <conv.chunks.Comment object at 0x104ca74a0>
-    // <conv.chunks.Comment object at 0x104ca7530>
+    // <conv.chunks.Comment object at 0x102e02bd0>
+    // <conv.chunks.Comment object at 0x102e02d80>
+    // <conv.chunks.Comment object at 0x102e02ed0>
+    // <conv.chunks.Comment object at 0x102e02f60>
+    // <conv.chunks.Comment object at 0x102e03110>
+    // <conv.chunks.Comment object at 0x102e03260>
+    // <conv.chunks.Comment object at 0x102e032f0>
+    // <conv.chunks.Comment object at 0x102e034a0>
+    // <conv.chunks.Comment object at 0x102e03530>
     stx(0x7);
     ldx(ObjectOffset);
     cmp(0xe);
-    // <conv.chunks.Comment object at 0x104ca76b0>
-    // <conv.chunks.Comment object at 0x104ca7860>
+    // <conv.chunks.Comment object at 0x102e036b0>
+    // <conv.chunks.Comment object at 0x102e03860>
     BNE(ChkRow13);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x104ca7a70>
+    // <conv.chunks.Comment object at 0x102e03a70>
     sta(0x7);
     lda(0x2e);
     BNE(NormObj);
@@ -4366,16 +4359,16 @@ int ChkRow14() {
 }
 
 int ChkRow13() {
-    // <conv.chunks.Comment object at 0x104ca7b00>
-    // <conv.chunks.Comment object at 0x104ca7d10>
-    // <conv.chunks.Comment object at 0x104ca7f20>
+    // <conv.chunks.Comment object at 0x102e03b00>
+    // <conv.chunks.Comment object at 0x102e03d10>
+    // <conv.chunks.Comment object at 0x102e03f20>
     cmp(0xd);
     BNE(ChkSRows);
     lda(0x22);
-    // <conv.chunks.Comment object at 0x104cac1a0>
+    // <conv.chunks.Comment object at 0x102e081a0>
     sta(0x7);
     iny();
-    // <conv.chunks.Comment object at 0x104cac350>
+    // <conv.chunks.Comment object at 0x102e08350>
     lda((AreaData), y);
     anda(0b1000000);
     BEQ(LeavePar);
@@ -4388,69 +4381,69 @@ int ChkRow13() {
 }
 
 int Mask2MSB() {
-    // <conv.chunks.Comment object at 0x104cac5c0>
-    // <conv.chunks.Comment object at 0x104cac6e0>
-    // <conv.chunks.Comment object at 0x104cac800>
-    // <conv.chunks.Comment object at 0x104cac980>
-    // <conv.chunks.Comment object at 0x104cacaa0>
-    // <conv.chunks.Comment object at 0x104cacb30>
-    // <conv.chunks.Comment object at 0x104cacce0>
-    // <conv.chunks.Comment object at 0x104cace00>
+    // <conv.chunks.Comment object at 0x102e085c0>
+    // <conv.chunks.Comment object at 0x102e086e0>
+    // <conv.chunks.Comment object at 0x102e08800>
+    // <conv.chunks.Comment object at 0x102e08980>
+    // <conv.chunks.Comment object at 0x102e08aa0>
+    // <conv.chunks.Comment object at 0x102e08b30>
+    // <conv.chunks.Comment object at 0x102e08ce0>
+    // <conv.chunks.Comment object at 0x102e08e00>
     anda(0b111111);
     JMP(NormObj);
     JMP(ChkSRows);
 }
 
 int ChkSRows() {
-    // <conv.chunks.Comment object at 0x104cacf50>
-    // <conv.chunks.Comment object at 0x104cad0a0>
+    // <conv.chunks.Comment object at 0x102e08f50>
+    // <conv.chunks.Comment object at 0x102e090a0>
     cmp(0xc);
     BCS(SpecObj);
     iny();
-    // <conv.chunks.Comment object at 0x104cad340>
+    // <conv.chunks.Comment object at 0x102e09340>
     lda((AreaData), y);
     anda(0b1110000);
     BNE(LrgObj);
-    // <conv.chunks.Comment object at 0x104cad520>
-    // <conv.chunks.Comment object at 0x104cad640>
+    // <conv.chunks.Comment object at 0x102e09520>
+    // <conv.chunks.Comment object at 0x102e09640>
     lda(0x16);
     sta(0x7);
     lda((AreaData), y);
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x104cad8b0>
-    // <conv.chunks.Comment object at 0x104cad940>
-    // <conv.chunks.Comment object at 0x104cadb20>
+    // <conv.chunks.Comment object at 0x102e098b0>
+    // <conv.chunks.Comment object at 0x102e09940>
+    // <conv.chunks.Comment object at 0x102e09b20>
     JMP(NormObj);
     JMP(LrgObj);
 }
 
 int LrgObj() {
-    // <conv.chunks.Comment object at 0x104cadd60>
+    // <conv.chunks.Comment object at 0x102e09d60>
     sta(0x0);
     cmp(0x70);
-    // <conv.chunks.Comment object at 0x104cade80>
+    // <conv.chunks.Comment object at 0x102e09e80>
     BNE(NotWPipe);
     lda((AreaData), y);
     anda(0b1000);
     BEQ(NotWPipe);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x104cae0f0>
-    // <conv.chunks.Comment object at 0x104cae270>
-    // <conv.chunks.Comment object at 0x104cae390>
-    // <conv.chunks.Comment object at 0x104cae4b0>
+    // <conv.chunks.Comment object at 0x102e0a0f0>
+    // <conv.chunks.Comment object at 0x102e0a270>
+    // <conv.chunks.Comment object at 0x102e0a390>
+    // <conv.chunks.Comment object at 0x102e0a4b0>
     sta(0x0);
     JMP(NotWPipe);
 }
 
 int NotWPipe() {
-    // <conv.chunks.Comment object at 0x104cae540>
+    // <conv.chunks.Comment object at 0x102e0a540>
     lda(0x0);
     JMP(MoveAOId);
     JMP(SpecObj);
 }
 
 int SpecObj() {
-    // <conv.chunks.Comment object at 0x104cae900>
+    // <conv.chunks.Comment object at 0x102e0a900>
     iny();
     lda((AreaData), y);
     anda(0b1110000);
@@ -4458,8 +4451,8 @@ int SpecObj() {
 }
 
 int MoveAOId() {
-    // <conv.chunks.Comment object at 0x104caeb70>
-    // <conv.chunks.Comment object at 0x104caec90>
+    // <conv.chunks.Comment object at 0x102e0ab70>
+    // <conv.chunks.Comment object at 0x102e0ac90>
     lsr();
     lsr();
     lsr();
@@ -4468,24 +4461,24 @@ int MoveAOId() {
 }
 
 int NormObj() {
-    // <conv.chunks.Comment object at 0x104caef30>
+    // <conv.chunks.Comment object at 0x102e0af30>
     sta(0x0);
     lda(AreaObjectLength, x);
     BPL(RunAObj);
     lda(AreaObjectPageLoc);
     cmp(CurrentPageLoc);
-    // <conv.chunks.Comment object at 0x104caf050>
-    // <conv.chunks.Comment object at 0x104caf200>
-    // <conv.chunks.Comment object at 0x104caf350>
-    // <conv.chunks.Comment object at 0x104caf470>
+    // <conv.chunks.Comment object at 0x102e0b050>
+    // <conv.chunks.Comment object at 0x102e0b200>
+    // <conv.chunks.Comment object at 0x102e0b350>
+    // <conv.chunks.Comment object at 0x102e0b470>
     BEQ(InitRear);
     ldy(AreaDataOffset);
     lda((AreaData), y);
-    // <conv.chunks.Comment object at 0x104caf680>
-    // <conv.chunks.Comment object at 0x104caf7a0>
+    // <conv.chunks.Comment object at 0x102e0b680>
+    // <conv.chunks.Comment object at 0x102e0b7a0>
     anda(0b1111);
     cmp(0xe);
-    // <conv.chunks.Comment object at 0x104cafa70>
+    // <conv.chunks.Comment object at 0x102e0ba70>
     BNE(LeavePar);
     lda(BackloadingFlag);
     BNE(StrAObj);
@@ -4493,35 +4486,35 @@ int NormObj() {
 }
 
 int LeavePar() {
-    rts();
+    return 0;
     JMP(InitRear);
 }
 
 int InitRear() {
-    // <conv.chunks.Comment object at 0x104caffb0>
+    // <conv.chunks.Comment object at 0x102e0bfb0>
     lda(BackloadingFlag);
     BEQ(BackColC);
     lda(0x0);
     sta(BackloadingFlag);
-    // <conv.chunks.Comment object at 0x104cb8140>
-    // <conv.chunks.Comment object at 0x104cb8260>
-    // <conv.chunks.Comment object at 0x104cb82f0>
+    // <conv.chunks.Comment object at 0x102e14140>
+    // <conv.chunks.Comment object at 0x102e14260>
+    // <conv.chunks.Comment object at 0x102e142f0>
     sta(BehindAreaParserFlag);
     sta(ObjectOffset);
     JMP(LoopCmdE);
 }
 
 int LoopCmdE() {
-    rts();
+    return 0;
     JMP(BackColC);
 }
 
 int BackColC() {
-    // <conv.chunks.Comment object at 0x104cb8740>
+    // <conv.chunks.Comment object at 0x102e14740>
     ldy(AreaDataOffset);
     lda((AreaData), y);
     anda(0b11110000);
-    // <conv.chunks.Comment object at 0x104cb8a10>
+    // <conv.chunks.Comment object at 0x102e14a10>
     lsr();
     lsr();
     lsr();
@@ -4532,9 +4525,9 @@ int BackColC() {
 }
 
 int StrAObj() {
-    // <conv.chunks.Comment object at 0x104cb8d70>
-    // <conv.chunks.Comment object at 0x104cb8e90>
-    // <conv.chunks.Comment object at 0x104cb8fb0>
+    // <conv.chunks.Comment object at 0x102e14d70>
+    // <conv.chunks.Comment object at 0x102e14e90>
+    // <conv.chunks.Comment object at 0x102e14fb0>
     lda(AreaDataOffset);
     sta(AreaObjOffsetBuffer, x);
     JSR(IncAreaObjOffset);
@@ -4542,49 +4535,48 @@ int StrAObj() {
 }
 
 int RunAObj() {
-    // <conv.chunks.Comment object at 0x104cb9250>
-    // <conv.chunks.Comment object at 0x104cb9370>
+    // <conv.chunks.Comment object at 0x102e15250>
+    // <conv.chunks.Comment object at 0x102e15370>
     lda(0x0);
     clc();
-    // <conv.chunks.Comment object at 0x104cb93d0>
+    // <conv.chunks.Comment object at 0x102e153d0>
     adc(0x7);
-    JSR(JumpEngine);
     JMP(AlterAreaAttributes);
 }
 
 int AlterAreaAttributes() {
     ldy(AreaObjOffsetBuffer, x);
     iny();
-    // <conv.chunks.Comment object at 0x104cbb3b0>
-    // <conv.chunks.Comment object at 0x104cbb5c0>
-    // <conv.chunks.Comment object at 0x104cbb6b0>
-    // <conv.chunks.Comment object at 0x104cbb710>
-    // <conv.chunks.Comment object at 0x104cbb890>
+    // <conv.chunks.Comment object at 0x102e173b0>
+    // <conv.chunks.Comment object at 0x102e175c0>
+    // <conv.chunks.Comment object at 0x102e176b0>
+    // <conv.chunks.Comment object at 0x102e17710>
+    // <conv.chunks.Comment object at 0x102e17890>
     lda((AreaData), y);
     pha();
-    // <conv.chunks.Comment object at 0x104cbbaa0>
+    // <conv.chunks.Comment object at 0x102e17aa0>
     anda(0b1000000);
     BNE(Alter2);
-    // <conv.chunks.Comment object at 0x104cbbc20>
+    // <conv.chunks.Comment object at 0x102e17c20>
     pla();
     pha();
     anda(0b1111);
     sta(TerrainControl);
-    // <conv.chunks.Comment object at 0x104cbbe30>
-    // <conv.chunks.Comment object at 0x104cbbec0>
-    // <conv.chunks.Comment object at 0x104cbbfe0>
+    // <conv.chunks.Comment object at 0x102e17e30>
+    // <conv.chunks.Comment object at 0x102e17ec0>
+    // <conv.chunks.Comment object at 0x102e17fe0>
     pla();
     anda(0b110000);
     lsr();
     lsr();
-    // <conv.chunks.Comment object at 0x104cc41d0>
-    // <conv.chunks.Comment object at 0x104cc4320>
-    // <conv.chunks.Comment object at 0x104cc43e0>
+    // <conv.chunks.Comment object at 0x102e201d0>
+    // <conv.chunks.Comment object at 0x102e20320>
+    // <conv.chunks.Comment object at 0x102e203e0>
     lsr();
     lsr();
     sta(BackgroundScenery);
-    // <conv.chunks.Comment object at 0x104cc4590>
-    rts();
+    // <conv.chunks.Comment object at 0x102e20590>
+    return 0;
     JMP(Alter2);
 }
 
@@ -4593,31 +4585,31 @@ int Alter2() {
     anda(0b111);
     cmp(0x4);
     BCC(SetFore);
-    // <conv.chunks.Comment object at 0x104cc4830>
-    // <conv.chunks.Comment object at 0x104cc4950>
-    // <conv.chunks.Comment object at 0x104cc49e0>
+    // <conv.chunks.Comment object at 0x102e20830>
+    // <conv.chunks.Comment object at 0x102e20950>
+    // <conv.chunks.Comment object at 0x102e209e0>
     sta(BackgroundColorCtrl);
     lda(0x0);
     JMP(SetFore);
 }
 
 int SetFore() {
-    // <conv.chunks.Comment object at 0x104cc4d10>
+    // <conv.chunks.Comment object at 0x102e20d10>
     sta(ForegroundScenery);
-    rts();
+    return 0;
     JMP(ScrollLockObject_Warp);
 }
 
 int ScrollLockObject_Warp() {
     ldx(0x4);
     lda(WorldNumber);
-    // <conv.chunks.Comment object at 0x104cc5010>
-    // <conv.chunks.Comment object at 0x104cc50a0>
+    // <conv.chunks.Comment object at 0x102e21010>
+    // <conv.chunks.Comment object at 0x102e210a0>
     BEQ(WarpNum);
     inx();
     ldy(AreaType);
-    // <conv.chunks.Comment object at 0x104cc53a0>
-    // <conv.chunks.Comment object at 0x104cc5430>
+    // <conv.chunks.Comment object at 0x102e213a0>
+    // <conv.chunks.Comment object at 0x102e21430>
     dey();
     BNE(WarpNum);
     inx();
@@ -4628,8 +4620,8 @@ int WarpNum() {
     txa();
     sta(WarpZoneControl);
     JSR(WriteGameText);
-    // <conv.chunks.Comment object at 0x104cc58e0>
-    // <conv.chunks.Comment object at 0x104cc5a00>
+    // <conv.chunks.Comment object at 0x102e218e0>
+    // <conv.chunks.Comment object at 0x102e21a00>
     lda(PiranhaPlant);
     JSR(KillEnemies);
     JMP(ScrollLockObject);
@@ -4637,17 +4629,17 @@ int WarpNum() {
 
 int ScrollLockObject() {
     lda(ScrollLock);
-    // <conv.chunks.Comment object at 0x104cc5d60>
+    // <conv.chunks.Comment object at 0x102e21d60>
     eor(0b1);
     sta(ScrollLock);
-    rts();
+    return 0;
     JMP(KillEnemies);
 }
 
 int KillEnemies() {
     sta(0x0);
-    // <conv.chunks.Comment object at 0x104cc6120>
-    // <conv.chunks.Comment object at 0x104cc61b0>
+    // <conv.chunks.Comment object at 0x102e22120>
+    // <conv.chunks.Comment object at 0x102e221b0>
     lda(0x0);
     ldx(0x4);
     JMP(KillELoop);
@@ -4656,74 +4648,71 @@ int KillEnemies() {
 int KillELoop() {
     ldy(Enemy_ID, x);
     cpy(0x0);
-    // <conv.chunks.Comment object at 0x104cc6630>
+    // <conv.chunks.Comment object at 0x102e22630>
     BNE(NoKillE);
     sta(Enemy_Flag, x);
     JMP(NoKillE);
 }
 
 int NoKillE() {
-    // <conv.chunks.Comment object at 0x104cc6840>
-    // <conv.chunks.Comment object at 0x104cc6990>
+    // <conv.chunks.Comment object at 0x102e22840>
+    // <conv.chunks.Comment object at 0x102e22990>
     dex();
     BPL(KillELoop);
-    rts();
+    return 0;
     JMP(AreaFrenzy);
 }
 
 int AreaFrenzy() {
-    // <conv.chunks.Comment object at 0x104cc6c90>
+    // <conv.chunks.Comment object at 0x102e22c90>
     ldx(0x0);
     lda(((offsetof(G, FrenzyIDData)) - (8)), x);
-    // <conv.chunks.Comment object at 0x104cc6f30>
+    // <conv.chunks.Comment object at 0x102e22f30>
     ldy(0x5);
     JMP(FreCompLoop);
 }
 
 int FreCompLoop() {
-    // <conv.chunks.Comment object at 0x104cc7200>
+    // <conv.chunks.Comment object at 0x102e23200>
     dey();
     BMI(ExitAFrenzy);
     cmp(Enemy_ID, y);
-    // <conv.chunks.Comment object at 0x104cc7380>
-    // <conv.chunks.Comment object at 0x104cc74a0>
+    // <conv.chunks.Comment object at 0x102e23380>
+    // <conv.chunks.Comment object at 0x102e234a0>
     BNE(FreCompLoop);
     lda(0x0);
     JMP(ExitAFrenzy);
 }
 
 int ExitAFrenzy() {
-    // <conv.chunks.Comment object at 0x104cc76e0>
-    // <conv.chunks.Comment object at 0x104cc7770>
+    // <conv.chunks.Comment object at 0x102e236e0>
+    // <conv.chunks.Comment object at 0x102e23770>
     sta(EnemyFrenzyQueue);
-    rts();
+    return 0;
     JMP(AreaStyleObject);
 }
 
 int AreaStyleObject() {
     lda(AreaStyle);
-    // <conv.chunks.Comment object at 0x104cc7a10>
-    // <conv.chunks.Comment object at 0x104cc7a70>
-    JSR(JumpEngine);
     JMP(TreeLedge);
 }
 
 int TreeLedge() {
     JSR(GetLrgObjAttrib);
     lda(AreaObjectLength, x);
-    // <conv.chunks.Comment object at 0x104cc7ce0>
-    // <conv.chunks.Comment object at 0x104cc7fb0>
+    // <conv.chunks.Comment object at 0x102e23ce0>
+    // <conv.chunks.Comment object at 0x102e23fb0>
     BEQ(EndTreeL);
     BPL(MidTreeL);
     tya();
     sta(AreaObjectLength, x);
-    // <conv.chunks.Comment object at 0x104cd03b0>
+    // <conv.chunks.Comment object at 0x102e2c3b0>
     lda(CurrentPageLoc);
     ora(CurrentColumnPos);
-    // <conv.chunks.Comment object at 0x104cd05f0>
+    // <conv.chunks.Comment object at 0x102e2c5f0>
     BEQ(MidTreeL);
     lda(0x16);
-    // <conv.chunks.Comment object at 0x104cd0800>
+    // <conv.chunks.Comment object at 0x102e2c800>
     JMP(NoUnder);
     JMP(MidTreeL);
 }
@@ -4738,11 +4727,11 @@ int MidTreeL() {
 }
 
 int EndTreeL() {
-    // <conv.chunks.Comment object at 0x104cd0b00>
-    // <conv.chunks.Comment object at 0x104cd0bf0>
-    // <conv.chunks.Comment object at 0x104cd0dd0>
-    // <conv.chunks.Comment object at 0x104cd0e60>
-    // <conv.chunks.Comment object at 0x104cd1010>
+    // <conv.chunks.Comment object at 0x102e2cb00>
+    // <conv.chunks.Comment object at 0x102e2cbf0>
+    // <conv.chunks.Comment object at 0x102e2cdd0>
+    // <conv.chunks.Comment object at 0x102e2ce60>
+    // <conv.chunks.Comment object at 0x102e2d010>
     lda(0x18);
     JMP(NoUnder);
     JMP(MushroomLedge);
@@ -4751,40 +4740,40 @@ int EndTreeL() {
 int MushroomLedge() {
     JSR(ChkLrgObjLength);
     sty(0x6);
-    // <conv.chunks.Comment object at 0x104cd12b0>
-    // <conv.chunks.Comment object at 0x104cd1400>
+    // <conv.chunks.Comment object at 0x102e2d2b0>
+    // <conv.chunks.Comment object at 0x102e2d400>
     BCC(EndMushL);
     lda(AreaObjectLength, x);
-    // <conv.chunks.Comment object at 0x104cd15e0>
+    // <conv.chunks.Comment object at 0x102e2d5e0>
     lsr();
     sta(MushroomLedgeHalfLen, x);
     lda(0x19);
-    // <conv.chunks.Comment object at 0x104cd18e0>
+    // <conv.chunks.Comment object at 0x102e2d8e0>
     JMP(NoUnder);
     JMP(EndMushL);
 }
 
 int EndMushL() {
-    // <conv.chunks.Comment object at 0x104cd1b20>
+    // <conv.chunks.Comment object at 0x102e2db20>
     lda(0x1b);
     ldy(AreaObjectLength, x);
     BEQ(NoUnder);
     lda(MushroomLedgeHalfLen, x);
     sta(0x6);
-    // <conv.chunks.Comment object at 0x104cd1eb0>
-    // <conv.chunks.Comment object at 0x104cd2030>
+    // <conv.chunks.Comment object at 0x102e2deb0>
+    // <conv.chunks.Comment object at 0x102e2e030>
     ldx(0x7);
     lda(0x1a);
     sta(MetatileBuffer, x);
     cpy(0x6);
     BNE(MushLExit);
-    // <conv.chunks.Comment object at 0x104cd2270>
-    // <conv.chunks.Comment object at 0x104cd2480>
-    // <conv.chunks.Comment object at 0x104cd2510>
+    // <conv.chunks.Comment object at 0x102e2e270>
+    // <conv.chunks.Comment object at 0x102e2e480>
+    // <conv.chunks.Comment object at 0x102e2e510>
     inx();
     lda(0x4f);
     sta(MetatileBuffer, x);
-    // <conv.chunks.Comment object at 0x104cd2780>
+    // <conv.chunks.Comment object at 0x102e2e780>
     lda(0x50);
     JMP(AllUnder);
 }
@@ -4797,12 +4786,12 @@ int AllUnder() {
 }
 
 int NoUnder() {
-    // <conv.chunks.Comment object at 0x104cd2b10>
-    // <conv.chunks.Comment object at 0x104cd2ba0>
-    // <conv.chunks.Comment object at 0x104cd2d50>
+    // <conv.chunks.Comment object at 0x102e2eb10>
+    // <conv.chunks.Comment object at 0x102e2eba0>
+    // <conv.chunks.Comment object at 0x102e2ed50>
     ldx(0x7);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x104cd2e70>
+    // <conv.chunks.Comment object at 0x102e2ee70>
     JMP(RenderUnderPart);
     JMP(PulleyRopeObject);
 }
@@ -4811,12 +4800,12 @@ int PulleyRopeObject() {
     JSR(ChkLrgObjLength);
     ldy(0x0);
     BCS(RenderPul);
-    // <conv.chunks.Comment object at 0x104cd31d0>
-    // <conv.chunks.Comment object at 0x104cd3470>
-    // <conv.chunks.Comment object at 0x104cd3500>
+    // <conv.chunks.Comment object at 0x102e2f1d0>
+    // <conv.chunks.Comment object at 0x102e2f470>
+    // <conv.chunks.Comment object at 0x102e2f500>
     iny();
     lda(AreaObjectLength, x);
-    // <conv.chunks.Comment object at 0x104cd3740>
+    // <conv.chunks.Comment object at 0x102e2f740>
     BNE(RenderPul);
     iny();
     JMP(RenderPul);
@@ -4829,46 +4818,46 @@ int RenderPul() {
 }
 
 int MushLExit() {
-    // <conv.chunks.Comment object at 0x104cd3b90>
-    // <conv.chunks.Comment object at 0x104cd3cb0>
-    rts();
+    // <conv.chunks.Comment object at 0x102e2fb90>
+    // <conv.chunks.Comment object at 0x102e2fcb0>
+    return 0;
     JMP(CastleObject);
 }
 
 int CastleObject() {
     JSR(GetLrgObjAttrib);
     sty(0x7);
-    // <conv.chunks.Comment object at 0x104cd3e30>
-    // <conv.chunks.Comment object at 0x104cddee0>
+    // <conv.chunks.Comment object at 0x102e2fe30>
+    // <conv.chunks.Comment object at 0x102e39ee0>
     ldy(0x4);
     JSR(ChkLrgObjFixedLength);
-    // <conv.chunks.Comment object at 0x104cde030>
+    // <conv.chunks.Comment object at 0x102e3a030>
     txa();
     pha();
     ldy(AreaObjectLength, x);
     ldx(0x7);
-    // <conv.chunks.Comment object at 0x104cde2a0>
-    // <conv.chunks.Comment object at 0x104cde330>
-    // <conv.chunks.Comment object at 0x104cde4b0>
+    // <conv.chunks.Comment object at 0x102e3a2a0>
+    // <conv.chunks.Comment object at 0x102e3a330>
+    // <conv.chunks.Comment object at 0x102e3a4b0>
     lda(0xb);
     sta(0x6);
     JMP(CRendLoop);
 }
 
 int CRendLoop() {
-    // <conv.chunks.Comment object at 0x104cde6c0>
-    // <conv.chunks.Comment object at 0x104cde750>
+    // <conv.chunks.Comment object at 0x102e3a6c0>
+    // <conv.chunks.Comment object at 0x102e3a750>
     lda(offsetof(G, CastleMetatiles), y);
     sta(MetatileBuffer, x);
     inx();
-    // <conv.chunks.Comment object at 0x104cdea80>
+    // <conv.chunks.Comment object at 0x102e3aa80>
     lda(0x6);
     BEQ(ChkCFloor);
     iny();
     iny();
-    // <conv.chunks.Comment object at 0x104cdeb10>
-    // <conv.chunks.Comment object at 0x104cded50>
-    // <conv.chunks.Comment object at 0x104cdee10>
+    // <conv.chunks.Comment object at 0x102e3ab10>
+    // <conv.chunks.Comment object at 0x102e3ad50>
+    // <conv.chunks.Comment object at 0x102e3ae10>
     iny();
     iny();
     iny();
@@ -4877,71 +4866,71 @@ int CRendLoop() {
 }
 
 int ChkCFloor() {
-    // <conv.chunks.Comment object at 0x104cdf080>
-    // <conv.chunks.Comment object at 0x104cdf110>
+    // <conv.chunks.Comment object at 0x102e3b080>
+    // <conv.chunks.Comment object at 0x102e3b110>
     cpx(0xb);
     BNE(CRendLoop);
-    // <conv.chunks.Comment object at 0x104cdf230>
+    // <conv.chunks.Comment object at 0x102e3b230>
     pla();
     tax();
-    // <conv.chunks.Comment object at 0x104cdf4a0>
+    // <conv.chunks.Comment object at 0x102e3b4a0>
     lda(CurrentPageLoc);
     BEQ(ExitCastle);
     lda(AreaObjectLength, x);
     cmp(0x1);
-    // <conv.chunks.Comment object at 0x104cdf620>
-    // <conv.chunks.Comment object at 0x104cdf740>
-    // <conv.chunks.Comment object at 0x104cdf890>
+    // <conv.chunks.Comment object at 0x102e3b620>
+    // <conv.chunks.Comment object at 0x102e3b740>
+    // <conv.chunks.Comment object at 0x102e3b890>
     BEQ(PlayerStop);
     ldy(0x7);
-    // <conv.chunks.Comment object at 0x104cdfad0>
+    // <conv.chunks.Comment object at 0x102e3bad0>
     BNE(NotTall);
     cmp(0x3);
-    // <conv.chunks.Comment object at 0x104cdfce0>
+    // <conv.chunks.Comment object at 0x102e3bce0>
     BEQ(PlayerStop);
     JMP(NotTall);
 }
 
 int NotTall() {
-    // <conv.chunks.Comment object at 0x104cdfef0>
+    // <conv.chunks.Comment object at 0x102e3bef0>
     cmp(0x2);
     BNE(ExitCastle);
     JSR(GetAreaObjXPosition);
-    // <conv.chunks.Comment object at 0x104cdffe0>
-    // <conv.chunks.Comment object at 0x104ce41d0>
+    // <conv.chunks.Comment object at 0x102e3bfe0>
+    // <conv.chunks.Comment object at 0x102e401d0>
     pha();
     JSR(FindEmptyEnemySlot);
-    // <conv.chunks.Comment object at 0x104ce4380>
+    // <conv.chunks.Comment object at 0x102e40380>
     pla();
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x104ce4530>
+    // <conv.chunks.Comment object at 0x102e40530>
     lda(CurrentPageLoc);
     sta(Enemy_PageLoc, x);
-    // <conv.chunks.Comment object at 0x104ce4770>
+    // <conv.chunks.Comment object at 0x102e40770>
     lda(0x1);
     sta(Enemy_Y_HighPos, x);
     sta(Enemy_Flag, x);
-    // <conv.chunks.Comment object at 0x104ce4920>
-    // <conv.chunks.Comment object at 0x104ce4b00>
+    // <conv.chunks.Comment object at 0x102e40920>
+    // <conv.chunks.Comment object at 0x102e40b00>
     lda(0x90);
     sta(Enemy_Y_Position, x);
     lda(StarFlagObject);
-    // <conv.chunks.Comment object at 0x104ce4cb0>
-    // <conv.chunks.Comment object at 0x104ce4e90>
+    // <conv.chunks.Comment object at 0x102e40cb0>
+    // <conv.chunks.Comment object at 0x102e40e90>
     sta(Enemy_ID, x);
-    rts();
+    return 0;
     JMP(PlayerStop);
 }
 
 int PlayerStop() {
-    // <conv.chunks.Comment object at 0x104ce5160>
+    // <conv.chunks.Comment object at 0x102e41160>
     ldy(0x52);
     sty(((MetatileBuffer) + (10)));
     JMP(ExitCastle);
 }
 
 int ExitCastle() {
-    rts();
+    return 0;
     JMP(WaterPipe);
 }
 
@@ -4949,26 +4938,26 @@ int WaterPipe() {
     JSR(GetLrgObjAttrib);
     ldy(AreaObjectLength, x);
     ldx(0x7);
-    // <conv.chunks.Comment object at 0x104ce55b0>
-    // <conv.chunks.Comment object at 0x104ce56d0>
-    // <conv.chunks.Comment object at 0x104ce5880>
+    // <conv.chunks.Comment object at 0x102e415b0>
+    // <conv.chunks.Comment object at 0x102e416d0>
+    // <conv.chunks.Comment object at 0x102e41880>
     lda(0x6b);
     sta(MetatileBuffer, x);
-    // <conv.chunks.Comment object at 0x104ce59d0>
+    // <conv.chunks.Comment object at 0x102e419d0>
     lda(0x6c);
     sta(((MetatileBuffer) + (1)), x);
-    rts();
+    return 0;
     JMP(IntroPipe);
 }
 
 int IntroPipe() {
     ldy(0x3);
-    // <conv.chunks.Comment object at 0x104ce5f40>
-    // <conv.chunks.Comment object at 0x104ce5fa0>
-    // <conv.chunks.Comment object at 0x104ce6000>
+    // <conv.chunks.Comment object at 0x102e41f40>
+    // <conv.chunks.Comment object at 0x102e41fa0>
+    // <conv.chunks.Comment object at 0x102e42000>
     JSR(ChkLrgObjFixedLength);
     ldy(0xa);
-    // <conv.chunks.Comment object at 0x104ce6210>
+    // <conv.chunks.Comment object at 0x102e42210>
     JSR(RenderSidewaysPipe);
     BCS(NoBlankP);
     ldx(0x6);
@@ -4976,28 +4965,28 @@ int IntroPipe() {
 }
 
 int VPipeSectLoop() {
-    // <conv.chunks.Comment object at 0x104ce6420>
-    // <conv.chunks.Comment object at 0x104ce6540>
-    // <conv.chunks.Comment object at 0x104ce65d0>
+    // <conv.chunks.Comment object at 0x102e42420>
+    // <conv.chunks.Comment object at 0x102e42540>
+    // <conv.chunks.Comment object at 0x102e425d0>
     lda(0x0);
     sta(MetatileBuffer, x);
-    // <conv.chunks.Comment object at 0x104ce6720>
+    // <conv.chunks.Comment object at 0x102e42720>
     dex();
     BPL(VPipeSectLoop);
     lda(offsetof(G, VerticalPipeData), y);
-    // <conv.chunks.Comment object at 0x104ce6a80>
+    // <conv.chunks.Comment object at 0x102e42a80>
     sta(((MetatileBuffer) + (7)));
     JMP(NoBlankP);
 }
 
 int NoBlankP() {
-    rts();
+    return 0;
     JMP(ExitPipe);
 }
 
 int ExitPipe() {
     ldy(0x3);
-    // <conv.chunks.Comment object at 0x104ce7080>
+    // <conv.chunks.Comment object at 0x102e43080>
     JSR(ChkLrgObjFixedLength);
     JSR(GetLrgObjAttrib);
     JMP(RenderSidewaysPipe);
@@ -5006,20 +4995,20 @@ int ExitPipe() {
 int RenderSidewaysPipe() {
     dey();
     dey();
-    // <conv.chunks.Comment object at 0x104ce7a10>
-    // <conv.chunks.Comment object at 0x104ce7ad0>
+    // <conv.chunks.Comment object at 0x102e43a10>
+    // <conv.chunks.Comment object at 0x102e43ad0>
     sty(0x5);
     ldy(AreaObjectLength, x);
-    // <conv.chunks.Comment object at 0x104ce7b60>
+    // <conv.chunks.Comment object at 0x102e43b60>
     sty(0x6);
     ldx(0x5);
-    // <conv.chunks.Comment object at 0x104ce7e30>
+    // <conv.chunks.Comment object at 0x102e43e30>
     inx();
     lda(offsetof(G, SidePipeShaftData), y);
-    // <conv.chunks.Comment object at 0x104cec080>
+    // <conv.chunks.Comment object at 0x102e48080>
     cmp(0x0);
     BEQ(DrawSidePart);
-    // <conv.chunks.Comment object at 0x104cec230>
+    // <conv.chunks.Comment object at 0x102e48230>
     ldx(0x0);
     ldy(0x5);
     JSR(RenderUnderPart);
@@ -5028,18 +5017,18 @@ int RenderSidewaysPipe() {
 }
 
 int DrawSidePart() {
-    // <conv.chunks.Comment object at 0x104cec500>
-    // <conv.chunks.Comment object at 0x104cec590>
-    // <conv.chunks.Comment object at 0x104cec740>
-    // <conv.chunks.Comment object at 0x104cec7d0>
+    // <conv.chunks.Comment object at 0x102e48500>
+    // <conv.chunks.Comment object at 0x102e48590>
+    // <conv.chunks.Comment object at 0x102e48740>
+    // <conv.chunks.Comment object at 0x102e487d0>
     ldy(0x6);
     lda(offsetof(G, SidePipeTopPart), y);
     sta(MetatileBuffer, x);
     lda(offsetof(G, SidePipeBottomPart), y);
-    // <conv.chunks.Comment object at 0x104ceca40>
-    // <conv.chunks.Comment object at 0x104cecb90>
+    // <conv.chunks.Comment object at 0x102e48a40>
+    // <conv.chunks.Comment object at 0x102e48b90>
     sta(((MetatileBuffer) + (1)), x);
-    rts();
+    return 0;
     JMP(VerticalPipe);
 }
 
@@ -5047,8 +5036,8 @@ int VerticalPipe() {
     JSR(GetPipeHeight);
     lda(0x0);
     BEQ(WarpPipe);
-    // <conv.chunks.Comment object at 0x104ced5b0>
-    // <conv.chunks.Comment object at 0x104ced640>
+    // <conv.chunks.Comment object at 0x102e495b0>
+    // <conv.chunks.Comment object at 0x102e49640>
     iny();
     iny();
     iny();
@@ -5057,63 +5046,63 @@ int VerticalPipe() {
 }
 
 int WarpPipe() {
-    // <conv.chunks.Comment object at 0x104ced9a0>
-    // <conv.chunks.Comment object at 0x104ceda30>
+    // <conv.chunks.Comment object at 0x102e499a0>
+    // <conv.chunks.Comment object at 0x102e49a30>
     tya();
     pha();
     lda(AreaNumber);
     ora(WorldNumber);
-    // <conv.chunks.Comment object at 0x104cedca0>
+    // <conv.chunks.Comment object at 0x102e49ca0>
     BEQ(DrawPipe);
     ldy(AreaObjectLength, x);
     BEQ(DrawPipe);
     JSR(FindEmptyEnemySlot);
     BCS(DrawPipe);
     JSR(GetAreaObjXPosition);
-    // <conv.chunks.Comment object at 0x104cedeb0>
-    // <conv.chunks.Comment object at 0x104cee000>
-    // <conv.chunks.Comment object at 0x104cee120>
-    // <conv.chunks.Comment object at 0x104cee240>
-    // <conv.chunks.Comment object at 0x104cee360>
+    // <conv.chunks.Comment object at 0x102e49eb0>
+    // <conv.chunks.Comment object at 0x102e4a000>
+    // <conv.chunks.Comment object at 0x102e4a120>
+    // <conv.chunks.Comment object at 0x102e4a240>
+    // <conv.chunks.Comment object at 0x102e4a360>
     clc();
     adc(0x8);
     sta(Enemy_X_Position, x);
     lda(CurrentPageLoc);
-    // <conv.chunks.Comment object at 0x104cee510>
-    // <conv.chunks.Comment object at 0x104cee5a0>
-    // <conv.chunks.Comment object at 0x104cee780>
+    // <conv.chunks.Comment object at 0x102e4a510>
+    // <conv.chunks.Comment object at 0x102e4a5a0>
+    // <conv.chunks.Comment object at 0x102e4a780>
     adc(0x0);
     sta(Enemy_PageLoc, x);
-    // <conv.chunks.Comment object at 0x104cee900>
+    // <conv.chunks.Comment object at 0x102e4a900>
     lda(0x1);
     sta(Enemy_Y_HighPos, x);
     sta(Enemy_Flag, x);
     JSR(GetAreaObjYPosition);
-    // <conv.chunks.Comment object at 0x104ceecf0>
-    // <conv.chunks.Comment object at 0x104ceee40>
+    // <conv.chunks.Comment object at 0x102e4acf0>
+    // <conv.chunks.Comment object at 0x102e4ae40>
     sta(Enemy_Y_Position, x);
     lda(PiranhaPlant);
-    // <conv.chunks.Comment object at 0x104cef080>
+    // <conv.chunks.Comment object at 0x102e4b080>
     sta(Enemy_ID, x);
     JSR(InitPiranhaPlant);
     JMP(DrawPipe);
 }
 
 int DrawPipe() {
-    // <conv.chunks.Comment object at 0x104cef3b0>
+    // <conv.chunks.Comment object at 0x102e4b3b0>
     pla();
     tay();
     ldx(0x7);
     lda(offsetof(G, VerticalPipeData), y);
     sta(MetatileBuffer, x);
-    // <conv.chunks.Comment object at 0x104cef560>
-    // <conv.chunks.Comment object at 0x104cef5f0>
-    // <conv.chunks.Comment object at 0x104cef7a0>
+    // <conv.chunks.Comment object at 0x102e4b560>
+    // <conv.chunks.Comment object at 0x102e4b5f0>
+    // <conv.chunks.Comment object at 0x102e4b7a0>
     inx();
     lda(((offsetof(G, VerticalPipeData)) + (2)), y);
     ldy(0x6);
-    // <conv.chunks.Comment object at 0x104cef980>
-    // <conv.chunks.Comment object at 0x104cefbc0>
+    // <conv.chunks.Comment object at 0x102e4b980>
+    // <conv.chunks.Comment object at 0x102e4bbc0>
     dey();
     JMP(RenderUnderPart);
     JMP(GetPipeHeight);
@@ -5122,18 +5111,18 @@ int DrawPipe() {
 int GetPipeHeight() {
     ldy(0x1);
     JSR(ChkLrgObjFixedLength);
-    // <conv.chunks.Comment object at 0x104cefe60>
-    // <conv.chunks.Comment object at 0x104cefef0>
+    // <conv.chunks.Comment object at 0x102e4be60>
+    // <conv.chunks.Comment object at 0x102e4bef0>
     JSR(GetLrgObjAttrib);
     tya();
     anda(0x7);
     sta(0x6);
     ldy(AreaObjectLength, x);
-    // <conv.chunks.Comment object at 0x104cf8200>
-    // <conv.chunks.Comment object at 0x104cf8290>
-    // <conv.chunks.Comment object at 0x104cf83e0>
-    // <conv.chunks.Comment object at 0x104cf8470>
-    rts();
+    // <conv.chunks.Comment object at 0x102e54200>
+    // <conv.chunks.Comment object at 0x102e54290>
+    // <conv.chunks.Comment object at 0x102e543e0>
+    // <conv.chunks.Comment object at 0x102e54470>
+    return 0;
     JMP(FindEmptyEnemySlot);
 }
 
@@ -5143,35 +5132,35 @@ int FindEmptyEnemySlot() {
 }
 
 int EmptyChkLoop() {
-    // <conv.chunks.Comment object at 0x104cf86e0>
-    // <conv.chunks.Comment object at 0x104cf8770>
+    // <conv.chunks.Comment object at 0x102e546e0>
+    // <conv.chunks.Comment object at 0x102e54770>
     clc();
     lda(Enemy_Flag, x);
     BEQ(ExitEmptyChk);
-    // <conv.chunks.Comment object at 0x104cf88f0>
-    // <conv.chunks.Comment object at 0x104cf8a40>
+    // <conv.chunks.Comment object at 0x102e548f0>
+    // <conv.chunks.Comment object at 0x102e54a40>
     inx();
     cpx(0x5);
-    // <conv.chunks.Comment object at 0x104cf8bf0>
+    // <conv.chunks.Comment object at 0x102e54bf0>
     BNE(EmptyChkLoop);
     JMP(ExitEmptyChk);
 }
 
 int ExitEmptyChk() {
-    // <conv.chunks.Comment object at 0x104cf8e00>
-    rts();
+    // <conv.chunks.Comment object at 0x102e54e00>
+    return 0;
     JMP(Hole_Water);
 }
 
 int Hole_Water() {
     JSR(ChkLrgObjLength);
     lda(0x86);
-    // <conv.chunks.Comment object at 0x104cf8f50>
-    // <conv.chunks.Comment object at 0x104cf9070>
+    // <conv.chunks.Comment object at 0x102e54f50>
+    // <conv.chunks.Comment object at 0x102e55070>
     sta(((MetatileBuffer) + (10)));
     ldx(0xb);
     ldy(0x1);
-    // <conv.chunks.Comment object at 0x104cf93a0>
+    // <conv.chunks.Comment object at 0x102e553a0>
     lda(0x87);
     JMP(RenderUnderPart);
     JMP(QuestionBlockRow_High);
@@ -5186,15 +5175,15 @@ int QuestionBlockRow_Low() {
     lda(0x7);
     pha();
     JSR(ChkLrgObjLength);
-    // <conv.chunks.Comment object at 0x104cf9940>
-    // <conv.chunks.Comment object at 0x104cf9af0>
-    // <conv.chunks.Comment object at 0x104cf9b80>
+    // <conv.chunks.Comment object at 0x102e55940>
+    // <conv.chunks.Comment object at 0x102e55af0>
+    // <conv.chunks.Comment object at 0x102e55b80>
     pla();
     tax();
-    // <conv.chunks.Comment object at 0x104cf9d60>
+    // <conv.chunks.Comment object at 0x102e55d60>
     lda(0xc0);
     sta(MetatileBuffer, x);
-    rts();
+    return 0;
     JMP(Bridge_High);
 }
 
@@ -5212,17 +5201,17 @@ int Bridge_Low() {
     lda(0x9);
     pha();
     JSR(ChkLrgObjLength);
-    // <conv.chunks.Comment object at 0x104cfa4b0>
-    // <conv.chunks.Comment object at 0x104cfa660>
-    // <conv.chunks.Comment object at 0x104cfa6f0>
+    // <conv.chunks.Comment object at 0x102e564b0>
+    // <conv.chunks.Comment object at 0x102e56660>
+    // <conv.chunks.Comment object at 0x102e566f0>
     pla();
     tax();
-    // <conv.chunks.Comment object at 0x104cfa8d0>
+    // <conv.chunks.Comment object at 0x102e568d0>
     lda(0xb);
     sta(MetatileBuffer, x);
     inx();
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x104cfac00>
+    // <conv.chunks.Comment object at 0x102e56c00>
     lda(0x63);
     JMP(RenderUnderPart);
     JMP(FlagBalls_Residual);
@@ -5232,55 +5221,55 @@ int FlagBalls_Residual() {
     JSR(GetLrgObjAttrib);
     ldx(0x2);
     lda(0x6d);
-    // <conv.chunks.Comment object at 0x104cfaf60>
-    // <conv.chunks.Comment object at 0x104cfb080>
-    // <conv.chunks.Comment object at 0x104cfb110>
+    // <conv.chunks.Comment object at 0x102e56f60>
+    // <conv.chunks.Comment object at 0x102e57080>
+    // <conv.chunks.Comment object at 0x102e57110>
     JMP(RenderUnderPart);
     JMP(FlagpoleObject);
 }
 
 int FlagpoleObject() {
     lda(0x24);
-    // <conv.chunks.Comment object at 0x104cfb410>
+    // <conv.chunks.Comment object at 0x102e57410>
     sta(MetatileBuffer);
     ldx(0x1);
-    // <conv.chunks.Comment object at 0x104cfb620>
+    // <conv.chunks.Comment object at 0x102e57620>
     ldy(0x8);
     lda(0x25);
     JSR(RenderUnderPart);
     lda(0x61);
-    // <conv.chunks.Comment object at 0x104cfba10>
+    // <conv.chunks.Comment object at 0x102e57a10>
     sta(((MetatileBuffer) + (10)));
     JSR(GetAreaObjXPosition);
     sec();
     sbc(0x8);
     sta(((Enemy_X_Position) + (5)));
-    // <conv.chunks.Comment object at 0x104cfbe00>
-    // <conv.chunks.Comment object at 0x104cfbe90>
-    // <conv.chunks.Comment object at 0x104cfbf20>
+    // <conv.chunks.Comment object at 0x102e57e00>
+    // <conv.chunks.Comment object at 0x102e57e90>
+    // <conv.chunks.Comment object at 0x102e57f20>
     lda(CurrentPageLoc);
     sbc(0x0);
     sta(((Enemy_PageLoc) + (5)));
-    // <conv.chunks.Comment object at 0x104d042c0>
-    // <conv.chunks.Comment object at 0x104d04350>
+    // <conv.chunks.Comment object at 0x102e602c0>
+    // <conv.chunks.Comment object at 0x102e60350>
     lda(0x30);
     sta(((Enemy_Y_Position) + (5)));
-    // <conv.chunks.Comment object at 0x104d04620>
+    // <conv.chunks.Comment object at 0x102e60620>
     lda(0xb0);
     sta(FlagpoleFNum_Y_Pos);
-    // <conv.chunks.Comment object at 0x104d048f0>
+    // <conv.chunks.Comment object at 0x102e608f0>
     lda(FlagpoleFlagObject);
     sta(((Enemy_ID) + (5)));
     inc(((Enemy_Flag) + (5)));
-    // <conv.chunks.Comment object at 0x104d04b90>
-    // <conv.chunks.Comment object at 0x104d04d70>
-    rts();
+    // <conv.chunks.Comment object at 0x102e60b90>
+    // <conv.chunks.Comment object at 0x102e60d70>
+    return 0;
     JMP(EndlessRope);
 }
 
 int EndlessRope() {
     ldx(0x0);
-    // <conv.chunks.Comment object at 0x104d05040>
+    // <conv.chunks.Comment object at 0x102e61040>
     ldy(0xf);
     JMP(DrawRope);
     JMP(BalancePlatRope);
@@ -5288,25 +5277,25 @@ int EndlessRope() {
 
 int BalancePlatRope() {
     txa();
-    // <conv.chunks.Comment object at 0x104d053a0>
+    // <conv.chunks.Comment object at 0x102e613a0>
     pha();
     ldx(0x1);
     ldy(0xf);
-    // <conv.chunks.Comment object at 0x104d054c0>
-    // <conv.chunks.Comment object at 0x104d05550>
+    // <conv.chunks.Comment object at 0x102e614c0>
+    // <conv.chunks.Comment object at 0x102e61550>
     lda(0x44);
     JSR(RenderUnderPart);
     pla();
-    // <conv.chunks.Comment object at 0x104d05910>
+    // <conv.chunks.Comment object at 0x102e61910>
     tax();
     JSR(GetLrgObjAttrib);
-    // <conv.chunks.Comment object at 0x104d05a30>
+    // <conv.chunks.Comment object at 0x102e61a30>
     ldx(0x1);
     JMP(DrawRope);
 }
 
 int DrawRope() {
-    // <conv.chunks.Comment object at 0x104d05bb0>
+    // <conv.chunks.Comment object at 0x102e61bb0>
     lda(0x40);
     JMP(RenderUnderPart);
     JMP(RowOfCoins);
@@ -5315,15 +5304,15 @@ int DrawRope() {
 int RowOfCoins() {
     ldy(AreaType);
     lda(offsetof(G, CoinMetatileData), y);
-    // <conv.chunks.Comment object at 0x104d05f40>
-    // <conv.chunks.Comment object at 0x104d06270>
+    // <conv.chunks.Comment object at 0x102e61f40>
+    // <conv.chunks.Comment object at 0x102e62270>
     JMP(GetRow);
     JMP(CastleBridgeObj);
 }
 
 int CastleBridgeObj() {
     ldy(0xc);
-    // <conv.chunks.Comment object at 0x104d06540>
+    // <conv.chunks.Comment object at 0x102e62540>
     JSR(ChkLrgObjFixedLength);
     JMP(ChainObj);
     JMP(AxeObj);
@@ -5331,7 +5320,7 @@ int CastleBridgeObj() {
 
 int AxeObj() {
     lda(0x8);
-    // <conv.chunks.Comment object at 0x104d06c00>
+    // <conv.chunks.Comment object at 0x102e62c00>
     sta(VRAM_Buffer_AddrCtrl);
     JMP(ChainObj);
 }
@@ -5339,8 +5328,8 @@ int AxeObj() {
 int ChainObj() {
     ldy(0x0);
     ldx(((offsetof(G, C_ObjectRow)) - (2)), y);
-    // <conv.chunks.Comment object at 0x104d06ed0>
-    // <conv.chunks.Comment object at 0x104d06f60>
+    // <conv.chunks.Comment object at 0x102e62ed0>
+    // <conv.chunks.Comment object at 0x102e62f60>
     lda(((offsetof(G, C_ObjectMetatile)) - (2)), y);
     JMP(ColObj);
     JMP(EmptyBlock);
@@ -5348,14 +5337,14 @@ int ChainObj() {
 
 int EmptyBlock() {
     JSR(GetLrgObjAttrib);
-    // <conv.chunks.Comment object at 0x104d07500>
+    // <conv.chunks.Comment object at 0x102e63500>
     ldx(0x7);
     lda(0xc4);
     JMP(ColObj);
 }
 
 int ColObj() {
-    // <conv.chunks.Comment object at 0x104d07770>
+    // <conv.chunks.Comment object at 0x102e63770>
     ldy(0x0);
     JMP(RenderUnderPart);
     JMP(RowOfBricks);
@@ -5364,16 +5353,16 @@ int ColObj() {
 int RowOfBricks() {
     ldy(AreaType);
     lda(CloudTypeOverride);
-    // <conv.chunks.Comment object at 0x104d07bc0>
-    // <conv.chunks.Comment object at 0x104d0c1d0>
+    // <conv.chunks.Comment object at 0x102e63bc0>
+    // <conv.chunks.Comment object at 0x102e681d0>
     BEQ(DrawBricks);
     ldy(0x4);
     JMP(DrawBricks);
 }
 
 int DrawBricks() {
-    // <conv.chunks.Comment object at 0x104d0c3e0>
-    // <conv.chunks.Comment object at 0x104d0c470>
+    // <conv.chunks.Comment object at 0x102e683e0>
+    // <conv.chunks.Comment object at 0x102e68470>
     lda(offsetof(G, BrickMetatiles), y);
     JMP(GetRow);
     JMP(RowOfSolidBlocks);
@@ -5386,9 +5375,9 @@ int RowOfSolidBlocks() {
 }
 
 int GetRow() {
-    // <conv.chunks.Comment object at 0x104d0c800>
-    // <conv.chunks.Comment object at 0x104d0c920>
-    // <conv.chunks.Comment object at 0x104d0ca70>
+    // <conv.chunks.Comment object at 0x102e68800>
+    // <conv.chunks.Comment object at 0x102e68920>
+    // <conv.chunks.Comment object at 0x102e68a70>
     pha();
     JSR(ChkLrgObjLength);
     JMP(DrawRow);
@@ -5397,7 +5386,7 @@ int GetRow() {
 int DrawRow() {
     ldx(0x7);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x104d0cda0>
+    // <conv.chunks.Comment object at 0x102e68da0>
     pla();
     JMP(RenderUnderPart);
     JMP(ColumnOfBricks);
@@ -5406,8 +5395,8 @@ int DrawRow() {
 int ColumnOfBricks() {
     ldy(AreaType);
     lda(offsetof(G, BrickMetatiles), y);
-    // <conv.chunks.Comment object at 0x104d0d100>
-    // <conv.chunks.Comment object at 0x104d0d220>
+    // <conv.chunks.Comment object at 0x102e69100>
+    // <conv.chunks.Comment object at 0x102e69220>
     JMP(GetRow2);
     JMP(ColumnOfSolidBlocks);
 }
@@ -5419,9 +5408,9 @@ int ColumnOfSolidBlocks() {
 }
 
 int GetRow2() {
-    // <conv.chunks.Comment object at 0x104d0d4c0>
-    // <conv.chunks.Comment object at 0x104d0d5e0>
-    // <conv.chunks.Comment object at 0x104d0d730>
+    // <conv.chunks.Comment object at 0x102e694c0>
+    // <conv.chunks.Comment object at 0x102e695e0>
+    // <conv.chunks.Comment object at 0x102e69730>
     pha();
     JSR(GetLrgObjAttrib);
     pla();
@@ -5434,41 +5423,41 @@ int BulletBillCannon() {
     JSR(GetLrgObjAttrib);
     ldx(0x7);
     lda(0x64);
-    // <conv.chunks.Comment object at 0x104d0dcd0>
-    // <conv.chunks.Comment object at 0x104d0de20>
-    // <conv.chunks.Comment object at 0x104d0deb0>
+    // <conv.chunks.Comment object at 0x102e69cd0>
+    // <conv.chunks.Comment object at 0x102e69e20>
+    // <conv.chunks.Comment object at 0x102e69eb0>
     sta(MetatileBuffer, x);
     inx();
     dey();
-    // <conv.chunks.Comment object at 0x104d0e210>
+    // <conv.chunks.Comment object at 0x102e6a210>
     BMI(SetupCannon);
     lda(0x65);
-    // <conv.chunks.Comment object at 0x104d0e390>
+    // <conv.chunks.Comment object at 0x102e6a390>
     sta(MetatileBuffer, x);
     inx();
     dey();
-    // <conv.chunks.Comment object at 0x104d0e690>
+    // <conv.chunks.Comment object at 0x102e6a690>
     BMI(SetupCannon);
     lda(0x66);
-    // <conv.chunks.Comment object at 0x104d0e810>
+    // <conv.chunks.Comment object at 0x102e6a810>
     JSR(RenderUnderPart);
     JMP(SetupCannon);
 }
 
 int SetupCannon() {
-    // <conv.chunks.Comment object at 0x104d0ea20>
+    // <conv.chunks.Comment object at 0x102e6aa20>
     ldx(Cannon_Offset);
     JSR(GetAreaObjYPosition);
     sta(Cannon_Y_Position, x);
-    // <conv.chunks.Comment object at 0x104d0eb70>
-    // <conv.chunks.Comment object at 0x104d0ec90>
+    // <conv.chunks.Comment object at 0x102e6ab70>
+    // <conv.chunks.Comment object at 0x102e6ac90>
     lda(CurrentPageLoc);
     sta(Cannon_PageLoc, x);
     JSR(GetAreaObjXPosition);
     sta(Cannon_X_Position, x);
-    // <conv.chunks.Comment object at 0x104d0eed0>
-    // <conv.chunks.Comment object at 0x104d0f020>
-    // <conv.chunks.Comment object at 0x104d0f140>
+    // <conv.chunks.Comment object at 0x102e6aed0>
+    // <conv.chunks.Comment object at 0x102e6b020>
+    // <conv.chunks.Comment object at 0x102e6b140>
     inx();
     cpx(0x6);
     BCC(StrCOffset);
@@ -5477,12 +5466,12 @@ int SetupCannon() {
 }
 
 int StrCOffset() {
-    // <conv.chunks.Comment object at 0x104d0f320>
-    // <conv.chunks.Comment object at 0x104d0f3b0>
-    // <conv.chunks.Comment object at 0x104d0f560>
-    // <conv.chunks.Comment object at 0x104d0f5f0>
+    // <conv.chunks.Comment object at 0x102e6b320>
+    // <conv.chunks.Comment object at 0x102e6b3b0>
+    // <conv.chunks.Comment object at 0x102e6b560>
+    // <conv.chunks.Comment object at 0x102e6b5f0>
     stx(Cannon_Offset);
-    rts();
+    return 0;
     JMP(StaircaseObject);
 }
 
@@ -5495,19 +5484,19 @@ int StaircaseObject() {
 }
 
 int NextStair() {
-    // <conv.chunks.Comment object at 0x104d0f980>
-    // <conv.chunks.Comment object at 0x104d0f8c0>
-    // <conv.chunks.Comment object at 0x104d145c0>
-    // <conv.chunks.Comment object at 0x104d14650>
-    // <conv.chunks.Comment object at 0x104d14800>
+    // <conv.chunks.Comment object at 0x102e6b980>
+    // <conv.chunks.Comment object at 0x102e6b8c0>
+    // <conv.chunks.Comment object at 0x102e705c0>
+    // <conv.chunks.Comment object at 0x102e70650>
+    // <conv.chunks.Comment object at 0x102e70800>
     dec(StaircaseControl);
     ldy(StaircaseControl);
     ldx(offsetof(G, StaircaseRowData), y);
-    // <conv.chunks.Comment object at 0x104d14a40>
+    // <conv.chunks.Comment object at 0x102e70a40>
     lda(offsetof(G, StaircaseHeightData), y);
     tay();
     lda(0x61);
-    // <conv.chunks.Comment object at 0x104d14d40>
+    // <conv.chunks.Comment object at 0x102e70d40>
     JMP(RenderUnderPart);
     JMP(Jumpspring);
 }
@@ -5518,42 +5507,42 @@ int Jumpspring() {
     JSR(GetAreaObjXPosition);
     sta(Enemy_X_Position, x);
     lda(CurrentPageLoc);
-    // <conv.chunks.Comment object at 0x104d150a0>
-    // <conv.chunks.Comment object at 0x104d151c0>
-    // <conv.chunks.Comment object at 0x104d152e0>
-    // <conv.chunks.Comment object at 0x104d15430>
+    // <conv.chunks.Comment object at 0x102e710a0>
+    // <conv.chunks.Comment object at 0x102e711c0>
+    // <conv.chunks.Comment object at 0x102e712e0>
+    // <conv.chunks.Comment object at 0x102e71430>
     sta(Enemy_PageLoc, x);
     JSR(GetAreaObjYPosition);
     sta(Enemy_Y_Position, x);
     sta(Jumpspring_FixedYPos, x);
-    // <conv.chunks.Comment object at 0x104d15670>
-    // <conv.chunks.Comment object at 0x104d15790>
-    // <conv.chunks.Comment object at 0x104d158e0>
+    // <conv.chunks.Comment object at 0x102e71670>
+    // <conv.chunks.Comment object at 0x102e71790>
+    // <conv.chunks.Comment object at 0x102e718e0>
     lda(JumpspringObject);
     sta(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x104d15b20>
+    // <conv.chunks.Comment object at 0x102e71b20>
     ldy(0x1);
     sty(Enemy_Y_HighPos, x);
     inc(Enemy_Flag, x);
-    // <conv.chunks.Comment object at 0x104d15cd0>
-    // <conv.chunks.Comment object at 0x104d15eb0>
+    // <conv.chunks.Comment object at 0x102e71cd0>
+    // <conv.chunks.Comment object at 0x102e71eb0>
     ldx(0x7);
     lda(0x67);
-    // <conv.chunks.Comment object at 0x104d16000>
+    // <conv.chunks.Comment object at 0x102e72000>
     sta(MetatileBuffer, x);
     lda(0x68);
     sta(((MetatileBuffer) + (1)), x);
-    rts();
+    return 0;
     JMP(Hidden1UpBlock);
 }
 
 int Hidden1UpBlock() {
     lda(Hidden1UpFlag);
-    // <conv.chunks.Comment object at 0x104d166c0>
-    // <conv.chunks.Comment object at 0x104d16720>
+    // <conv.chunks.Comment object at 0x102e726c0>
+    // <conv.chunks.Comment object at 0x102e72720>
     BEQ(ExitDecBlock);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x104d16930>
+    // <conv.chunks.Comment object at 0x102e72930>
     sta(Hidden1UpFlag);
     JMP(BrickWithItem);
     JMP(QuestionBlock);
@@ -5567,19 +5556,19 @@ int QuestionBlock() {
 
 int BrickWithCoins() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x104d16f00>
+    // <conv.chunks.Comment object at 0x102e72f00>
     sta(BrickCoinTimerFlag);
     JMP(BrickWithItem);
 }
 
 int BrickWithItem() {
     JSR(GetAreaObjectID);
-    // <conv.chunks.Comment object at 0x104d17140>
+    // <conv.chunks.Comment object at 0x102e73140>
     sty(0x7);
     lda(0x0);
     ldy(AreaType);
-    // <conv.chunks.Comment object at 0x104d17260>
-    // <conv.chunks.Comment object at 0x104d173e0>
+    // <conv.chunks.Comment object at 0x102e73260>
+    // <conv.chunks.Comment object at 0x102e733e0>
     dey();
     BEQ(BWithL);
     lda(0x5);
@@ -5587,9 +5576,9 @@ int BrickWithItem() {
 }
 
 int BWithL() {
-    // <conv.chunks.Comment object at 0x104d17620>
-    // <conv.chunks.Comment object at 0x104d17770>
-    // <conv.chunks.Comment object at 0x104d17800>
+    // <conv.chunks.Comment object at 0x102e73620>
+    // <conv.chunks.Comment object at 0x102e73770>
+    // <conv.chunks.Comment object at 0x102e73800>
     clc();
     adc(0x7);
     tay();
@@ -5597,8 +5586,8 @@ int BWithL() {
 }
 
 int DrawQBlk() {
-    // <conv.chunks.Comment object at 0x104d17a40>
-    // <conv.chunks.Comment object at 0x104d17b60>
+    // <conv.chunks.Comment object at 0x102e73a40>
+    // <conv.chunks.Comment object at 0x102e73b60>
     lda(offsetof(G, BrickQBlockMetatiles), y);
     pha();
     JSR(GetLrgObjAttrib);
@@ -5608,7 +5597,7 @@ int DrawQBlk() {
 
 int GetAreaObjectID() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x104d200b0>
+    // <conv.chunks.Comment object at 0x102e7c0b0>
     sec();
     sbc(0x0);
     tay();
@@ -5616,7 +5605,7 @@ int GetAreaObjectID() {
 }
 
 int ExitDecBlock() {
-    rts();
+    return 0;
     JMP(Hole_Empty);
 }
 
@@ -5627,37 +5616,37 @@ int Hole_Empty() {
     BNE(NoWhirlP);
     ldx(Whirlpool_Offset);
     JSR(GetAreaObjXPosition);
-    // <conv.chunks.Comment object at 0x104d20590>
-    // <conv.chunks.Comment object at 0x104d208c0>
-    // <conv.chunks.Comment object at 0x104d209e0>
-    // <conv.chunks.Comment object at 0x104d20b00>
-    // <conv.chunks.Comment object at 0x104d20c20>
-    // <conv.chunks.Comment object at 0x104d20d40>
+    // <conv.chunks.Comment object at 0x102e7c590>
+    // <conv.chunks.Comment object at 0x102e7c8c0>
+    // <conv.chunks.Comment object at 0x102e7c9e0>
+    // <conv.chunks.Comment object at 0x102e7cb00>
+    // <conv.chunks.Comment object at 0x102e7cc20>
+    // <conv.chunks.Comment object at 0x102e7cd40>
     sec();
     sbc(0x10);
     sta(Whirlpool_LeftExtent, x);
     lda(CurrentPageLoc);
     sbc(0x0);
     sta(Whirlpool_PageLoc, x);
-    // <conv.chunks.Comment object at 0x104d20ef0>
-    // <conv.chunks.Comment object at 0x104d20f80>
-    // <conv.chunks.Comment object at 0x104d21160>
-    // <conv.chunks.Comment object at 0x104d21280>
-    // <conv.chunks.Comment object at 0x104d21310>
+    // <conv.chunks.Comment object at 0x102e7cef0>
+    // <conv.chunks.Comment object at 0x102e7cf80>
+    // <conv.chunks.Comment object at 0x102e7d160>
+    // <conv.chunks.Comment object at 0x102e7d280>
+    // <conv.chunks.Comment object at 0x102e7d310>
     iny();
     iny();
-    // <conv.chunks.Comment object at 0x104d215b0>
+    // <conv.chunks.Comment object at 0x102e7d5b0>
     tya();
     asl();
     asl();
     asl();
     asl();
     sta(Whirlpool_Length, x);
-    // <conv.chunks.Comment object at 0x104d21700>
-    // <conv.chunks.Comment object at 0x104d217c0>
-    // <conv.chunks.Comment object at 0x104d21880>
-    // <conv.chunks.Comment object at 0x104d21940>
-    // <conv.chunks.Comment object at 0x104d219d0>
+    // <conv.chunks.Comment object at 0x102e7d700>
+    // <conv.chunks.Comment object at 0x102e7d7c0>
+    // <conv.chunks.Comment object at 0x102e7d880>
+    // <conv.chunks.Comment object at 0x102e7d940>
+    // <conv.chunks.Comment object at 0x102e7d9d0>
     inx();
     cpx(0x5);
     BCC(StrWOffset);
@@ -5666,19 +5655,19 @@ int Hole_Empty() {
 }
 
 int StrWOffset() {
-    // <conv.chunks.Comment object at 0x104d21bb0>
-    // <conv.chunks.Comment object at 0x104d21c40>
-    // <conv.chunks.Comment object at 0x104d21df0>
-    // <conv.chunks.Comment object at 0x104d21e80>
+    // <conv.chunks.Comment object at 0x102e7dbb0>
+    // <conv.chunks.Comment object at 0x102e7dc40>
+    // <conv.chunks.Comment object at 0x102e7ddf0>
+    // <conv.chunks.Comment object at 0x102e7de80>
     stx(Whirlpool_Offset);
     JMP(NoWhirlP);
 }
 
 int NoWhirlP() {
-    // <conv.chunks.Comment object at 0x104d22060>
+    // <conv.chunks.Comment object at 0x102e7e060>
     ldx(AreaType);
     lda(offsetof(G, HoleMetatiles), x);
-    // <conv.chunks.Comment object at 0x104d221b0>
+    // <conv.chunks.Comment object at 0x102e7e1b0>
     ldx(0x8);
     ldy(0xf);
     JMP(RenderUnderPart);
@@ -5688,32 +5677,32 @@ int RenderUnderPart() {
     sty(AreaObjectHeight);
     ldy(MetatileBuffer, x);
     BEQ(DrawThisRow);
-    // <conv.chunks.Comment object at 0x104d22570>
-    // <conv.chunks.Comment object at 0x104d22690>
-    // <conv.chunks.Comment object at 0x104d227e0>
+    // <conv.chunks.Comment object at 0x102e7e570>
+    // <conv.chunks.Comment object at 0x102e7e690>
+    // <conv.chunks.Comment object at 0x102e7e7e0>
     cpy(0x17);
     BEQ(WaitOneRow);
-    // <conv.chunks.Comment object at 0x104d22960>
+    // <conv.chunks.Comment object at 0x102e7e960>
     cpy(0x1a);
     BEQ(WaitOneRow);
-    // <conv.chunks.Comment object at 0x104d22b70>
+    // <conv.chunks.Comment object at 0x102e7eb70>
     cpy(0xc0);
     BEQ(DrawThisRow);
-    // <conv.chunks.Comment object at 0x104d22d80>
+    // <conv.chunks.Comment object at 0x102e7ed80>
     cpy(0xc0);
     BCS(WaitOneRow);
-    // <conv.chunks.Comment object at 0x104d22f90>
+    // <conv.chunks.Comment object at 0x102e7ef90>
     cpy(0x54);
     BNE(DrawThisRow);
-    // <conv.chunks.Comment object at 0x104d231a0>
+    // <conv.chunks.Comment object at 0x102e7f1a0>
     cmp(0x50);
     BEQ(WaitOneRow);
     JMP(DrawThisRow);
 }
 
 int DrawThisRow() {
-    // <conv.chunks.Comment object at 0x104d233b0>
-    // <conv.chunks.Comment object at 0x104d23560>
+    // <conv.chunks.Comment object at 0x102e7f3b0>
+    // <conv.chunks.Comment object at 0x102e7f560>
     sta(MetatileBuffer, x);
     JMP(WaitOneRow);
 }
@@ -5721,17 +5710,17 @@ int DrawThisRow() {
 int WaitOneRow() {
     inx();
     cpx(0xd);
-    // <conv.chunks.Comment object at 0x104d237a0>
+    // <conv.chunks.Comment object at 0x102e7f7a0>
     BCS(ExitUPartR);
     ldy(AreaObjectHeight);
-    // <conv.chunks.Comment object at 0x104d239b0>
+    // <conv.chunks.Comment object at 0x102e7f9b0>
     dey();
     BPL(RenderUnderPart);
     JMP(ExitUPartR);
 }
 
 int ExitUPartR() {
-    rts();
+    return 0;
     JMP(ChkLrgObjLength);
 }
 
@@ -5745,232 +5734,232 @@ int ChkLrgObjFixedLength() {
     clc();
     BPL(LenSet);
     tya();
-    // <conv.chunks.Comment object at 0x104d23ec0>
-    // <conv.chunks.Comment object at 0x104d2c080>
-    // <conv.chunks.Comment object at 0x104d2c110>
-    // <conv.chunks.Comment object at 0x104d2c290>
+    // <conv.chunks.Comment object at 0x102e7fec0>
+    // <conv.chunks.Comment object at 0x102e88080>
+    // <conv.chunks.Comment object at 0x102e88110>
+    // <conv.chunks.Comment object at 0x102e88290>
     sta(AreaObjectLength, x);
     sec();
     JMP(LenSet);
 }
 
 int LenSet() {
-    rts();
+    return 0;
     JMP(GetLrgObjAttrib);
 }
 
 int GetLrgObjAttrib() {
     ldy(AreaObjOffsetBuffer, x);
     lda((AreaData), y);
-    // <conv.chunks.Comment object at 0x104d2c620>
-    // <conv.chunks.Comment object at 0x104d2c770>
+    // <conv.chunks.Comment object at 0x102e88620>
+    // <conv.chunks.Comment object at 0x102e88770>
     anda(0b1111);
     sta(0x7);
-    // <conv.chunks.Comment object at 0x104d2ca10>
+    // <conv.chunks.Comment object at 0x102e88a10>
     iny();
     lda((AreaData), y);
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x104d2cb90>
-    // <conv.chunks.Comment object at 0x104d2cd10>
+    // <conv.chunks.Comment object at 0x102e88b90>
+    // <conv.chunks.Comment object at 0x102e88d10>
     tay();
-    rts();
+    return 0;
     JMP(GetAreaObjXPosition);
 }
 
 int GetAreaObjXPosition() {
     lda(CurrentColumnPos);
     asl();
-    // <conv.chunks.Comment object at 0x104d2cfb0>
-    // <conv.chunks.Comment object at 0x104d2d100>
+    // <conv.chunks.Comment object at 0x102e88fb0>
+    // <conv.chunks.Comment object at 0x102e89100>
     asl();
     asl();
     asl();
-    rts();
+    return 0;
     JMP(GetAreaObjYPosition);
 }
 
 int GetAreaObjYPosition() {
     lda(0x7);
-    // <conv.chunks.Comment object at 0x104d2d460>
+    // <conv.chunks.Comment object at 0x102e89460>
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x104d2d610>
+    // <conv.chunks.Comment object at 0x102e89610>
     asl();
     asl();
     clc();
     adc(32);
-    // <conv.chunks.Comment object at 0x104d2d880>
-    rts();
+    // <conv.chunks.Comment object at 0x102e89880>
+    return 0;
     JMP(GetBlockBufferAddr);
 }
 
 int GetBlockBufferAddr() {
     pha();
     lsr();
-    // <conv.chunks.Comment object at 0x104d2de50>
-    // <conv.chunks.Comment object at 0x104d2df10>
+    // <conv.chunks.Comment object at 0x102e89e50>
+    // <conv.chunks.Comment object at 0x102e89f10>
     lsr();
     lsr();
     lsr();
     tay();
     lda(((offsetof(G, BlockBufferAddr)) + (2)), y);
-    // <conv.chunks.Comment object at 0x104d2e180>
-    // <conv.chunks.Comment object at 0x104d2e210>
+    // <conv.chunks.Comment object at 0x102e8a180>
+    // <conv.chunks.Comment object at 0x102e8a210>
     sta(0x7);
     pla();
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x104d2e5a0>
+    // <conv.chunks.Comment object at 0x102e8a5a0>
     clc();
     adc(offsetof(G, BlockBufferAddr), y);
     sta(0x6);
-    // <conv.chunks.Comment object at 0x104d2e750>
-    // <conv.chunks.Comment object at 0x104d2e8d0>
-    rts();
+    // <conv.chunks.Comment object at 0x102e8a750>
+    // <conv.chunks.Comment object at 0x102e8a8d0>
+    return 0;
     JMP(LoadAreaPointer);
 }
 
 int LoadAreaPointer() {
     JSR(FindAreaPointer);
-    // <conv.chunks.Comment object at 0x104d2ecc0>
+    // <conv.chunks.Comment object at 0x102e8acc0>
     sta(AreaPointer);
     JMP(GetAreaType);
 }
 
 int GetAreaType() {
-    // <conv.chunks.Comment object at 0x104d2f4d0>
+    // <conv.chunks.Comment object at 0x102e8b4d0>
     anda(0b1100000);
     asl();
     rol();
     rol();
     rol();
     sta(AreaType);
-    // <conv.chunks.Comment object at 0x104d2f800>
-    // <conv.chunks.Comment object at 0x104d2f890>
-    rts();
+    // <conv.chunks.Comment object at 0x102e8b800>
+    // <conv.chunks.Comment object at 0x102e8b890>
+    return 0;
     JMP(FindAreaPointer);
 }
 
 int FindAreaPointer() {
     ldy(WorldNumber);
-    // <conv.chunks.Comment object at 0x104d2fa70>
+    // <conv.chunks.Comment object at 0x102e8ba70>
     lda(offsetof(G, WorldAddrOffsets), y);
     clc();
-    // <conv.chunks.Comment object at 0x104d2fce0>
+    // <conv.chunks.Comment object at 0x102e8bce0>
     adc(AreaNumber);
     tay();
     lda(offsetof(G, AreaAddrOffsets), y);
-    // <conv.chunks.Comment object at 0x104d2fef0>
-    rts();
+    // <conv.chunks.Comment object at 0x102e8bef0>
+    return 0;
     JMP(GetAreaDataAddrs);
 }
 
 int GetAreaDataAddrs() {
     lda(AreaPointer);
-    // <conv.chunks.Comment object at 0x104d34140>
+    // <conv.chunks.Comment object at 0x102e90140>
     JSR(GetAreaType);
     tay();
     lda(AreaPointer);
-    // <conv.chunks.Comment object at 0x104d343e0>
+    // <conv.chunks.Comment object at 0x102e903e0>
     anda(0b11111);
     sta(AreaAddrsLOffset);
     lda(offsetof(G, EnemyAddrHOffsets), y);
     clc();
     adc(AreaAddrsLOffset);
-    // <conv.chunks.Comment object at 0x104d345f0>
-    // <conv.chunks.Comment object at 0x104d34710>
-    // <conv.chunks.Comment object at 0x104d34890>
-    // <conv.chunks.Comment object at 0x104d34920>
+    // <conv.chunks.Comment object at 0x102e905f0>
+    // <conv.chunks.Comment object at 0x102e90710>
+    // <conv.chunks.Comment object at 0x102e90890>
+    // <conv.chunks.Comment object at 0x102e90920>
     tay();
     lda(offsetof(G, EnemyDataAddrLow), y);
-    // <conv.chunks.Comment object at 0x104d34ad0>
+    // <conv.chunks.Comment object at 0x102e90ad0>
     sta(EnemyDataLow);
     lda(offsetof(G, EnemyDataAddrHigh), y);
     sta(EnemyDataHigh);
     ldy(AreaType);
     lda(offsetof(G, AreaDataHOffsets), y);
-    // <conv.chunks.Comment object at 0x104d34f20>
-    // <conv.chunks.Comment object at 0x104d35040>
+    // <conv.chunks.Comment object at 0x102e90f20>
+    // <conv.chunks.Comment object at 0x102e91040>
     clc();
     adc(AreaAddrsLOffset);
     tay();
     lda(offsetof(G, AreaDataAddrLow), y);
-    // <conv.chunks.Comment object at 0x104d353a0>
+    // <conv.chunks.Comment object at 0x102e913a0>
     sta(AreaDataLow);
     lda(offsetof(G, AreaDataAddrHigh), y);
     sta(AreaDataHigh);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x104d357f0>
+    // <conv.chunks.Comment object at 0x102e917f0>
     lda((AreaData), y);
     pha();
     anda(0b111);
-    // <conv.chunks.Comment object at 0x104d35a90>
-    // <conv.chunks.Comment object at 0x104d35b20>
+    // <conv.chunks.Comment object at 0x102e91a90>
+    // <conv.chunks.Comment object at 0x102e91b20>
     cmp(0x4);
     BCC(StoreFore);
     sta(BackgroundColorCtrl);
-    // <conv.chunks.Comment object at 0x104d35e20>
+    // <conv.chunks.Comment object at 0x102e91e20>
     lda(0x0);
     JMP(StoreFore);
 }
 
 int StoreFore() {
-    // <conv.chunks.Comment object at 0x104d35fa0>
+    // <conv.chunks.Comment object at 0x102e91fa0>
     sta(ForegroundScenery);
     pla();
-    // <conv.chunks.Comment object at 0x104d361b0>
+    // <conv.chunks.Comment object at 0x102e921b0>
     pha();
     anda(0b111000);
     lsr();
-    // <conv.chunks.Comment object at 0x104d362d0>
-    // <conv.chunks.Comment object at 0x104d36420>
+    // <conv.chunks.Comment object at 0x102e922d0>
+    // <conv.chunks.Comment object at 0x102e92420>
     lsr();
     lsr();
     sta(PlayerEntranceCtrl);
     pla();
     anda(0b11000000);
-    // <conv.chunks.Comment object at 0x104d365d0>
-    // <conv.chunks.Comment object at 0x104d36720>
-    // <conv.chunks.Comment object at 0x104d367b0>
+    // <conv.chunks.Comment object at 0x102e925d0>
+    // <conv.chunks.Comment object at 0x102e92720>
+    // <conv.chunks.Comment object at 0x102e927b0>
     clc();
     rol();
-    // <conv.chunks.Comment object at 0x104d36990>
+    // <conv.chunks.Comment object at 0x102e92990>
     rol();
     rol();
     sta(GameTimerSetting);
-    // <conv.chunks.Comment object at 0x104d36b40>
+    // <conv.chunks.Comment object at 0x102e92b40>
     iny();
     lda((AreaData), y);
     pha();
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x104d36cf0>
-    // <conv.chunks.Comment object at 0x104d36ea0>
-    // <conv.chunks.Comment object at 0x104d36f30>
+    // <conv.chunks.Comment object at 0x102e92cf0>
+    // <conv.chunks.Comment object at 0x102e92ea0>
+    // <conv.chunks.Comment object at 0x102e92f30>
     sta(TerrainControl);
     pla();
-    // <conv.chunks.Comment object at 0x104d37170>
+    // <conv.chunks.Comment object at 0x102e93170>
     pha();
     anda(0b110000);
-    // <conv.chunks.Comment object at 0x104d37290>
+    // <conv.chunks.Comment object at 0x102e93290>
     lsr();
     lsr();
-    // <conv.chunks.Comment object at 0x104d37470>
+    // <conv.chunks.Comment object at 0x102e93470>
     lsr();
     lsr();
     sta(BackgroundScenery);
-    // <conv.chunks.Comment object at 0x104d37620>
+    // <conv.chunks.Comment object at 0x102e93620>
     pla();
     anda(0b11000000);
     clc();
     rol();
-    // <conv.chunks.Comment object at 0x104d37980>
+    // <conv.chunks.Comment object at 0x102e93980>
     rol();
     rol();
     cmp(0b11);
     BNE(StoreStyle);
     sta(CloudTypeOverride);
-    // <conv.chunks.Comment object at 0x104d37b30>
-    // <conv.chunks.Comment object at 0x104d37c50>
-    // <conv.chunks.Comment object at 0x104d37d70>
+    // <conv.chunks.Comment object at 0x102e93b30>
+    // <conv.chunks.Comment object at 0x102e93c50>
+    // <conv.chunks.Comment object at 0x102e93d70>
     lda(0x0);
     JMP(StoreStyle);
 }
@@ -5978,20 +5967,19 @@ int StoreFore() {
 int StoreStyle() {
     sta(AreaStyle);
     lda(AreaDataLow);
-    // <conv.chunks.Comment object at 0x104d400e0>
+    // <conv.chunks.Comment object at 0x102e9c0e0>
     clc();
     adc(0x2);
     sta(AreaDataLow);
     lda(AreaDataHigh);
     adc(0x0);
     sta(AreaDataHigh);
-    rts();
+    return 0;
     JMP(GameMode);
 }
 
 int GameMode() {
     lda(OperMode_Task);
-    JSR(JumpEngine);
     JMP(GameCoreRoutine);
 }
 
@@ -6003,48 +5991,48 @@ int GameCoreRoutine() {
     lda(OperMode_Task);
     cmp(0x3);
     BCS(GameEngine);
-    // <conv.chunks.Comment object at 0x104eb4c80>
-    // <conv.chunks.Comment object at 0x104eb4da0>
-    // <conv.chunks.Comment object at 0x104eb4ef0>
-    // <conv.chunks.Comment object at 0x104eb5010>
-    // <conv.chunks.Comment object at 0x104eb5130>
-    // <conv.chunks.Comment object at 0x104eb5250>
-    // <conv.chunks.Comment object at 0x104eb52e0>
-    rts();
+    // <conv.chunks.Comment object at 0x103010c80>
+    // <conv.chunks.Comment object at 0x103010da0>
+    // <conv.chunks.Comment object at 0x103010ef0>
+    // <conv.chunks.Comment object at 0x103011010>
+    // <conv.chunks.Comment object at 0x103011130>
+    // <conv.chunks.Comment object at 0x103011250>
+    // <conv.chunks.Comment object at 0x1030112e0>
+    return 0;
     JMP(GameEngine);
 }
 
 int GameEngine() {
     JSR(ProcFireball_Bubble);
-    // <conv.chunks.Comment object at 0x104eb5550>
+    // <conv.chunks.Comment object at 0x103011550>
     ldx(0x0);
     JMP(ProcELoop);
 }
 
 int ProcELoop() {
-    // <conv.chunks.Comment object at 0x104eb56d0>
+    // <conv.chunks.Comment object at 0x1030116d0>
     stx(ObjectOffset);
     JSR(EnemiesAndLoopsCore);
     JSR(FloateyNumbersRoutine);
-    // <conv.chunks.Comment object at 0x104eb58b0>
-    // <conv.chunks.Comment object at 0x104eb59d0>
+    // <conv.chunks.Comment object at 0x1030118b0>
+    // <conv.chunks.Comment object at 0x1030119d0>
     inx();
     cpx(0x6);
-    // <conv.chunks.Comment object at 0x104eb5b80>
+    // <conv.chunks.Comment object at 0x103011b80>
     BNE(ProcELoop);
     JSR(GetPlayerOffscreenBits);
     JSR(RelativePlayerPosition);
     JSR(PlayerGfxHandler);
     JSR(BlockObjMT_Updater);
-    // <conv.chunks.Comment object at 0x104eb5d90>
-    // <conv.chunks.Comment object at 0x104eb5eb0>
-    // <conv.chunks.Comment object at 0x104eb5fd0>
-    // <conv.chunks.Comment object at 0x104eb60f0>
+    // <conv.chunks.Comment object at 0x103011d90>
+    // <conv.chunks.Comment object at 0x103011eb0>
+    // <conv.chunks.Comment object at 0x103011fd0>
+    // <conv.chunks.Comment object at 0x1030120f0>
     ldx(0x1);
     stx(ObjectOffset);
     JSR(BlockObjectsCore);
-    // <conv.chunks.Comment object at 0x104eb6270>
-    // <conv.chunks.Comment object at 0x104eb6420>
+    // <conv.chunks.Comment object at 0x103012270>
+    // <conv.chunks.Comment object at 0x103012420>
     dex();
     stx(ObjectOffset);
     JSR(BlockObjectsCore);
@@ -6054,22 +6042,22 @@ int ProcELoop() {
     JSR(FlagpoleRoutine);
     JSR(RunGameTimer);
     JSR(ColorRotation);
-    // <conv.chunks.Comment object at 0x104eb65d0>
-    // <conv.chunks.Comment object at 0x104eb66f0>
-    // <conv.chunks.Comment object at 0x104eb6810>
-    // <conv.chunks.Comment object at 0x104eb6930>
-    // <conv.chunks.Comment object at 0x104eb6a50>
-    // <conv.chunks.Comment object at 0x104eb6b70>
-    // <conv.chunks.Comment object at 0x104eb6c90>
-    // <conv.chunks.Comment object at 0x104eb6db0>
+    // <conv.chunks.Comment object at 0x1030125d0>
+    // <conv.chunks.Comment object at 0x1030126f0>
+    // <conv.chunks.Comment object at 0x103012810>
+    // <conv.chunks.Comment object at 0x103012930>
+    // <conv.chunks.Comment object at 0x103012a50>
+    // <conv.chunks.Comment object at 0x103012b70>
+    // <conv.chunks.Comment object at 0x103012c90>
+    // <conv.chunks.Comment object at 0x103012db0>
     lda(Player_Y_HighPos);
     cmp(0x2);
-    // <conv.chunks.Comment object at 0x104eb6fc0>
+    // <conv.chunks.Comment object at 0x103012fc0>
     BPL(NoChgMus);
     lda(StarInvincibleTimer);
     BEQ(ClrPlrPal);
-    // <conv.chunks.Comment object at 0x104eb71d0>
-    // <conv.chunks.Comment object at 0x104eb72f0>
+    // <conv.chunks.Comment object at 0x1030131d0>
+    // <conv.chunks.Comment object at 0x1030132f0>
     cmp(0x4);
     BNE(NoChgMus);
     lda(IntervalTimerControl);
@@ -6079,26 +6067,26 @@ int ProcELoop() {
 }
 
 int NoChgMus() {
-    // <conv.chunks.Comment object at 0x104eb7470>
-    // <conv.chunks.Comment object at 0x104eb7620>
-    // <conv.chunks.Comment object at 0x104eb7740>
-    // <conv.chunks.Comment object at 0x104eb7860>
-    // <conv.chunks.Comment object at 0x104eb7980>
+    // <conv.chunks.Comment object at 0x103013470>
+    // <conv.chunks.Comment object at 0x103013620>
+    // <conv.chunks.Comment object at 0x103013740>
+    // <conv.chunks.Comment object at 0x103013860>
+    // <conv.chunks.Comment object at 0x103013980>
     ldy(StarInvincibleTimer);
     lda(FrameCounter);
     cpy(0x8);
     BCS(CycleTwo);
     lsr();
-    // <conv.chunks.Comment object at 0x104eb7ad0>
-    // <conv.chunks.Comment object at 0x104eb7bf0>
-    // <conv.chunks.Comment object at 0x104eb7c80>
-    // <conv.chunks.Comment object at 0x104eb7e60>
+    // <conv.chunks.Comment object at 0x103013ad0>
+    // <conv.chunks.Comment object at 0x103013bf0>
+    // <conv.chunks.Comment object at 0x103013c80>
+    // <conv.chunks.Comment object at 0x103013e60>
     lsr();
     JMP(CycleTwo);
 }
 
 int CycleTwo() {
-    // <conv.chunks.Comment object at 0x104eb7f80>
+    // <conv.chunks.Comment object at 0x103013f80>
     lsr();
     JSR(CyclePlayerPalette);
     JMP(SaveAB);
@@ -6106,18 +6094,18 @@ int CycleTwo() {
 }
 
 int ClrPlrPal() {
-    // <conv.chunks.Comment object at 0x104ec00b0>
-    // <conv.chunks.Comment object at 0x104ec01d0>
-    // <conv.chunks.Comment object at 0x104ec0320>
+    // <conv.chunks.Comment object at 0x10301c0b0>
+    // <conv.chunks.Comment object at 0x10301c1d0>
+    // <conv.chunks.Comment object at 0x10301c320>
     JSR(ResetPalStar);
     JMP(SaveAB);
 }
 
 int SaveAB() {
-    // <conv.chunks.Comment object at 0x104ec0470>
+    // <conv.chunks.Comment object at 0x10301c470>
     lda(A_B_Buttons);
     sta(PreviousA_B_Buttons);
-    // <conv.chunks.Comment object at 0x104ec05f0>
+    // <conv.chunks.Comment object at 0x10301c5f0>
     lda(0x0);
     sta(Left_Right_Buttons);
     JMP(UpdScrollVar);
@@ -6128,16 +6116,16 @@ int UpdScrollVar() {
     cmp(0x6);
     BEQ(ExitEng);
     lda(AreaParserTaskNum);
-    // <conv.chunks.Comment object at 0x104ec0a40>
-    // <conv.chunks.Comment object at 0x104ec0ad0>
-    // <conv.chunks.Comment object at 0x104ec0cb0>
+    // <conv.chunks.Comment object at 0x10301ca40>
+    // <conv.chunks.Comment object at 0x10301cad0>
+    // <conv.chunks.Comment object at 0x10301ccb0>
     BNE(RunParser);
     lda(ScrollThirtyTwo);
     cmp(0x20);
     BMI(ExitEng);
-    // <conv.chunks.Comment object at 0x104ec0ec0>
-    // <conv.chunks.Comment object at 0x104ec0fe0>
-    // <conv.chunks.Comment object at 0x104ec1070>
+    // <conv.chunks.Comment object at 0x10301cec0>
+    // <conv.chunks.Comment object at 0x10301cfe0>
+    // <conv.chunks.Comment object at 0x10301d070>
     lda(ScrollThirtyTwo);
     sbc(0x20);
     sta(ScrollThirtyTwo);
@@ -6147,33 +6135,33 @@ int UpdScrollVar() {
 }
 
 int RunParser() {
-    // <conv.chunks.Comment object at 0x104ec1340>
-    // <conv.chunks.Comment object at 0x104ec13d0>
-    // <conv.chunks.Comment object at 0x104ec1580>
-    // <conv.chunks.Comment object at 0x104ec1610>
-    // <conv.chunks.Comment object at 0x104ec17c0>
+    // <conv.chunks.Comment object at 0x10301d340>
+    // <conv.chunks.Comment object at 0x10301d3d0>
+    // <conv.chunks.Comment object at 0x10301d580>
+    // <conv.chunks.Comment object at 0x10301d610>
+    // <conv.chunks.Comment object at 0x10301d7c0>
     JSR(AreaParserTaskHandler);
     JMP(ExitEng);
 }
 
 int ExitEng() {
-    // <conv.chunks.Comment object at 0x104ec1910>
-    rts();
+    // <conv.chunks.Comment object at 0x10301d910>
+    return 0;
     JMP(ScrollHandler);
 }
 
 int ScrollHandler() {
     lda(Player_X_Scroll);
-    // <conv.chunks.Comment object at 0x104ec1a90>
+    // <conv.chunks.Comment object at 0x10301da90>
     clc();
     adc(Platform_X_Scroll);
     sta(Player_X_Scroll);
     lda(ScrollLock);
     BNE(InitScrlAmt);
-    // <conv.chunks.Comment object at 0x104ec1c40>
-    // <conv.chunks.Comment object at 0x104ec1d60>
-    // <conv.chunks.Comment object at 0x104ec1e80>
-    // <conv.chunks.Comment object at 0x104ec1fa0>
+    // <conv.chunks.Comment object at 0x10301dc40>
+    // <conv.chunks.Comment object at 0x10301dd60>
+    // <conv.chunks.Comment object at 0x10301de80>
+    // <conv.chunks.Comment object at 0x10301dfa0>
     lda(Player_Pos_ForScroll);
     cmp(0x50);
     BCC(InitScrlAmt);
@@ -6182,16 +6170,16 @@ int ScrollHandler() {
     ldy(Player_X_Scroll);
     dey();
     BMI(InitScrlAmt);
-    // <conv.chunks.Comment object at 0x104ec21b0>
-    // <conv.chunks.Comment object at 0x104ec2240>
-    // <conv.chunks.Comment object at 0x104ec23f0>
-    // <conv.chunks.Comment object at 0x104ec2510>
-    // <conv.chunks.Comment object at 0x104ec2630>
-    // <conv.chunks.Comment object at 0x104ec2780>
-    // <conv.chunks.Comment object at 0x104ec2810>
+    // <conv.chunks.Comment object at 0x10301e1b0>
+    // <conv.chunks.Comment object at 0x10301e240>
+    // <conv.chunks.Comment object at 0x10301e3f0>
+    // <conv.chunks.Comment object at 0x10301e510>
+    // <conv.chunks.Comment object at 0x10301e630>
+    // <conv.chunks.Comment object at 0x10301e780>
+    // <conv.chunks.Comment object at 0x10301e810>
     iny();
     cpy(0x2);
-    // <conv.chunks.Comment object at 0x104ec29c0>
+    // <conv.chunks.Comment object at 0x10301e9c0>
     BCC(ChkNearMid);
     dey();
     JMP(ChkNearMid);
@@ -6208,20 +6196,20 @@ int ChkNearMid() {
 int ScrollScreen() {
     tya();
     sta(ScrollAmount);
-    // <conv.chunks.Comment object at 0x104ec31d0>
+    // <conv.chunks.Comment object at 0x10301f1d0>
     clc();
     adc(ScrollThirtyTwo);
     sta(ScrollThirtyTwo);
-    // <conv.chunks.Comment object at 0x104ec3380>
-    // <conv.chunks.Comment object at 0x104ec34a0>
+    // <conv.chunks.Comment object at 0x10301f380>
+    // <conv.chunks.Comment object at 0x10301f4a0>
     tya();
     clc();
     adc(ScreenLeft_X_Pos);
     sta(ScreenLeft_X_Pos);
     sta(HorizontalScroll);
-    // <conv.chunks.Comment object at 0x104ec36e0>
-    // <conv.chunks.Comment object at 0x104ec3800>
-    // <conv.chunks.Comment object at 0x104ec3920>
+    // <conv.chunks.Comment object at 0x10301f6e0>
+    // <conv.chunks.Comment object at 0x10301f800>
+    // <conv.chunks.Comment object at 0x10301f920>
     lda(ScreenLeft_PageLoc);
     adc(0x0);
     sta(ScreenLeft_PageLoc);
@@ -6232,15 +6220,15 @@ int ScrollScreen() {
     ora(0x0);
     sta(Mirror_PPU_CTRL_REG1);
     JSR(GetScreenPosition);
-    // <conv.chunks.Comment object at 0x104ec3b30>
-    // <conv.chunks.Comment object at 0x104ec3bc0>
-    // <conv.chunks.Comment object at 0x104ec3d70>
-    // <conv.chunks.Comment object at 0x104ec3ec0>
-    // <conv.chunks.Comment object at 0x104ec3f50>
-    // <conv.chunks.Comment object at 0x104ec8110>
-    // <conv.chunks.Comment object at 0x104ec8260>
-    // <conv.chunks.Comment object at 0x104ec82f0>
-    // <conv.chunks.Comment object at 0x104ec8470>
+    // <conv.chunks.Comment object at 0x10301fb30>
+    // <conv.chunks.Comment object at 0x10301fbc0>
+    // <conv.chunks.Comment object at 0x10301fd70>
+    // <conv.chunks.Comment object at 0x10301fec0>
+    // <conv.chunks.Comment object at 0x10301ff50>
+    // <conv.chunks.Comment object at 0x103024110>
+    // <conv.chunks.Comment object at 0x103024260>
+    // <conv.chunks.Comment object at 0x1030242f0>
+    // <conv.chunks.Comment object at 0x103024470>
     lda(0x8);
     sta(ScrollIntervalTimer);
     JMP(ChkPOffscr);
@@ -6254,8 +6242,8 @@ int InitScrlAmt() {
 }
 
 int ChkPOffscr() {
-    // <conv.chunks.Comment object at 0x104ec8950>
-    // <conv.chunks.Comment object at 0x104ec8b00>
+    // <conv.chunks.Comment object at 0x103024950>
+    // <conv.chunks.Comment object at 0x103024b00>
     ldx(0x0);
     JSR(GetXOffscreenBits);
     sta(0x0);
@@ -6263,12 +6251,12 @@ int ChkPOffscr() {
     asl();
     BCS(KeepOnscr);
     iny();
-    // <conv.chunks.Comment object at 0x104ec8bc0>
-    // <conv.chunks.Comment object at 0x104ec8da0>
-    // <conv.chunks.Comment object at 0x104ec8e30>
-    // <conv.chunks.Comment object at 0x104ec8fe0>
-    // <conv.chunks.Comment object at 0x104ec9070>
-    // <conv.chunks.Comment object at 0x104ec91c0>
+    // <conv.chunks.Comment object at 0x103024bc0>
+    // <conv.chunks.Comment object at 0x103024da0>
+    // <conv.chunks.Comment object at 0x103024e30>
+    // <conv.chunks.Comment object at 0x103024fe0>
+    // <conv.chunks.Comment object at 0x103025070>
+    // <conv.chunks.Comment object at 0x1030251c0>
     lda(0x0);
     anda(0b100000);
     BEQ(InitPlatScrl);
@@ -6276,9 +6264,9 @@ int ChkPOffscr() {
 }
 
 int KeepOnscr() {
-    // <conv.chunks.Comment object at 0x104ec9250>
-    // <conv.chunks.Comment object at 0x104ec9460>
-    // <conv.chunks.Comment object at 0x104ec9580>
+    // <conv.chunks.Comment object at 0x103025250>
+    // <conv.chunks.Comment object at 0x103025460>
+    // <conv.chunks.Comment object at 0x103025580>
     lda(ScreenEdge_X_Pos, y);
     sec();
     sbc(offsetof(G, X_SubtracterData), y);
@@ -6289,89 +6277,88 @@ int KeepOnscr() {
     lda(Left_Right_Buttons);
     cmp(offsetof(G, OffscrJoypadBitsData), y);
     BEQ(InitPlatScrl);
-    // <conv.chunks.Comment object at 0x104ec9790>
-    // <conv.chunks.Comment object at 0x104ec98e0>
-    // <conv.chunks.Comment object at 0x104ec9a00>
-    // <conv.chunks.Comment object at 0x104ec9b50>
-    // <conv.chunks.Comment object at 0x104ec9be0>
-    // <conv.chunks.Comment object at 0x104ec9d90>
-    // <conv.chunks.Comment object at 0x104ec9eb0>
-    // <conv.chunks.Comment object at 0x104eca000>
+    // <conv.chunks.Comment object at 0x103025790>
+    // <conv.chunks.Comment object at 0x1030258e0>
+    // <conv.chunks.Comment object at 0x103025a00>
+    // <conv.chunks.Comment object at 0x103025b50>
+    // <conv.chunks.Comment object at 0x103025be0>
+    // <conv.chunks.Comment object at 0x103025d90>
+    // <conv.chunks.Comment object at 0x103025eb0>
+    // <conv.chunks.Comment object at 0x103026000>
     lda(0x0);
     sta(Player_X_Speed);
     JMP(InitPlatScrl);
 }
 
 int InitPlatScrl() {
-    // <conv.chunks.Comment object at 0x104eca180>
-    // <conv.chunks.Comment object at 0x104eca330>
+    // <conv.chunks.Comment object at 0x103026180>
+    // <conv.chunks.Comment object at 0x103026330>
     lda(0x0);
     sta(Platform_X_Scroll);
-    rts();
+    return 0;
     JMP(GetScreenPosition);
 }
 
 int GetScreenPosition() {
     lda(ScreenLeft_X_Pos);
-    // <conv.chunks.Comment object at 0x104eca690>
+    // <conv.chunks.Comment object at 0x103026690>
     clc();
     adc(0xff);
     sta(ScreenRight_X_Pos);
     lda(ScreenLeft_PageLoc);
     adc(0x0);
     sta(ScreenRight_PageLoc);
-    // <conv.chunks.Comment object at 0x104ecaab0>
-    // <conv.chunks.Comment object at 0x104ecab40>
-    // <conv.chunks.Comment object at 0x104ecacf0>
-    // <conv.chunks.Comment object at 0x104ecae10>
-    // <conv.chunks.Comment object at 0x104ecaea0>
-    rts();
+    // <conv.chunks.Comment object at 0x103026ab0>
+    // <conv.chunks.Comment object at 0x103026b40>
+    // <conv.chunks.Comment object at 0x103026cf0>
+    // <conv.chunks.Comment object at 0x103026e10>
+    // <conv.chunks.Comment object at 0x103026ea0>
+    return 0;
     JMP(GameRoutines);
 }
 
 int GameRoutines() {
     lda(GameEngineSubroutine);
-    JSR(JumpEngine);
     JMP(PlayerEntrance);
 }
 
 int PlayerEntrance() {
     lda(AltEntranceControl);
-    // <conv.chunks.Comment object at 0x104ecbb30>
+    // <conv.chunks.Comment object at 0x103027b30>
     cmp(0x2);
     BEQ(EntrMode2);
-    // <conv.chunks.Comment object at 0x104ecbcb0>
+    // <conv.chunks.Comment object at 0x103027cb0>
     lda(0x0);
     ldy(Player_Y_Position);
     cpy(0x30);
     BCC(AutoControlPlayer);
     lda(PlayerEntranceCtrl);
-    // <conv.chunks.Comment object at 0x104ecbec0>
-    // <conv.chunks.Comment object at 0x104ed80b0>
-    // <conv.chunks.Comment object at 0x104ed8140>
-    // <conv.chunks.Comment object at 0x104ed82f0>
+    // <conv.chunks.Comment object at 0x103027ec0>
+    // <conv.chunks.Comment object at 0x1030340b0>
+    // <conv.chunks.Comment object at 0x103034140>
+    // <conv.chunks.Comment object at 0x1030342f0>
     cmp(0x6);
     BEQ(ChkBehPipe);
     cmp(0x7);
-    // <conv.chunks.Comment object at 0x104ed8470>
-    // <conv.chunks.Comment object at 0x104ed8620>
+    // <conv.chunks.Comment object at 0x103034470>
+    // <conv.chunks.Comment object at 0x103034620>
     BNE(PlayerRdy);
     JMP(ChkBehPipe);
 }
 
 int ChkBehPipe() {
-    // <conv.chunks.Comment object at 0x104ed8830>
+    // <conv.chunks.Comment object at 0x103034830>
     lda(Player_SprAttrib);
     BNE(IntroEntr);
-    // <conv.chunks.Comment object at 0x104ed8980>
+    // <conv.chunks.Comment object at 0x103034980>
     lda(0x1);
     JMP(AutoControlPlayer);
     JMP(IntroEntr);
 }
 
 int IntroEntr() {
-    // <conv.chunks.Comment object at 0x104ed8b00>
-    // <conv.chunks.Comment object at 0x104ed8cb0>
+    // <conv.chunks.Comment object at 0x103034b00>
+    // <conv.chunks.Comment object at 0x103034cb0>
     JSR(EnterSidePipe);
     dec(ChangeAreaTimer);
     BNE(ExitEntr);
@@ -6381,11 +6368,11 @@ int IntroEntr() {
 }
 
 int EntrMode2() {
-    // <conv.chunks.Comment object at 0x104ed8e00>
-    // <conv.chunks.Comment object at 0x104ed8f20>
-    // <conv.chunks.Comment object at 0x104ed9040>
-    // <conv.chunks.Comment object at 0x104ed9160>
-    // <conv.chunks.Comment object at 0x104ed9280>
+    // <conv.chunks.Comment object at 0x103034e00>
+    // <conv.chunks.Comment object at 0x103034f20>
+    // <conv.chunks.Comment object at 0x103035040>
+    // <conv.chunks.Comment object at 0x103035160>
+    // <conv.chunks.Comment object at 0x103035280>
     lda(JoypadOverride);
     BNE(VineEntr);
     lda(0xff);
@@ -6393,7 +6380,7 @@ int EntrMode2() {
     lda(Player_Y_Position);
     cmp(0x91);
     BCC(PlayerRdy);
-    rts();
+    return 0;
     JMP(VineEntr);
 }
 
@@ -6406,13 +6393,13 @@ int VineEntr() {
     ldy(0x0);
     lda(0x1);
     BCC(OffVine);
-    // <conv.chunks.Comment object at 0x104ed9c70>
-    // <conv.chunks.Comment object at 0x104ed9d00>
-    // <conv.chunks.Comment object at 0x104ed9eb0>
-    // <conv.chunks.Comment object at 0x104ed9fd0>
-    // <conv.chunks.Comment object at 0x104eda060>
-    // <conv.chunks.Comment object at 0x104eda180>
-    // <conv.chunks.Comment object at 0x104eda2a0>
+    // <conv.chunks.Comment object at 0x103035c70>
+    // <conv.chunks.Comment object at 0x103035d00>
+    // <conv.chunks.Comment object at 0x103035eb0>
+    // <conv.chunks.Comment object at 0x103035fd0>
+    // <conv.chunks.Comment object at 0x103036060>
+    // <conv.chunks.Comment object at 0x103036180>
+    // <conv.chunks.Comment object at 0x1030362a0>
     lda(0x3);
     sta(Player_State);
     iny();
@@ -6422,14 +6409,14 @@ int VineEntr() {
 }
 
 int OffVine() {
-    // <conv.chunks.Comment object at 0x104eda4e0>
-    // <conv.chunks.Comment object at 0x104eda6c0>
-    // <conv.chunks.Comment object at 0x104eda750>
-    // <conv.chunks.Comment object at 0x104eda7e0>
-    // <conv.chunks.Comment object at 0x104edaa50>
+    // <conv.chunks.Comment object at 0x1030364e0>
+    // <conv.chunks.Comment object at 0x1030366c0>
+    // <conv.chunks.Comment object at 0x103036750>
+    // <conv.chunks.Comment object at 0x1030367e0>
+    // <conv.chunks.Comment object at 0x103036a50>
     sty(DisableCollisionDet);
     JSR(AutoControlPlayer);
-    // <conv.chunks.Comment object at 0x104edabd0>
+    // <conv.chunks.Comment object at 0x103036bd0>
     lda(Player_X_Position);
     cmp(0x48);
     BCC(ExitEntr);
@@ -6437,13 +6424,13 @@ int OffVine() {
 }
 
 int PlayerRdy() {
-    // <conv.chunks.Comment object at 0x104edade0>
-    // <conv.chunks.Comment object at 0x104edae70>
-    // <conv.chunks.Comment object at 0x104edb020>
+    // <conv.chunks.Comment object at 0x103036de0>
+    // <conv.chunks.Comment object at 0x103036e70>
+    // <conv.chunks.Comment object at 0x103037020>
     lda(0x8);
     sta(GameEngineSubroutine);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x104edb260>
+    // <conv.chunks.Comment object at 0x103037260>
     sta(PlayerFacingDir);
     lsr();
     sta(AltEntranceControl);
@@ -6453,12 +6440,12 @@ int PlayerRdy() {
 }
 
 int ExitEntr() {
-    // <conv.chunks.Comment object at 0x104edb4d0>
-    // <conv.chunks.Comment object at 0x104edb560>
-    // <conv.chunks.Comment object at 0x104edb680>
-    // <conv.chunks.Comment object at 0x104edb7a0>
-    // <conv.chunks.Comment object at 0x104edb8f0>
-    rts();
+    // <conv.chunks.Comment object at 0x1030374d0>
+    // <conv.chunks.Comment object at 0x103037560>
+    // <conv.chunks.Comment object at 0x103037680>
+    // <conv.chunks.Comment object at 0x1030377a0>
+    // <conv.chunks.Comment object at 0x1030378f0>
+    return 0;
     JMP(AutoControlPlayer);
 }
 
@@ -6470,18 +6457,18 @@ int AutoControlPlayer() {
 int PlayerCtrlRoutine() {
     lda(GameEngineSubroutine);
     cmp(0xb);
-    // <conv.chunks.Comment object at 0x104edbbc0>
-    // <conv.chunks.Comment object at 0x104edbce0>
+    // <conv.chunks.Comment object at 0x103037bc0>
+    // <conv.chunks.Comment object at 0x103037ce0>
     BEQ(SizeChk);
     lda(AreaType);
     BNE(SaveJoyp);
-    // <conv.chunks.Comment object at 0x104edbf20>
-    // <conv.chunks.Comment object at 0x104ee0080>
+    // <conv.chunks.Comment object at 0x103037f20>
+    // <conv.chunks.Comment object at 0x10303c080>
     ldy(Player_Y_HighPos);
     dey();
     BNE(DisJoyp);
-    // <conv.chunks.Comment object at 0x104ee02c0>
-    // <conv.chunks.Comment object at 0x104ee0350>
+    // <conv.chunks.Comment object at 0x10303c2c0>
+    // <conv.chunks.Comment object at 0x10303c350>
     lda(Player_Y_Position);
     cmp(0xd0);
     BCC(SaveJoyp);
@@ -6489,25 +6476,25 @@ int PlayerCtrlRoutine() {
 }
 
 int DisJoyp() {
-    // <conv.chunks.Comment object at 0x104ee0590>
-    // <conv.chunks.Comment object at 0x104ee0620>
-    // <conv.chunks.Comment object at 0x104ee07d0>
+    // <conv.chunks.Comment object at 0x10303c590>
+    // <conv.chunks.Comment object at 0x10303c620>
+    // <conv.chunks.Comment object at 0x10303c7d0>
     lda(0x0);
     sta(SavedJoypadBits);
     JMP(SaveJoyp);
 }
 
 int SaveJoyp() {
-    // <conv.chunks.Comment object at 0x104ee0a40>
+    // <conv.chunks.Comment object at 0x10303ca40>
     lda(SavedJoypadBits);
     anda(0b11000000);
     sta(A_B_Buttons);
     lda(SavedJoypadBits);
-    // <conv.chunks.Comment object at 0x104ee0d70>
+    // <conv.chunks.Comment object at 0x10303cd70>
     anda(0b11);
     sta(Left_Right_Buttons);
     lda(SavedJoypadBits);
-    // <conv.chunks.Comment object at 0x104ee1070>
+    // <conv.chunks.Comment object at 0x10303d070>
     anda(0b1100);
     sta(Up_Down_Buttons);
     anda(0b100);
@@ -6516,12 +6503,12 @@ int SaveJoyp() {
     BNE(SizeChk);
     ldy(Left_Right_Buttons);
     BEQ(SizeChk);
-    // <conv.chunks.Comment object at 0x104ee1370>
-    // <conv.chunks.Comment object at 0x104ee1490>
-    // <conv.chunks.Comment object at 0x104ee15e0>
-    // <conv.chunks.Comment object at 0x104ee1700>
-    // <conv.chunks.Comment object at 0x104ee1850>
-    // <conv.chunks.Comment object at 0x104ee1970>
+    // <conv.chunks.Comment object at 0x10303d370>
+    // <conv.chunks.Comment object at 0x10303d490>
+    // <conv.chunks.Comment object at 0x10303d5e0>
+    // <conv.chunks.Comment object at 0x10303d700>
+    // <conv.chunks.Comment object at 0x10303d850>
+    // <conv.chunks.Comment object at 0x10303d970>
     lda(0x0);
     sta(Left_Right_Buttons);
     sta(Up_Down_Buttons);
@@ -6529,16 +6516,16 @@ int SaveJoyp() {
 }
 
 int SizeChk() {
-    // <conv.chunks.Comment object at 0x104ee1b20>
-    // <conv.chunks.Comment object at 0x104ee1cd0>
-    // <conv.chunks.Comment object at 0x104ee1df0>
+    // <conv.chunks.Comment object at 0x10303db20>
+    // <conv.chunks.Comment object at 0x10303dcd0>
+    // <conv.chunks.Comment object at 0x10303ddf0>
     JSR(PlayerMovementSubs);
     ldy(0x1);
-    // <conv.chunks.Comment object at 0x104ee1f70>
+    // <conv.chunks.Comment object at 0x10303df70>
     lda(PlayerSize);
     BNE(ChkMoveDir);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x104ee2270>
+    // <conv.chunks.Comment object at 0x10303e270>
     lda(CrouchingFlag);
     BEQ(ChkMoveDir);
     ldy(0x2);
@@ -6546,9 +6533,9 @@ int SizeChk() {
 }
 
 int ChkMoveDir() {
-    // <conv.chunks.Comment object at 0x104ee2480>
-    // <conv.chunks.Comment object at 0x104ee25a0>
-    // <conv.chunks.Comment object at 0x104ee2630>
+    // <conv.chunks.Comment object at 0x10303e480>
+    // <conv.chunks.Comment object at 0x10303e5a0>
+    // <conv.chunks.Comment object at 0x10303e630>
     sty(Player_BoundBoxCtrl);
     lda(0x1);
     ldy(Player_X_Speed);
@@ -6559,43 +6546,43 @@ int ChkMoveDir() {
 }
 
 int SetMoveDir() {
-    // <conv.chunks.Comment object at 0x104ee2810>
-    // <conv.chunks.Comment object at 0x104ee28a0>
-    // <conv.chunks.Comment object at 0x104ee2a50>
-    // <conv.chunks.Comment object at 0x104ee2b70>
-    // <conv.chunks.Comment object at 0x104ee2cc0>
-    // <conv.chunks.Comment object at 0x104ee2d50>
+    // <conv.chunks.Comment object at 0x10303e810>
+    // <conv.chunks.Comment object at 0x10303e8a0>
+    // <conv.chunks.Comment object at 0x10303ea50>
+    // <conv.chunks.Comment object at 0x10303eb70>
+    // <conv.chunks.Comment object at 0x10303ecc0>
+    // <conv.chunks.Comment object at 0x10303ed50>
     sta(Player_MovingDir);
     JMP(PlayerSubs);
 }
 
 int PlayerSubs() {
-    // <conv.chunks.Comment object at 0x104ee2ea0>
+    // <conv.chunks.Comment object at 0x10303eea0>
     JSR(ScrollHandler);
     JSR(GetPlayerOffscreenBits);
     JSR(RelativePlayerPosition);
     ldx(0x0);
     JSR(BoundingBoxCore);
     JSR(PlayerBGCollision);
-    // <conv.chunks.Comment object at 0x104ee2ff0>
-    // <conv.chunks.Comment object at 0x104ee3110>
-    // <conv.chunks.Comment object at 0x104ee3230>
-    // <conv.chunks.Comment object at 0x104ee32c0>
-    // <conv.chunks.Comment object at 0x104ee3470>
+    // <conv.chunks.Comment object at 0x10303eff0>
+    // <conv.chunks.Comment object at 0x10303f110>
+    // <conv.chunks.Comment object at 0x10303f230>
+    // <conv.chunks.Comment object at 0x10303f2c0>
+    // <conv.chunks.Comment object at 0x10303f470>
     lda(Player_Y_Position);
     cmp(0x40);
     BCC(PlayerHole);
-    // <conv.chunks.Comment object at 0x104ee3680>
-    // <conv.chunks.Comment object at 0x104ee3710>
+    // <conv.chunks.Comment object at 0x10303f680>
+    // <conv.chunks.Comment object at 0x10303f710>
     lda(GameEngineSubroutine);
     cmp(0x5);
-    // <conv.chunks.Comment object at 0x104ee39b0>
+    // <conv.chunks.Comment object at 0x10303f9b0>
     BEQ(PlayerHole);
     cmp(0x7);
-    // <conv.chunks.Comment object at 0x104ee3bc0>
+    // <conv.chunks.Comment object at 0x10303fbc0>
     BEQ(PlayerHole);
     cmp(0x4);
-    // <conv.chunks.Comment object at 0x104ee3dd0>
+    // <conv.chunks.Comment object at 0x10303fdd0>
     BCC(PlayerHole);
     lda(Player_SprAttrib);
     anda(0b11011111);
@@ -6604,17 +6591,17 @@ int PlayerSubs() {
 }
 
 int PlayerHole() {
-    // <conv.chunks.Comment object at 0x104ee8110>
-    // <conv.chunks.Comment object at 0x104ee8230>
-    // <conv.chunks.Comment object at 0x104ee8350>
+    // <conv.chunks.Comment object at 0x103044110>
+    // <conv.chunks.Comment object at 0x103044230>
+    // <conv.chunks.Comment object at 0x103044350>
     lda(Player_Y_HighPos);
     cmp(0x2);
     BMI(ExitCtrl);
-    // <conv.chunks.Comment object at 0x104ee84a0>
-    // <conv.chunks.Comment object at 0x104ee8530>
+    // <conv.chunks.Comment object at 0x1030444a0>
+    // <conv.chunks.Comment object at 0x103044530>
     ldx(0x1);
     stx(ScrollLock);
-    // <conv.chunks.Comment object at 0x104ee8740>
+    // <conv.chunks.Comment object at 0x103044740>
     ldy(0x4);
     sty(0x7);
     ldx(0x0);
@@ -6626,23 +6613,23 @@ int PlayerHole() {
 }
 
 int HoleDie() {
-    // <conv.chunks.Comment object at 0x104ee8a10>
-    // <conv.chunks.Comment object at 0x104ee8aa0>
-    // <conv.chunks.Comment object at 0x104ee8b90>
-    // <conv.chunks.Comment object at 0x104ee8d40>
-    // <conv.chunks.Comment object at 0x104ee8e90>
-    // <conv.chunks.Comment object at 0x104ee8fb0>
-    // <conv.chunks.Comment object at 0x104ee90d0>
+    // <conv.chunks.Comment object at 0x103044a10>
+    // <conv.chunks.Comment object at 0x103044aa0>
+    // <conv.chunks.Comment object at 0x103044b90>
+    // <conv.chunks.Comment object at 0x103044d40>
+    // <conv.chunks.Comment object at 0x103044e90>
+    // <conv.chunks.Comment object at 0x103044fb0>
+    // <conv.chunks.Comment object at 0x1030450d0>
     inx();
     ldy(GameEngineSubroutine);
     cpy(0xb);
     BEQ(ChkHoleX);
     ldy(DeathMusicLoaded);
     BNE(HoleBottom);
-    // <conv.chunks.Comment object at 0x104ee92e0>
-    // <conv.chunks.Comment object at 0x104ee9370>
-    // <conv.chunks.Comment object at 0x104ee9520>
-    // <conv.chunks.Comment object at 0x104ee9640>
+    // <conv.chunks.Comment object at 0x1030452e0>
+    // <conv.chunks.Comment object at 0x103045370>
+    // <conv.chunks.Comment object at 0x103045520>
+    // <conv.chunks.Comment object at 0x103045640>
     iny();
     sty(EventMusicQueue);
     sty(DeathMusicLoaded);
@@ -6656,8 +6643,8 @@ int HoleBottom() {
 }
 
 int ChkHoleX() {
-    // <conv.chunks.Comment object at 0x104ee9b80>
-    // <conv.chunks.Comment object at 0x104ee9c10>
+    // <conv.chunks.Comment object at 0x103045b80>
+    // <conv.chunks.Comment object at 0x103045c10>
     cmp(0x7);
     BMI(ExitCtrl);
     dex();
@@ -6670,15 +6657,15 @@ int ChkHoleX() {
 }
 
 int ExitCtrl() {
-    // <conv.chunks.Comment object at 0x104ee9d60>
-    // <conv.chunks.Comment object at 0x104ee9f10>
-    // <conv.chunks.Comment object at 0x104ee9fa0>
-    // <conv.chunks.Comment object at 0x104eea0c0>
-    // <conv.chunks.Comment object at 0x104eea1e0>
-    // <conv.chunks.Comment object at 0x104eea300>
-    // <conv.chunks.Comment object at 0x104eea390>
-    // <conv.chunks.Comment object at 0x104eea570>
-    rts();
+    // <conv.chunks.Comment object at 0x103045d60>
+    // <conv.chunks.Comment object at 0x103045f10>
+    // <conv.chunks.Comment object at 0x103045fa0>
+    // <conv.chunks.Comment object at 0x1030460c0>
+    // <conv.chunks.Comment object at 0x1030461e0>
+    // <conv.chunks.Comment object at 0x103046300>
+    // <conv.chunks.Comment object at 0x103046390>
+    // <conv.chunks.Comment object at 0x103046570>
+    return 0;
     JMP(CloudExit);
 }
 
@@ -6687,18 +6674,18 @@ int CloudExit() {
     sta(JoypadOverride);
     JSR(SetEntr);
     inc(AltEntranceControl);
-    // <conv.chunks.Comment object at 0x104eea6f0>
-    // <conv.chunks.Comment object at 0x104eea8a0>
-    // <conv.chunks.Comment object at 0x104eea9f0>
-    rts();
+    // <conv.chunks.Comment object at 0x1030466f0>
+    // <conv.chunks.Comment object at 0x1030468a0>
+    // <conv.chunks.Comment object at 0x1030469f0>
+    return 0;
     JMP(Vine_AutoClimb);
 }
 
 int Vine_AutoClimb() {
     lda(Player_Y_HighPos);
     BNE(AutoClimb);
-    // <conv.chunks.Comment object at 0x104eeac00>
-    // <conv.chunks.Comment object at 0x104eead20>
+    // <conv.chunks.Comment object at 0x103046c00>
+    // <conv.chunks.Comment object at 0x103046d20>
     lda(Player_Y_Position);
     cmp(0xe4);
     BCC(SetEntr);
@@ -6706,18 +6693,18 @@ int Vine_AutoClimb() {
 }
 
 int AutoClimb() {
-    // <conv.chunks.Comment object at 0x104eeb140>
+    // <conv.chunks.Comment object at 0x103047140>
     lda(0b1000);
     sta(JoypadOverride);
     ldy(0x3);
-    // <conv.chunks.Comment object at 0x104eeb380>
+    // <conv.chunks.Comment object at 0x103047380>
     sty(Player_State);
     JMP(AutoControlPlayer);
     JMP(SetEntr);
 }
 
 int SetEntr() {
-    // <conv.chunks.Comment object at 0x104eeb680>
+    // <conv.chunks.Comment object at 0x103047680>
     lda(0x2);
     sta(AltEntranceControl);
     JMP(ChgAreaMode);
@@ -6731,18 +6718,18 @@ int VerticalPipeEntry() {
     ldy(0x0);
     lda(WarpZoneControl);
     BNE(ChgAreaPipe);
-    // <conv.chunks.Comment object at 0x104eeba70>
-    // <conv.chunks.Comment object at 0x104eebb00>
-    // <conv.chunks.Comment object at 0x104eebcb0>
-    // <conv.chunks.Comment object at 0x104eebdd0>
-    // <conv.chunks.Comment object at 0x104eebe60>
-    // <conv.chunks.Comment object at 0x104ef4050>
+    // <conv.chunks.Comment object at 0x103047a70>
+    // <conv.chunks.Comment object at 0x103047b00>
+    // <conv.chunks.Comment object at 0x103047cb0>
+    // <conv.chunks.Comment object at 0x103047dd0>
+    // <conv.chunks.Comment object at 0x103047e60>
+    // <conv.chunks.Comment object at 0x103050050>
     iny();
     lda(AreaType);
-    // <conv.chunks.Comment object at 0x104ef4200>
+    // <conv.chunks.Comment object at 0x103050200>
     cmp(0x3);
     BNE(ChgAreaPipe);
-    // <conv.chunks.Comment object at 0x104ef4380>
+    // <conv.chunks.Comment object at 0x103050380>
     iny();
     JMP(ChgAreaPipe);
     JMP(MovePlayerYAxis);
@@ -6751,21 +6738,21 @@ int VerticalPipeEntry() {
 int MovePlayerYAxis() {
     clc();
     adc(Player_Y_Position);
-    // <conv.chunks.Comment object at 0x104ef47a0>
+    // <conv.chunks.Comment object at 0x1030507a0>
     sta(Player_Y_Position);
-    rts();
+    return 0;
     JMP(SideExitPipeEntry);
 }
 
 int SideExitPipeEntry() {
     JSR(EnterSidePipe);
-    // <conv.chunks.Comment object at 0x104ef4aa0>
+    // <conv.chunks.Comment object at 0x103050aa0>
     ldy(0x2);
     JMP(ChgAreaPipe);
 }
 
 int ChgAreaPipe() {
-    // <conv.chunks.Comment object at 0x104ef4c20>
+    // <conv.chunks.Comment object at 0x103050c20>
     dec(ChangeAreaTimer);
     BNE(ExitCAPipe);
     sty(AltEntranceControl);
@@ -6773,8 +6760,8 @@ int ChgAreaPipe() {
 }
 
 int ChgAreaMode() {
-    // <conv.chunks.Comment object at 0x104ef4ef0>
-    // <conv.chunks.Comment object at 0x104ef5010>
+    // <conv.chunks.Comment object at 0x103050ef0>
+    // <conv.chunks.Comment object at 0x103051010>
     inc(DisableScreenFlag);
     lda(0x0);
     sta(OperMode_Task);
@@ -6783,23 +6770,23 @@ int ChgAreaMode() {
 }
 
 int ExitCAPipe() {
-    // <conv.chunks.Comment object at 0x104ef51c0>
-    // <conv.chunks.Comment object at 0x104ef5370>
-    // <conv.chunks.Comment object at 0x104ef54c0>
-    rts();
+    // <conv.chunks.Comment object at 0x1030511c0>
+    // <conv.chunks.Comment object at 0x103051370>
+    // <conv.chunks.Comment object at 0x1030514c0>
+    return 0;
     JMP(EnterSidePipe);
 }
 
 int EnterSidePipe() {
     lda(0x8);
-    // <conv.chunks.Comment object at 0x104ef55e0>
+    // <conv.chunks.Comment object at 0x1030515e0>
     sta(Player_X_Speed);
     ldy(0x1);
     lda(Player_X_Position);
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x104ef57f0>
-    // <conv.chunks.Comment object at 0x104ef5880>
-    // <conv.chunks.Comment object at 0x104ef5a30>
+    // <conv.chunks.Comment object at 0x1030517f0>
+    // <conv.chunks.Comment object at 0x103051880>
+    // <conv.chunks.Comment object at 0x103051a30>
     BNE(RightPipe);
     sta(Player_X_Speed);
     tay();
@@ -6807,13 +6794,13 @@ int EnterSidePipe() {
 }
 
 int RightPipe() {
-    // <conv.chunks.Comment object at 0x104ef5c40>
-    // <conv.chunks.Comment object at 0x104ef5d90>
-    // <conv.chunks.Comment object at 0x104ef5e20>
+    // <conv.chunks.Comment object at 0x103051c40>
+    // <conv.chunks.Comment object at 0x103051d90>
+    // <conv.chunks.Comment object at 0x103051e20>
     tya();
     JSR(AutoControlPlayer);
-    // <conv.chunks.Comment object at 0x104ef5f10>
-    rts();
+    // <conv.chunks.Comment object at 0x103051f10>
+    return 0;
     JMP(PlayerChangeSize);
 }
 
@@ -6826,11 +6813,11 @@ int PlayerChangeSize() {
 }
 
 int EndChgSize() {
-    // <conv.chunks.Comment object at 0x104ef6120>
-    // <conv.chunks.Comment object at 0x104ef6240>
-    // <conv.chunks.Comment object at 0x104ef62d0>
-    // <conv.chunks.Comment object at 0x104ef6480>
-    // <conv.chunks.Comment object at 0x104ef65a0>
+    // <conv.chunks.Comment object at 0x103052120>
+    // <conv.chunks.Comment object at 0x103052240>
+    // <conv.chunks.Comment object at 0x1030522d0>
+    // <conv.chunks.Comment object at 0x103052480>
+    // <conv.chunks.Comment object at 0x1030525a0>
     cmp(0xc4);
     BNE(ExitChgSize);
     JSR(DonePlayerTask);
@@ -6838,10 +6825,10 @@ int EndChgSize() {
 }
 
 int ExitChgSize() {
-    // <conv.chunks.Comment object at 0x104ef6660>
-    // <conv.chunks.Comment object at 0x104ef6810>
-    // <conv.chunks.Comment object at 0x104ef6930>
-    rts();
+    // <conv.chunks.Comment object at 0x103052660>
+    // <conv.chunks.Comment object at 0x103052810>
+    // <conv.chunks.Comment object at 0x103052930>
+    return 0;
     JMP(PlayerInjuryBlink);
 }
 
@@ -6856,13 +6843,13 @@ int PlayerInjuryBlink() {
 }
 
 int ExitBlink() {
-    // <conv.chunks.Comment object at 0x104ef6a80>
-    // <conv.chunks.Comment object at 0x104ef6ba0>
-    // <conv.chunks.Comment object at 0x104ef6c30>
-    // <conv.chunks.Comment object at 0x104ef6de0>
-    // <conv.chunks.Comment object at 0x104ef6e70>
-    // <conv.chunks.Comment object at 0x104ef7020>
-    // <conv.chunks.Comment object at 0x104ef7140>
+    // <conv.chunks.Comment object at 0x103052a80>
+    // <conv.chunks.Comment object at 0x103052ba0>
+    // <conv.chunks.Comment object at 0x103052c30>
+    // <conv.chunks.Comment object at 0x103052de0>
+    // <conv.chunks.Comment object at 0x103052e70>
+    // <conv.chunks.Comment object at 0x103053020>
+    // <conv.chunks.Comment object at 0x103053140>
     BNE(ExitBoth);
     JMP(InitChangeSize);
 }
@@ -6872,20 +6859,20 @@ int InitChangeSize() {
     BNE(ExitBoth);
     sty(PlayerAnimCtrl);
     inc(PlayerChangeSizeFlag);
-    // <conv.chunks.Comment object at 0x104ef72c0>
-    // <conv.chunks.Comment object at 0x104ef73e0>
-    // <conv.chunks.Comment object at 0x104ef7500>
-    // <conv.chunks.Comment object at 0x104ef7620>
+    // <conv.chunks.Comment object at 0x1030532c0>
+    // <conv.chunks.Comment object at 0x1030533e0>
+    // <conv.chunks.Comment object at 0x103053500>
+    // <conv.chunks.Comment object at 0x103053620>
     lda(PlayerSize);
     eor(0x1);
-    // <conv.chunks.Comment object at 0x104ef7830>
+    // <conv.chunks.Comment object at 0x103053830>
     sta(PlayerSize);
     JMP(ExitBoth);
 }
 
 int ExitBoth() {
-    // <conv.chunks.Comment object at 0x104ef7a70>
-    rts();
+    // <conv.chunks.Comment object at 0x103053a70>
+    return 0;
     JMP(PlayerDeath);
 }
 
@@ -6900,10 +6887,10 @@ int PlayerDeath() {
 int DonePlayerTask() {
     lda(0x0);
     sta(TimerControl);
-    // <conv.chunks.Comment object at 0x104f00140>
+    // <conv.chunks.Comment object at 0x10305c140>
     lda(0x8);
     sta(GameEngineSubroutine);
-    rts();
+    return 0;
     JMP(PlayerFireFlower);
 }
 
@@ -6912,10 +6899,10 @@ int PlayerFireFlower() {
     cmp(0xc0);
     BEQ(ResetPalFireFlower);
     lda(FrameCounter);
-    // <conv.chunks.Comment object at 0x104f00620>
-    // <conv.chunks.Comment object at 0x104f00740>
-    // <conv.chunks.Comment object at 0x104f007d0>
-    // <conv.chunks.Comment object at 0x104f00980>
+    // <conv.chunks.Comment object at 0x10305c620>
+    // <conv.chunks.Comment object at 0x10305c740>
+    // <conv.chunks.Comment object at 0x10305c7d0>
+    // <conv.chunks.Comment object at 0x10305c980>
     lsr();
     lsr();
     JMP(CyclePlayerPalette);
@@ -6928,7 +6915,7 @@ int CyclePlayerPalette() {
     anda(0b11111100);
     ora(0x0);
     sta(Player_SprAttrib);
-    rts();
+    return 0;
     JMP(ResetPalFireFlower);
 }
 
@@ -6941,12 +6928,12 @@ int ResetPalStar() {
     lda(Player_SprAttrib);
     anda(0b11111100);
     sta(Player_SprAttrib);
-    rts();
+    return 0;
     JMP(ExitDeath);
 }
 
 int ExitDeath() {
-    rts();
+    return 0;
     JMP(FlagpoleSlide);
 }
 
@@ -6956,14 +6943,14 @@ int FlagpoleSlide() {
     BNE(NoFPObj);
     lda(FlagpoleSoundQueue);
     sta(Square1SoundQueue);
-    // <conv.chunks.Comment object at 0x104f01a90>
-    // <conv.chunks.Comment object at 0x104f01c70>
-    // <conv.chunks.Comment object at 0x104f01d90>
-    // <conv.chunks.Comment object at 0x104f01ee0>
-    // <conv.chunks.Comment object at 0x104f02000>
+    // <conv.chunks.Comment object at 0x10305da90>
+    // <conv.chunks.Comment object at 0x10305dc70>
+    // <conv.chunks.Comment object at 0x10305dd90>
+    // <conv.chunks.Comment object at 0x10305dee0>
+    // <conv.chunks.Comment object at 0x10305e000>
     lda(0x0);
     sta(FlagpoleSoundQueue);
-    // <conv.chunks.Comment object at 0x104f02180>
+    // <conv.chunks.Comment object at 0x10305e180>
     ldy(Player_Y_Position);
     cpy(0x9e);
     BCS(SlidePlayer);
@@ -6972,45 +6959,45 @@ int FlagpoleSlide() {
 }
 
 int SlidePlayer() {
-    // <conv.chunks.Comment object at 0x104f02420>
-    // <conv.chunks.Comment object at 0x104f024b0>
-    // <conv.chunks.Comment object at 0x104f02660>
-    // <conv.chunks.Comment object at 0x104f026f0>
+    // <conv.chunks.Comment object at 0x10305e420>
+    // <conv.chunks.Comment object at 0x10305e4b0>
+    // <conv.chunks.Comment object at 0x10305e660>
+    // <conv.chunks.Comment object at 0x10305e6f0>
     JMP(AutoControlPlayer);
     JMP(NoFPObj);
 }
 
 int NoFPObj() {
-    // <conv.chunks.Comment object at 0x104f028d0>
+    // <conv.chunks.Comment object at 0x10305e8d0>
     inc(GameEngineSubroutine);
-    rts();
+    return 0;
     JMP(PlayerEndLevel);
 }
 
 int PlayerEndLevel() {
     lda(0x1);
-    // <conv.chunks.Comment object at 0x104f02bd0>
+    // <conv.chunks.Comment object at 0x10305ebd0>
     JSR(AutoControlPlayer);
     lda(Player_Y_Position);
-    // <conv.chunks.Comment object at 0x104f03230>
+    // <conv.chunks.Comment object at 0x10305f230>
     cmp(0xae);
     BCC(ChkStop);
     lda(ScrollLock);
     BEQ(ChkStop);
-    // <conv.chunks.Comment object at 0x104f033b0>
-    // <conv.chunks.Comment object at 0x104f03590>
-    // <conv.chunks.Comment object at 0x104f036b0>
+    // <conv.chunks.Comment object at 0x10305f3b0>
+    // <conv.chunks.Comment object at 0x10305f590>
+    // <conv.chunks.Comment object at 0x10305f6b0>
     lda(EndOfLevelMusic);
     sta(EventMusicQueue);
-    // <conv.chunks.Comment object at 0x104f038f0>
+    // <conv.chunks.Comment object at 0x10305f8f0>
     lda(0x0);
     sta(ScrollLock);
     JMP(ChkStop);
 }
 
 int ChkStop() {
-    // <conv.chunks.Comment object at 0x104f03a70>
-    // <conv.chunks.Comment object at 0x104f03c20>
+    // <conv.chunks.Comment object at 0x10305fa70>
+    // <conv.chunks.Comment object at 0x10305fc20>
     lda(Player_CollisionBits);
     lsr();
     BCS(RdyNextA);
@@ -7021,12 +7008,12 @@ int ChkStop() {
 }
 
 int InCastle() {
-    // <conv.chunks.Comment object at 0x104f03dd0>
-    // <conv.chunks.Comment object at 0x104f03e60>
-    // <conv.chunks.Comment object at 0x104f03f80>
-    // <conv.chunks.Comment object at 0x104f080e0>
-    // <conv.chunks.Comment object at 0x104f08200>
-    // <conv.chunks.Comment object at 0x104f08320>
+    // <conv.chunks.Comment object at 0x10305fdd0>
+    // <conv.chunks.Comment object at 0x10305fe60>
+    // <conv.chunks.Comment object at 0x10305ff80>
+    // <conv.chunks.Comment object at 0x1030640e0>
+    // <conv.chunks.Comment object at 0x103064200>
+    // <conv.chunks.Comment object at 0x103064320>
     lda(0b100000);
     sta(Player_SprAttrib);
     JMP(RdyNextA);
@@ -7037,9 +7024,9 @@ int RdyNextA() {
     cmp(0x5);
     BNE(ExitNA);
     inc(LevelNumber);
-    // <conv.chunks.Comment object at 0x104f086b0>
-    // <conv.chunks.Comment object at 0x104f08740>
-    // <conv.chunks.Comment object at 0x104f08920>
+    // <conv.chunks.Comment object at 0x1030646b0>
+    // <conv.chunks.Comment object at 0x103064740>
+    // <conv.chunks.Comment object at 0x103064920>
     lda(LevelNumber);
     cmp(0x3);
     BNE(NextArea);
@@ -7052,30 +7039,30 @@ int RdyNextA() {
 }
 
 int NextArea() {
-    // <conv.chunks.Comment object at 0x104f08b30>
-    // <conv.chunks.Comment object at 0x104f08bc0>
-    // <conv.chunks.Comment object at 0x104f08d70>
-    // <conv.chunks.Comment object at 0x104f08e90>
-    // <conv.chunks.Comment object at 0x104f08fb0>
-    // <conv.chunks.Comment object at 0x104f09100>
-    // <conv.chunks.Comment object at 0x104f09220>
-    // <conv.chunks.Comment object at 0x104f09340>
+    // <conv.chunks.Comment object at 0x103064b30>
+    // <conv.chunks.Comment object at 0x103064bc0>
+    // <conv.chunks.Comment object at 0x103064d70>
+    // <conv.chunks.Comment object at 0x103064e90>
+    // <conv.chunks.Comment object at 0x103064fb0>
+    // <conv.chunks.Comment object at 0x103065100>
+    // <conv.chunks.Comment object at 0x103065220>
+    // <conv.chunks.Comment object at 0x103065340>
     inc(AreaNumber);
     JSR(LoadAreaPointer);
     inc(FetchNewGameTimerFlag);
     JSR(ChgAreaMode);
     sta(HalfwayPage);
-    // <conv.chunks.Comment object at 0x104f09490>
-    // <conv.chunks.Comment object at 0x104f095b0>
-    // <conv.chunks.Comment object at 0x104f096d0>
-    // <conv.chunks.Comment object at 0x104f097f0>
+    // <conv.chunks.Comment object at 0x103065490>
+    // <conv.chunks.Comment object at 0x1030655b0>
+    // <conv.chunks.Comment object at 0x1030656d0>
+    // <conv.chunks.Comment object at 0x1030657f0>
     lda(Silence);
     sta(EventMusicQueue);
     JMP(ExitNA);
 }
 
 int ExitNA() {
-    rts();
+    return 0;
     JMP(PlayerMovementSubs);
 }
 
@@ -7091,49 +7078,48 @@ int PlayerMovementSubs() {
 }
 
 int SetCrouch() {
-    // <conv.chunks.Comment object at 0x104f09ca0>
-    // <conv.chunks.Comment object at 0x104f09d30>
-    // <conv.chunks.Comment object at 0x104f09ee0>
-    // <conv.chunks.Comment object at 0x104f0a000>
-    // <conv.chunks.Comment object at 0x104f0a120>
-    // <conv.chunks.Comment object at 0x104f0a240>
-    // <conv.chunks.Comment object at 0x104f0a360>
-    // <conv.chunks.Comment object at 0x104f0a480>
+    // <conv.chunks.Comment object at 0x103065ca0>
+    // <conv.chunks.Comment object at 0x103065d30>
+    // <conv.chunks.Comment object at 0x103065ee0>
+    // <conv.chunks.Comment object at 0x103066000>
+    // <conv.chunks.Comment object at 0x103066120>
+    // <conv.chunks.Comment object at 0x103066240>
+    // <conv.chunks.Comment object at 0x103066360>
+    // <conv.chunks.Comment object at 0x103066480>
     sta(CrouchingFlag);
     JMP(ProcMove);
 }
 
 int ProcMove() {
-    // <conv.chunks.Comment object at 0x104f0a5d0>
+    // <conv.chunks.Comment object at 0x1030665d0>
     JSR(PlayerPhysicsSub);
     lda(PlayerChangeSizeFlag);
     BNE(NoMoveSub);
-    // <conv.chunks.Comment object at 0x104f0a720>
-    // <conv.chunks.Comment object at 0x104f0a840>
+    // <conv.chunks.Comment object at 0x103066720>
+    // <conv.chunks.Comment object at 0x103066840>
     lda(Player_State);
     cmp(0x3);
     BEQ(MoveSubs);
-    // <conv.chunks.Comment object at 0x104f0aa50>
-    // <conv.chunks.Comment object at 0x104f0aae0>
+    // <conv.chunks.Comment object at 0x103066a50>
+    // <conv.chunks.Comment object at 0x103066ae0>
     ldy(0x18);
     sty(ClimbSideTimer);
     JMP(MoveSubs);
 }
 
 int MoveSubs() {
-    JSR(JumpEngine);
     JMP(NoMoveSub);
 }
 
 int NoMoveSub() {
-    rts();
+    return 0;
     JMP(OnGroundStateSub);
 }
 
 int OnGroundStateSub() {
     JSR(GetPlayerAnimSpeed);
-    // <conv.chunks.Comment object at 0x104f0b2f0>
-    // <conv.chunks.Comment object at 0x104f0b350>
+    // <conv.chunks.Comment object at 0x1030672f0>
+    // <conv.chunks.Comment object at 0x103067350>
     lda(Left_Right_Buttons);
     BEQ(GndMove);
     sta(PlayerFacingDir);
@@ -7141,15 +7127,15 @@ int OnGroundStateSub() {
 }
 
 int GndMove() {
-    // <conv.chunks.Comment object at 0x104f0b560>
-    // <conv.chunks.Comment object at 0x104f0b6b0>
-    // <conv.chunks.Comment object at 0x104f0b7d0>
+    // <conv.chunks.Comment object at 0x103067560>
+    // <conv.chunks.Comment object at 0x1030676b0>
+    // <conv.chunks.Comment object at 0x1030677d0>
     JSR(ImposeFriction);
     JSR(MovePlayerHorizontally);
     sta(Player_X_Scroll);
-    // <conv.chunks.Comment object at 0x104f0b950>
-    // <conv.chunks.Comment object at 0x104f0ba70>
-    rts();
+    // <conv.chunks.Comment object at 0x103067950>
+    // <conv.chunks.Comment object at 0x103067a70>
+    return 0;
     JMP(FallingSub);
 }
 
@@ -7163,17 +7149,17 @@ int FallingSub() {
 int JumpSwimSub() {
     ldy(Player_Y_Speed);
     BPL(DumpFall);
-    // <conv.chunks.Comment object at 0x104f14080>
-    // <conv.chunks.Comment object at 0x104f141a0>
+    // <conv.chunks.Comment object at 0x103070080>
+    // <conv.chunks.Comment object at 0x1030701a0>
     lda(A_B_Buttons);
     anda(A_Button);
     anda(PreviousA_B_Buttons);
     BNE(ProcSwim);
     lda(JumpOrigin_Y_Position);
-    // <conv.chunks.Comment object at 0x104f143b0>
-    // <conv.chunks.Comment object at 0x104f144d0>
-    // <conv.chunks.Comment object at 0x104f145f0>
-    // <conv.chunks.Comment object at 0x104f14710>
+    // <conv.chunks.Comment object at 0x1030703b0>
+    // <conv.chunks.Comment object at 0x1030704d0>
+    // <conv.chunks.Comment object at 0x1030705f0>
+    // <conv.chunks.Comment object at 0x103070710>
     sec();
     sbc(Player_Y_Position);
     cmp(DiffToHaltJump);
@@ -7182,35 +7168,35 @@ int JumpSwimSub() {
 }
 
 int DumpFall() {
-    // <conv.chunks.Comment object at 0x104f148c0>
-    // <conv.chunks.Comment object at 0x104f149e0>
-    // <conv.chunks.Comment object at 0x104f14b00>
-    // <conv.chunks.Comment object at 0x104f14c20>
+    // <conv.chunks.Comment object at 0x1030708c0>
+    // <conv.chunks.Comment object at 0x1030709e0>
+    // <conv.chunks.Comment object at 0x103070b00>
+    // <conv.chunks.Comment object at 0x103070c20>
     lda(VerticalForceDown);
     sta(VerticalForce);
     JMP(ProcSwim);
 }
 
 int ProcSwim() {
-    // <conv.chunks.Comment object at 0x104f14e60>
+    // <conv.chunks.Comment object at 0x103070e60>
     lda(SwimmingFlag);
     BEQ(LRAir);
     JSR(GetPlayerAnimSpeed);
-    // <conv.chunks.Comment object at 0x104f14fb0>
-    // <conv.chunks.Comment object at 0x104f15100>
+    // <conv.chunks.Comment object at 0x103070fb0>
+    // <conv.chunks.Comment object at 0x103071100>
     lda(Player_Y_Position);
     cmp(0x14);
     BCS(LRWater);
-    // <conv.chunks.Comment object at 0x104f15310>
-    // <conv.chunks.Comment object at 0x104f153a0>
+    // <conv.chunks.Comment object at 0x103071310>
+    // <conv.chunks.Comment object at 0x1030713a0>
     lda(0x18);
     sta(VerticalForce);
     JMP(LRWater);
 }
 
 int LRWater() {
-    // <conv.chunks.Comment object at 0x104f155e0>
-    // <conv.chunks.Comment object at 0x104f15790>
+    // <conv.chunks.Comment object at 0x1030715e0>
+    // <conv.chunks.Comment object at 0x103071790>
     lda(Left_Right_Buttons);
     BEQ(LRAir);
     sta(PlayerFacingDir);
@@ -7218,9 +7204,9 @@ int LRWater() {
 }
 
 int LRAir() {
-    // <conv.chunks.Comment object at 0x104f15910>
-    // <conv.chunks.Comment object at 0x104f15a60>
-    // <conv.chunks.Comment object at 0x104f15b80>
+    // <conv.chunks.Comment object at 0x103071910>
+    // <conv.chunks.Comment object at 0x103071a60>
+    // <conv.chunks.Comment object at 0x103071b80>
     lda(Left_Right_Buttons);
     BEQ(JSMove);
     JSR(ImposeFriction);
@@ -7228,25 +7214,25 @@ int LRAir() {
 }
 
 int JSMove() {
-    // <conv.chunks.Comment object at 0x104f15d00>
-    // <conv.chunks.Comment object at 0x104f15e50>
-    // <conv.chunks.Comment object at 0x104f15f70>
+    // <conv.chunks.Comment object at 0x103071d00>
+    // <conv.chunks.Comment object at 0x103071e50>
+    // <conv.chunks.Comment object at 0x103071f70>
     JSR(MovePlayerHorizontally);
     sta(Player_X_Scroll);
-    // <conv.chunks.Comment object at 0x104f160f0>
+    // <conv.chunks.Comment object at 0x1030720f0>
     lda(GameEngineSubroutine);
     cmp(0xb);
     BNE(ExitMov1);
-    // <conv.chunks.Comment object at 0x104f16300>
-    // <conv.chunks.Comment object at 0x104f16390>
+    // <conv.chunks.Comment object at 0x103072300>
+    // <conv.chunks.Comment object at 0x103072390>
     lda(0x28);
     sta(VerticalForce);
     JMP(ExitMov1);
 }
 
 int ExitMov1() {
-    // <conv.chunks.Comment object at 0x104f165a0>
-    // <conv.chunks.Comment object at 0x104f16750>
+    // <conv.chunks.Comment object at 0x1030725a0>
+    // <conv.chunks.Comment object at 0x103072750>
     JMP(MovePlayerVertically);
     JMP(ClimbingSub);
 }
@@ -7255,8 +7241,8 @@ int ClimbingSub() {
     lda(Player_YMF_Dummy);
     clc();
     adc(Player_Y_MoveForce);
-    // <conv.chunks.Comment object at 0x104f16f00>
-    // <conv.chunks.Comment object at 0x104f16f90>
+    // <conv.chunks.Comment object at 0x103072f00>
+    // <conv.chunks.Comment object at 0x103072f90>
     sta(Player_YMF_Dummy);
     ldy(0x0);
     lda(Player_Y_Speed);
@@ -7266,16 +7252,16 @@ int ClimbingSub() {
 }
 
 int MoveOnVine() {
-    // <conv.chunks.Comment object at 0x104f171a0>
-    // <conv.chunks.Comment object at 0x104f17230>
-    // <conv.chunks.Comment object at 0x104f173e0>
-    // <conv.chunks.Comment object at 0x104f17530>
-    // <conv.chunks.Comment object at 0x104f175c0>
+    // <conv.chunks.Comment object at 0x1030731a0>
+    // <conv.chunks.Comment object at 0x103073230>
+    // <conv.chunks.Comment object at 0x1030733e0>
+    // <conv.chunks.Comment object at 0x103073530>
+    // <conv.chunks.Comment object at 0x1030735c0>
     sty(0x0);
     adc(Player_Y_Position);
     sta(Player_Y_Position);
-    // <conv.chunks.Comment object at 0x104f176b0>
-    // <conv.chunks.Comment object at 0x104f17830>
+    // <conv.chunks.Comment object at 0x1030736b0>
+    // <conv.chunks.Comment object at 0x103073830>
     lda(Player_Y_HighPos);
     adc(0x0);
     sta(Player_Y_HighPos);
@@ -7284,32 +7270,32 @@ int MoveOnVine() {
     BEQ(InitCSTimer);
     ldy(ClimbSideTimer);
     BNE(ExitCSub);
-    // <conv.chunks.Comment object at 0x104f17a70>
-    // <conv.chunks.Comment object at 0x104f17b00>
-    // <conv.chunks.Comment object at 0x104f17c80>
-    // <conv.chunks.Comment object at 0x104f17da0>
-    // <conv.chunks.Comment object at 0x104f17ec0>
-    // <conv.chunks.Comment object at 0x104f17fe0>
-    // <conv.chunks.Comment object at 0x104f20140>
+    // <conv.chunks.Comment object at 0x103073a70>
+    // <conv.chunks.Comment object at 0x103073b00>
+    // <conv.chunks.Comment object at 0x103073c80>
+    // <conv.chunks.Comment object at 0x103073da0>
+    // <conv.chunks.Comment object at 0x103073ec0>
+    // <conv.chunks.Comment object at 0x103073fe0>
+    // <conv.chunks.Comment object at 0x10307c140>
     ldy(0x18);
     sty(ClimbSideTimer);
     ldx(0x0);
     ldy(PlayerFacingDir);
     lsr();
     BCS(ClimbFD);
-    // <conv.chunks.Comment object at 0x104f202c0>
-    // <conv.chunks.Comment object at 0x104f20470>
-    // <conv.chunks.Comment object at 0x104f20500>
-    // <conv.chunks.Comment object at 0x104f206e0>
-    // <conv.chunks.Comment object at 0x104f20770>
+    // <conv.chunks.Comment object at 0x10307c2c0>
+    // <conv.chunks.Comment object at 0x10307c470>
+    // <conv.chunks.Comment object at 0x10307c500>
+    // <conv.chunks.Comment object at 0x10307c6e0>
+    // <conv.chunks.Comment object at 0x10307c770>
     inx();
     inx();
     JMP(ClimbFD);
 }
 
 int ClimbFD() {
-    // <conv.chunks.Comment object at 0x104f20980>
-    // <conv.chunks.Comment object at 0x104f20a10>
+    // <conv.chunks.Comment object at 0x10307c980>
+    // <conv.chunks.Comment object at 0x10307ca10>
     dey();
     BEQ(CSetFDir);
     inx();
@@ -7320,13 +7306,13 @@ int CSetFDir() {
     lda(Player_X_Position);
     clc();
     adc(offsetof(G, ClimbAdderLow), x);
-    // <conv.chunks.Comment object at 0x104f20e60>
-    // <conv.chunks.Comment object at 0x104f20ef0>
+    // <conv.chunks.Comment object at 0x10307ce60>
+    // <conv.chunks.Comment object at 0x10307cef0>
     sta(Player_X_Position);
     lda(Player_PageLoc);
     adc(offsetof(G, ClimbAdderHigh), x);
-    // <conv.chunks.Comment object at 0x104f21130>
-    // <conv.chunks.Comment object at 0x104f21250>
+    // <conv.chunks.Comment object at 0x10307d130>
+    // <conv.chunks.Comment object at 0x10307d250>
     sta(Player_PageLoc);
     lda(Left_Right_Buttons);
     eor(0b11);
@@ -7335,44 +7321,44 @@ int CSetFDir() {
 }
 
 int ExitCSub() {
-    // <conv.chunks.Comment object at 0x104f21490>
-    // <conv.chunks.Comment object at 0x104f215b0>
-    // <conv.chunks.Comment object at 0x104f216d0>
-    // <conv.chunks.Comment object at 0x104f217f0>
-    rts();
+    // <conv.chunks.Comment object at 0x10307d490>
+    // <conv.chunks.Comment object at 0x10307d5b0>
+    // <conv.chunks.Comment object at 0x10307d6d0>
+    // <conv.chunks.Comment object at 0x10307d7f0>
+    return 0;
     JMP(InitCSTimer);
 }
 
 int InitCSTimer() {
-    // <conv.chunks.Comment object at 0x104f218e0>
+    // <conv.chunks.Comment object at 0x10307d8e0>
     sta(ClimbSideTimer);
-    rts();
+    return 0;
     JMP(PlayerPhysicsSub);
 }
 
 int PlayerPhysicsSub() {
     lda(Player_State);
-    // <conv.chunks.Comment object at 0x104f23050>
+    // <conv.chunks.Comment object at 0x10307f050>
     cmp(0x3);
     BNE(CheckForJumping);
-    // <conv.chunks.Comment object at 0x104f23770>
+    // <conv.chunks.Comment object at 0x10307f770>
     ldy(0x0);
     lda(Up_Down_Buttons);
     anda(Player_CollisionBits);
     BEQ(ProcClimb);
-    // <conv.chunks.Comment object at 0x104f23980>
-    // <conv.chunks.Comment object at 0x104f23b30>
-    // <conv.chunks.Comment object at 0x104f23c50>
+    // <conv.chunks.Comment object at 0x10307f980>
+    // <conv.chunks.Comment object at 0x10307fb30>
+    // <conv.chunks.Comment object at 0x10307fc50>
     iny();
     anda(0b1000);
-    // <conv.chunks.Comment object at 0x104f23e00>
+    // <conv.chunks.Comment object at 0x10307fe00>
     BNE(ProcClimb);
     iny();
     JMP(ProcClimb);
 }
 
 int ProcClimb() {
-    // <conv.chunks.Comment object at 0x104f300e0>
+    // <conv.chunks.Comment object at 0x10308c0e0>
     ldx(offsetof(G, Climb_Y_MForceData), y);
     stx(Player_Y_MoveForce);
     lda(0x8);
@@ -7384,15 +7370,15 @@ int ProcClimb() {
 }
 
 int SetCAnim() {
-    // <conv.chunks.Comment object at 0x104f30260>
-    // <conv.chunks.Comment object at 0x104f30380>
-    // <conv.chunks.Comment object at 0x104f30410>
-    // <conv.chunks.Comment object at 0x104f305f0>
-    // <conv.chunks.Comment object at 0x104f30710>
-    // <conv.chunks.Comment object at 0x104f30860>
-    // <conv.chunks.Comment object at 0x104f308f0>
+    // <conv.chunks.Comment object at 0x10308c260>
+    // <conv.chunks.Comment object at 0x10308c380>
+    // <conv.chunks.Comment object at 0x10308c410>
+    // <conv.chunks.Comment object at 0x10308c5f0>
+    // <conv.chunks.Comment object at 0x10308c710>
+    // <conv.chunks.Comment object at 0x10308c860>
+    // <conv.chunks.Comment object at 0x10308c8f0>
     sta(PlayerAnimTimerSet);
-    rts();
+    return 0;
     JMP(CheckForJumping);
 }
 
@@ -7400,20 +7386,20 @@ int CheckForJumping() {
     lda(JumpspringAnimCtrl);
     BNE(NoJump);
     lda(A_B_Buttons);
-    // <conv.chunks.Comment object at 0x104f30b00>
-    // <conv.chunks.Comment object at 0x104f30c20>
-    // <conv.chunks.Comment object at 0x104f30d70>
+    // <conv.chunks.Comment object at 0x10308cb00>
+    // <conv.chunks.Comment object at 0x10308cc20>
+    // <conv.chunks.Comment object at 0x10308cd70>
     anda(A_Button);
     BEQ(NoJump);
     anda(PreviousA_B_Buttons);
-    // <conv.chunks.Comment object at 0x104f30f80>
-    // <conv.chunks.Comment object at 0x104f310d0>
+    // <conv.chunks.Comment object at 0x10308cf80>
+    // <conv.chunks.Comment object at 0x10308d0d0>
     BEQ(ProcJumping);
     JMP(NoJump);
 }
 
 int NoJump() {
-    // <conv.chunks.Comment object at 0x104f312e0>
+    // <conv.chunks.Comment object at 0x10308d2e0>
     JMP(X_Physics);
     JMP(ProcJumping);
 }
@@ -7424,11 +7410,11 @@ int ProcJumping() {
     lda(SwimmingFlag);
     BEQ(NoJump);
     lda(JumpSwimTimer);
-    // <conv.chunks.Comment object at 0x104f31490>
-    // <conv.chunks.Comment object at 0x104f315b0>
-    // <conv.chunks.Comment object at 0x104f31700>
-    // <conv.chunks.Comment object at 0x104f31820>
-    // <conv.chunks.Comment object at 0x104f31970>
+    // <conv.chunks.Comment object at 0x10308d490>
+    // <conv.chunks.Comment object at 0x10308d5b0>
+    // <conv.chunks.Comment object at 0x10308d700>
+    // <conv.chunks.Comment object at 0x10308d820>
+    // <conv.chunks.Comment object at 0x10308d970>
     BNE(InitJS);
     lda(Player_Y_Speed);
     BPL(InitJS);
@@ -7437,32 +7423,32 @@ int ProcJumping() {
 }
 
 int InitJS() {
-    // <conv.chunks.Comment object at 0x104f31bb0>
-    // <conv.chunks.Comment object at 0x104f31cd0>
-    // <conv.chunks.Comment object at 0x104f31e20>
-    // <conv.chunks.Comment object at 0x104f31f40>
+    // <conv.chunks.Comment object at 0x10308dbb0>
+    // <conv.chunks.Comment object at 0x10308dcd0>
+    // <conv.chunks.Comment object at 0x10308de20>
+    // <conv.chunks.Comment object at 0x10308df40>
     lda(0x20);
     sta(JumpSwimTimer);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x104f321b0>
+    // <conv.chunks.Comment object at 0x10308e1b0>
     sty(Player_YMF_Dummy);
     sty(Player_Y_MoveForce);
     lda(Player_Y_HighPos);
     sta(JumpOrigin_Y_HighPos);
-    // <conv.chunks.Comment object at 0x104f324b0>
-    // <conv.chunks.Comment object at 0x104f325d0>
+    // <conv.chunks.Comment object at 0x10308e4b0>
+    // <conv.chunks.Comment object at 0x10308e5d0>
     lda(Player_Y_Position);
     sta(JumpOrigin_Y_Position);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x104f328d0>
+    // <conv.chunks.Comment object at 0x10308e8d0>
     sta(Player_State);
     lda(Player_XSpeedAbsolute);
-    // <conv.chunks.Comment object at 0x104f32ae0>
+    // <conv.chunks.Comment object at 0x10308eae0>
     cmp(0x9);
     BCC(ChkWtr);
     iny();
-    // <conv.chunks.Comment object at 0x104f32c60>
-    // <conv.chunks.Comment object at 0x104f32e70>
+    // <conv.chunks.Comment object at 0x10308ec60>
+    // <conv.chunks.Comment object at 0x10308ee70>
     cmp(0x10);
     BCC(ChkWtr);
     iny();
@@ -7471,33 +7457,33 @@ int InitJS() {
     iny();
     cmp(0x1c);
     BCC(ChkWtr);
-    // <conv.chunks.Comment object at 0x104f334a0>
+    // <conv.chunks.Comment object at 0x10308f4a0>
     iny();
     JMP(ChkWtr);
 }
 
 int ChkWtr() {
-    // <conv.chunks.Comment object at 0x104f33710>
+    // <conv.chunks.Comment object at 0x10308f710>
     lda(0x1);
     sta(DiffToHaltJump);
     lda(SwimmingFlag);
-    // <conv.chunks.Comment object at 0x104f33980>
+    // <conv.chunks.Comment object at 0x10308f980>
     BEQ(GetYPhy);
     ldy(0x5);
     lda(Whirlpool_Flag);
-    // <conv.chunks.Comment object at 0x104f33bc0>
-    // <conv.chunks.Comment object at 0x104f33c50>
+    // <conv.chunks.Comment object at 0x10308fbc0>
+    // <conv.chunks.Comment object at 0x10308fc50>
     BEQ(GetYPhy);
     iny();
     JMP(GetYPhy);
 }
 
 int GetYPhy() {
-    // <conv.chunks.Comment object at 0x104f33f50>
-    // <conv.chunks.Comment object at 0x104f33fe0>
+    // <conv.chunks.Comment object at 0x10308ff50>
+    // <conv.chunks.Comment object at 0x10308ffe0>
     lda(offsetof(G, JumpMForceData), y);
     sta(VerticalForce);
-    // <conv.chunks.Comment object at 0x104f381d0>
+    // <conv.chunks.Comment object at 0x1030941d0>
     lda(offsetof(G, FallMForceData), y);
     sta(VerticalForceDown);
     lda(offsetof(G, InitMForceData), y);
@@ -7505,12 +7491,12 @@ int GetYPhy() {
     lda(offsetof(G, PlayerYSpdData), y);
     sta(Player_Y_Speed);
     lda(SwimmingFlag);
-    // <conv.chunks.Comment object at 0x104f38920>
+    // <conv.chunks.Comment object at 0x103094920>
     BEQ(PJumpSnd);
     lda(Sfx_EnemyStomp);
     sta(Square1SoundQueue);
-    // <conv.chunks.Comment object at 0x104f38b30>
-    // <conv.chunks.Comment object at 0x104f38c50>
+    // <conv.chunks.Comment object at 0x103094b30>
+    // <conv.chunks.Comment object at 0x103094c50>
     lda(Player_Y_Position);
     cmp(0x14);
     BCS(X_Physics);
@@ -7521,23 +7507,23 @@ int GetYPhy() {
 }
 
 int PJumpSnd() {
-    // <conv.chunks.Comment object at 0x104f38e60>
-    // <conv.chunks.Comment object at 0x104f38ef0>
-    // <conv.chunks.Comment object at 0x104f390a0>
-    // <conv.chunks.Comment object at 0x104f39130>
-    // <conv.chunks.Comment object at 0x104f392e0>
-    // <conv.chunks.Comment object at 0x104f39400>
+    // <conv.chunks.Comment object at 0x103094e60>
+    // <conv.chunks.Comment object at 0x103094ef0>
+    // <conv.chunks.Comment object at 0x1030950a0>
+    // <conv.chunks.Comment object at 0x103095130>
+    // <conv.chunks.Comment object at 0x1030952e0>
+    // <conv.chunks.Comment object at 0x103095400>
     lda(Sfx_BigJump);
     ldy(PlayerSize);
-    // <conv.chunks.Comment object at 0x104f39550>
+    // <conv.chunks.Comment object at 0x103095550>
     BEQ(SJumpSnd);
     lda(Sfx_SmallJump);
     JMP(SJumpSnd);
 }
 
 int SJumpSnd() {
-    // <conv.chunks.Comment object at 0x104f39760>
-    // <conv.chunks.Comment object at 0x104f39880>
+    // <conv.chunks.Comment object at 0x103095760>
+    // <conv.chunks.Comment object at 0x103095880>
     sta(Square1SoundQueue);
     JMP(X_Physics);
 }
@@ -7546,8 +7532,8 @@ int X_Physics() {
     ldy(0x0);
     sty(0x0);
     lda(Player_State);
-    // <conv.chunks.Comment object at 0x104f39b20>
-    // <conv.chunks.Comment object at 0x104f39bb0>
+    // <conv.chunks.Comment object at 0x103095b20>
+    // <conv.chunks.Comment object at 0x103095bb0>
     BEQ(ProcPRun);
     lda(Player_XSpeedAbsolute);
     cmp(0x19);
@@ -7557,11 +7543,11 @@ int X_Physics() {
 }
 
 int ProcPRun() {
-    // <conv.chunks.Comment object at 0x104f39e20>
-    // <conv.chunks.Comment object at 0x104f39f40>
-    // <conv.chunks.Comment object at 0x104f39fd0>
-    // <conv.chunks.Comment object at 0x104f3a1b0>
-    // <conv.chunks.Comment object at 0x104f3a2d0>
+    // <conv.chunks.Comment object at 0x103095e20>
+    // <conv.chunks.Comment object at 0x103095f40>
+    // <conv.chunks.Comment object at 0x103095fd0>
+    // <conv.chunks.Comment object at 0x1030961b0>
+    // <conv.chunks.Comment object at 0x1030962d0>
     iny();
     lda(AreaType);
     BEQ(ChkRFast);
@@ -7570,13 +7556,13 @@ int ProcPRun() {
     cmp(Player_MovingDir);
     BNE(ChkRFast);
     lda(A_B_Buttons);
-    // <conv.chunks.Comment object at 0x104f3a3c0>
-    // <conv.chunks.Comment object at 0x104f3a4e0>
-    // <conv.chunks.Comment object at 0x104f3a630>
-    // <conv.chunks.Comment object at 0x104f3a6c0>
-    // <conv.chunks.Comment object at 0x104f3a7e0>
-    // <conv.chunks.Comment object at 0x104f3a900>
-    // <conv.chunks.Comment object at 0x104f3aa20>
+    // <conv.chunks.Comment object at 0x1030963c0>
+    // <conv.chunks.Comment object at 0x1030964e0>
+    // <conv.chunks.Comment object at 0x103096630>
+    // <conv.chunks.Comment object at 0x1030966c0>
+    // <conv.chunks.Comment object at 0x1030967e0>
+    // <conv.chunks.Comment object at 0x103096900>
+    // <conv.chunks.Comment object at 0x103096a20>
     anda(B_Button);
     BNE(SetRTmr);
     lda(RunningTimer);
@@ -7585,16 +7571,16 @@ int ProcPRun() {
 }
 
 int ChkRFast() {
-    // <conv.chunks.Comment object at 0x104f3ac30>
-    // <conv.chunks.Comment object at 0x104f3ad80>
-    // <conv.chunks.Comment object at 0x104f3aea0>
-    // <conv.chunks.Comment object at 0x104f3aff0>
+    // <conv.chunks.Comment object at 0x103096c30>
+    // <conv.chunks.Comment object at 0x103096d80>
+    // <conv.chunks.Comment object at 0x103096ea0>
+    // <conv.chunks.Comment object at 0x103096ff0>
     iny();
     inc(0x0);
-    // <conv.chunks.Comment object at 0x104f3b110>
+    // <conv.chunks.Comment object at 0x103097110>
     lda(RunningSpeed);
     BNE(FastXSp);
-    // <conv.chunks.Comment object at 0x104f3b2f0>
+    // <conv.chunks.Comment object at 0x1030972f0>
     lda(Player_XSpeedAbsolute);
     cmp(0x21);
     BCC(GetXPhy);
@@ -7602,24 +7588,24 @@ int ChkRFast() {
 }
 
 int FastXSp() {
-    // <conv.chunks.Comment object at 0x104f3b530>
-    // <conv.chunks.Comment object at 0x104f3b5c0>
-    // <conv.chunks.Comment object at 0x104f3b7a0>
+    // <conv.chunks.Comment object at 0x103097530>
+    // <conv.chunks.Comment object at 0x1030975c0>
+    // <conv.chunks.Comment object at 0x1030977a0>
     inc(0x0);
     JMP(GetXPhy);
     JMP(SetRTmr);
 }
 
 int SetRTmr() {
-    // <conv.chunks.Comment object at 0x104f3b8c0>
-    // <conv.chunks.Comment object at 0x104f3ba70>
+    // <conv.chunks.Comment object at 0x1030978c0>
+    // <conv.chunks.Comment object at 0x103097a70>
     lda(0xa);
     sta(RunningTimer);
     JMP(GetXPhy);
 }
 
 int GetXPhy() {
-    // <conv.chunks.Comment object at 0x104f3bce0>
+    // <conv.chunks.Comment object at 0x103097ce0>
     lda(offsetof(G, MaxLeftXSpdData), y);
     sta(MaximumLeftSpeed);
     lda(GameEngineSubroutine);
@@ -7630,21 +7616,21 @@ int GetXPhy() {
 }
 
 int GetXPhy2() {
-    // <conv.chunks.Comment object at 0x104f3bf80>
-    // <conv.chunks.Comment object at 0x104f400e0>
-    // <conv.chunks.Comment object at 0x104f40170>
-    // <conv.chunks.Comment object at 0x104f40320>
-    // <conv.chunks.Comment object at 0x104f403b0>
+    // <conv.chunks.Comment object at 0x103097f80>
+    // <conv.chunks.Comment object at 0x10309c0e0>
+    // <conv.chunks.Comment object at 0x10309c170>
+    // <conv.chunks.Comment object at 0x10309c320>
+    // <conv.chunks.Comment object at 0x10309c3b0>
     lda(offsetof(G, MaxRightXSpdData), y);
     sta(MaximumRightSpeed);
     ldy(0x0);
     lda(offsetof(G, FrictionData), y);
-    // <conv.chunks.Comment object at 0x104f406e0>
-    // <conv.chunks.Comment object at 0x104f40770>
+    // <conv.chunks.Comment object at 0x10309c6e0>
+    // <conv.chunks.Comment object at 0x10309c770>
     sta(FrictionAdderLow);
     lda(0x0);
     sta(FrictionAdderHigh);
-    // <conv.chunks.Comment object at 0x104f40a70>
+    // <conv.chunks.Comment object at 0x10309ca70>
     lda(PlayerFacingDir);
     cmp(Player_MovingDir);
     BEQ(ExitPhy);
@@ -7654,12 +7640,12 @@ int GetXPhy2() {
 }
 
 int ExitPhy() {
-    // <conv.chunks.Comment object at 0x104f40d10>
-    // <conv.chunks.Comment object at 0x104f40e30>
-    // <conv.chunks.Comment object at 0x104f40f80>
-    // <conv.chunks.Comment object at 0x104f410a0>
-    // <conv.chunks.Comment object at 0x104f411c0>
-    rts();
+    // <conv.chunks.Comment object at 0x10309cd10>
+    // <conv.chunks.Comment object at 0x10309ce30>
+    // <conv.chunks.Comment object at 0x10309cf80>
+    // <conv.chunks.Comment object at 0x10309d0a0>
+    // <conv.chunks.Comment object at 0x10309d1c0>
+    return 0;
     JMP(GetPlayerAnimSpeed);
 }
 
@@ -7676,15 +7662,15 @@ int GetPlayerAnimSpeed() {
 }
 
 int ChkSkid() {
-    // <conv.chunks.Comment object at 0x104f413a0>
-    // <conv.chunks.Comment object at 0x104f41400>
-    // <conv.chunks.Comment object at 0x104f41760>
-    // <conv.chunks.Comment object at 0x104f417f0>
-    // <conv.chunks.Comment object at 0x104f419d0>
-    // <conv.chunks.Comment object at 0x104f41a60>
-    // <conv.chunks.Comment object at 0x104f41af0>
-    // <conv.chunks.Comment object at 0x104f41d00>
-    // <conv.chunks.Comment object at 0x104f41d90>
+    // <conv.chunks.Comment object at 0x10309d3a0>
+    // <conv.chunks.Comment object at 0x10309d400>
+    // <conv.chunks.Comment object at 0x10309d760>
+    // <conv.chunks.Comment object at 0x10309d7f0>
+    // <conv.chunks.Comment object at 0x10309d9d0>
+    // <conv.chunks.Comment object at 0x10309da60>
+    // <conv.chunks.Comment object at 0x10309daf0>
+    // <conv.chunks.Comment object at 0x10309dd00>
+    // <conv.chunks.Comment object at 0x10309dd90>
     lda(SavedJoypadBits);
     anda(0b1111111);
     BEQ(SetAnimSpd);
@@ -7696,28 +7682,28 @@ int ChkSkid() {
 }
 
 int SetRunSpd() {
-    // <conv.chunks.Comment object at 0x104f41f10>
-    // <conv.chunks.Comment object at 0x104f42030>
-    // <conv.chunks.Comment object at 0x104f42150>
-    // <conv.chunks.Comment object at 0x104f421e0>
-    // <conv.chunks.Comment object at 0x104f42390>
-    // <conv.chunks.Comment object at 0x104f424b0>
-    // <conv.chunks.Comment object at 0x104f42540>
+    // <conv.chunks.Comment object at 0x10309df10>
+    // <conv.chunks.Comment object at 0x10309e030>
+    // <conv.chunks.Comment object at 0x10309e150>
+    // <conv.chunks.Comment object at 0x10309e1e0>
+    // <conv.chunks.Comment object at 0x10309e390>
+    // <conv.chunks.Comment object at 0x10309e4b0>
+    // <conv.chunks.Comment object at 0x10309e540>
     sta(RunningSpeed);
     JMP(SetAnimSpd);
     JMP(ProcSkid);
 }
 
 int ProcSkid() {
-    // <conv.chunks.Comment object at 0x104f42810>
+    // <conv.chunks.Comment object at 0x10309e810>
     lda(Player_XSpeedAbsolute);
     cmp(0xb);
     BCS(SetAnimSpd);
-    // <conv.chunks.Comment object at 0x104f42960>
-    // <conv.chunks.Comment object at 0x104f429f0>
+    // <conv.chunks.Comment object at 0x10309e960>
+    // <conv.chunks.Comment object at 0x10309e9f0>
     lda(PlayerFacingDir);
     sta(Player_MovingDir);
-    // <conv.chunks.Comment object at 0x104f42c90>
+    // <conv.chunks.Comment object at 0x10309ec90>
     lda(0x0);
     sta(Player_X_Speed);
     sta(Player_X_MoveForce);
@@ -7725,12 +7711,12 @@ int ProcSkid() {
 }
 
 int SetAnimSpd() {
-    // <conv.chunks.Comment object at 0x104f42e10>
-    // <conv.chunks.Comment object at 0x104f42fc0>
-    // <conv.chunks.Comment object at 0x104f430e0>
+    // <conv.chunks.Comment object at 0x10309ee10>
+    // <conv.chunks.Comment object at 0x10309efc0>
+    // <conv.chunks.Comment object at 0x10309f0e0>
     lda(offsetof(G, PlayerAnimTmrData), y);
     sta(PlayerAnimTimerSet);
-    rts();
+    return 0;
     JMP(ImposeFriction);
 }
 
@@ -7738,9 +7724,9 @@ int ImposeFriction() {
     anda(Player_CollisionBits);
     cmp(0x0);
     BNE(JoypFrict);
-    // <conv.chunks.Comment object at 0x104f43440>
-    // <conv.chunks.Comment object at 0x104f43560>
-    // <conv.chunks.Comment object at 0x104f435f0>
+    // <conv.chunks.Comment object at 0x10309f440>
+    // <conv.chunks.Comment object at 0x10309f560>
+    // <conv.chunks.Comment object at 0x10309f5f0>
     lda(Player_X_Speed);
     BEQ(SetAbsSpd);
     BPL(RghtFrict);
@@ -7749,24 +7735,24 @@ int ImposeFriction() {
 }
 
 int JoypFrict() {
-    // <conv.chunks.Comment object at 0x104f43890>
-    // <conv.chunks.Comment object at 0x104f439b0>
-    // <conv.chunks.Comment object at 0x104f43ad0>
-    // <conv.chunks.Comment object at 0x104f43bf0>
+    // <conv.chunks.Comment object at 0x10309f890>
+    // <conv.chunks.Comment object at 0x10309f9b0>
+    // <conv.chunks.Comment object at 0x10309fad0>
+    // <conv.chunks.Comment object at 0x10309fbf0>
     lsr();
     BCC(RghtFrict);
     JMP(LeftFrict);
 }
 
 int LeftFrict() {
-    // <conv.chunks.Comment object at 0x104f43ce0>
-    // <conv.chunks.Comment object at 0x104f43e00>
+    // <conv.chunks.Comment object at 0x10309fce0>
+    // <conv.chunks.Comment object at 0x10309fe00>
     lda(Player_X_MoveForce);
     clc();
     adc(FrictionAdderLow);
     sta(Player_X_MoveForce);
-    // <conv.chunks.Comment object at 0x104f43fe0>
-    // <conv.chunks.Comment object at 0x104f50140>
+    // <conv.chunks.Comment object at 0x10309ffe0>
+    // <conv.chunks.Comment object at 0x1030ac140>
     lda(Player_X_Speed);
     adc(FrictionAdderHigh);
     sta(Player_X_Speed);
@@ -7779,20 +7765,20 @@ int LeftFrict() {
 }
 
 int RghtFrict() {
-    // <conv.chunks.Comment object at 0x104f50350>
-    // <conv.chunks.Comment object at 0x104f50470>
-    // <conv.chunks.Comment object at 0x104f50590>
-    // <conv.chunks.Comment object at 0x104f506b0>
-    // <conv.chunks.Comment object at 0x104f507d0>
-    // <conv.chunks.Comment object at 0x104f508f0>
-    // <conv.chunks.Comment object at 0x104f50a10>
-    // <conv.chunks.Comment object at 0x104f50b30>
+    // <conv.chunks.Comment object at 0x1030ac350>
+    // <conv.chunks.Comment object at 0x1030ac470>
+    // <conv.chunks.Comment object at 0x1030ac590>
+    // <conv.chunks.Comment object at 0x1030ac6b0>
+    // <conv.chunks.Comment object at 0x1030ac7d0>
+    // <conv.chunks.Comment object at 0x1030ac8f0>
+    // <conv.chunks.Comment object at 0x1030aca10>
+    // <conv.chunks.Comment object at 0x1030acb30>
     lda(Player_X_MoveForce);
     sec();
     sbc(FrictionAdderLow);
     sta(Player_X_MoveForce);
-    // <conv.chunks.Comment object at 0x104f50d10>
-    // <conv.chunks.Comment object at 0x104f50e30>
+    // <conv.chunks.Comment object at 0x1030acd10>
+    // <conv.chunks.Comment object at 0x1030ace30>
     lda(Player_X_Speed);
     sbc(FrictionAdderHigh);
     sta(Player_X_Speed);
@@ -7804,16 +7790,16 @@ int RghtFrict() {
 }
 
 int XSpdSign() {
-    // <conv.chunks.Comment object at 0x104f51040>
-    // <conv.chunks.Comment object at 0x104f51160>
-    // <conv.chunks.Comment object at 0x104f51280>
-    // <conv.chunks.Comment object at 0x104f513a0>
-    // <conv.chunks.Comment object at 0x104f514c0>
-    // <conv.chunks.Comment object at 0x104f515e0>
-    // <conv.chunks.Comment object at 0x104f51700>
+    // <conv.chunks.Comment object at 0x1030ad040>
+    // <conv.chunks.Comment object at 0x1030ad160>
+    // <conv.chunks.Comment object at 0x1030ad280>
+    // <conv.chunks.Comment object at 0x1030ad3a0>
+    // <conv.chunks.Comment object at 0x1030ad4c0>
+    // <conv.chunks.Comment object at 0x1030ad5e0>
+    // <conv.chunks.Comment object at 0x1030ad700>
     cmp(0x0);
     BPL(SetAbsSpd);
-    // <conv.chunks.Comment object at 0x104f517c0>
+    // <conv.chunks.Comment object at 0x1030ad7c0>
     eor(0xff);
     clc();
     adc(0x1);
@@ -7821,60 +7807,60 @@ int XSpdSign() {
 }
 
 int SetAbsSpd() {
-    // <conv.chunks.Comment object at 0x104f51a90>
-    // <conv.chunks.Comment object at 0x104f51b20>
-    // <conv.chunks.Comment object at 0x104f51bb0>
+    // <conv.chunks.Comment object at 0x1030ada90>
+    // <conv.chunks.Comment object at 0x1030adb20>
+    // <conv.chunks.Comment object at 0x1030adbb0>
     sta(Player_XSpeedAbsolute);
-    rts();
+    return 0;
     JMP(ProcFireball_Bubble);
 }
 
 int ProcFireball_Bubble() {
     lda(PlayerStatus);
-    // <conv.chunks.Comment object at 0x104f51e50>
-    // <conv.chunks.Comment object at 0x104f51eb0>
-    // <conv.chunks.Comment object at 0x104f51f10>
+    // <conv.chunks.Comment object at 0x1030ade50>
+    // <conv.chunks.Comment object at 0x1030adeb0>
+    // <conv.chunks.Comment object at 0x1030adf10>
     cmp(0x2);
     BCC(ProcAirBubbles);
-    // <conv.chunks.Comment object at 0x104f52090>
+    // <conv.chunks.Comment object at 0x1030ae090>
     lda(A_B_Buttons);
     anda(B_Button);
     BEQ(ProcFireballs);
-    // <conv.chunks.Comment object at 0x104f52330>
-    // <conv.chunks.Comment object at 0x104f52450>
+    // <conv.chunks.Comment object at 0x1030ae330>
+    // <conv.chunks.Comment object at 0x1030ae450>
     anda(PreviousA_B_Buttons);
     BNE(ProcFireballs);
     lda(FireballCounter);
     anda(0b1);
-    // <conv.chunks.Comment object at 0x104f52660>
-    // <conv.chunks.Comment object at 0x104f52780>
-    // <conv.chunks.Comment object at 0x104f528a0>
+    // <conv.chunks.Comment object at 0x1030ae660>
+    // <conv.chunks.Comment object at 0x1030ae780>
+    // <conv.chunks.Comment object at 0x1030ae8a0>
     tax();
     lda(Fireball_State, x);
     BNE(ProcFireballs);
     ldy(Player_Y_HighPos);
-    // <conv.chunks.Comment object at 0x104f52a50>
-    // <conv.chunks.Comment object at 0x104f52ba0>
-    // <conv.chunks.Comment object at 0x104f52cc0>
+    // <conv.chunks.Comment object at 0x1030aea50>
+    // <conv.chunks.Comment object at 0x1030aeba0>
+    // <conv.chunks.Comment object at 0x1030aecc0>
     dey();
     BNE(ProcFireballs);
     lda(CrouchingFlag);
-    // <conv.chunks.Comment object at 0x104f52f60>
+    // <conv.chunks.Comment object at 0x1030aef60>
     BNE(ProcFireballs);
     lda(Player_State);
-    // <conv.chunks.Comment object at 0x104f53170>
+    // <conv.chunks.Comment object at 0x1030af170>
     cmp(0x3);
     BEQ(ProcFireballs);
     lda(Sfx_Fireball);
-    // <conv.chunks.Comment object at 0x104f53470>
+    // <conv.chunks.Comment object at 0x1030af470>
     sta(Square1SoundQueue);
     lda(0x2);
-    // <conv.chunks.Comment object at 0x104f53680>
+    // <conv.chunks.Comment object at 0x1030af680>
     sta(Fireball_State, x);
     ldy(PlayerAnimTimerSet);
     sty(FireballThrowingTimer);
-    // <conv.chunks.Comment object at 0x104f538c0>
-    // <conv.chunks.Comment object at 0x104f539e0>
+    // <conv.chunks.Comment object at 0x1030af8c0>
+    // <conv.chunks.Comment object at 0x1030af9e0>
     dey();
     sty(PlayerAnimTimer);
     inc(FireballCounter);
@@ -7884,7 +7870,7 @@ int ProcFireball_Bubble() {
 int ProcFireballs() {
     ldx(0x0);
     JSR(FireballObjCore);
-    // <conv.chunks.Comment object at 0x104f53e60>
+    // <conv.chunks.Comment object at 0x1030afe60>
     ldx(0x1);
     JSR(FireballObjCore);
     JMP(ProcAirBubbles);
@@ -7892,75 +7878,75 @@ int ProcFireballs() {
 
 int ProcAirBubbles() {
     lda(AreaType);
-    // <conv.chunks.Comment object at 0x104f5c290>
+    // <conv.chunks.Comment object at 0x1030b8290>
     BNE(BublExit);
     ldx(0x2);
     JMP(BublLoop);
 }
 
 int BublLoop() {
-    // <conv.chunks.Comment object at 0x104f5c4a0>
-    // <conv.chunks.Comment object at 0x104f5c530>
+    // <conv.chunks.Comment object at 0x1030b84a0>
+    // <conv.chunks.Comment object at 0x1030b8530>
     stx(ObjectOffset);
     JSR(BubbleCheck);
     JSR(RelativeBubblePosition);
     JSR(GetBubbleOffscreenBits);
     JSR(DrawBubble);
-    // <conv.chunks.Comment object at 0x104f5c710>
-    // <conv.chunks.Comment object at 0x104f5c830>
-    // <conv.chunks.Comment object at 0x104f5c950>
-    // <conv.chunks.Comment object at 0x104f5ca70>
+    // <conv.chunks.Comment object at 0x1030b8710>
+    // <conv.chunks.Comment object at 0x1030b8830>
+    // <conv.chunks.Comment object at 0x1030b8950>
+    // <conv.chunks.Comment object at 0x1030b8a70>
     dex();
     BPL(BublLoop);
     JMP(BublExit);
 }
 
 int BublExit() {
-    // <conv.chunks.Comment object at 0x104f5cc20>
-    // <conv.chunks.Comment object at 0x104f5cd40>
-    rts();
+    // <conv.chunks.Comment object at 0x1030b8c20>
+    // <conv.chunks.Comment object at 0x1030b8d40>
+    return 0;
     JMP(FireballObjCore);
 }
 
 int FireballObjCore() {
     stx(ObjectOffset);
     lda(Fireball_State, x);
-    // <conv.chunks.Comment object at 0x104f5cec0>
-    // <conv.chunks.Comment object at 0x104f5d0d0>
+    // <conv.chunks.Comment object at 0x1030b8ec0>
+    // <conv.chunks.Comment object at 0x1030b90d0>
     asl();
     BCS(FireballExplosion);
     ldy(Fireball_State, x);
-    // <conv.chunks.Comment object at 0x104f5d2b0>
-    // <conv.chunks.Comment object at 0x104f5d3d0>
+    // <conv.chunks.Comment object at 0x1030b92b0>
+    // <conv.chunks.Comment object at 0x1030b93d0>
     BEQ(NoFBall);
     dey();
-    // <conv.chunks.Comment object at 0x104f5d670>
+    // <conv.chunks.Comment object at 0x1030b9670>
     BEQ(RunFB);
     lda(Player_X_Position);
     adc(0x4);
-    // <conv.chunks.Comment object at 0x104f5d820>
-    // <conv.chunks.Comment object at 0x104f5d940>
+    // <conv.chunks.Comment object at 0x1030b9820>
+    // <conv.chunks.Comment object at 0x1030b9940>
     sta(Fireball_X_Position, x);
     lda(Player_PageLoc);
     adc(0x0);
-    // <conv.chunks.Comment object at 0x104f5db80>
-    // <conv.chunks.Comment object at 0x104f5dca0>
+    // <conv.chunks.Comment object at 0x1030b9b80>
+    // <conv.chunks.Comment object at 0x1030b9ca0>
     sta(Fireball_PageLoc, x);
     lda(Player_Y_Position);
-    // <conv.chunks.Comment object at 0x104f5dee0>
+    // <conv.chunks.Comment object at 0x1030b9ee0>
     sta(Fireball_Y_Position, x);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x104f5e120>
+    // <conv.chunks.Comment object at 0x1030ba120>
     sta(Fireball_Y_HighPos, x);
     ldy(PlayerFacingDir);
     dey();
     lda(offsetof(G, FireballXSpdData), y);
-    // <conv.chunks.Comment object at 0x104f5e360>
-    // <conv.chunks.Comment object at 0x104f5e4b0>
-    // <conv.chunks.Comment object at 0x104f5e540>
+    // <conv.chunks.Comment object at 0x1030ba360>
+    // <conv.chunks.Comment object at 0x1030ba4b0>
+    // <conv.chunks.Comment object at 0x1030ba540>
     sta(Fireball_X_Speed, x);
     lda(0x4);
-    // <conv.chunks.Comment object at 0x104f5e7b0>
+    // <conv.chunks.Comment object at 0x1030ba7b0>
     sta(Fireball_Y_Speed, x);
     lda(0x7);
     sta(Fireball_BoundBoxCtrl, x);
@@ -7969,19 +7955,19 @@ int FireballObjCore() {
 }
 
 int RunFB() {
-    // <conv.chunks.Comment object at 0x104f5ea50>
-    // <conv.chunks.Comment object at 0x104f5ec30>
-    // <conv.chunks.Comment object at 0x104f5ed80>
+    // <conv.chunks.Comment object at 0x1030baa50>
+    // <conv.chunks.Comment object at 0x1030bac30>
+    // <conv.chunks.Comment object at 0x1030bad80>
     txa();
     clc();
-    // <conv.chunks.Comment object at 0x104f5eed0>
+    // <conv.chunks.Comment object at 0x1030baed0>
     adc(0x7);
     tax();
     lda(0x50);
-    // <conv.chunks.Comment object at 0x104f5f0e0>
+    // <conv.chunks.Comment object at 0x1030bb0e0>
     sta(0x0);
     lda(0x3);
-    // <conv.chunks.Comment object at 0x104f5f170>
+    // <conv.chunks.Comment object at 0x1030bb170>
     sta(0x2);
     lda(0x0);
     JSR(ImposeGravity);
@@ -8000,27 +7986,27 @@ int RunFB() {
 }
 
 int EraseFB() {
-    // <conv.chunks.Comment object at 0x104f5f560>
-    // <conv.chunks.Comment object at 0x104f5f710>
-    // <conv.chunks.Comment object at 0x104f5f830>
-    // <conv.chunks.Comment object at 0x104f5f950>
-    // <conv.chunks.Comment object at 0x104f5fa70>
-    // <conv.chunks.Comment object at 0x104f5fb90>
-    // <conv.chunks.Comment object at 0x104f5fcb0>
-    // <conv.chunks.Comment object at 0x104f5fdd0>
-    // <conv.chunks.Comment object at 0x104f5fef0>
-    // <conv.chunks.Comment object at 0x104f64050>
-    // <conv.chunks.Comment object at 0x104f641a0>
-    // <conv.chunks.Comment object at 0x104f642c0>
-    // <conv.chunks.Comment object at 0x104f643e0>
+    // <conv.chunks.Comment object at 0x1030bb560>
+    // <conv.chunks.Comment object at 0x1030bb710>
+    // <conv.chunks.Comment object at 0x1030bb830>
+    // <conv.chunks.Comment object at 0x1030bb950>
+    // <conv.chunks.Comment object at 0x1030bba70>
+    // <conv.chunks.Comment object at 0x1030bbb90>
+    // <conv.chunks.Comment object at 0x1030bbcb0>
+    // <conv.chunks.Comment object at 0x1030bbdd0>
+    // <conv.chunks.Comment object at 0x1030bbef0>
+    // <conv.chunks.Comment object at 0x1030c0050>
+    // <conv.chunks.Comment object at 0x1030c01a0>
+    // <conv.chunks.Comment object at 0x1030c02c0>
+    // <conv.chunks.Comment object at 0x1030c03e0>
     lda(0x0);
     sta(Fireball_State, x);
     JMP(NoFBall);
 }
 
 int NoFBall() {
-    // <conv.chunks.Comment object at 0x104f646b0>
-    rts();
+    // <conv.chunks.Comment object at 0x1030c06b0>
+    return 0;
     JMP(FireballExplosion);
 }
 
@@ -8032,7 +8018,7 @@ int FireballExplosion() {
 
 int BubbleCheck() {
     lda(((PseudoRandomBitReg) + (1)), x);
-    // <conv.chunks.Comment object at 0x104f64a10>
+    // <conv.chunks.Comment object at 0x1030c0a10>
     anda(0x1);
     sta(0x7);
     lda(Bubble_Y_Position, x);
@@ -8053,28 +8039,28 @@ int SetupBubble() {
 }
 
 int PosBubl() {
-    // <conv.chunks.Comment object at 0x104f65430>
-    // <conv.chunks.Comment object at 0x104f654c0>
-    // <conv.chunks.Comment object at 0x104f656a0>
-    // <conv.chunks.Comment object at 0x104f65730>
-    // <conv.chunks.Comment object at 0x104f65880>
-    // <conv.chunks.Comment object at 0x104f65910>
+    // <conv.chunks.Comment object at 0x1030c1430>
+    // <conv.chunks.Comment object at 0x1030c14c0>
+    // <conv.chunks.Comment object at 0x1030c16a0>
+    // <conv.chunks.Comment object at 0x1030c1730>
+    // <conv.chunks.Comment object at 0x1030c1880>
+    // <conv.chunks.Comment object at 0x1030c1910>
     tya();
     adc(Player_X_Position);
     sta(Bubble_X_Position, x);
-    // <conv.chunks.Comment object at 0x104f65ac0>
-    // <conv.chunks.Comment object at 0x104f65be0>
+    // <conv.chunks.Comment object at 0x1030c1ac0>
+    // <conv.chunks.Comment object at 0x1030c1be0>
     lda(Player_PageLoc);
     adc(0x0);
     sta(Bubble_PageLoc, x);
-    // <conv.chunks.Comment object at 0x104f65e20>
-    // <conv.chunks.Comment object at 0x104f65eb0>
+    // <conv.chunks.Comment object at 0x1030c1e20>
+    // <conv.chunks.Comment object at 0x1030c1eb0>
     lda(Player_Y_Position);
     clc();
-    // <conv.chunks.Comment object at 0x104f661b0>
+    // <conv.chunks.Comment object at 0x1030c21b0>
     adc(0x8);
     sta(Bubble_Y_Position, x);
-    // <conv.chunks.Comment object at 0x104f662a0>
+    // <conv.chunks.Comment object at 0x1030c22a0>
     lda(0x1);
     sta(Bubble_Y_HighPos, x);
     ldy(0x7);
@@ -8084,18 +8070,18 @@ int PosBubl() {
 }
 
 int MoveBubl() {
-    // <conv.chunks.Comment object at 0x104f664e0>
-    // <conv.chunks.Comment object at 0x104f666f0>
-    // <conv.chunks.Comment object at 0x104f66780>
-    // <conv.chunks.Comment object at 0x104f66930>
-    // <conv.chunks.Comment object at 0x104f66a50>
+    // <conv.chunks.Comment object at 0x1030c24e0>
+    // <conv.chunks.Comment object at 0x1030c26f0>
+    // <conv.chunks.Comment object at 0x1030c2780>
+    // <conv.chunks.Comment object at 0x1030c2930>
+    // <conv.chunks.Comment object at 0x1030c2a50>
     ldy(0x7);
     lda(Bubble_YMF_Dummy, x);
     sec();
-    // <conv.chunks.Comment object at 0x104f66cf0>
+    // <conv.chunks.Comment object at 0x1030c2cf0>
     sbc(offsetof(G, Bubble_MForceData), y);
     sta(Bubble_YMF_Dummy, x);
-    // <conv.chunks.Comment object at 0x104f66ea0>
+    // <conv.chunks.Comment object at 0x1030c2ea0>
     lda(Bubble_Y_Position, x);
     sbc(0x0);
     cmp(0x20);
@@ -8105,75 +8091,75 @@ int MoveBubl() {
 }
 
 int Y_Bubl() {
-    // <conv.chunks.Comment object at 0x104f67110>
-    // <conv.chunks.Comment object at 0x104f671a0>
-    // <conv.chunks.Comment object at 0x104f672c0>
-    // <conv.chunks.Comment object at 0x104f674a0>
-    // <conv.chunks.Comment object at 0x104f67530>
+    // <conv.chunks.Comment object at 0x1030c3110>
+    // <conv.chunks.Comment object at 0x1030c31a0>
+    // <conv.chunks.Comment object at 0x1030c32c0>
+    // <conv.chunks.Comment object at 0x1030c34a0>
+    // <conv.chunks.Comment object at 0x1030c3530>
     sta(Bubble_Y_Position, x);
     JMP(ExitBubl);
 }
 
 int ExitBubl() {
-    // <conv.chunks.Comment object at 0x104f677a0>
-    rts();
+    // <conv.chunks.Comment object at 0x1030c37a0>
+    return 0;
     JMP(RunGameTimer);
 }
 
 int RunGameTimer() {
     lda(OperMode);
     BEQ(ExGTimer);
-    // <conv.chunks.Comment object at 0x104f67920>
-    // <conv.chunks.Comment object at 0x104f67cb0>
+    // <conv.chunks.Comment object at 0x1030c3920>
+    // <conv.chunks.Comment object at 0x1030c3cb0>
     lda(GameEngineSubroutine);
     cmp(0x8);
     BCC(ExGTimer);
     cmp(0xb);
     BEQ(ExGTimer);
-    // <conv.chunks.Comment object at 0x104f67ec0>
-    // <conv.chunks.Comment object at 0x104f67f50>
-    // <conv.chunks.Comment object at 0x104f70140>
-    // <conv.chunks.Comment object at 0x104f701d0>
+    // <conv.chunks.Comment object at 0x1030c3ec0>
+    // <conv.chunks.Comment object at 0x1030c3f50>
+    // <conv.chunks.Comment object at 0x1030cc140>
+    // <conv.chunks.Comment object at 0x1030cc1d0>
     lda(Player_Y_HighPos);
     cmp(0x2);
     BCS(ExGTimer);
     lda(GameTimerCtrlTimer);
     BNE(ExGTimer);
-    // <conv.chunks.Comment object at 0x104f70470>
-    // <conv.chunks.Comment object at 0x104f70500>
-    // <conv.chunks.Comment object at 0x104f706b0>
-    // <conv.chunks.Comment object at 0x104f707d0>
+    // <conv.chunks.Comment object at 0x1030cc470>
+    // <conv.chunks.Comment object at 0x1030cc500>
+    // <conv.chunks.Comment object at 0x1030cc6b0>
+    // <conv.chunks.Comment object at 0x1030cc7d0>
     lda(GameTimerDisplay);
     ora(((GameTimerDisplay) + (1)));
-    // <conv.chunks.Comment object at 0x104f709e0>
+    // <conv.chunks.Comment object at 0x1030cc9e0>
     ora(((GameTimerDisplay) + (2)));
     BEQ(TimeUpOn);
     ldy(GameTimerDisplay);
     dey();
     BNE(ResGTCtrl);
     lda(((GameTimerDisplay) + (1)));
-    // <conv.chunks.Comment object at 0x104f70d70>
-    // <conv.chunks.Comment object at 0x104f70e90>
-    // <conv.chunks.Comment object at 0x104f70fe0>
-    // <conv.chunks.Comment object at 0x104f71070>
-    // <conv.chunks.Comment object at 0x104f71190>
+    // <conv.chunks.Comment object at 0x1030ccd70>
+    // <conv.chunks.Comment object at 0x1030cce90>
+    // <conv.chunks.Comment object at 0x1030ccfe0>
+    // <conv.chunks.Comment object at 0x1030cd070>
+    // <conv.chunks.Comment object at 0x1030cd190>
     ora(((GameTimerDisplay) + (2)));
     BNE(ResGTCtrl);
-    // <conv.chunks.Comment object at 0x104f71520>
+    // <conv.chunks.Comment object at 0x1030cd520>
     lda(TimeRunningOutMusic);
     sta(EventMusicQueue);
     JMP(ResGTCtrl);
 }
 
 int ResGTCtrl() {
-    // <conv.chunks.Comment object at 0x104f71730>
-    // <conv.chunks.Comment object at 0x104f71850>
+    // <conv.chunks.Comment object at 0x1030cd730>
+    // <conv.chunks.Comment object at 0x1030cd850>
     lda(0x18);
     sta(GameTimerCtrlTimer);
     ldy(0x23);
     lda(0xff);
-    // <conv.chunks.Comment object at 0x104f71a90>
-    // <conv.chunks.Comment object at 0x104f71b20>
+    // <conv.chunks.Comment object at 0x1030cda90>
+    // <conv.chunks.Comment object at 0x1030cdb20>
     sta(((DigitModifier) + (5)));
     JSR(DigitsMathRoutine);
     lda(0xa4);
@@ -8182,10 +8168,10 @@ int ResGTCtrl() {
 }
 
 int TimeUpOn() {
-    // <conv.chunks.Comment object at 0x104f71e80>
-    // <conv.chunks.Comment object at 0x104f71fa0>
-    // <conv.chunks.Comment object at 0x104f72030>
-    // <conv.chunks.Comment object at 0x104f721e0>
+    // <conv.chunks.Comment object at 0x1030cde80>
+    // <conv.chunks.Comment object at 0x1030cdfa0>
+    // <conv.chunks.Comment object at 0x1030ce030>
+    // <conv.chunks.Comment object at 0x1030ce1e0>
     sta(PlayerStatus);
     JSR(ForceInjury);
     inc(GameTimerExpiredFlag);
@@ -8193,10 +8179,10 @@ int TimeUpOn() {
 }
 
 int ExGTimer() {
-    // <conv.chunks.Comment object at 0x104f72330>
-    // <conv.chunks.Comment object at 0x104f72450>
-    // <conv.chunks.Comment object at 0x104f725a0>
-    rts();
+    // <conv.chunks.Comment object at 0x1030ce330>
+    // <conv.chunks.Comment object at 0x1030ce450>
+    // <conv.chunks.Comment object at 0x1030ce5a0>
+    return 0;
     JMP(WarpZoneObject);
 }
 
@@ -8223,13 +8209,13 @@ int ProcessWhirlpools() {
 }
 
 int WhLoop() {
-    // <conv.chunks.Comment object at 0x104f73170>
-    // <conv.chunks.Comment object at 0x104f73290>
-    // <conv.chunks.Comment object at 0x104f733e0>
-    // <conv.chunks.Comment object at 0x104f73500>
-    // <conv.chunks.Comment object at 0x104f73620>
-    // <conv.chunks.Comment object at 0x104f73770>
-    // <conv.chunks.Comment object at 0x104f73800>
+    // <conv.chunks.Comment object at 0x1030cf170>
+    // <conv.chunks.Comment object at 0x1030cf290>
+    // <conv.chunks.Comment object at 0x1030cf3e0>
+    // <conv.chunks.Comment object at 0x1030cf500>
+    // <conv.chunks.Comment object at 0x1030cf620>
+    // <conv.chunks.Comment object at 0x1030cf770>
+    // <conv.chunks.Comment object at 0x1030cf800>
     lda(Whirlpool_LeftExtent, y);
     clc();
     adc(Whirlpool_Length, y);
@@ -8239,24 +8225,24 @@ int WhLoop() {
     adc(0x0);
     sta(0x1);
     lda(Player_X_Position);
-    // <conv.chunks.Comment object at 0x104f73ad0>
-    // <conv.chunks.Comment object at 0x104f73c50>
-    // <conv.chunks.Comment object at 0x104f73ce0>
-    // <conv.chunks.Comment object at 0x104f73e90>
-    // <conv.chunks.Comment object at 0x104f73fe0>
-    // <conv.chunks.Comment object at 0x104f7c170>
-    // <conv.chunks.Comment object at 0x104f7c200>
+    // <conv.chunks.Comment object at 0x1030cfad0>
+    // <conv.chunks.Comment object at 0x1030cfc50>
+    // <conv.chunks.Comment object at 0x1030cfce0>
+    // <conv.chunks.Comment object at 0x1030cfe90>
+    // <conv.chunks.Comment object at 0x1030cffe0>
+    // <conv.chunks.Comment object at 0x1030d8170>
+    // <conv.chunks.Comment object at 0x1030d8200>
     sec();
     sbc(Whirlpool_LeftExtent, y);
     lda(Player_PageLoc);
     sbc(Whirlpool_PageLoc, y);
     BMI(NextWh);
     lda(0x2);
-    // <conv.chunks.Comment object at 0x104f7c410>
-    // <conv.chunks.Comment object at 0x104f7c560>
-    // <conv.chunks.Comment object at 0x104f7c680>
-    // <conv.chunks.Comment object at 0x104f7c7d0>
-    // <conv.chunks.Comment object at 0x104f7c950>
+    // <conv.chunks.Comment object at 0x1030d8410>
+    // <conv.chunks.Comment object at 0x1030d8560>
+    // <conv.chunks.Comment object at 0x1030d8680>
+    // <conv.chunks.Comment object at 0x1030d87d0>
+    // <conv.chunks.Comment object at 0x1030d8950>
     sec();
     sbc(Player_X_Position);
     lda(0x1);
@@ -8266,20 +8252,20 @@ int WhLoop() {
 }
 
 int NextWh() {
-    // <conv.chunks.Comment object at 0x104f7cad0>
-    // <conv.chunks.Comment object at 0x104f7cc20>
-    // <conv.chunks.Comment object at 0x104f7ccb0>
-    // <conv.chunks.Comment object at 0x104f7ce30>
-    // <conv.chunks.Comment object at 0x104f7cf50>
+    // <conv.chunks.Comment object at 0x1030d8ad0>
+    // <conv.chunks.Comment object at 0x1030d8c20>
+    // <conv.chunks.Comment object at 0x1030d8cb0>
+    // <conv.chunks.Comment object at 0x1030d8e30>
+    // <conv.chunks.Comment object at 0x1030d8f50>
     dey();
     BPL(WhLoop);
     JMP(ExitWh);
 }
 
 int ExitWh() {
-    // <conv.chunks.Comment object at 0x104f7d070>
-    // <conv.chunks.Comment object at 0x104f7d1f0>
-    rts();
+    // <conv.chunks.Comment object at 0x1030d9070>
+    // <conv.chunks.Comment object at 0x1030d91f0>
+    return 0;
     JMP(WhirlpoolActivate);
 }
 
@@ -8288,10 +8274,10 @@ int WhirlpoolActivate() {
     lsr();
     sta(0x0);
     lda(Whirlpool_LeftExtent, y);
-    // <conv.chunks.Comment object at 0x104f7d340>
-    // <conv.chunks.Comment object at 0x104f7d4c0>
-    // <conv.chunks.Comment object at 0x104f7d580>
-    // <conv.chunks.Comment object at 0x104f7d610>
+    // <conv.chunks.Comment object at 0x1030d9340>
+    // <conv.chunks.Comment object at 0x1030d94c0>
+    // <conv.chunks.Comment object at 0x1030d9580>
+    // <conv.chunks.Comment object at 0x1030d9610>
     clc();
     adc(0x0);
     sta(0x1);
@@ -8302,31 +8288,31 @@ int WhirlpoolActivate() {
     lsr();
     BCC(WhPull);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x104f7d880>
-    // <conv.chunks.Comment object at 0x104f7d850>
-    // <conv.chunks.Comment object at 0x104f7da30>
-    // <conv.chunks.Comment object at 0x104f7dbe0>
-    // <conv.chunks.Comment object at 0x104f7dd30>
-    // <conv.chunks.Comment object at 0x104f7ddc0>
-    // <conv.chunks.Comment object at 0x104f7df70>
-    // <conv.chunks.Comment object at 0x104f7e000>
-    // <conv.chunks.Comment object at 0x104f7e180>
+    // <conv.chunks.Comment object at 0x1030d9880>
+    // <conv.chunks.Comment object at 0x1030d9850>
+    // <conv.chunks.Comment object at 0x1030d9a30>
+    // <conv.chunks.Comment object at 0x1030d9be0>
+    // <conv.chunks.Comment object at 0x1030d9d30>
+    // <conv.chunks.Comment object at 0x1030d9dc0>
+    // <conv.chunks.Comment object at 0x1030d9f70>
+    // <conv.chunks.Comment object at 0x1030da000>
+    // <conv.chunks.Comment object at 0x1030da180>
     sec();
     sbc(Player_X_Position);
     lda(0x0);
     sbc(Player_PageLoc);
     BPL(LeftWh);
     lda(Player_X_Position);
-    // <conv.chunks.Comment object at 0x104f7e300>
-    // <conv.chunks.Comment object at 0x104f7e450>
-    // <conv.chunks.Comment object at 0x104f7e4e0>
-    // <conv.chunks.Comment object at 0x104f7e660>
-    // <conv.chunks.Comment object at 0x104f7e7b0>
+    // <conv.chunks.Comment object at 0x1030da300>
+    // <conv.chunks.Comment object at 0x1030da450>
+    // <conv.chunks.Comment object at 0x1030da4e0>
+    // <conv.chunks.Comment object at 0x1030da660>
+    // <conv.chunks.Comment object at 0x1030da7b0>
     sec();
     sbc(0x1);
     sta(Player_X_Position);
-    // <conv.chunks.Comment object at 0x104f7e960>
-    // <conv.chunks.Comment object at 0x104f7e9f0>
+    // <conv.chunks.Comment object at 0x1030da960>
+    // <conv.chunks.Comment object at 0x1030da9f0>
     lda(Player_PageLoc);
     sbc(0x0);
     JMP(SetPWh);
@@ -8334,29 +8320,29 @@ int WhirlpoolActivate() {
 }
 
 int LeftWh() {
-    // <conv.chunks.Comment object at 0x104f7ec90>
-    // <conv.chunks.Comment object at 0x104f7ed20>
-    // <conv.chunks.Comment object at 0x104f7ef00>
+    // <conv.chunks.Comment object at 0x1030dac90>
+    // <conv.chunks.Comment object at 0x1030dad20>
+    // <conv.chunks.Comment object at 0x1030daf00>
     lda(Player_CollisionBits);
     lsr();
     BCC(WhPull);
     lda(Player_X_Position);
-    // <conv.chunks.Comment object at 0x104f7f0b0>
-    // <conv.chunks.Comment object at 0x104f7f140>
-    // <conv.chunks.Comment object at 0x104f7f290>
+    // <conv.chunks.Comment object at 0x1030db0b0>
+    // <conv.chunks.Comment object at 0x1030db140>
+    // <conv.chunks.Comment object at 0x1030db290>
     clc();
     adc(0x1);
     sta(Player_X_Position);
-    // <conv.chunks.Comment object at 0x104f7f440>
-    // <conv.chunks.Comment object at 0x104f7f4d0>
+    // <conv.chunks.Comment object at 0x1030db440>
+    // <conv.chunks.Comment object at 0x1030db4d0>
     lda(Player_PageLoc);
     adc(0x0);
     JMP(SetPWh);
 }
 
 int SetPWh() {
-    // <conv.chunks.Comment object at 0x104f7f770>
-    // <conv.chunks.Comment object at 0x104f7f800>
+    // <conv.chunks.Comment object at 0x1030db770>
+    // <conv.chunks.Comment object at 0x1030db800>
     sta(Player_PageLoc);
     JMP(WhPull);
 }
@@ -8364,12 +8350,12 @@ int SetPWh() {
 int WhPull() {
     lda(0x10);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x104f7fb90>
+    // <conv.chunks.Comment object at 0x1030dbb90>
     lda(0x1);
     sta(Whirlpool_Flag);
     sta(0x2);
-    // <conv.chunks.Comment object at 0x104f7fce0>
-    // <conv.chunks.Comment object at 0x104f7fec0>
+    // <conv.chunks.Comment object at 0x1030dbce0>
+    // <conv.chunks.Comment object at 0x1030dbec0>
     lsr();
     tax();
     JMP(ImposeGravity);
@@ -8379,18 +8365,18 @@ int WhPull() {
 int FlagpoleRoutine() {
     ldx(0x5);
     stx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x104f84380>
-    // <conv.chunks.Comment object at 0x104f843e0>
+    // <conv.chunks.Comment object at 0x1030e0380>
+    // <conv.chunks.Comment object at 0x1030e03e0>
     lda(Enemy_ID, x);
     cmp(FlagpoleFlagObject);
     BNE(ExitFlagP);
-    // <conv.chunks.Comment object at 0x104f84c20>
-    // <conv.chunks.Comment object at 0x104f84d40>
+    // <conv.chunks.Comment object at 0x1030e0c20>
+    // <conv.chunks.Comment object at 0x1030e0d40>
     lda(GameEngineSubroutine);
     cmp(0x4);
     BNE(SkipScore);
-    // <conv.chunks.Comment object at 0x104f84f50>
-    // <conv.chunks.Comment object at 0x104f84fe0>
+    // <conv.chunks.Comment object at 0x1030e0f50>
+    // <conv.chunks.Comment object at 0x1030e0fe0>
     lda(Player_State);
     cmp(0x3);
     BNE(SkipScore);
@@ -8400,31 +8386,31 @@ int FlagpoleRoutine() {
     lda(Player_Y_Position);
     cmp(0xa2);
     BCS(GiveFPScr);
-    // <conv.chunks.Comment object at 0x104f85280>
-    // <conv.chunks.Comment object at 0x104f85310>
-    // <conv.chunks.Comment object at 0x104f854c0>
-    // <conv.chunks.Comment object at 0x104f85610>
-    // <conv.chunks.Comment object at 0x104f856a0>
-    // <conv.chunks.Comment object at 0x104f85850>
-    // <conv.chunks.Comment object at 0x104f85970>
-    // <conv.chunks.Comment object at 0x104f85a00>
+    // <conv.chunks.Comment object at 0x1030e1280>
+    // <conv.chunks.Comment object at 0x1030e1310>
+    // <conv.chunks.Comment object at 0x1030e14c0>
+    // <conv.chunks.Comment object at 0x1030e1610>
+    // <conv.chunks.Comment object at 0x1030e16a0>
+    // <conv.chunks.Comment object at 0x1030e1850>
+    // <conv.chunks.Comment object at 0x1030e1970>
+    // <conv.chunks.Comment object at 0x1030e1a00>
     lda(Enemy_YMF_Dummy, x);
     adc(0xff);
     sta(Enemy_YMF_Dummy, x);
     lda(Enemy_Y_Position, x);
     adc(0x1);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x104f85cd0>
-    // <conv.chunks.Comment object at 0x104f85d60>
-    // <conv.chunks.Comment object at 0x104f85f40>
-    // <conv.chunks.Comment object at 0x104f86090>
-    // <conv.chunks.Comment object at 0x104f86120>
+    // <conv.chunks.Comment object at 0x1030e1cd0>
+    // <conv.chunks.Comment object at 0x1030e1d60>
+    // <conv.chunks.Comment object at 0x1030e1f40>
+    // <conv.chunks.Comment object at 0x1030e2090>
+    // <conv.chunks.Comment object at 0x1030e2120>
     lda(FlagpoleFNum_YMFDummy);
     sec();
-    // <conv.chunks.Comment object at 0x104f86420>
+    // <conv.chunks.Comment object at 0x1030e2420>
     sbc(0xff);
     sta(FlagpoleFNum_YMFDummy);
-    // <conv.chunks.Comment object at 0x104f86510>
+    // <conv.chunks.Comment object at 0x1030e2510>
     lda(FlagpoleFNum_Y_Pos);
     sbc(0x1);
     sta(FlagpoleFNum_Y_Pos);
@@ -8432,32 +8418,32 @@ int FlagpoleRoutine() {
 }
 
 int SkipScore() {
-    // <conv.chunks.Comment object at 0x104f867b0>
-    // <conv.chunks.Comment object at 0x104f86840>
-    // <conv.chunks.Comment object at 0x104f869f0>
+    // <conv.chunks.Comment object at 0x1030e27b0>
+    // <conv.chunks.Comment object at 0x1030e2840>
+    // <conv.chunks.Comment object at 0x1030e29f0>
     JMP(FPGfx);
     JMP(GiveFPScr);
 }
 
 int GiveFPScr() {
-    // <conv.chunks.Comment object at 0x104f86b70>
+    // <conv.chunks.Comment object at 0x1030e2b70>
     ldy(FlagpoleScore);
     lda(offsetof(G, FlagpoleScoreMods), y);
     ldx(offsetof(G, FlagpoleScoreDigits), y);
     sta(DigitModifier, x);
     JSR(AddToScore);
-    // <conv.chunks.Comment object at 0x104f86cc0>
-    // <conv.chunks.Comment object at 0x104f86e10>
-    // <conv.chunks.Comment object at 0x104f86f60>
-    // <conv.chunks.Comment object at 0x104f870b0>
+    // <conv.chunks.Comment object at 0x1030e2cc0>
+    // <conv.chunks.Comment object at 0x1030e2e10>
+    // <conv.chunks.Comment object at 0x1030e2f60>
+    // <conv.chunks.Comment object at 0x1030e30b0>
     lda(0x5);
     sta(GameEngineSubroutine);
     JMP(FPGfx);
 }
 
 int FPGfx() {
-    // <conv.chunks.Comment object at 0x104f87230>
-    // <conv.chunks.Comment object at 0x104f873e0>
+    // <conv.chunks.Comment object at 0x1030e3230>
+    // <conv.chunks.Comment object at 0x1030e33e0>
     JSR(GetEnemyOffscreenBits);
     JSR(RelativeEnemyPosition);
     JSR(FlagpoleGfxHandler);
@@ -8465,7 +8451,7 @@ int FPGfx() {
 }
 
 int ExitFlagP() {
-    rts();
+    return 0;
     JMP(JumpspringHandler);
 }
 
@@ -8475,20 +8461,20 @@ int JumpspringHandler() {
     BNE(DrawJSpr);
     lda(JumpspringAnimCtrl);
     BEQ(DrawJSpr);
-    // <conv.chunks.Comment object at 0x104f87920>
-    // <conv.chunks.Comment object at 0x104f87c50>
-    // <conv.chunks.Comment object at 0x104f87d70>
-    // <conv.chunks.Comment object at 0x104f87e90>
-    // <conv.chunks.Comment object at 0x104f87fb0>
+    // <conv.chunks.Comment object at 0x1030e3920>
+    // <conv.chunks.Comment object at 0x1030e3c50>
+    // <conv.chunks.Comment object at 0x1030e3d70>
+    // <conv.chunks.Comment object at 0x1030e3e90>
+    // <conv.chunks.Comment object at 0x1030e3fb0>
     tay();
     dey();
     tya();
     anda(0b10);
     BNE(DownJSpr);
-    // <conv.chunks.Comment object at 0x104f901d0>
-    // <conv.chunks.Comment object at 0x104f90290>
-    // <conv.chunks.Comment object at 0x104f90320>
-    // <conv.chunks.Comment object at 0x104f90440>
+    // <conv.chunks.Comment object at 0x1030ec1d0>
+    // <conv.chunks.Comment object at 0x1030ec290>
+    // <conv.chunks.Comment object at 0x1030ec320>
+    // <conv.chunks.Comment object at 0x1030ec440>
     inc(Player_Y_Position);
     inc(Player_Y_Position);
     JMP(PosJSpr);
@@ -8496,69 +8482,69 @@ int JumpspringHandler() {
 }
 
 int DownJSpr() {
-    // <conv.chunks.Comment object at 0x104f90650>
-    // <conv.chunks.Comment object at 0x104f90770>
-    // <conv.chunks.Comment object at 0x104f908c0>
+    // <conv.chunks.Comment object at 0x1030ec650>
+    // <conv.chunks.Comment object at 0x1030ec770>
+    // <conv.chunks.Comment object at 0x1030ec8c0>
     dec(Player_Y_Position);
     dec(Player_Y_Position);
     JMP(PosJSpr);
 }
 
 int PosJSpr() {
-    // <conv.chunks.Comment object at 0x104f90b00>
+    // <conv.chunks.Comment object at 0x1030ecb00>
     lda(Jumpspring_FixedYPos, x);
     clc();
     adc(offsetof(G, Jumpspring_Y_PosData), y);
     sta(Enemy_Y_Position, x);
     cpy(0x1);
     BCC(BounceJS);
-    // <conv.chunks.Comment object at 0x104f90d40>
-    // <conv.chunks.Comment object at 0x104f90e90>
-    // <conv.chunks.Comment object at 0x104f90fe0>
-    // <conv.chunks.Comment object at 0x104f91070>
+    // <conv.chunks.Comment object at 0x1030ecd40>
+    // <conv.chunks.Comment object at 0x1030ece90>
+    // <conv.chunks.Comment object at 0x1030ecfe0>
+    // <conv.chunks.Comment object at 0x1030ed070>
     lda(A_B_Buttons);
     anda(A_Button);
     BEQ(BounceJS);
     anda(PreviousA_B_Buttons);
     BNE(BounceJS);
-    // <conv.chunks.Comment object at 0x104f91310>
-    // <conv.chunks.Comment object at 0x104f91430>
-    // <conv.chunks.Comment object at 0x104f91550>
-    // <conv.chunks.Comment object at 0x104f91670>
+    // <conv.chunks.Comment object at 0x1030ed310>
+    // <conv.chunks.Comment object at 0x1030ed430>
+    // <conv.chunks.Comment object at 0x1030ed550>
+    // <conv.chunks.Comment object at 0x1030ed670>
     lda(0xf4);
     sta(JumpspringForce);
     JMP(BounceJS);
 }
 
 int BounceJS() {
-    // <conv.chunks.Comment object at 0x104f917f0>
-    // <conv.chunks.Comment object at 0x104f919a0>
+    // <conv.chunks.Comment object at 0x1030ed7f0>
+    // <conv.chunks.Comment object at 0x1030ed9a0>
     cpy(0x3);
     BNE(DrawJSpr);
-    // <conv.chunks.Comment object at 0x104f91a60>
+    // <conv.chunks.Comment object at 0x1030eda60>
     lda(JumpspringForce);
     sta(Player_Y_Speed);
-    // <conv.chunks.Comment object at 0x104f91d00>
+    // <conv.chunks.Comment object at 0x1030edd00>
     lda(0x0);
     sta(JumpspringAnimCtrl);
     JMP(DrawJSpr);
 }
 
 int DrawJSpr() {
-    // <conv.chunks.Comment object at 0x104f91e80>
-    // <conv.chunks.Comment object at 0x104f92030>
+    // <conv.chunks.Comment object at 0x1030ede80>
+    // <conv.chunks.Comment object at 0x1030ee030>
     JSR(RelativeEnemyPosition);
     JSR(EnemyGfxHandler);
     JSR(OffscreenBoundsCheck);
     lda(JumpspringAnimCtrl);
     BEQ(ExJSpring);
-    // <conv.chunks.Comment object at 0x104f92180>
-    // <conv.chunks.Comment object at 0x104f922a0>
-    // <conv.chunks.Comment object at 0x104f923c0>
-    // <conv.chunks.Comment object at 0x104f924e0>
+    // <conv.chunks.Comment object at 0x1030ee180>
+    // <conv.chunks.Comment object at 0x1030ee2a0>
+    // <conv.chunks.Comment object at 0x1030ee3c0>
+    // <conv.chunks.Comment object at 0x1030ee4e0>
     lda(JumpspringTimer);
     BNE(ExJSpring);
-    // <conv.chunks.Comment object at 0x104f926f0>
+    // <conv.chunks.Comment object at 0x1030ee6f0>
     lda(0x4);
     sta(JumpspringTimer);
     inc(JumpspringAnimCtrl);
@@ -8566,27 +8552,27 @@ int DrawJSpr() {
 }
 
 int ExJSpring() {
-    // <conv.chunks.Comment object at 0x104f92870>
-    // <conv.chunks.Comment object at 0x104f92a20>
-    // <conv.chunks.Comment object at 0x104f92b70>
-    rts();
+    // <conv.chunks.Comment object at 0x1030ee870>
+    // <conv.chunks.Comment object at 0x1030eea20>
+    // <conv.chunks.Comment object at 0x1030eeb70>
+    return 0;
     JMP(Setup_Vine);
 }
 
 int Setup_Vine() {
     lda(VineObject);
     sta(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x104f92cc0>
-    // <conv.chunks.Comment object at 0x104f92de0>
+    // <conv.chunks.Comment object at 0x1030eecc0>
+    // <conv.chunks.Comment object at 0x1030eede0>
     lda(0x1);
     sta(Enemy_Flag, x);
-    // <conv.chunks.Comment object at 0x104f92f90>
+    // <conv.chunks.Comment object at 0x1030eef90>
     lda(Block_PageLoc, y);
     sta(Enemy_PageLoc, x);
-    // <conv.chunks.Comment object at 0x104f93290>
+    // <conv.chunks.Comment object at 0x1030ef290>
     lda(Block_X_Position, y);
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x104f93500>
+    // <conv.chunks.Comment object at 0x1030ef500>
     lda(Block_Y_Position, y);
     sta(Enemy_Y_Position, x);
     ldy(VineFlagOffset);
@@ -8596,43 +8582,43 @@ int Setup_Vine() {
 }
 
 int NextVO() {
-    // <conv.chunks.Comment object at 0x104f93770>
-    // <conv.chunks.Comment object at 0x104f938c0>
-    // <conv.chunks.Comment object at 0x104f939e0>
-    // <conv.chunks.Comment object at 0x104f93b30>
-    // <conv.chunks.Comment object at 0x104f93c50>
+    // <conv.chunks.Comment object at 0x1030ef770>
+    // <conv.chunks.Comment object at 0x1030ef8c0>
+    // <conv.chunks.Comment object at 0x1030ef9e0>
+    // <conv.chunks.Comment object at 0x1030efb30>
+    // <conv.chunks.Comment object at 0x1030efc50>
     txa();
     sta(VineObjOffset, y);
     inc(VineFlagOffset);
-    // <conv.chunks.Comment object at 0x104f93d70>
-    // <conv.chunks.Comment object at 0x104f93ec0>
+    // <conv.chunks.Comment object at 0x1030efd70>
+    // <conv.chunks.Comment object at 0x1030efec0>
     lda(Sfx_GrowVine);
     sta(Square2SoundQueue);
-    // <conv.chunks.Comment object at 0x104f98110>
-    rts();
+    // <conv.chunks.Comment object at 0x1030f4110>
+    return 0;
     JMP(VineObjectHandler);
 }
 
 int VineObjectHandler() {
     cpx(0x5);
     BNE(ExitVH);
-    // <conv.chunks.Comment object at 0x104f983e0>
-    // <conv.chunks.Comment object at 0x104f98560>
+    // <conv.chunks.Comment object at 0x1030f43e0>
+    // <conv.chunks.Comment object at 0x1030f4560>
     ldy(VineFlagOffset);
     dey();
-    // <conv.chunks.Comment object at 0x104f98860>
+    // <conv.chunks.Comment object at 0x1030f4860>
     lda(VineHeight);
     cmp(offsetof(G, VineHeightData), y);
     BEQ(RunVSubs);
     lda(FrameCounter);
     lsr();
-    // <conv.chunks.Comment object at 0x104f989e0>
-    // <conv.chunks.Comment object at 0x104f98b30>
-    // <conv.chunks.Comment object at 0x104f98c50>
-    // <conv.chunks.Comment object at 0x104f98da0>
+    // <conv.chunks.Comment object at 0x1030f49e0>
+    // <conv.chunks.Comment object at 0x1030f4b30>
+    // <conv.chunks.Comment object at 0x1030f4c50>
+    // <conv.chunks.Comment object at 0x1030f4da0>
     lsr();
     BCC(RunVSubs);
-    // <conv.chunks.Comment object at 0x104f98ec0>
+    // <conv.chunks.Comment object at 0x1030f4ec0>
     lda(((Enemy_Y_Position) + (5)));
     sbc(0x1);
     sta(((Enemy_Y_Position) + (5)));
@@ -8641,13 +8627,13 @@ int VineObjectHandler() {
 }
 
 int RunVSubs() {
-    // <conv.chunks.Comment object at 0x104f99190>
-    // <conv.chunks.Comment object at 0x104f99220>
-    // <conv.chunks.Comment object at 0x104f99490>
-    // <conv.chunks.Comment object at 0x104f995b0>
+    // <conv.chunks.Comment object at 0x1030f5190>
+    // <conv.chunks.Comment object at 0x1030f5220>
+    // <conv.chunks.Comment object at 0x1030f5490>
+    // <conv.chunks.Comment object at 0x1030f55b0>
     lda(VineHeight);
     cmp(0x8);
-    // <conv.chunks.Comment object at 0x104f99700>
+    // <conv.chunks.Comment object at 0x1030f5700>
     BCC(ExitVH);
     JSR(RelativeEnemyPosition);
     JSR(GetEnemyOffscreenBits);
@@ -8656,17 +8642,17 @@ int RunVSubs() {
 }
 
 int VDrawLoop() {
-    // <conv.chunks.Comment object at 0x104f99940>
-    // <conv.chunks.Comment object at 0x104f99a60>
-    // <conv.chunks.Comment object at 0x104f99b80>
-    // <conv.chunks.Comment object at 0x104f99c10>
+    // <conv.chunks.Comment object at 0x1030f5940>
+    // <conv.chunks.Comment object at 0x1030f5a60>
+    // <conv.chunks.Comment object at 0x1030f5b80>
+    // <conv.chunks.Comment object at 0x1030f5c10>
     JSR(DrawVine);
     iny();
     cpy(VineFlagOffset);
     BNE(VDrawLoop);
-    // <conv.chunks.Comment object at 0x104f99e20>
-    // <conv.chunks.Comment object at 0x104f99eb0>
-    // <conv.chunks.Comment object at 0x104f99fd0>
+    // <conv.chunks.Comment object at 0x1030f5e20>
+    // <conv.chunks.Comment object at 0x1030f5eb0>
+    // <conv.chunks.Comment object at 0x1030f5fd0>
     lda(Enemy_OffscreenBits);
     anda(0b1100);
     BEQ(WrCMTile);
@@ -8675,10 +8661,10 @@ int VDrawLoop() {
 }
 
 int KillVine() {
-    // <conv.chunks.Comment object at 0x104f9a1e0>
-    // <conv.chunks.Comment object at 0x104f9a300>
-    // <conv.chunks.Comment object at 0x104f9a450>
-    // <conv.chunks.Comment object at 0x104f9a4e0>
+    // <conv.chunks.Comment object at 0x1030f61e0>
+    // <conv.chunks.Comment object at 0x1030f6300>
+    // <conv.chunks.Comment object at 0x1030f6450>
+    // <conv.chunks.Comment object at 0x1030f64e0>
     ldx(VineObjOffset, y);
     JSR(EraseEnemyObject);
     dey();
@@ -8689,12 +8675,12 @@ int KillVine() {
 }
 
 int WrCMTile() {
-    // <conv.chunks.Comment object at 0x104f9a660>
-    // <conv.chunks.Comment object at 0x104f9a7b0>
-    // <conv.chunks.Comment object at 0x104f9a840>
-    // <conv.chunks.Comment object at 0x104f9a960>
-    // <conv.chunks.Comment object at 0x104f9aa80>
-    // <conv.chunks.Comment object at 0x104f9aba0>
+    // <conv.chunks.Comment object at 0x1030f6660>
+    // <conv.chunks.Comment object at 0x1030f67b0>
+    // <conv.chunks.Comment object at 0x1030f6840>
+    // <conv.chunks.Comment object at 0x1030f6960>
+    // <conv.chunks.Comment object at 0x1030f6a80>
+    // <conv.chunks.Comment object at 0x1030f6ba0>
     lda(VineHeight);
     cmp(0x20);
     BCC(ExitVH);
@@ -8702,45 +8688,45 @@ int WrCMTile() {
     lda(0x1);
     ldy(0x1b);
     JSR(BlockBufferCollision);
-    // <conv.chunks.Comment object at 0x104f9acf0>
-    // <conv.chunks.Comment object at 0x104f9ad80>
-    // <conv.chunks.Comment object at 0x104f9af60>
-    // <conv.chunks.Comment object at 0x104f9aff0>
-    // <conv.chunks.Comment object at 0x104f9b110>
-    // <conv.chunks.Comment object at 0x104f9b230>
+    // <conv.chunks.Comment object at 0x1030f6cf0>
+    // <conv.chunks.Comment object at 0x1030f6d80>
+    // <conv.chunks.Comment object at 0x1030f6f60>
+    // <conv.chunks.Comment object at 0x1030f6ff0>
+    // <conv.chunks.Comment object at 0x1030f7110>
+    // <conv.chunks.Comment object at 0x1030f7230>
     ldy(0x2);
     cpy(0xd0);
     BCS(ExitVH);
     lda((0x6), y);
     BNE(ExitVH);
-    // <conv.chunks.Comment object at 0x104f9b3e0>
-    // <conv.chunks.Comment object at 0x104f9b560>
-    // <conv.chunks.Comment object at 0x104f9b740>
-    // <conv.chunks.Comment object at 0x104f9b7a0>
+    // <conv.chunks.Comment object at 0x1030f73e0>
+    // <conv.chunks.Comment object at 0x1030f7560>
+    // <conv.chunks.Comment object at 0x1030f7740>
+    // <conv.chunks.Comment object at 0x1030f77a0>
     lda(0x26);
     sta((0x6), y);
     JMP(ExitVH);
 }
 
 int ExitVH() {
-    // <conv.chunks.Comment object at 0x104f9ba70>
-    // <conv.chunks.Comment object at 0x104f9bb60>
+    // <conv.chunks.Comment object at 0x1030f7a70>
+    // <conv.chunks.Comment object at 0x1030f7b60>
     ldx(ObjectOffset);
-    rts();
+    return 0;
     JMP(ProcessCannons);
 }
 
 int ProcessCannons() {
     lda(AreaType);
     BEQ(ExCannon);
-    // <conv.chunks.Comment object at 0x104f9bf20>
-    // <conv.chunks.Comment object at 0x104fa81a0>
+    // <conv.chunks.Comment object at 0x1030f7f20>
+    // <conv.chunks.Comment object at 0x1031041a0>
     ldx(0x2);
     JMP(ThreeSChk);
 }
 
 int ThreeSChk() {
-    // <conv.chunks.Comment object at 0x104fa8320>
+    // <conv.chunks.Comment object at 0x103104320>
     stx(ObjectOffset);
     lda(Enemy_Flag, x);
     BNE(Chk_BB);
@@ -8770,32 +8756,32 @@ int FireCannon() {
     lda(Cannon_X_Position, y);
     sta(Enemy_X_Position, x);
     lda(Cannon_Y_Position, y);
-    // <conv.chunks.Comment object at 0x104fa9850>
-    // <conv.chunks.Comment object at 0x104fa9970>
-    // <conv.chunks.Comment object at 0x104fa9ac0>
-    // <conv.chunks.Comment object at 0x104fa9b50>
-    // <conv.chunks.Comment object at 0x104fa9d30>
-    // <conv.chunks.Comment object at 0x104fa9e80>
-    // <conv.chunks.Comment object at 0x104fa9fd0>
-    // <conv.chunks.Comment object at 0x104faa120>
-    // <conv.chunks.Comment object at 0x104faa270>
+    // <conv.chunks.Comment object at 0x103105850>
+    // <conv.chunks.Comment object at 0x103105970>
+    // <conv.chunks.Comment object at 0x103105ac0>
+    // <conv.chunks.Comment object at 0x103105b50>
+    // <conv.chunks.Comment object at 0x103105d30>
+    // <conv.chunks.Comment object at 0x103105e80>
+    // <conv.chunks.Comment object at 0x103105fd0>
+    // <conv.chunks.Comment object at 0x103106120>
+    // <conv.chunks.Comment object at 0x103106270>
     sec();
     sbc(0x8);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x104faa450>
-    // <conv.chunks.Comment object at 0x104faa4e0>
+    // <conv.chunks.Comment object at 0x103106450>
+    // <conv.chunks.Comment object at 0x1031064e0>
     lda(0x1);
     sta(Enemy_Y_HighPos, x);
     sta(Enemy_Flag, x);
     lsr();
     sta(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x104faa720>
-    // <conv.chunks.Comment object at 0x104faa900>
-    // <conv.chunks.Comment object at 0x104faaa80>
-    // <conv.chunks.Comment object at 0x104faab10>
+    // <conv.chunks.Comment object at 0x103106720>
+    // <conv.chunks.Comment object at 0x103106900>
+    // <conv.chunks.Comment object at 0x103106a80>
+    // <conv.chunks.Comment object at 0x103106b10>
     lda(0x9);
     sta(Enemy_BoundBoxCtrl, x);
-    // <conv.chunks.Comment object at 0x104faacc0>
+    // <conv.chunks.Comment object at 0x103106cc0>
     lda(BulletBill_CannonVar);
     sta(Enemy_ID, x);
     JMP(Next3Slt);
@@ -8803,9 +8789,9 @@ int FireCannon() {
 }
 
 int Chk_BB() {
-    // <conv.chunks.Comment object at 0x104faaf90>
-    // <conv.chunks.Comment object at 0x104fab0e0>
-    // <conv.chunks.Comment object at 0x104fab200>
+    // <conv.chunks.Comment object at 0x103106f90>
+    // <conv.chunks.Comment object at 0x1031070e0>
+    // <conv.chunks.Comment object at 0x103107200>
     lda(Enemy_ID, x);
     cmp(BulletBill_CannonVar);
     BNE(Next3Slt);
@@ -8818,30 +8804,30 @@ int Chk_BB() {
 }
 
 int Next3Slt() {
-    // <conv.chunks.Comment object at 0x104fab4a0>
-    // <conv.chunks.Comment object at 0x104fab5c0>
-    // <conv.chunks.Comment object at 0x104fab6e0>
-    // <conv.chunks.Comment object at 0x104fab830>
-    // <conv.chunks.Comment object at 0x104fab950>
-    // <conv.chunks.Comment object at 0x104faba70>
-    // <conv.chunks.Comment object at 0x104fabb90>
+    // <conv.chunks.Comment object at 0x1031074a0>
+    // <conv.chunks.Comment object at 0x1031075c0>
+    // <conv.chunks.Comment object at 0x1031076e0>
+    // <conv.chunks.Comment object at 0x103107830>
+    // <conv.chunks.Comment object at 0x103107950>
+    // <conv.chunks.Comment object at 0x103107a70>
+    // <conv.chunks.Comment object at 0x103107b90>
     dex();
     BPL(ThreeSChk);
     JMP(ExCannon);
 }
 
 int ExCannon() {
-    // <conv.chunks.Comment object at 0x104fabc80>
-    // <conv.chunks.Comment object at 0x104fabda0>
-    rts();
+    // <conv.chunks.Comment object at 0x103107c80>
+    // <conv.chunks.Comment object at 0x103107da0>
+    return 0;
     JMP(BulletBillHandler);
 }
 
 int BulletBillHandler() {
     lda(TimerControl);
     BNE(RunBBSubs);
-    // <conv.chunks.Comment object at 0x104fabf50>
-    // <conv.chunks.Comment object at 0x104fb41a0>
+    // <conv.chunks.Comment object at 0x103107f50>
+    // <conv.chunks.Comment object at 0x1031101a0>
     lda(Enemy_State, x);
     BNE(ChkDSte);
     lda(Enemy_OffscreenBits);
@@ -8856,16 +8842,16 @@ int BulletBillHandler() {
 }
 
 int SetupBB() {
-    // <conv.chunks.Comment object at 0x104fb43e0>
-    // <conv.chunks.Comment object at 0x104fb4530>
-    // <conv.chunks.Comment object at 0x104fb4650>
-    // <conv.chunks.Comment object at 0x104fb4770>
-    // <conv.chunks.Comment object at 0x104fb4890>
-    // <conv.chunks.Comment object at 0x104fb49e0>
-    // <conv.chunks.Comment object at 0x104fb4a70>
-    // <conv.chunks.Comment object at 0x104fb4c20>
-    // <conv.chunks.Comment object at 0x104fb4da0>
-    // <conv.chunks.Comment object at 0x104fb4e30>
+    // <conv.chunks.Comment object at 0x1031103e0>
+    // <conv.chunks.Comment object at 0x103110530>
+    // <conv.chunks.Comment object at 0x103110650>
+    // <conv.chunks.Comment object at 0x103110770>
+    // <conv.chunks.Comment object at 0x103110890>
+    // <conv.chunks.Comment object at 0x1031109e0>
+    // <conv.chunks.Comment object at 0x103110a70>
+    // <conv.chunks.Comment object at 0x103110c20>
+    // <conv.chunks.Comment object at 0x103110da0>
+    // <conv.chunks.Comment object at 0x103110e30>
     sty(Enemy_MovingDir, x);
     dey();
     lda(offsetof(G, BulletBillXSpdData), y);
@@ -8874,27 +8860,27 @@ int SetupBB() {
     adc(0x28);
     cmp(0x50);
     BCC(KillBB);
-    // <conv.chunks.Comment object at 0x104fb5010>
-    // <conv.chunks.Comment object at 0x104fb50a0>
-    // <conv.chunks.Comment object at 0x104fb51f0>
-    // <conv.chunks.Comment object at 0x104fb5370>
-    // <conv.chunks.Comment object at 0x104fb5400>
-    // <conv.chunks.Comment object at 0x104fb54f0>
-    // <conv.chunks.Comment object at 0x104fb5610>
+    // <conv.chunks.Comment object at 0x103111010>
+    // <conv.chunks.Comment object at 0x1031110a0>
+    // <conv.chunks.Comment object at 0x1031111f0>
+    // <conv.chunks.Comment object at 0x103111370>
+    // <conv.chunks.Comment object at 0x103111400>
+    // <conv.chunks.Comment object at 0x1031114f0>
+    // <conv.chunks.Comment object at 0x103111610>
     lda(0x1);
     sta(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x104fb5850>
+    // <conv.chunks.Comment object at 0x103111850>
     lda(0xa);
     sta(EnemyFrameTimer, x);
-    // <conv.chunks.Comment object at 0x104fb5a90>
+    // <conv.chunks.Comment object at 0x103111a90>
     lda(Sfx_Blast);
     sta(Square2SoundQueue);
     JMP(ChkDSte);
 }
 
 int ChkDSte() {
-    // <conv.chunks.Comment object at 0x104fb5d60>
-    // <conv.chunks.Comment object at 0x104fb5e80>
+    // <conv.chunks.Comment object at 0x103111d60>
+    // <conv.chunks.Comment object at 0x103111e80>
     lda(Enemy_State, x);
     anda(0b100000);
     BEQ(BBFly);
@@ -8903,15 +8889,15 @@ int ChkDSte() {
 }
 
 int BBFly() {
-    // <conv.chunks.Comment object at 0x104fb6120>
-    // <conv.chunks.Comment object at 0x104fb6270>
-    // <conv.chunks.Comment object at 0x104fb6390>
+    // <conv.chunks.Comment object at 0x103112120>
+    // <conv.chunks.Comment object at 0x103112270>
+    // <conv.chunks.Comment object at 0x103112390>
     JSR(MoveEnemyHorizontally);
     JMP(RunBBSubs);
 }
 
 int RunBBSubs() {
-    // <conv.chunks.Comment object at 0x104fb6510>
+    // <conv.chunks.Comment object at 0x103112510>
     JSR(GetEnemyOffscreenBits);
     JSR(RelativeEnemyPosition);
     JSR(GetEnemyBoundBox);
@@ -8921,13 +8907,13 @@ int RunBBSubs() {
 }
 
 int KillBB() {
-    // <conv.chunks.Comment object at 0x104fb6660>
-    // <conv.chunks.Comment object at 0x104fb6780>
-    // <conv.chunks.Comment object at 0x104fb68a0>
-    // <conv.chunks.Comment object at 0x104fb69c0>
-    // <conv.chunks.Comment object at 0x104fb6ae0>
+    // <conv.chunks.Comment object at 0x103112660>
+    // <conv.chunks.Comment object at 0x103112780>
+    // <conv.chunks.Comment object at 0x1031128a0>
+    // <conv.chunks.Comment object at 0x1031129c0>
+    // <conv.chunks.Comment object at 0x103112ae0>
     JSR(EraseEnemyObject);
-    rts();
+    return 0;
     JMP(SpawnHammerObj);
 }
 
@@ -8935,17 +8921,17 @@ int SpawnHammerObj() {
     lda(((PseudoRandomBitReg) + (1)));
     anda(0b111);
     BNE(SetMOfs);
-    // <conv.chunks.Comment object at 0x104fb6d80>
-    // <conv.chunks.Comment object at 0x104fb75c0>
-    // <conv.chunks.Comment object at 0x104fb76e0>
+    // <conv.chunks.Comment object at 0x103112d80>
+    // <conv.chunks.Comment object at 0x1031135c0>
+    // <conv.chunks.Comment object at 0x1031136e0>
     lda(((PseudoRandomBitReg) + (1)));
     anda(0b1000);
     JMP(SetMOfs);
 }
 
 int SetMOfs() {
-    // <conv.chunks.Comment object at 0x104fb79e0>
-    // <conv.chunks.Comment object at 0x104fb7b00>
+    // <conv.chunks.Comment object at 0x1031139e0>
+    // <conv.chunks.Comment object at 0x103113b00>
     tay();
     lda(Misc_State, y);
     BNE(NoHammer);
@@ -8953,33 +8939,33 @@ int SetMOfs() {
     lda(Enemy_Flag, x);
     BNE(NoHammer);
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x104fb7c20>
-    // <conv.chunks.Comment object at 0x104fb7d70>
-    // <conv.chunks.Comment object at 0x104fb7e90>
-    // <conv.chunks.Comment object at 0x104fb7fe0>
-    // <conv.chunks.Comment object at 0x104fbc170>
-    // <conv.chunks.Comment object at 0x104fbc290>
+    // <conv.chunks.Comment object at 0x103113c20>
+    // <conv.chunks.Comment object at 0x103113d70>
+    // <conv.chunks.Comment object at 0x103113e90>
+    // <conv.chunks.Comment object at 0x103113fe0>
+    // <conv.chunks.Comment object at 0x103118170>
+    // <conv.chunks.Comment object at 0x103118290>
     txa();
     sta(HammerEnemyOffset, y);
-    // <conv.chunks.Comment object at 0x104fbc440>
+    // <conv.chunks.Comment object at 0x103118440>
     lda(0x90);
     sta(Misc_State, y);
-    // <conv.chunks.Comment object at 0x104fbc5f0>
+    // <conv.chunks.Comment object at 0x1031185f0>
     lda(0x7);
     sta(Misc_BoundBoxCtrl, y);
     sec();
-    // <conv.chunks.Comment object at 0x104fbc830>
-    // <conv.chunks.Comment object at 0x104fbca40>
-    rts();
+    // <conv.chunks.Comment object at 0x103118830>
+    // <conv.chunks.Comment object at 0x103118a40>
+    return 0;
     JMP(NoHammer);
 }
 
 int NoHammer() {
-    // <conv.chunks.Comment object at 0x104fbcb60>
+    // <conv.chunks.Comment object at 0x103118b60>
     ldx(ObjectOffset);
     clc();
-    // <conv.chunks.Comment object at 0x104fbcce0>
-    rts();
+    // <conv.chunks.Comment object at 0x103118ce0>
+    return 0;
     JMP(ProcHammerObj);
 }
 
@@ -8992,29 +8978,29 @@ int ProcHammerObj() {
     cmp(0x2);
     BEQ(SetHSpd);
     BCS(SetHPos);
-    // <conv.chunks.Comment object at 0x104fbce30>
-    // <conv.chunks.Comment object at 0x104fbce90>
-    // <conv.chunks.Comment object at 0x104fbcef0>
-    // <conv.chunks.Comment object at 0x104fbd010>
-    // <conv.chunks.Comment object at 0x104fbd130>
-    // <conv.chunks.Comment object at 0x104fbd280>
-    // <conv.chunks.Comment object at 0x104fbd3a0>
-    // <conv.chunks.Comment object at 0x104fbd4f0>
-    // <conv.chunks.Comment object at 0x104fbd580>
-    // <conv.chunks.Comment object at 0x104fbd760>
+    // <conv.chunks.Comment object at 0x103118e30>
+    // <conv.chunks.Comment object at 0x103118e90>
+    // <conv.chunks.Comment object at 0x103118ef0>
+    // <conv.chunks.Comment object at 0x103119010>
+    // <conv.chunks.Comment object at 0x103119130>
+    // <conv.chunks.Comment object at 0x103119280>
+    // <conv.chunks.Comment object at 0x1031193a0>
+    // <conv.chunks.Comment object at 0x1031194f0>
+    // <conv.chunks.Comment object at 0x103119580>
+    // <conv.chunks.Comment object at 0x103119760>
     txa();
     clc();
     adc(0xd);
     tax();
-    // <conv.chunks.Comment object at 0x104fbd970>
-    // <conv.chunks.Comment object at 0x104fbda00>
-    // <conv.chunks.Comment object at 0x104fbdb50>
+    // <conv.chunks.Comment object at 0x103119970>
+    // <conv.chunks.Comment object at 0x103119a00>
+    // <conv.chunks.Comment object at 0x103119b50>
     lda(0x10);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x104fbdd00>
+    // <conv.chunks.Comment object at 0x103119d00>
     lda(0xf);
     sta(0x1);
-    // <conv.chunks.Comment object at 0x104fbdf10>
+    // <conv.chunks.Comment object at 0x103119f10>
     lda(0x4);
     sta(0x2);
     lda(0x0);
@@ -9040,19 +9026,19 @@ int SetHSpd() {
 }
 
 int SetHPos() {
-    // <conv.chunks.Comment object at 0x104fbe8a0>
-    // <conv.chunks.Comment object at 0x104fbea80>
-    // <conv.chunks.Comment object at 0x104fbebd0>
-    // <conv.chunks.Comment object at 0x104fbecf0>
-    // <conv.chunks.Comment object at 0x104fbee40>
-    // <conv.chunks.Comment object at 0x104fbefc0>
-    // <conv.chunks.Comment object at 0x104fbf050>
-    // <conv.chunks.Comment object at 0x104fbf1a0>
-    // <conv.chunks.Comment object at 0x104fbf2c0>
-    // <conv.chunks.Comment object at 0x104fbf410>
+    // <conv.chunks.Comment object at 0x10311a8a0>
+    // <conv.chunks.Comment object at 0x10311aa80>
+    // <conv.chunks.Comment object at 0x10311abd0>
+    // <conv.chunks.Comment object at 0x10311acf0>
+    // <conv.chunks.Comment object at 0x10311ae40>
+    // <conv.chunks.Comment object at 0x10311afc0>
+    // <conv.chunks.Comment object at 0x10311b050>
+    // <conv.chunks.Comment object at 0x10311b1a0>
+    // <conv.chunks.Comment object at 0x10311b2c0>
+    // <conv.chunks.Comment object at 0x10311b410>
     dec(Misc_State, x);
     lda(Enemy_X_Position, y);
-    // <conv.chunks.Comment object at 0x104fbf5c0>
+    // <conv.chunks.Comment object at 0x10311b5c0>
     clc();
     adc(0x2);
     sta(Misc_X_Position, x);
@@ -9060,17 +9046,17 @@ int SetHPos() {
     adc(0x0);
     sta(Misc_PageLoc, x);
     lda(Enemy_Y_Position, y);
-    // <conv.chunks.Comment object at 0x104fbf7a0>
-    // <conv.chunks.Comment object at 0x104fbf830>
-    // <conv.chunks.Comment object at 0x104fbfa10>
-    // <conv.chunks.Comment object at 0x104fbfb60>
-    // <conv.chunks.Comment object at 0x104fbfbf0>
-    // <conv.chunks.Comment object at 0x104fbfdd0>
+    // <conv.chunks.Comment object at 0x10311b7a0>
+    // <conv.chunks.Comment object at 0x10311b830>
+    // <conv.chunks.Comment object at 0x10311ba10>
+    // <conv.chunks.Comment object at 0x10311bb60>
+    // <conv.chunks.Comment object at 0x10311bbf0>
+    // <conv.chunks.Comment object at 0x10311bdd0>
     sec();
     sbc(0xa);
     sta(Misc_Y_Position, x);
-    // <conv.chunks.Comment object at 0x104fbffb0>
-    // <conv.chunks.Comment object at 0x104fc4080>
+    // <conv.chunks.Comment object at 0x10311bfb0>
+    // <conv.chunks.Comment object at 0x103120080>
     lda(0x1);
     sta(Misc_Y_HighPos, x);
     BNE(RunHSubs);
@@ -9078,20 +9064,20 @@ int SetHPos() {
 }
 
 int RunAllH() {
-    // <conv.chunks.Comment object at 0x104fc42c0>
-    // <conv.chunks.Comment object at 0x104fc44a0>
-    // <conv.chunks.Comment object at 0x104fc45c0>
+    // <conv.chunks.Comment object at 0x1031202c0>
+    // <conv.chunks.Comment object at 0x1031204a0>
+    // <conv.chunks.Comment object at 0x1031205c0>
     JSR(PlayerHammerCollision);
     JMP(RunHSubs);
 }
 
 int RunHSubs() {
-    // <conv.chunks.Comment object at 0x104fc4740>
+    // <conv.chunks.Comment object at 0x103120740>
     JSR(GetMiscOffscreenBits);
     JSR(RelativeMiscPosition);
     JSR(GetMiscBoundBox);
     JSR(DrawHammer);
-    rts();
+    return 0;
     JMP(CoinBlock);
 }
 
@@ -9114,13 +9100,13 @@ int SetupJumpCoin() {
     lda(Block_PageLoc2, x);
     sta(Misc_PageLoc, y);
     lda(0x6);
-    // <conv.chunks.Comment object at 0x104fc5a30>
-    // <conv.chunks.Comment object at 0x104fc5b50>
-    // <conv.chunks.Comment object at 0x104fc5ca0>
-    // <conv.chunks.Comment object at 0x104fc5e20>
+    // <conv.chunks.Comment object at 0x103121a30>
+    // <conv.chunks.Comment object at 0x103121b50>
+    // <conv.chunks.Comment object at 0x103121ca0>
+    // <conv.chunks.Comment object at 0x103121e20>
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x104fc5fd0>
+    // <conv.chunks.Comment object at 0x103121fd0>
     asl();
     asl();
     ora(0x5);
@@ -9134,7 +9120,7 @@ int SetupJumpCoin() {
 int JCoinC() {
     lda(0xfb);
     sta(Misc_Y_Speed, y);
-    // <conv.chunks.Comment object at 0x104fc6840>
+    // <conv.chunks.Comment object at 0x103122840>
     lda(0x1);
     sta(Misc_Y_HighPos, y);
     sta(Misc_State, y);
@@ -9142,13 +9128,13 @@ int JCoinC() {
     stx(ObjectOffset);
     JSR(GiveOneCoin);
     inc(CoinTallyFor1Ups);
-    // <conv.chunks.Comment object at 0x104fc6a80>
-    // <conv.chunks.Comment object at 0x104fc6c60>
-    // <conv.chunks.Comment object at 0x104fc6db0>
-    // <conv.chunks.Comment object at 0x104fc6ed0>
-    // <conv.chunks.Comment object at 0x104fc6ff0>
-    // <conv.chunks.Comment object at 0x104fc7110>
-    rts();
+    // <conv.chunks.Comment object at 0x103122a80>
+    // <conv.chunks.Comment object at 0x103122c60>
+    // <conv.chunks.Comment object at 0x103122db0>
+    // <conv.chunks.Comment object at 0x103122ed0>
+    // <conv.chunks.Comment object at 0x103122ff0>
+    // <conv.chunks.Comment object at 0x103123110>
+    return 0;
     JMP(FindEmptyMiscSlot);
 }
 
@@ -9158,8 +9144,8 @@ int FindEmptyMiscSlot() {
 }
 
 int FMiscLoop() {
-    // <conv.chunks.Comment object at 0x104fc72f0>
-    // <conv.chunks.Comment object at 0x104fc7380>
+    // <conv.chunks.Comment object at 0x1031232f0>
+    // <conv.chunks.Comment object at 0x103123380>
     lda(Misc_State, y);
     BEQ(UseMiscS);
     dey();
@@ -9170,14 +9156,14 @@ int FMiscLoop() {
 }
 
 int UseMiscS() {
-    // <conv.chunks.Comment object at 0x104fc7590>
-    // <conv.chunks.Comment object at 0x104fc76e0>
-    // <conv.chunks.Comment object at 0x104fc7770>
-    // <conv.chunks.Comment object at 0x104fc7800>
-    // <conv.chunks.Comment object at 0x104fc79b0>
-    // <conv.chunks.Comment object at 0x104fc7a40>
+    // <conv.chunks.Comment object at 0x103123590>
+    // <conv.chunks.Comment object at 0x1031236e0>
+    // <conv.chunks.Comment object at 0x103123770>
+    // <conv.chunks.Comment object at 0x103123800>
+    // <conv.chunks.Comment object at 0x1031239b0>
+    // <conv.chunks.Comment object at 0x103123a40>
     sty(JumpCoinMiscOffset);
-    rts();
+    return 0;
     JMP(MiscObjectsCore);
 }
 
@@ -9187,8 +9173,8 @@ int MiscObjectsCore() {
 }
 
 int MiscLoop() {
-    // <conv.chunks.Comment object at 0x104fc7d10>
-    // <conv.chunks.Comment object at 0x104fc7da0>
+    // <conv.chunks.Comment object at 0x103123d10>
+    // <conv.chunks.Comment object at 0x103123da0>
     stx(ObjectOffset);
     lda(Misc_State, x);
     BEQ(MiscLoopBack);
@@ -9211,30 +9197,30 @@ int ProcJumpCoin() {
     lda(Misc_PageLoc, x);
     adc(0x0);
     sta(Misc_PageLoc, x);
-    // <conv.chunks.Comment object at 0x104fc7f80>
-    // <conv.chunks.Comment object at 0x104fd4110>
-    // <conv.chunks.Comment object at 0x104fd4260>
-    // <conv.chunks.Comment object at 0x104fd42f0>
-    // <conv.chunks.Comment object at 0x104fd4410>
-    // <conv.chunks.Comment object at 0x104fd4530>
-    // <conv.chunks.Comment object at 0x104fd4680>
-    // <conv.chunks.Comment object at 0x104fd46e0>
-    // <conv.chunks.Comment object at 0x104fd4740>
-    // <conv.chunks.Comment object at 0x104fd48c0>
-    // <conv.chunks.Comment object at 0x104fd4950>
-    // <conv.chunks.Comment object at 0x104fd4a70>
-    // <conv.chunks.Comment object at 0x104fd4bc0>
-    // <conv.chunks.Comment object at 0x104fd4d40>
-    // <conv.chunks.Comment object at 0x104fd4dd0>
-    // <conv.chunks.Comment object at 0x104fd4ef0>
-    // <conv.chunks.Comment object at 0x104fd5040>
-    // <conv.chunks.Comment object at 0x104fd5190>
-    // <conv.chunks.Comment object at 0x104fd5220>
+    // <conv.chunks.Comment object at 0x103123f80>
+    // <conv.chunks.Comment object at 0x103130110>
+    // <conv.chunks.Comment object at 0x103130260>
+    // <conv.chunks.Comment object at 0x1031302f0>
+    // <conv.chunks.Comment object at 0x103130410>
+    // <conv.chunks.Comment object at 0x103130530>
+    // <conv.chunks.Comment object at 0x103130680>
+    // <conv.chunks.Comment object at 0x1031306e0>
+    // <conv.chunks.Comment object at 0x103130740>
+    // <conv.chunks.Comment object at 0x1031308c0>
+    // <conv.chunks.Comment object at 0x103130950>
+    // <conv.chunks.Comment object at 0x103130a70>
+    // <conv.chunks.Comment object at 0x103130bc0>
+    // <conv.chunks.Comment object at 0x103130d40>
+    // <conv.chunks.Comment object at 0x103130dd0>
+    // <conv.chunks.Comment object at 0x103130ef0>
+    // <conv.chunks.Comment object at 0x103131040>
+    // <conv.chunks.Comment object at 0x103131190>
+    // <conv.chunks.Comment object at 0x103131220>
     lda(Misc_State, x);
     cmp(0x30);
     BNE(RunJCSubs);
-    // <conv.chunks.Comment object at 0x104fd5520>
-    // <conv.chunks.Comment object at 0x104fd55b0>
+    // <conv.chunks.Comment object at 0x103131520>
+    // <conv.chunks.Comment object at 0x1031315b0>
     lda(0x0);
     sta(Misc_State, x);
     JMP(MiscLoopBack);
@@ -9244,14 +9230,14 @@ int ProcJumpCoin() {
 int JCoinRun() {
     txa();
     clc();
-    // <conv.chunks.Comment object at 0x104fd5bb0>
+    // <conv.chunks.Comment object at 0x103131bb0>
     adc(0xd);
     tax();
     lda(0x50);
-    // <conv.chunks.Comment object at 0x104fd5dc0>
+    // <conv.chunks.Comment object at 0x103131dc0>
     sta(0x0);
     lda(0x6);
-    // <conv.chunks.Comment object at 0x104fd5e50>
+    // <conv.chunks.Comment object at 0x103131e50>
     sta(0x2);
     lsr();
     sta(0x1);
@@ -9259,12 +9245,12 @@ int JCoinRun() {
     JSR(ImposeGravity);
     ldx(ObjectOffset);
     lda(Misc_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x104fd6180>
-    // <conv.chunks.Comment object at 0x104fd62d0>
-    // <conv.chunks.Comment object at 0x104fd6360>
-    // <conv.chunks.Comment object at 0x104fd6450>
-    // <conv.chunks.Comment object at 0x104fd6600>
-    // <conv.chunks.Comment object at 0x104fd6720>
+    // <conv.chunks.Comment object at 0x103132180>
+    // <conv.chunks.Comment object at 0x1031322d0>
+    // <conv.chunks.Comment object at 0x103132360>
+    // <conv.chunks.Comment object at 0x103132450>
+    // <conv.chunks.Comment object at 0x103132600>
+    // <conv.chunks.Comment object at 0x103132720>
     cmp(0x5);
     BNE(RunJCSubs);
     inc(Misc_State, x);
@@ -9272,9 +9258,9 @@ int JCoinRun() {
 }
 
 int RunJCSubs() {
-    // <conv.chunks.Comment object at 0x104fd68d0>
-    // <conv.chunks.Comment object at 0x104fd6a80>
-    // <conv.chunks.Comment object at 0x104fd6bd0>
+    // <conv.chunks.Comment object at 0x1031328d0>
+    // <conv.chunks.Comment object at 0x103132a80>
+    // <conv.chunks.Comment object at 0x103132bd0>
     JSR(RelativeMiscPosition);
     JSR(GetMiscOffscreenBits);
     JSR(GetMiscBoundBox);
@@ -9285,7 +9271,7 @@ int RunJCSubs() {
 int MiscLoopBack() {
     dex();
     BPL(MiscLoop);
-    rts();
+    return 0;
     JMP(GiveOneCoin);
 }
 
@@ -9296,22 +9282,22 @@ int GiveOneCoin() {
     ldy(offsetof(G, CoinTallyOffsets), x);
     JSR(DigitsMathRoutine);
     inc(CoinTally);
-    // <conv.chunks.Comment object at 0x104fd7590>
-    // <conv.chunks.Comment object at 0x104fd7830>
-    // <conv.chunks.Comment object at 0x104fd7aa0>
-    // <conv.chunks.Comment object at 0x104fd7bc0>
-    // <conv.chunks.Comment object at 0x104fd7d10>
-    // <conv.chunks.Comment object at 0x104fd7e30>
+    // <conv.chunks.Comment object at 0x103133590>
+    // <conv.chunks.Comment object at 0x103133830>
+    // <conv.chunks.Comment object at 0x103133aa0>
+    // <conv.chunks.Comment object at 0x103133bc0>
+    // <conv.chunks.Comment object at 0x103133d10>
+    // <conv.chunks.Comment object at 0x103133e30>
     lda(CoinTally);
     cmp(100);
     BNE(CoinPoints);
-    // <conv.chunks.Comment object at 0x104fdc080>
-    // <conv.chunks.Comment object at 0x104fdc110>
+    // <conv.chunks.Comment object at 0x103138080>
+    // <conv.chunks.Comment object at 0x103138110>
     lda(0x0);
     sta(CoinTally);
     inc(NumberofLives);
-    // <conv.chunks.Comment object at 0x104fdc320>
-    // <conv.chunks.Comment object at 0x104fdc4d0>
+    // <conv.chunks.Comment object at 0x103138320>
+    // <conv.chunks.Comment object at 0x1031384d0>
     lda(Sfx_ExtraLife);
     sta(Square2SoundQueue);
     JMP(CoinPoints);
@@ -9338,21 +9324,21 @@ int GetSBNybbles() {
 
 int UpdateNumber() {
     JSR(PrintStatusBarNumbers);
-    // <conv.chunks.Comment object at 0x104fdd1c0>
+    // <conv.chunks.Comment object at 0x1031391c0>
     ldy(VRAM_Buffer1_Offset);
     lda(((VRAM_Buffer1) - (6)), y);
     BNE(NoZSup);
-    // <conv.chunks.Comment object at 0x104fdd3d0>
-    // <conv.chunks.Comment object at 0x104fdd5e0>
+    // <conv.chunks.Comment object at 0x1031393d0>
+    // <conv.chunks.Comment object at 0x1031395e0>
     lda(0x24);
     sta(((VRAM_Buffer1) - (6)), y);
     JMP(NoZSup);
 }
 
 int NoZSup() {
-    // <conv.chunks.Comment object at 0x104fdda00>
+    // <conv.chunks.Comment object at 0x103139a00>
     ldx(ObjectOffset);
-    rts();
+    return 0;
     JMP(SetupPowerUp);
 }
 
@@ -9363,17 +9349,17 @@ int SetupPowerUp() {
     sta(((Enemy_PageLoc) + (5)));
     lda(Block_X_Position, x);
     sta(((Enemy_X_Position) + (5)));
-    // <conv.chunks.Comment object at 0x104fddc70>
-    // <conv.chunks.Comment object at 0x104fddd90>
-    // <conv.chunks.Comment object at 0x104fddf70>
-    // <conv.chunks.Comment object at 0x104fde0c0>
-    // <conv.chunks.Comment object at 0x104fde2a0>
-    // <conv.chunks.Comment object at 0x104fde3f0>
+    // <conv.chunks.Comment object at 0x103139c70>
+    // <conv.chunks.Comment object at 0x103139d90>
+    // <conv.chunks.Comment object at 0x103139f70>
+    // <conv.chunks.Comment object at 0x10313a0c0>
+    // <conv.chunks.Comment object at 0x10313a2a0>
+    // <conv.chunks.Comment object at 0x10313a3f0>
     lda(0x1);
     sta(((Enemy_Y_HighPos) + (5)));
     lda(Block_Y_Position, x);
-    // <conv.chunks.Comment object at 0x104fde630>
-    // <conv.chunks.Comment object at 0x104fde8a0>
+    // <conv.chunks.Comment object at 0x10313a630>
+    // <conv.chunks.Comment object at 0x10313a8a0>
     sec();
     sbc(0x8);
     sta(((Enemy_Y_Position) + (5)));
@@ -9381,24 +9367,24 @@ int SetupPowerUp() {
 }
 
 int PwrUpJmp() {
-    // <conv.chunks.Comment object at 0x104fdea80>
-    // <conv.chunks.Comment object at 0x104fdeb10>
-    // <conv.chunks.Comment object at 0x104fded80>
+    // <conv.chunks.Comment object at 0x10313aa80>
+    // <conv.chunks.Comment object at 0x10313ab10>
+    // <conv.chunks.Comment object at 0x10313ad80>
     lda(0x1);
     sta(((Enemy_State) + (5)));
     sta(((Enemy_Flag) + (5)));
-    // <conv.chunks.Comment object at 0x104fdee40>
-    // <conv.chunks.Comment object at 0x104fdf0b0>
+    // <conv.chunks.Comment object at 0x10313ae40>
+    // <conv.chunks.Comment object at 0x10313b0b0>
     lda(0x3);
     sta(((Enemy_BoundBoxCtrl) + (5)));
-    // <conv.chunks.Comment object at 0x104fdf2f0>
+    // <conv.chunks.Comment object at 0x10313b2f0>
     lda(PowerUpType);
     cmp(0x2);
     BCS(PutBehind);
     lda(PlayerStatus);
-    // <conv.chunks.Comment object at 0x104fdf650>
-    // <conv.chunks.Comment object at 0x104fdf6e0>
-    // <conv.chunks.Comment object at 0x104fdf890>
+    // <conv.chunks.Comment object at 0x10313b650>
+    // <conv.chunks.Comment object at 0x10313b6e0>
+    // <conv.chunks.Comment object at 0x10313b890>
     cmp(0x2);
     BCC(StrType);
     lsr();
@@ -9406,9 +9392,9 @@ int PwrUpJmp() {
 }
 
 int StrType() {
-    // <conv.chunks.Comment object at 0x104fdfa10>
-    // <conv.chunks.Comment object at 0x104fdfc20>
-    // <conv.chunks.Comment object at 0x104fdfcb0>
+    // <conv.chunks.Comment object at 0x10313ba10>
+    // <conv.chunks.Comment object at 0x10313bc20>
+    // <conv.chunks.Comment object at 0x10313bcb0>
     sta(PowerUpType);
     JMP(PutBehind);
 }
@@ -9416,17 +9402,17 @@ int StrType() {
 int PutBehind() {
     lda(0b100000);
     sta(((Enemy_SprAttrib) + (5)));
-    // <conv.chunks.Comment object at 0x104fdff50>
+    // <conv.chunks.Comment object at 0x10313bf50>
     lda(Sfx_GrowPowerUp);
     sta(Square2SoundQueue);
-    // <conv.chunks.Comment object at 0x104fe4260>
-    rts();
+    // <conv.chunks.Comment object at 0x103140260>
+    return 0;
     JMP(PowerUpObjHandler);
 }
 
 int PowerUpObjHandler() {
     ldx(0x5);
-    // <conv.chunks.Comment object at 0x104fe4470>
+    // <conv.chunks.Comment object at 0x103140470>
     stx(ObjectOffset);
     lda(((Enemy_State) + (5)));
     BEQ(ExitPUp);
@@ -9436,17 +9422,17 @@ int PowerUpObjHandler() {
     BNE(RunPUSubs);
     lda(PowerUpType);
     BEQ(ShroomM);
-    // <conv.chunks.Comment object at 0x104fe4680>
-    // <conv.chunks.Comment object at 0x104fe4860>
-    // <conv.chunks.Comment object at 0x104fe49e0>
-    // <conv.chunks.Comment object at 0x104fe4a70>
-    // <conv.chunks.Comment object at 0x104fe4b90>
-    // <conv.chunks.Comment object at 0x104fe4cb0>
-    // <conv.chunks.Comment object at 0x104fe4dd0>
-    // <conv.chunks.Comment object at 0x104fe4ef0>
+    // <conv.chunks.Comment object at 0x103140680>
+    // <conv.chunks.Comment object at 0x103140860>
+    // <conv.chunks.Comment object at 0x1031409e0>
+    // <conv.chunks.Comment object at 0x103140a70>
+    // <conv.chunks.Comment object at 0x103140b90>
+    // <conv.chunks.Comment object at 0x103140cb0>
+    // <conv.chunks.Comment object at 0x103140dd0>
+    // <conv.chunks.Comment object at 0x103140ef0>
     cmp(0x3);
     BEQ(ShroomM);
-    // <conv.chunks.Comment object at 0x104fe50a0>
+    // <conv.chunks.Comment object at 0x1031410a0>
     cmp(0x2);
     BNE(RunPUSubs);
     JSR(MoveJumpingEnemy);
@@ -9456,11 +9442,11 @@ int PowerUpObjHandler() {
 }
 
 int ShroomM() {
-    // <conv.chunks.Comment object at 0x104fe52e0>
-    // <conv.chunks.Comment object at 0x104fe5490>
-    // <conv.chunks.Comment object at 0x104fe55b0>
-    // <conv.chunks.Comment object at 0x104fe56d0>
-    // <conv.chunks.Comment object at 0x104fe57f0>
+    // <conv.chunks.Comment object at 0x1031412e0>
+    // <conv.chunks.Comment object at 0x103141490>
+    // <conv.chunks.Comment object at 0x1031415b0>
+    // <conv.chunks.Comment object at 0x1031416d0>
+    // <conv.chunks.Comment object at 0x1031417f0>
     JSR(MoveNormalEnemy);
     JSR(EnemyToBGCollisionDet);
     JMP(RunPUSubs);
@@ -9476,17 +9462,17 @@ int GrowThePowerUp() {
     inc(((Enemy_State) + (5)));
     cmp(0x11);
     BCC(ChkPUSte);
-    // <conv.chunks.Comment object at 0x104fe5be0>
-    // <conv.chunks.Comment object at 0x104fe5d00>
-    // <conv.chunks.Comment object at 0x104fe5d90>
-    // <conv.chunks.Comment object at 0x104fe5f40>
-    // <conv.chunks.Comment object at 0x104fe6120>
-    // <conv.chunks.Comment object at 0x104fe6300>
-    // <conv.chunks.Comment object at 0x104fe64e0>
-    // <conv.chunks.Comment object at 0x104fe6570>
+    // <conv.chunks.Comment object at 0x103141be0>
+    // <conv.chunks.Comment object at 0x103141d00>
+    // <conv.chunks.Comment object at 0x103141d90>
+    // <conv.chunks.Comment object at 0x103141f40>
+    // <conv.chunks.Comment object at 0x103142120>
+    // <conv.chunks.Comment object at 0x103142300>
+    // <conv.chunks.Comment object at 0x1031424e0>
+    // <conv.chunks.Comment object at 0x103142570>
     lda(0x10);
     sta(Enemy_X_Speed, x);
-    // <conv.chunks.Comment object at 0x104fe6780>
+    // <conv.chunks.Comment object at 0x103142780>
     lda(0b10000000);
     sta(((Enemy_State) + (5)));
     asl();
@@ -9497,12 +9483,12 @@ int GrowThePowerUp() {
 }
 
 int ChkPUSte() {
-    // <conv.chunks.Comment object at 0x104fe6a50>
-    // <conv.chunks.Comment object at 0x104fe6c60>
-    // <conv.chunks.Comment object at 0x104fe6cf0>
-    // <conv.chunks.Comment object at 0x104fe6f00>
-    // <conv.chunks.Comment object at 0x104fe6f90>
-    // <conv.chunks.Comment object at 0x104fe70e0>
+    // <conv.chunks.Comment object at 0x103142a50>
+    // <conv.chunks.Comment object at 0x103142c60>
+    // <conv.chunks.Comment object at 0x103142cf0>
+    // <conv.chunks.Comment object at 0x103142f00>
+    // <conv.chunks.Comment object at 0x103142f90>
+    // <conv.chunks.Comment object at 0x1031430e0>
     lda(((Enemy_State) + (5)));
     cmp(0x6);
     BCC(ExitPUp);
@@ -9510,9 +9496,9 @@ int ChkPUSte() {
 }
 
 int RunPUSubs() {
-    // <conv.chunks.Comment object at 0x104fe72f0>
-    // <conv.chunks.Comment object at 0x104fe7380>
-    // <conv.chunks.Comment object at 0x104fe7560>
+    // <conv.chunks.Comment object at 0x1031432f0>
+    // <conv.chunks.Comment object at 0x103143380>
+    // <conv.chunks.Comment object at 0x103143560>
     JSR(RelativeEnemyPosition);
     JSR(GetEnemyOffscreenBits);
     JSR(GetEnemyBoundBox);
@@ -9523,13 +9509,13 @@ int RunPUSubs() {
 }
 
 int ExitPUp() {
-    // <conv.chunks.Comment object at 0x104fe76b0>
-    // <conv.chunks.Comment object at 0x104fe77d0>
-    // <conv.chunks.Comment object at 0x104fe78f0>
-    // <conv.chunks.Comment object at 0x104fe7a10>
-    // <conv.chunks.Comment object at 0x104fe7b30>
-    // <conv.chunks.Comment object at 0x104fe7c50>
-    rts();
+    // <conv.chunks.Comment object at 0x1031436b0>
+    // <conv.chunks.Comment object at 0x1031437d0>
+    // <conv.chunks.Comment object at 0x1031438f0>
+    // <conv.chunks.Comment object at 0x103143a10>
+    // <conv.chunks.Comment object at 0x103143b30>
+    // <conv.chunks.Comment object at 0x103143c50>
+    return 0;
     JMP(PlayerHeadCollision);
 }
 
@@ -9544,22 +9530,22 @@ int PlayerHeadCollision() {
 }
 
 int DBlockSte() {
-    // <conv.chunks.Comment object at 0x104fe7ec0>
-    // <conv.chunks.Comment object at 0x104ff0110>
-    // <conv.chunks.Comment object at 0x104ff01a0>
-    // <conv.chunks.Comment object at 0x104ff0350>
-    // <conv.chunks.Comment object at 0x104ff0470>
-    // <conv.chunks.Comment object at 0x104ff0590>
-    // <conv.chunks.Comment object at 0x104ff0620>
+    // <conv.chunks.Comment object at 0x103143ec0>
+    // <conv.chunks.Comment object at 0x10314c110>
+    // <conv.chunks.Comment object at 0x10314c1a0>
+    // <conv.chunks.Comment object at 0x10314c350>
+    // <conv.chunks.Comment object at 0x10314c470>
+    // <conv.chunks.Comment object at 0x10314c590>
+    // <conv.chunks.Comment object at 0x10314c620>
     sta(Block_State, x);
     JSR(DestroyBlockMetatile);
     ldx(SprDataOffset_Ctrl);
     lda(0x2);
     sta(Block_Orig_YPos, x);
-    // <conv.chunks.Comment object at 0x104ff0830>
-    // <conv.chunks.Comment object at 0x104ff0950>
-    // <conv.chunks.Comment object at 0x104ff0aa0>
-    // <conv.chunks.Comment object at 0x104ff0b30>
+    // <conv.chunks.Comment object at 0x10314c830>
+    // <conv.chunks.Comment object at 0x10314c950>
+    // <conv.chunks.Comment object at 0x10314caa0>
+    // <conv.chunks.Comment object at 0x10314cb30>
     tay();
     lda(0x6);
     sta(Block_BBuf_Low, x);
@@ -9573,15 +9559,15 @@ int DBlockSte() {
 }
 
 int ChkBrick() {
-    // <conv.chunks.Comment object at 0x104ff0da0>
-    // <conv.chunks.Comment object at 0x104ff0e30>
-    // <conv.chunks.Comment object at 0x104ff0fe0>
-    // <conv.chunks.Comment object at 0x104ff1040>
-    // <conv.chunks.Comment object at 0x104ff12b0>
-    // <conv.chunks.Comment object at 0x104ff1340>
-    // <conv.chunks.Comment object at 0x104ff14c0>
-    // <conv.chunks.Comment object at 0x104ff1610>
-    // <conv.chunks.Comment object at 0x104ff16a0>
+    // <conv.chunks.Comment object at 0x10314cda0>
+    // <conv.chunks.Comment object at 0x10314ce30>
+    // <conv.chunks.Comment object at 0x10314cfe0>
+    // <conv.chunks.Comment object at 0x10314d040>
+    // <conv.chunks.Comment object at 0x10314d2b0>
+    // <conv.chunks.Comment object at 0x10314d340>
+    // <conv.chunks.Comment object at 0x10314d4c0>
+    // <conv.chunks.Comment object at 0x10314d610>
+    // <conv.chunks.Comment object at 0x10314d6a0>
     BCC(PutMTileB);
     ldy(0x11);
     sty(Block_State, x);
@@ -9595,18 +9581,18 @@ int ChkBrick() {
 }
 
 int StartBTmr() {
-    // <conv.chunks.Comment object at 0x104ff17f0>
-    // <conv.chunks.Comment object at 0x104ff1880>
-    // <conv.chunks.Comment object at 0x104ff1a60>
-    // <conv.chunks.Comment object at 0x104ff1bb0>
-    // <conv.chunks.Comment object at 0x104ff1c40>
-    // <conv.chunks.Comment object at 0x104ff1d30>
-    // <conv.chunks.Comment object at 0x104ff1ee0>
-    // <conv.chunks.Comment object at 0x104ff1f70>
-    // <conv.chunks.Comment object at 0x104ff2120>
+    // <conv.chunks.Comment object at 0x10314d7f0>
+    // <conv.chunks.Comment object at 0x10314d880>
+    // <conv.chunks.Comment object at 0x10314da60>
+    // <conv.chunks.Comment object at 0x10314dbb0>
+    // <conv.chunks.Comment object at 0x10314dc40>
+    // <conv.chunks.Comment object at 0x10314dd30>
+    // <conv.chunks.Comment object at 0x10314dee0>
+    // <conv.chunks.Comment object at 0x10314df70>
+    // <conv.chunks.Comment object at 0x10314e120>
     lda(BrickCoinTimerFlag);
     BNE(ContBTmr);
-    // <conv.chunks.Comment object at 0x104ff2270>
+    // <conv.chunks.Comment object at 0x10314e270>
     lda(0xb);
     sta(BrickCoinTimer);
     inc(BrickCoinTimerFlag);
@@ -9614,9 +9600,9 @@ int StartBTmr() {
 }
 
 int ContBTmr() {
-    // <conv.chunks.Comment object at 0x104ff23f0>
-    // <conv.chunks.Comment object at 0x104ff25a0>
-    // <conv.chunks.Comment object at 0x104ff26c0>
+    // <conv.chunks.Comment object at 0x10314e3f0>
+    // <conv.chunks.Comment object at 0x10314e5a0>
+    // <conv.chunks.Comment object at 0x10314e6c0>
     lda(BrickCoinTimer);
     BNE(PutOldMT);
     ldy(0xc4);
@@ -9624,23 +9610,23 @@ int ContBTmr() {
 }
 
 int PutOldMT() {
-    // <conv.chunks.Comment object at 0x104ff2810>
-    // <conv.chunks.Comment object at 0x104ff2930>
-    // <conv.chunks.Comment object at 0x104ff29c0>
+    // <conv.chunks.Comment object at 0x10314e810>
+    // <conv.chunks.Comment object at 0x10314e930>
+    // <conv.chunks.Comment object at 0x10314e9c0>
     tya();
     JMP(PutMTileB);
 }
 
 int PutMTileB() {
-    // <conv.chunks.Comment object at 0x104ff2b40>
+    // <conv.chunks.Comment object at 0x10314eb40>
     sta(Block_Metatile, x);
     JSR(InitBlock_XY_Pos);
     ldy(0x2);
-    // <conv.chunks.Comment object at 0x104ff2cc0>
-    // <conv.chunks.Comment object at 0x104ff2e10>
+    // <conv.chunks.Comment object at 0x10314ecc0>
+    // <conv.chunks.Comment object at 0x10314ee10>
     lda(0x23);
     sta((0x6), y);
-    // <conv.chunks.Comment object at 0x104ff2f60>
+    // <conv.chunks.Comment object at 0x10314ef60>
     lda(0x10);
     sta(BlockBounceTimer);
     pla();
@@ -9654,31 +9640,31 @@ int PutMTileB() {
 }
 
 int SmallBP() {
-    // <conv.chunks.Comment object at 0x104ff31d0>
-    // <conv.chunks.Comment object at 0x104ff33b0>
-    // <conv.chunks.Comment object at 0x104ff3470>
-    // <conv.chunks.Comment object at 0x104ff3500>
-    // <conv.chunks.Comment object at 0x104ff35f0>
-    // <conv.chunks.Comment object at 0x104ff37a0>
-    // <conv.chunks.Comment object at 0x104ff38f0>
-    // <conv.chunks.Comment object at 0x104ff3a10>
-    // <conv.chunks.Comment object at 0x104ff3b60>
+    // <conv.chunks.Comment object at 0x10314f1d0>
+    // <conv.chunks.Comment object at 0x10314f3b0>
+    // <conv.chunks.Comment object at 0x10314f470>
+    // <conv.chunks.Comment object at 0x10314f500>
+    // <conv.chunks.Comment object at 0x10314f5f0>
+    // <conv.chunks.Comment object at 0x10314f7a0>
+    // <conv.chunks.Comment object at 0x10314f8f0>
+    // <conv.chunks.Comment object at 0x10314fa10>
+    // <conv.chunks.Comment object at 0x10314fb60>
     iny();
     JMP(BigBP);
 }
 
 int BigBP() {
-    // <conv.chunks.Comment object at 0x104ff3c80>
+    // <conv.chunks.Comment object at 0x10314fc80>
     lda(Player_Y_Position);
     clc();
     adc(offsetof(G, BlockYPosAdderData), y);
     anda(0xf0);
     sta(Block_Y_Position, x);
     ldy(Block_State, x);
-    // <conv.chunks.Comment object at 0x104ff3e90>
-    // <conv.chunks.Comment object at 0x104ff3fe0>
-    // <conv.chunks.Comment object at 0x104ffc0b0>
-    // <conv.chunks.Comment object at 0x104ffc290>
+    // <conv.chunks.Comment object at 0x10314fe90>
+    // <conv.chunks.Comment object at 0x10314ffe0>
+    // <conv.chunks.Comment object at 0x10315c0b0>
+    // <conv.chunks.Comment object at 0x10315c290>
     cpy(0x11);
     BEQ(Unbreak);
     JSR(BrickShatter);
@@ -9687,60 +9673,60 @@ int BigBP() {
 }
 
 int Unbreak() {
-    // <conv.chunks.Comment object at 0x104ffc440>
-    // <conv.chunks.Comment object at 0x104ffc620>
-    // <conv.chunks.Comment object at 0x104ffc740>
-    // <conv.chunks.Comment object at 0x104ffc890>
+    // <conv.chunks.Comment object at 0x10315c440>
+    // <conv.chunks.Comment object at 0x10315c620>
+    // <conv.chunks.Comment object at 0x10315c740>
+    // <conv.chunks.Comment object at 0x10315c890>
     JSR(BumpBlock);
     JMP(InvOBit);
 }
 
 int InvOBit() {
-    // <conv.chunks.Comment object at 0x104ffca10>
+    // <conv.chunks.Comment object at 0x10315ca10>
     lda(SprDataOffset_Ctrl);
     eor(0x1);
-    // <conv.chunks.Comment object at 0x104ffcb90>
+    // <conv.chunks.Comment object at 0x10315cb90>
     sta(SprDataOffset_Ctrl);
-    rts();
+    return 0;
     JMP(InitBlock_XY_Pos);
 }
 
 int InitBlock_XY_Pos() {
     lda(Player_X_Position);
-    // <conv.chunks.Comment object at 0x104ffcef0>
+    // <conv.chunks.Comment object at 0x10315cef0>
     clc();
     adc(0x8);
     anda(0xf0);
     sta(Block_X_Position, x);
-    // <conv.chunks.Comment object at 0x104ffd0a0>
-    // <conv.chunks.Comment object at 0x104ffd130>
-    // <conv.chunks.Comment object at 0x104ffd250>
+    // <conv.chunks.Comment object at 0x10315d0a0>
+    // <conv.chunks.Comment object at 0x10315d130>
+    // <conv.chunks.Comment object at 0x10315d250>
     lda(Player_PageLoc);
     adc(0x0);
     sta(Block_PageLoc, x);
     sta(Block_PageLoc2, x);
-    // <conv.chunks.Comment object at 0x104ffd520>
-    // <conv.chunks.Comment object at 0x104ffd5b0>
-    // <conv.chunks.Comment object at 0x104ffd790>
+    // <conv.chunks.Comment object at 0x10315d520>
+    // <conv.chunks.Comment object at 0x10315d5b0>
+    // <conv.chunks.Comment object at 0x10315d790>
     lda(Player_Y_HighPos);
     sta(Block_Y_HighPos, x);
-    rts();
+    return 0;
     JMP(BumpBlock);
 }
 
 int BumpBlock() {
     JSR(CheckTopOfBlock);
-    // <conv.chunks.Comment object at 0x104ffdc40>
+    // <conv.chunks.Comment object at 0x10315dc40>
     lda(Sfx_Bump);
     sta(Square1SoundQueue);
-    // <conv.chunks.Comment object at 0x104ffde50>
+    // <conv.chunks.Comment object at 0x10315de50>
     lda(0x0);
     sta(Block_X_Speed, x);
     sta(Block_Y_MoveForce, x);
     sta(Player_Y_Speed);
-    // <conv.chunks.Comment object at 0x104ffdfd0>
-    // <conv.chunks.Comment object at 0x104ffe1b0>
-    // <conv.chunks.Comment object at 0x104ffe300>
+    // <conv.chunks.Comment object at 0x10315dfd0>
+    // <conv.chunks.Comment object at 0x10315e1b0>
+    // <conv.chunks.Comment object at 0x10315e300>
     lda(0xfe);
     sta(Block_Y_Speed, x);
     lda(0x5);
@@ -9754,16 +9740,6 @@ int BumpBlock() {
 }
 
 int BlockCode() {
-    // <conv.chunks.Comment object at 0x104ffe480>
-    // <conv.chunks.Comment object at 0x104ffe690>
-    // <conv.chunks.Comment object at 0x104ffe720>
-    // <conv.chunks.Comment object at 0x104ffe8a0>
-    // <conv.chunks.Comment object at 0x104ffe9f0>
-    // <conv.chunks.Comment object at 0x104ffea80>
-    // <conv.chunks.Comment object at 0x104ffeb10>
-    // <conv.chunks.Comment object at 0x104ffecc0>
-    // <conv.chunks.Comment object at 0x104ffed50>
-    JSR(JumpEngine);
     JMP(MushFlowerBlock);
 }
 
@@ -9780,8 +9756,8 @@ int StarBlock() {
 int ExtraLifeMushBlock() {
     lda(0x3);
     sta(0x39);
-    // <conv.chunks.Comment object at 0x104fff860>
-    // <conv.chunks.Comment object at 0x104fffa10>
+    // <conv.chunks.Comment object at 0x10315f860>
+    // <conv.chunks.Comment object at 0x10315fa10>
     JMP(SetupPowerUp);
     JMP(VineBlock);
 }
@@ -9794,7 +9770,7 @@ int VineBlock() {
 }
 
 int ExitBlockChk() {
-    rts();
+    return 0;
     JMP(BlockBumpedChk);
 }
 
@@ -9804,8 +9780,8 @@ int BlockBumpedChk() {
 }
 
 int BumpChkLoop() {
-    // <conv.chunks.Comment object at 0x10500c4d0>
-    // <conv.chunks.Comment object at 0x10500c530>
+    // <conv.chunks.Comment object at 0x1031684d0>
+    // <conv.chunks.Comment object at 0x103168530>
     cmp(offsetof(G, BrickQBlockMetatiles), y);
     BEQ(MatchBump);
     dey();
@@ -9815,36 +9791,36 @@ int BumpChkLoop() {
 }
 
 int MatchBump() {
-    // <conv.chunks.Comment object at 0x10500ccb0>
-    // <conv.chunks.Comment object at 0x10500ce00>
-    // <conv.chunks.Comment object at 0x10500ce90>
-    // <conv.chunks.Comment object at 0x10500cfe0>
-    // <conv.chunks.Comment object at 0x10500d070>
-    rts();
+    // <conv.chunks.Comment object at 0x103168cb0>
+    // <conv.chunks.Comment object at 0x103168e00>
+    // <conv.chunks.Comment object at 0x103168e90>
+    // <conv.chunks.Comment object at 0x103168fe0>
+    // <conv.chunks.Comment object at 0x103169070>
+    return 0;
     JMP(BrickShatter);
 }
 
 int BrickShatter() {
     JSR(CheckTopOfBlock);
-    // <conv.chunks.Comment object at 0x10500d1c0>
+    // <conv.chunks.Comment object at 0x1031691c0>
     lda(Sfx_BrickShatter);
     sta(Block_RepFlag, x);
     sta(NoiseSoundQueue);
     JSR(SpawnBrickChunks);
-    // <conv.chunks.Comment object at 0x10500d3d0>
-    // <conv.chunks.Comment object at 0x10500d520>
-    // <conv.chunks.Comment object at 0x10500d640>
+    // <conv.chunks.Comment object at 0x1031693d0>
+    // <conv.chunks.Comment object at 0x103169520>
+    // <conv.chunks.Comment object at 0x103169640>
     lda(0xfe);
     sta(Player_Y_Speed);
-    // <conv.chunks.Comment object at 0x10500d7c0>
+    // <conv.chunks.Comment object at 0x1031697c0>
     lda(0x5);
     sta(((DigitModifier) + (5)));
     JSR(AddToScore);
     ldx(SprDataOffset_Ctrl);
-    // <conv.chunks.Comment object at 0x10500d9d0>
-    // <conv.chunks.Comment object at 0x10500dc40>
-    // <conv.chunks.Comment object at 0x10500dd60>
-    rts();
+    // <conv.chunks.Comment object at 0x1031699d0>
+    // <conv.chunks.Comment object at 0x103169c40>
+    // <conv.chunks.Comment object at 0x103169d60>
+    return 0;
     JMP(CheckTopOfBlock);
 }
 
@@ -9853,22 +9829,22 @@ int CheckTopOfBlock() {
     ldy(0x2);
     BEQ(TopEx);
     tya();
-    // <conv.chunks.Comment object at 0x10500df70>
-    // <conv.chunks.Comment object at 0x10500e0c0>
-    // <conv.chunks.Comment object at 0x10500e150>
-    // <conv.chunks.Comment object at 0x10500e330>
+    // <conv.chunks.Comment object at 0x103169f70>
+    // <conv.chunks.Comment object at 0x10316a0c0>
+    // <conv.chunks.Comment object at 0x10316a150>
+    // <conv.chunks.Comment object at 0x10316a330>
     sec();
     sbc(0x10);
     sta(0x2);
-    // <conv.chunks.Comment object at 0x10500e450>
-    // <conv.chunks.Comment object at 0x10500e5a0>
+    // <conv.chunks.Comment object at 0x10316a450>
+    // <conv.chunks.Comment object at 0x10316a5a0>
     tay();
     lda((0x6), y);
     cmp(0xc2);
     BNE(TopEx);
-    // <conv.chunks.Comment object at 0x10500e720>
-    // <conv.chunks.Comment object at 0x10500e780>
-    // <conv.chunks.Comment object at 0x10500e930>
+    // <conv.chunks.Comment object at 0x10316a720>
+    // <conv.chunks.Comment object at 0x10316a780>
+    // <conv.chunks.Comment object at 0x10316a930>
     lda(0x0);
     sta((0x6), y);
     JSR(RemoveCoin_Axe);
@@ -9878,50 +9854,50 @@ int CheckTopOfBlock() {
 }
 
 int TopEx() {
-    // <conv.chunks.Comment object at 0x10500eb70>
-    // <conv.chunks.Comment object at 0x10500ec60>
-    // <conv.chunks.Comment object at 0x10500eea0>
-    // <conv.chunks.Comment object at 0x10500efc0>
-    // <conv.chunks.Comment object at 0x10500f110>
-    rts();
+    // <conv.chunks.Comment object at 0x10316ab70>
+    // <conv.chunks.Comment object at 0x10316ac60>
+    // <conv.chunks.Comment object at 0x10316aea0>
+    // <conv.chunks.Comment object at 0x10316afc0>
+    // <conv.chunks.Comment object at 0x10316b110>
+    return 0;
     JMP(SpawnBrickChunks);
 }
 
 int SpawnBrickChunks() {
     lda(Block_X_Position, x);
     sta(Block_Orig_XPos, x);
-    // <conv.chunks.Comment object at 0x10500f290>
-    // <conv.chunks.Comment object at 0x10500f3e0>
+    // <conv.chunks.Comment object at 0x10316b290>
+    // <conv.chunks.Comment object at 0x10316b3e0>
     lda(0xf0);
     sta(Block_X_Speed, x);
-    // <conv.chunks.Comment object at 0x10500f590>
+    // <conv.chunks.Comment object at 0x10316b590>
     sta(((Block_X_Speed) + (2)), x);
     lda(0xfa);
     sta(Block_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x10500f9b0>
+    // <conv.chunks.Comment object at 0x10316b9b0>
     lda(0xfc);
     sta(((Block_Y_Speed) + (2)), x);
-    // <conv.chunks.Comment object at 0x10500fbf0>
+    // <conv.chunks.Comment object at 0x10316bbf0>
     lda(0x0);
     sta(Block_Y_MoveForce, x);
-    // <conv.chunks.Comment object at 0x10500fef0>
+    // <conv.chunks.Comment object at 0x10316bef0>
     sta(((Block_Y_MoveForce) + (2)), x);
     lda(Block_PageLoc, x);
     sta(((Block_PageLoc) + (2)), x);
-    // <conv.chunks.Comment object at 0x10501c410>
+    // <conv.chunks.Comment object at 0x103178410>
     lda(Block_X_Position, x);
     sta(((Block_X_Position) + (2)), x);
-    // <conv.chunks.Comment object at 0x10501c740>
+    // <conv.chunks.Comment object at 0x103178740>
     lda(Block_Y_Position, x);
     clc();
     adc(0x8);
-    // <conv.chunks.Comment object at 0x10501caa0>
-    // <conv.chunks.Comment object at 0x10501cb30>
+    // <conv.chunks.Comment object at 0x103178aa0>
+    // <conv.chunks.Comment object at 0x103178b30>
     sta(((Block_Y_Position) + (2)), x);
     lda(0xfa);
     sta(Block_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x10501ce90>
-    rts();
+    // <conv.chunks.Comment object at 0x103178e90>
+    return 0;
     JMP(BlockObjectsCore);
 }
 
@@ -9931,11 +9907,11 @@ int BlockObjectsCore() {
     anda(0xf);
     pha();
     tay();
-    // <conv.chunks.Comment object at 0x10501d160>
-    // <conv.chunks.Comment object at 0x10501d2b0>
-    // <conv.chunks.Comment object at 0x10501d400>
-    // <conv.chunks.Comment object at 0x10501d550>
-    // <conv.chunks.Comment object at 0x10501d610>
+    // <conv.chunks.Comment object at 0x103179160>
+    // <conv.chunks.Comment object at 0x1031792b0>
+    // <conv.chunks.Comment object at 0x103179400>
+    // <conv.chunks.Comment object at 0x103179550>
+    // <conv.chunks.Comment object at 0x103179610>
     txa();
     clc();
     adc(0x9);
@@ -9944,15 +9920,15 @@ int BlockObjectsCore() {
     BEQ(BouncingBlockHandler);
     JSR(ImposeGravityBlock);
     JSR(MoveObjectHorizontally);
-    // <conv.chunks.Comment object at 0x10501d7c0>
-    // <conv.chunks.Comment object at 0x10501d910>
-    // <conv.chunks.Comment object at 0x10501d9d0>
-    // <conv.chunks.Comment object at 0x10501da60>
-    // <conv.chunks.Comment object at 0x10501db80>
-    // <conv.chunks.Comment object at 0x10501dca0>
+    // <conv.chunks.Comment object at 0x1031797c0>
+    // <conv.chunks.Comment object at 0x103179910>
+    // <conv.chunks.Comment object at 0x1031799d0>
+    // <conv.chunks.Comment object at 0x103179a60>
+    // <conv.chunks.Comment object at 0x103179b80>
+    // <conv.chunks.Comment object at 0x103179ca0>
     txa();
     clc();
-    // <conv.chunks.Comment object at 0x10501de80>
+    // <conv.chunks.Comment object at 0x103179e80>
     adc(0x2);
     tax();
     JSR(ImposeGravityBlock);
@@ -9965,16 +9941,16 @@ int BlockObjectsCore() {
     ldy(Block_Y_HighPos, x);
     BEQ(UpdSte);
     pha();
-    // <conv.chunks.Comment object at 0x10501e090>
-    // <conv.chunks.Comment object at 0x10501e1b0>
-    // <conv.chunks.Comment object at 0x10501e2d0>
-    // <conv.chunks.Comment object at 0x10501e3f0>
-    // <conv.chunks.Comment object at 0x10501e510>
-    // <conv.chunks.Comment object at 0x10501e630>
-    // <conv.chunks.Comment object at 0x10501e780>
-    // <conv.chunks.Comment object at 0x10501e810>
-    // <conv.chunks.Comment object at 0x10501e960>
-    // <conv.chunks.Comment object at 0x10501eae0>
+    // <conv.chunks.Comment object at 0x10317a090>
+    // <conv.chunks.Comment object at 0x10317a1b0>
+    // <conv.chunks.Comment object at 0x10317a2d0>
+    // <conv.chunks.Comment object at 0x10317a3f0>
+    // <conv.chunks.Comment object at 0x10317a510>
+    // <conv.chunks.Comment object at 0x10317a630>
+    // <conv.chunks.Comment object at 0x10317a780>
+    // <conv.chunks.Comment object at 0x10317a810>
+    // <conv.chunks.Comment object at 0x10317a960>
+    // <conv.chunks.Comment object at 0x10317aae0>
     lda(0xf0);
     cmp(((Block_Y_Position) + (2)), x);
     BCS(ChkTop);
@@ -9983,10 +9959,10 @@ int BlockObjectsCore() {
 }
 
 int ChkTop() {
-    // <conv.chunks.Comment object at 0x10501ebd0>
-    // <conv.chunks.Comment object at 0x10501ee70>
-    // <conv.chunks.Comment object at 0x10501efc0>
-    // <conv.chunks.Comment object at 0x10501f1d0>
+    // <conv.chunks.Comment object at 0x10317abd0>
+    // <conv.chunks.Comment object at 0x10317ae70>
+    // <conv.chunks.Comment object at 0x10317afc0>
+    // <conv.chunks.Comment object at 0x10317b1d0>
     lda(Block_Y_Position, x);
     cmp(0xf0);
     pla();
@@ -10006,32 +9982,32 @@ int BouncingBlockHandler() {
     cmp(0x5);
     pla();
     BCS(UpdSte);
-    // <conv.chunks.Comment object at 0x10501f800>
-    // <conv.chunks.Comment object at 0x10501f920>
-    // <conv.chunks.Comment object at 0x10501fa40>
-    // <conv.chunks.Comment object at 0x10501fb60>
-    // <conv.chunks.Comment object at 0x10501fc80>
-    // <conv.chunks.Comment object at 0x10501fda0>
-    // <conv.chunks.Comment object at 0x10501fef0>
-    // <conv.chunks.Comment object at 0x10501ff80>
-    // <conv.chunks.Comment object at 0x1050241a0>
-    // <conv.chunks.Comment object at 0x105024230>
+    // <conv.chunks.Comment object at 0x10317b800>
+    // <conv.chunks.Comment object at 0x10317b920>
+    // <conv.chunks.Comment object at 0x10317ba40>
+    // <conv.chunks.Comment object at 0x10317bb60>
+    // <conv.chunks.Comment object at 0x10317bc80>
+    // <conv.chunks.Comment object at 0x10317bda0>
+    // <conv.chunks.Comment object at 0x10317bef0>
+    // <conv.chunks.Comment object at 0x10317bf80>
+    // <conv.chunks.Comment object at 0x1031801a0>
+    // <conv.chunks.Comment object at 0x103180230>
     lda(0x1);
     sta(Block_RepFlag, x);
     JMP(KillBlock);
 }
 
 int KillBlock() {
-    // <conv.chunks.Comment object at 0x1050243e0>
-    // <conv.chunks.Comment object at 0x1050245c0>
+    // <conv.chunks.Comment object at 0x1031803e0>
+    // <conv.chunks.Comment object at 0x1031805c0>
     lda(0x0);
     JMP(UpdSte);
 }
 
 int UpdSte() {
-    // <conv.chunks.Comment object at 0x105024680>
+    // <conv.chunks.Comment object at 0x103180680>
     sta(Block_State, x);
-    rts();
+    return 0;
     JMP(BlockObjMT_Updater);
 }
 
@@ -10041,8 +10017,8 @@ int BlockObjMT_Updater() {
 }
 
 int UpdateLoop() {
-    // <conv.chunks.Comment object at 0x105024a10>
-    // <conv.chunks.Comment object at 0x105024aa0>
+    // <conv.chunks.Comment object at 0x103180a10>
+    // <conv.chunks.Comment object at 0x103180aa0>
     stx(ObjectOffset);
     lda(VRAM_Buffer1);
     BNE(NextBUpd);
@@ -10050,37 +10026,37 @@ int UpdateLoop() {
     BEQ(NextBUpd);
     lda(Block_BBuf_Low, x);
     sta(0x6);
-    // <conv.chunks.Comment object at 0x105024c80>
-    // <conv.chunks.Comment object at 0x105024da0>
-    // <conv.chunks.Comment object at 0x105024ec0>
-    // <conv.chunks.Comment object at 0x105025010>
-    // <conv.chunks.Comment object at 0x105025130>
-    // <conv.chunks.Comment object at 0x1050252b0>
+    // <conv.chunks.Comment object at 0x103180c80>
+    // <conv.chunks.Comment object at 0x103180da0>
+    // <conv.chunks.Comment object at 0x103180ec0>
+    // <conv.chunks.Comment object at 0x103181010>
+    // <conv.chunks.Comment object at 0x103181130>
+    // <conv.chunks.Comment object at 0x1031812b0>
     lda(0x5);
     sta(0x7);
     lda(Block_Orig_YPos, x);
     sta(0x2);
-    // <conv.chunks.Comment object at 0x1050254c0>
-    // <conv.chunks.Comment object at 0x105025550>
-    // <conv.chunks.Comment object at 0x105025730>
+    // <conv.chunks.Comment object at 0x1031814c0>
+    // <conv.chunks.Comment object at 0x103181550>
+    // <conv.chunks.Comment object at 0x103181730>
     tay();
     lda(Block_Metatile, x);
     sta((0x6), y);
     JSR(ReplaceBlockMetatile);
-    // <conv.chunks.Comment object at 0x1050258b0>
-    // <conv.chunks.Comment object at 0x105025a00>
-    // <conv.chunks.Comment object at 0x105025a60>
+    // <conv.chunks.Comment object at 0x1031818b0>
+    // <conv.chunks.Comment object at 0x103181a00>
+    // <conv.chunks.Comment object at 0x103181a60>
     lda(0x0);
     sta(Block_RepFlag, x);
     JMP(NextBUpd);
 }
 
 int NextBUpd() {
-    // <conv.chunks.Comment object at 0x105025d00>
-    // <conv.chunks.Comment object at 0x105025ee0>
+    // <conv.chunks.Comment object at 0x103181d00>
+    // <conv.chunks.Comment object at 0x103181ee0>
     dex();
     BPL(UpdateLoop);
-    rts();
+    return 0;
     JMP(MoveEnemyHorizontally);
 }
 
@@ -10088,7 +10064,7 @@ int MoveEnemyHorizontally() {
     inx();
     JSR(MoveObjectHorizontally);
     ldx(ObjectOffset);
-    rts();
+    return 0;
     JMP(MovePlayerHorizontally);
 }
 
@@ -10103,46 +10079,46 @@ int MoveObjectHorizontally() {
     lda(SprObject_X_Speed, x);
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x1050269f0>
-    // <conv.chunks.Comment object at 0x105026b70>
-    // <conv.chunks.Comment object at 0x105026c30>
+    // <conv.chunks.Comment object at 0x1031829f0>
+    // <conv.chunks.Comment object at 0x103182b70>
+    // <conv.chunks.Comment object at 0x103182c30>
     asl();
     asl();
     sta(0x1);
     lda(SprObject_X_Speed, x);
     lsr();
-    // <conv.chunks.Comment object at 0x105026e10>
-    // <conv.chunks.Comment object at 0x105026ea0>
-    // <conv.chunks.Comment object at 0x105027080>
+    // <conv.chunks.Comment object at 0x103182e10>
+    // <conv.chunks.Comment object at 0x103182ea0>
+    // <conv.chunks.Comment object at 0x103183080>
     lsr();
     lsr();
     lsr();
     cmp(0x8);
-    // <conv.chunks.Comment object at 0x1050272c0>
+    // <conv.chunks.Comment object at 0x1031832c0>
     BCC(SaveXSpd);
     ora(0b11110000);
     JMP(SaveXSpd);
 }
 
 int SaveXSpd() {
-    // <conv.chunks.Comment object at 0x1050274d0>
-    // <conv.chunks.Comment object at 0x1050275f0>
+    // <conv.chunks.Comment object at 0x1031834d0>
+    // <conv.chunks.Comment object at 0x1031835f0>
     sta(0x0);
     ldy(0x0);
     cmp(0x0);
-    // <conv.chunks.Comment object at 0x1050276e0>
-    // <conv.chunks.Comment object at 0x1050277d0>
+    // <conv.chunks.Comment object at 0x1031836e0>
+    // <conv.chunks.Comment object at 0x1031837d0>
     BPL(UseAdder);
     dey();
     JMP(UseAdder);
 }
 
 int UseAdder() {
-    // <conv.chunks.Comment object at 0x105027aa0>
-    // <conv.chunks.Comment object at 0x105027b30>
+    // <conv.chunks.Comment object at 0x103183aa0>
+    // <conv.chunks.Comment object at 0x103183b30>
     sty(0x2);
     lda(SprObject_X_MoveForce, x);
-    // <conv.chunks.Comment object at 0x105027c20>
+    // <conv.chunks.Comment object at 0x103183c20>
     clc();
     adc(0x1);
     sta(SprObject_X_MoveForce, x);
@@ -10150,22 +10126,22 @@ int UseAdder() {
     rol();
     pha();
     ror();
-    // <conv.chunks.Comment object at 0x105027e90>
-    // <conv.chunks.Comment object at 0x105027f20>
-    // <conv.chunks.Comment object at 0x10502c140>
-    // <conv.chunks.Comment object at 0x10502c290>
-    // <conv.chunks.Comment object at 0x10502c350>
-    // <conv.chunks.Comment object at 0x10502c410>
+    // <conv.chunks.Comment object at 0x103183e90>
+    // <conv.chunks.Comment object at 0x103183f20>
+    // <conv.chunks.Comment object at 0x103188140>
+    // <conv.chunks.Comment object at 0x103188290>
+    // <conv.chunks.Comment object at 0x103188350>
+    // <conv.chunks.Comment object at 0x103188410>
     lda(SprObject_X_Position, x);
     adc(0x0);
     sta(SprObject_X_Position, x);
-    // <conv.chunks.Comment object at 0x10502c5f0>
-    // <conv.chunks.Comment object at 0x10502c680>
+    // <conv.chunks.Comment object at 0x1031885f0>
+    // <conv.chunks.Comment object at 0x103188680>
     lda(SprObject_PageLoc, x);
     adc(0x2);
     sta(SprObject_PageLoc, x);
-    // <conv.chunks.Comment object at 0x10502c980>
-    // <conv.chunks.Comment object at 0x10502ca10>
+    // <conv.chunks.Comment object at 0x103188980>
+    // <conv.chunks.Comment object at 0x103188a10>
     pla();
     clc();
     adc(0x0);
@@ -10173,18 +10149,18 @@ int UseAdder() {
 }
 
 int ExXMove() {
-    // <conv.chunks.Comment object at 0x10502cc80>
-    // <conv.chunks.Comment object at 0x10502cd40>
-    // <conv.chunks.Comment object at 0x10502cdd0>
-    rts();
+    // <conv.chunks.Comment object at 0x103188c80>
+    // <conv.chunks.Comment object at 0x103188d40>
+    // <conv.chunks.Comment object at 0x103188dd0>
+    return 0;
     JMP(MovePlayerVertically);
 }
 
 int MovePlayerVertically() {
     ldx(0x0);
-    // <conv.chunks.Comment object at 0x10502cf80>
-    // <conv.chunks.Comment object at 0x10502cfe0>
-    // <conv.chunks.Comment object at 0x10502d040>
+    // <conv.chunks.Comment object at 0x103188f80>
+    // <conv.chunks.Comment object at 0x103188fe0>
+    // <conv.chunks.Comment object at 0x103189040>
     lda(TimerControl);
     BNE(NoJSChk);
     lda(JumpspringAnimCtrl);
@@ -10193,10 +10169,10 @@ int MovePlayerVertically() {
 }
 
 int NoJSChk() {
-    // <conv.chunks.Comment object at 0x10502d250>
-    // <conv.chunks.Comment object at 0x10502d3a0>
-    // <conv.chunks.Comment object at 0x10502d4c0>
-    // <conv.chunks.Comment object at 0x10502d610>
+    // <conv.chunks.Comment object at 0x103189250>
+    // <conv.chunks.Comment object at 0x1031893a0>
+    // <conv.chunks.Comment object at 0x1031894c0>
+    // <conv.chunks.Comment object at 0x103189610>
     lda(VerticalForce);
     sta(0x0);
     lda(0x4);
@@ -10218,8 +10194,8 @@ int MoveFallingPlatform() {
 }
 
 int ContVMove() {
-    // <conv.chunks.Comment object at 0x10502e000>
-    // <conv.chunks.Comment object at 0x10502e090>
+    // <conv.chunks.Comment object at 0x10318a000>
+    // <conv.chunks.Comment object at 0x10318a090>
     JMP(SetHiMax);
     JMP(MoveRedPTroopaDown);
 }
@@ -10237,13 +10213,13 @@ int MoveRedPTroopaUp() {
 
 int MoveRedPTroopa() {
     inx();
-    // <conv.chunks.Comment object at 0x10502e6c0>
+    // <conv.chunks.Comment object at 0x10318a6c0>
     lda(0x3);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x10502e870>
+    // <conv.chunks.Comment object at 0x10318a870>
     lda(0x6);
     sta(0x1);
-    // <conv.chunks.Comment object at 0x10502ea80>
+    // <conv.chunks.Comment object at 0x10318aa80>
     lda(0x2);
     sta(0x2);
     tya();
@@ -10263,8 +10239,8 @@ int MoveEnemySlowVert() {
 }
 
 int SetMdMax() {
-    // <conv.chunks.Comment object at 0x10502f230>
-    // <conv.chunks.Comment object at 0x10502f2c0>
+    // <conv.chunks.Comment object at 0x10318b230>
+    // <conv.chunks.Comment object at 0x10318b2c0>
     lda(0x2);
     BNE(SetXMoveAmt);
     JMP(MoveJ_EnemyVertically);
@@ -10276,22 +10252,22 @@ int MoveJ_EnemyVertically() {
 }
 
 int SetHiMax() {
-    // <conv.chunks.Comment object at 0x10502f620>
-    // <conv.chunks.Comment object at 0x10502f6b0>
+    // <conv.chunks.Comment object at 0x10318b620>
+    // <conv.chunks.Comment object at 0x10318b6b0>
     lda(0x3);
     JMP(SetXMoveAmt);
 }
 
 int SetXMoveAmt() {
-    // <conv.chunks.Comment object at 0x10502f800>
+    // <conv.chunks.Comment object at 0x10318b800>
     sty(0x0);
     inx();
     JSR(ImposeGravitySprObj);
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x10502f8c0>
-    // <conv.chunks.Comment object at 0x10502faa0>
-    // <conv.chunks.Comment object at 0x10502fbc0>
-    rts();
+    // <conv.chunks.Comment object at 0x10318b8c0>
+    // <conv.chunks.Comment object at 0x10318baa0>
+    // <conv.chunks.Comment object at 0x10318bbc0>
+    return 0;
     JMP(ResidualGravityCode);
 }
 
@@ -10303,8 +10279,8 @@ int ResidualGravityCode() {
 int ImposeGravityBlock() {
     ldy(0x1);
     lda(0x50);
-    // <conv.chunks.Comment object at 0x10503c140>
-    // <conv.chunks.Comment object at 0x10503c200>
+    // <conv.chunks.Comment object at 0x103198140>
+    // <conv.chunks.Comment object at 0x103198200>
     sta(0x0);
     lda(offsetof(G, MaxSpdBlockData), y);
     JMP(ImposeGravitySprObj);
@@ -10324,7 +10300,7 @@ int MovePlatformDown() {
 
 int MovePlatformUp() {
     lda(0x1);
-    // <conv.chunks.Comment object at 0x10503cb90>
+    // <conv.chunks.Comment object at 0x103198b90>
     pha();
     ldy(Enemy_ID, x);
     inx();
@@ -10336,19 +10312,19 @@ int MovePlatformUp() {
 }
 
 int SetDplSpd() {
-    // <conv.chunks.Comment object at 0x10503cda0>
-    // <conv.chunks.Comment object at 0x10503cf20>
-    // <conv.chunks.Comment object at 0x10503cfb0>
-    // <conv.chunks.Comment object at 0x10503d040>
-    // <conv.chunks.Comment object at 0x10503d160>
-    // <conv.chunks.Comment object at 0x10503d310>
-    // <conv.chunks.Comment object at 0x10503d3a0>
+    // <conv.chunks.Comment object at 0x103198da0>
+    // <conv.chunks.Comment object at 0x103198f20>
+    // <conv.chunks.Comment object at 0x103198fb0>
+    // <conv.chunks.Comment object at 0x103199040>
+    // <conv.chunks.Comment object at 0x103199160>
+    // <conv.chunks.Comment object at 0x103199310>
+    // <conv.chunks.Comment object at 0x1031993a0>
     sta(0x0);
     lda(0xa);
-    // <conv.chunks.Comment object at 0x10503d520>
+    // <conv.chunks.Comment object at 0x103199520>
     sta(0x1);
     lda(0x3);
-    // <conv.chunks.Comment object at 0x10503d610>
+    // <conv.chunks.Comment object at 0x103199610>
     sta(0x2);
     pla();
     tay();
@@ -10358,20 +10334,20 @@ int SetDplSpd() {
 int RedPTroopaGrav() {
     JSR(ImposeGravity);
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x10503db50>
-    // <conv.chunks.Comment object at 0x10503dc70>
-    rts();
+    // <conv.chunks.Comment object at 0x103199b50>
+    // <conv.chunks.Comment object at 0x103199c70>
+    return 0;
     JMP(ImposeGravity);
 }
 
 int ImposeGravity() {
     pha();
-    // <conv.chunks.Comment object at 0x10503de50>
-    // <conv.chunks.Comment object at 0x10503deb0>
-    // <conv.chunks.Comment object at 0x10503df40>
+    // <conv.chunks.Comment object at 0x103199e50>
+    // <conv.chunks.Comment object at 0x103199eb0>
+    // <conv.chunks.Comment object at 0x103199f40>
     lda(SprObject_YMF_Dummy, x);
     clc();
-    // <conv.chunks.Comment object at 0x10503e120>
+    // <conv.chunks.Comment object at 0x10319a120>
     adc(SprObject_Y_MoveForce, x);
     sta(SprObject_YMF_Dummy, x);
     ldy(0x0);
@@ -10382,99 +10358,99 @@ int ImposeGravity() {
 }
 
 int AlterYP() {
-    // <conv.chunks.Comment object at 0x10503e3f0>
-    // <conv.chunks.Comment object at 0x10503e480>
-    // <conv.chunks.Comment object at 0x10503e660>
-    // <conv.chunks.Comment object at 0x10503e7e0>
-    // <conv.chunks.Comment object at 0x10503e870>
+    // <conv.chunks.Comment object at 0x10319a3f0>
+    // <conv.chunks.Comment object at 0x10319a480>
+    // <conv.chunks.Comment object at 0x10319a660>
+    // <conv.chunks.Comment object at 0x10319a7e0>
+    // <conv.chunks.Comment object at 0x10319a870>
     sty(0x7);
     adc(SprObject_Y_Position, x);
     sta(SprObject_Y_Position, x);
-    // <conv.chunks.Comment object at 0x10503e990>
-    // <conv.chunks.Comment object at 0x10503eb40>
+    // <conv.chunks.Comment object at 0x10319a990>
+    // <conv.chunks.Comment object at 0x10319ab40>
     lda(SprObject_Y_HighPos, x);
     adc(0x7);
     sta(SprObject_Y_HighPos, x);
-    // <conv.chunks.Comment object at 0x10503ede0>
-    // <conv.chunks.Comment object at 0x10503ee70>
+    // <conv.chunks.Comment object at 0x10319ade0>
+    // <conv.chunks.Comment object at 0x10319ae70>
     lda(SprObject_Y_MoveForce, x);
     clc();
     adc(0x0);
-    // <conv.chunks.Comment object at 0x10503f200>
+    // <conv.chunks.Comment object at 0x10319b200>
     sta(SprObject_Y_MoveForce, x);
     lda(SprObject_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x10503f410>
+    // <conv.chunks.Comment object at 0x10319b410>
     adc(0x0);
     sta(SprObject_Y_Speed, x);
     cmp(0x2);
     BMI(ChkUpM);
-    // <conv.chunks.Comment object at 0x10503f7a0>
-    // <conv.chunks.Comment object at 0x10503f830>
+    // <conv.chunks.Comment object at 0x10319b7a0>
+    // <conv.chunks.Comment object at 0x10319b830>
     lda(SprObject_Y_MoveForce, x);
     cmp(0x80);
-    // <conv.chunks.Comment object at 0x10503fb00>
+    // <conv.chunks.Comment object at 0x10319bb00>
     BCC(ChkUpM);
     lda(0x2);
     sta(SprObject_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x10503fd40>
+    // <conv.chunks.Comment object at 0x10319bd40>
     lda(0x0);
     sta(SprObject_Y_MoveForce, x);
     JMP(ChkUpM);
 }
 
 int ChkUpM() {
-    // <conv.chunks.Comment object at 0x10503ffe0>
-    // <conv.chunks.Comment object at 0x105684200>
+    // <conv.chunks.Comment object at 0x10319bfe0>
+    // <conv.chunks.Comment object at 0x1037e0200>
     pla();
     BEQ(ExVMove);
-    // <conv.chunks.Comment object at 0x105684320>
+    // <conv.chunks.Comment object at 0x1037e0320>
     lda(0x2);
     eor(0b11111111);
-    // <conv.chunks.Comment object at 0x105684470>
+    // <conv.chunks.Comment object at 0x1037e0470>
     tay();
     iny();
     sty(0x7);
-    // <conv.chunks.Comment object at 0x1056847d0>
+    // <conv.chunks.Comment object at 0x1037e07d0>
     lda(SprObject_Y_MoveForce, x);
     sec();
     sbc(0x1);
     sta(SprObject_Y_MoveForce, x);
-    // <conv.chunks.Comment object at 0x105684a10>
-    // <conv.chunks.Comment object at 0x105684ad0>
-    // <conv.chunks.Comment object at 0x105684b60>
+    // <conv.chunks.Comment object at 0x1037e0a10>
+    // <conv.chunks.Comment object at 0x1037e0ad0>
+    // <conv.chunks.Comment object at 0x1037e0b60>
     lda(SprObject_Y_Speed, x);
     sbc(0x0);
-    // <conv.chunks.Comment object at 0x105684e30>
+    // <conv.chunks.Comment object at 0x1037e0e30>
     sta(SprObject_Y_Speed, x);
     cmp(0x7);
     BPL(ExVMove);
-    // <conv.chunks.Comment object at 0x1056850a0>
-    // <conv.chunks.Comment object at 0x105685130>
+    // <conv.chunks.Comment object at 0x1037e10a0>
+    // <conv.chunks.Comment object at 0x1037e1130>
     lda(SprObject_Y_MoveForce, x);
     cmp(0x80);
     BCS(ExVMove);
-    // <conv.chunks.Comment object at 0x105685400>
-    // <conv.chunks.Comment object at 0x105685490>
+    // <conv.chunks.Comment object at 0x1037e1400>
+    // <conv.chunks.Comment object at 0x1037e1490>
     lda(0x7);
     sta(SprObject_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x105685670>
+    // <conv.chunks.Comment object at 0x1037e1670>
     lda(0xff);
     sta(SprObject_Y_MoveForce, x);
     JMP(ExVMove);
 }
 
 int ExVMove() {
-    // <conv.chunks.Comment object at 0x105685910>
-    // <conv.chunks.Comment object at 0x105685b20>
-    rts();
+    // <conv.chunks.Comment object at 0x1037e1910>
+    // <conv.chunks.Comment object at 0x1037e1b20>
+    return 0;
     JMP(EnemiesAndLoopsCore);
 }
 
 int EnemiesAndLoopsCore() {
     lda(Enemy_Flag, x);
     pha();
-    // <conv.chunks.Comment object at 0x105685ca0>
-    // <conv.chunks.Comment object at 0x105685e20>
+    // <conv.chunks.Comment object at 0x1037e1ca0>
+    // <conv.chunks.Comment object at 0x1037e1e20>
     asl();
     BCS(ChkBowserF);
     pla();
@@ -10484,88 +10460,88 @@ int EnemiesAndLoopsCore() {
 }
 
 int ChkAreaTsk() {
-    // <conv.chunks.Comment object at 0x105685f40>
-    // <conv.chunks.Comment object at 0x105686090>
-    // <conv.chunks.Comment object at 0x105686120>
-    // <conv.chunks.Comment object at 0x105686240>
-    // <conv.chunks.Comment object at 0x105686360>
+    // <conv.chunks.Comment object at 0x1037e1f40>
+    // <conv.chunks.Comment object at 0x1037e2090>
+    // <conv.chunks.Comment object at 0x1037e2120>
+    // <conv.chunks.Comment object at 0x1037e2240>
+    // <conv.chunks.Comment object at 0x1037e2360>
     lda(AreaParserTaskNum);
     anda(0x7);
     cmp(0x7);
-    // <conv.chunks.Comment object at 0x105686510>
+    // <conv.chunks.Comment object at 0x1037e2510>
     BEQ(ExitELCore);
     JMP(ProcLoopCommand);
     JMP(ChkBowserF);
 }
 
 int ChkBowserF() {
-    // <conv.chunks.Comment object at 0x1056867b0>
-    // <conv.chunks.Comment object at 0x1056868d0>
+    // <conv.chunks.Comment object at 0x1037e27b0>
+    // <conv.chunks.Comment object at 0x1037e28d0>
     pla();
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x1056869c0>
+    // <conv.chunks.Comment object at 0x1037e29c0>
     tay();
     lda(Enemy_Flag, y);
-    // <conv.chunks.Comment object at 0x105686b70>
+    // <conv.chunks.Comment object at 0x1037e2b70>
     BNE(ExitELCore);
     sta(Enemy_Flag, x);
     JMP(ExitELCore);
 }
 
 int ExitELCore() {
-    rts();
+    return 0;
     JMP(ExecGameLoopback);
 }
 
 int ExecGameLoopback() {
     lda(Player_PageLoc);
-    // <conv.chunks.Comment object at 0x105687170>
+    // <conv.chunks.Comment object at 0x1037e3170>
     sec();
     sbc(0x4);
     sta(Player_PageLoc);
     lda(CurrentPageLoc);
-    // <conv.chunks.Comment object at 0x10568c740>
+    // <conv.chunks.Comment object at 0x1037e8740>
     sec();
     sbc(0x4);
     sta(CurrentPageLoc);
     lda(ScreenLeft_PageLoc);
     sec();
-    // <conv.chunks.Comment object at 0x10568cad0>
-    // <conv.chunks.Comment object at 0x10568cc20>
+    // <conv.chunks.Comment object at 0x1037e8ad0>
+    // <conv.chunks.Comment object at 0x1037e8c20>
     sbc(0x4);
     sta(ScreenLeft_PageLoc);
     lda(ScreenRight_PageLoc);
     sec();
-    // <conv.chunks.Comment object at 0x10568ce90>
-    // <conv.chunks.Comment object at 0x10568cfe0>
+    // <conv.chunks.Comment object at 0x1037e8e90>
+    // <conv.chunks.Comment object at 0x1037e8fe0>
     sbc(0x4);
     sta(ScreenRight_PageLoc);
     lda(AreaObjectPageLoc);
     sec();
-    // <conv.chunks.Comment object at 0x10568d250>
-    // <conv.chunks.Comment object at 0x10568d3a0>
+    // <conv.chunks.Comment object at 0x1037e9250>
+    // <conv.chunks.Comment object at 0x1037e93a0>
     sbc(0x4);
     sta(AreaObjectPageLoc);
     lda(0x0);
     sta(EnemyObjectPageSel);
-    // <conv.chunks.Comment object at 0x10568d610>
-    // <conv.chunks.Comment object at 0x10568d6a0>
+    // <conv.chunks.Comment object at 0x1037e9610>
+    // <conv.chunks.Comment object at 0x1037e96a0>
     sta(AreaObjectPageSel);
     sta(EnemyDataOffset);
     sta(EnemyObjectPageLoc);
     lda(offsetof(G, AreaDataOfsLoopback), y);
     sta(AreaDataOffset);
-    // <conv.chunks.Comment object at 0x10568d940>
-    // <conv.chunks.Comment object at 0x10568da60>
-    // <conv.chunks.Comment object at 0x10568db80>
-    // <conv.chunks.Comment object at 0x10568dcd0>
-    rts();
+    // <conv.chunks.Comment object at 0x1037e9940>
+    // <conv.chunks.Comment object at 0x1037e9a60>
+    // <conv.chunks.Comment object at 0x1037e9b80>
+    // <conv.chunks.Comment object at 0x1037e9cd0>
+    return 0;
     JMP(ProcLoopCommand);
 }
 
 int ProcLoopCommand() {
     lda(LoopCommand);
-    // <conv.chunks.Comment object at 0x10568deb0>
+    // <conv.chunks.Comment object at 0x1037e9eb0>
     BEQ(ChkEnemyFrenzy);
     lda(CurrentColumnPos);
     BNE(ChkEnemyFrenzy);
@@ -10578,19 +10554,19 @@ int FindLoop() {
     BMI(ChkEnemyFrenzy);
     lda(WorldNumber);
     cmp(offsetof(G, LoopCmdWorldNumber), y);
-    // <conv.chunks.Comment object at 0x10568e4e0>
-    // <conv.chunks.Comment object at 0x10568e600>
-    // <conv.chunks.Comment object at 0x10568e720>
+    // <conv.chunks.Comment object at 0x1037ea4e0>
+    // <conv.chunks.Comment object at 0x1037ea600>
+    // <conv.chunks.Comment object at 0x1037ea720>
     BNE(FindLoop);
     lda(CurrentPageLoc);
     cmp(offsetof(G, LoopCmdPageNumber), y);
-    // <conv.chunks.Comment object at 0x10568e960>
-    // <conv.chunks.Comment object at 0x10568ea80>
+    // <conv.chunks.Comment object at 0x1037ea960>
+    // <conv.chunks.Comment object at 0x1037eaa80>
     BNE(FindLoop);
     lda(Player_Y_Position);
     cmp(offsetof(G, LoopCmdYPosition), y);
-    // <conv.chunks.Comment object at 0x10568ecc0>
-    // <conv.chunks.Comment object at 0x10568ede0>
+    // <conv.chunks.Comment object at 0x1037eacc0>
+    // <conv.chunks.Comment object at 0x1037eade0>
     BNE(WrongChk);
     lda(Player_State);
     cmp(0x0);
@@ -10603,22 +10579,22 @@ int FindLoop() {
 }
 
 int IncMLoop() {
-    // <conv.chunks.Comment object at 0x10568f020>
-    // <conv.chunks.Comment object at 0x10568f140>
-    // <conv.chunks.Comment object at 0x10568f1d0>
-    // <conv.chunks.Comment object at 0x10568f380>
-    // <conv.chunks.Comment object at 0x10568f4a0>
-    // <conv.chunks.Comment object at 0x10568f500>
-    // <conv.chunks.Comment object at 0x10568f740>
-    // <conv.chunks.Comment object at 0x10568f860>
+    // <conv.chunks.Comment object at 0x1037eb020>
+    // <conv.chunks.Comment object at 0x1037eb140>
+    // <conv.chunks.Comment object at 0x1037eb1d0>
+    // <conv.chunks.Comment object at 0x1037eb380>
+    // <conv.chunks.Comment object at 0x1037eb4a0>
+    // <conv.chunks.Comment object at 0x1037eb500>
+    // <conv.chunks.Comment object at 0x1037eb740>
+    // <conv.chunks.Comment object at 0x1037eb860>
     inc(MultiLoopPassCntr);
     lda(MultiLoopPassCntr);
-    // <conv.chunks.Comment object at 0x10568f9b0>
+    // <conv.chunks.Comment object at 0x1037eb9b0>
     cmp(0x3);
     BNE(InitLCmd);
     lda(MultiLoopCorrectCntr);
-    // <conv.chunks.Comment object at 0x10568fb30>
-    // <conv.chunks.Comment object at 0x10568fce0>
+    // <conv.chunks.Comment object at 0x1037ebb30>
+    // <conv.chunks.Comment object at 0x1037ebce0>
     cmp(0x3);
     BEQ(InitMLp);
     BNE(DoLpBack);
@@ -10626,25 +10602,25 @@ int IncMLoop() {
 }
 
 int WrongChk() {
-    // <conv.chunks.Comment object at 0x10568fe60>
-    // <conv.chunks.Comment object at 0x105698080>
-    // <conv.chunks.Comment object at 0x1056981a0>
+    // <conv.chunks.Comment object at 0x1037ebe60>
+    // <conv.chunks.Comment object at 0x1037f4080>
+    // <conv.chunks.Comment object at 0x1037f41a0>
     lda(WorldNumber);
     cmp(World7);
-    // <conv.chunks.Comment object at 0x1056982f0>
+    // <conv.chunks.Comment object at 0x1037f42f0>
     BEQ(IncMLoop);
     JMP(DoLpBack);
 }
 
 int DoLpBack() {
-    // <conv.chunks.Comment object at 0x105698530>
+    // <conv.chunks.Comment object at 0x1037f4530>
     JSR(ExecGameLoopback);
     JSR(KillAllEnemies);
     JMP(InitMLp);
 }
 
 int InitMLp() {
-    // <conv.chunks.Comment object at 0x105698770>
+    // <conv.chunks.Comment object at 0x1037f4770>
     lda(0x0);
     sta(MultiLoopPassCntr);
     sta(MultiLoopCorrectCntr);
@@ -10652,7 +10628,7 @@ int InitMLp() {
 }
 
 int InitLCmd() {
-    // <conv.chunks.Comment object at 0x105698ad0>
+    // <conv.chunks.Comment object at 0x1037f4ad0>
     lda(0x0);
     sta(LoopCommand);
     JMP(ChkEnemyFrenzy);
@@ -10662,15 +10638,15 @@ int ChkEnemyFrenzy() {
     lda(EnemyFrenzyQueue);
     BEQ(ProcessEnemyData);
     sta(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x105698d70>
-    // <conv.chunks.Comment object at 0x105698e90>
-    // <conv.chunks.Comment object at 0x105698fb0>
+    // <conv.chunks.Comment object at 0x1037f4d70>
+    // <conv.chunks.Comment object at 0x1037f4e90>
+    // <conv.chunks.Comment object at 0x1037f4fb0>
     lda(0x1);
     sta(Enemy_Flag, x);
-    // <conv.chunks.Comment object at 0x105699160>
+    // <conv.chunks.Comment object at 0x1037f5160>
     lda(0x0);
     sta(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x1056993a0>
+    // <conv.chunks.Comment object at 0x1037f53a0>
     sta(EnemyFrenzyQueue);
     JMP(InitEnemyObject);
     JMP(ProcessEnemyData);
@@ -10680,9 +10656,9 @@ int ProcessEnemyData() {
     ldy(EnemyDataOffset);
     lda((EnemyData), y);
     cmp(0xff);
-    // <conv.chunks.Comment object at 0x105699850>
-    // <conv.chunks.Comment object at 0x105699970>
-    // <conv.chunks.Comment object at 0x105699af0>
+    // <conv.chunks.Comment object at 0x1037f5850>
+    // <conv.chunks.Comment object at 0x1037f5970>
+    // <conv.chunks.Comment object at 0x1037f5af0>
     BNE(CheckEndofBuffer);
     JMP(CheckFrenzyBuffer);
     JMP(CheckEndofBuffer);
@@ -10690,44 +10666,44 @@ int ProcessEnemyData() {
 
 int CheckEndofBuffer() {
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x105699e50>
+    // <conv.chunks.Comment object at 0x1037f5e50>
     cmp(0xe);
     BEQ(CheckRightBounds);
     cpx(0x5);
     BCC(CheckRightBounds);
-    // <conv.chunks.Comment object at 0x105699fd0>
-    // <conv.chunks.Comment object at 0x10569a180>
-    // <conv.chunks.Comment object at 0x10569a210>
+    // <conv.chunks.Comment object at 0x1037f5fd0>
+    // <conv.chunks.Comment object at 0x1037f6180>
+    // <conv.chunks.Comment object at 0x1037f6210>
     iny();
     lda((EnemyData), y);
     anda(0b111111);
     cmp(0x2e);
     BEQ(CheckRightBounds);
-    rts();
+    return 0;
     JMP(CheckRightBounds);
 }
 
 int CheckRightBounds() {
     lda(ScreenRight_X_Pos);
-    // <conv.chunks.Comment object at 0x10569aa20>
+    // <conv.chunks.Comment object at 0x1037f6a20>
     clc();
     adc(0x30);
     anda(0b11110000);
-    // <conv.chunks.Comment object at 0x10569ac30>
+    // <conv.chunks.Comment object at 0x1037f6c30>
     sta(0x7);
     lda(ScreenRight_PageLoc);
-    // <conv.chunks.Comment object at 0x10569ade0>
+    // <conv.chunks.Comment object at 0x1037f6de0>
     adc(0x0);
     sta(0x6);
-    // <conv.chunks.Comment object at 0x10569b110>
+    // <conv.chunks.Comment object at 0x1037f7110>
     ldy(EnemyDataOffset);
     iny();
     lda((EnemyData), y);
-    // <conv.chunks.Comment object at 0x10569b380>
+    // <conv.chunks.Comment object at 0x1037f7380>
     asl();
     BCC(CheckPageCtrlRow);
     lda(EnemyObjectPageSel);
-    // <conv.chunks.Comment object at 0x10569b680>
+    // <conv.chunks.Comment object at 0x1037f7680>
     BNE(CheckPageCtrlRow);
     inc(EnemyObjectPageSel);
     inc(EnemyObjectPageLoc);
@@ -10737,24 +10713,24 @@ int CheckRightBounds() {
 int CheckPageCtrlRow() {
     dey();
     lda((EnemyData), y);
-    // <conv.chunks.Comment object at 0x10569bb90>
+    // <conv.chunks.Comment object at 0x1037f7b90>
     anda(0xf);
     cmp(0xf);
     BNE(PositionEnemyObj);
     lda(EnemyObjectPageSel);
     BNE(PositionEnemyObj);
-    // <conv.chunks.Comment object at 0x10569bd70>
-    // <conv.chunks.Comment object at 0x10569be90>
-    // <conv.chunks.Comment object at 0x1056a0080>
-    // <conv.chunks.Comment object at 0x1056a01a0>
+    // <conv.chunks.Comment object at 0x1037f7d70>
+    // <conv.chunks.Comment object at 0x1037f7e90>
+    // <conv.chunks.Comment object at 0x1037fc080>
+    // <conv.chunks.Comment object at 0x1037fc1a0>
     iny();
     lda((EnemyData), y);
-    // <conv.chunks.Comment object at 0x1056a0350>
+    // <conv.chunks.Comment object at 0x1037fc350>
     anda(0b111111);
     sta(EnemyObjectPageLoc);
     inc(EnemyDataOffset);
-    // <conv.chunks.Comment object at 0x1056a05c0>
-    // <conv.chunks.Comment object at 0x1056a06e0>
+    // <conv.chunks.Comment object at 0x1037fc5c0>
+    // <conv.chunks.Comment object at 0x1037fc6e0>
     inc(EnemyDataOffset);
     inc(EnemyObjectPageSel);
     JMP(ProcLoopCommand);
@@ -10765,25 +10741,25 @@ int PositionEnemyObj() {
     lda(EnemyObjectPageLoc);
     sta(Enemy_PageLoc, x);
     lda((EnemyData), y);
-    // <conv.chunks.Comment object at 0x1056a0b60>
-    // <conv.chunks.Comment object at 0x1056a0c80>
-    // <conv.chunks.Comment object at 0x1056a0dd0>
+    // <conv.chunks.Comment object at 0x1037fcb60>
+    // <conv.chunks.Comment object at 0x1037fcc80>
+    // <conv.chunks.Comment object at 0x1037fcdd0>
     anda(0b11110000);
     sta(Enemy_X_Position, x);
     cmp(ScreenRight_X_Pos);
     lda(Enemy_PageLoc, x);
     sbc(ScreenRight_PageLoc);
     BCS(CheckRightExtBounds);
-    // <conv.chunks.Comment object at 0x1056a1040>
-    // <conv.chunks.Comment object at 0x1056a1190>
-    // <conv.chunks.Comment object at 0x1056a12b0>
-    // <conv.chunks.Comment object at 0x1056a1400>
-    // <conv.chunks.Comment object at 0x1056a1520>
+    // <conv.chunks.Comment object at 0x1037fd040>
+    // <conv.chunks.Comment object at 0x1037fd190>
+    // <conv.chunks.Comment object at 0x1037fd2b0>
+    // <conv.chunks.Comment object at 0x1037fd400>
+    // <conv.chunks.Comment object at 0x1037fd520>
     lda((EnemyData), y);
     anda(0b1111);
     cmp(0xe);
-    // <conv.chunks.Comment object at 0x1056a1790>
-    // <conv.chunks.Comment object at 0x1056a18b0>
+    // <conv.chunks.Comment object at 0x1037fd790>
+    // <conv.chunks.Comment object at 0x1037fd8b0>
     BEQ(ParseRow0e);
     JMP(CheckThreeBytes);
     JMP(CheckRightExtBounds);
@@ -10796,26 +10772,26 @@ int CheckRightExtBounds() {
     sbc(Enemy_PageLoc, x);
     BCC(CheckFrenzyBuffer);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x1056a1c40>
-    // <conv.chunks.Comment object at 0x1056a1cd0>
-    // <conv.chunks.Comment object at 0x1056a1eb0>
-    // <conv.chunks.Comment object at 0x1056a1f40>
-    // <conv.chunks.Comment object at 0x1056a20f0>
-    // <conv.chunks.Comment object at 0x1056a2210>
+    // <conv.chunks.Comment object at 0x1037fdc40>
+    // <conv.chunks.Comment object at 0x1037fdcd0>
+    // <conv.chunks.Comment object at 0x1037fdeb0>
+    // <conv.chunks.Comment object at 0x1037fdf40>
+    // <conv.chunks.Comment object at 0x1037fe0f0>
+    // <conv.chunks.Comment object at 0x1037fe210>
     sta(Enemy_Y_HighPos, x);
     lda((EnemyData), y);
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x1056a2450>
-    // <conv.chunks.Comment object at 0x1056a2600>
-    // <conv.chunks.Comment object at 0x1056a26c0>
+    // <conv.chunks.Comment object at 0x1037fe450>
+    // <conv.chunks.Comment object at 0x1037fe600>
+    // <conv.chunks.Comment object at 0x1037fe6c0>
     asl();
     asl();
     sta(Enemy_Y_Position, x);
     cmp(0xe0);
     BEQ(ParseRow0e);
-    // <conv.chunks.Comment object at 0x1056a2990>
-    // <conv.chunks.Comment object at 0x1056a2a20>
+    // <conv.chunks.Comment object at 0x1037fe990>
+    // <conv.chunks.Comment object at 0x1037fea20>
     iny();
     lda((EnemyData), y);
     anda(0b1000000);
@@ -10827,10 +10803,10 @@ int CheckRightExtBounds() {
 
 int CheckForEnemyGroup() {
     lda((EnemyData), y);
-    // <conv.chunks.Comment object at 0x1056a32c0>
+    // <conv.chunks.Comment object at 0x1037ff2c0>
     anda(0b111111);
     cmp(0x37);
-    // <conv.chunks.Comment object at 0x1056a3530>
+    // <conv.chunks.Comment object at 0x1037ff530>
     BCC(BuzzyBeetleMutate);
     cmp(0x3f);
     BCC(DoGroup);
@@ -10842,26 +10818,26 @@ int BuzzyBeetleMutate() {
     BNE(StrID);
     ldy(PrimaryHardMode);
     BEQ(StrID);
-    // <conv.chunks.Comment object at 0x1056a39e0>
-    // <conv.chunks.Comment object at 0x1056a3a40>
-    // <conv.chunks.Comment object at 0x1056a3c80>
-    // <conv.chunks.Comment object at 0x1056a3da0>
+    // <conv.chunks.Comment object at 0x1037ff9e0>
+    // <conv.chunks.Comment object at 0x1037ffa40>
+    // <conv.chunks.Comment object at 0x1037ffc80>
+    // <conv.chunks.Comment object at 0x1037ffda0>
     lda(BuzzyBeetle);
     JMP(StrID);
 }
 
 int StrID() {
-    // <conv.chunks.Comment object at 0x1056a3fe0>
+    // <conv.chunks.Comment object at 0x1037fffe0>
     sta(Enemy_ID, x);
     lda(0x1);
     sta(Enemy_Flag, x);
-    // <conv.chunks.Comment object at 0x1056ac230>
+    // <conv.chunks.Comment object at 0x103808230>
     JSR(InitEnemyObject);
     lda(Enemy_Flag, x);
     BNE(Inc2B);
-    // <conv.chunks.Comment object at 0x1056ac500>
-    // <conv.chunks.Comment object at 0x1056ac650>
-    rts();
+    // <conv.chunks.Comment object at 0x103808500>
+    // <conv.chunks.Comment object at 0x103808650>
+    return 0;
     JMP(CheckFrenzyBuffer);
 }
 
@@ -10869,9 +10845,9 @@ int CheckFrenzyBuffer() {
     lda(EnemyFrenzyBuffer);
     BNE(StrFre);
     lda(VineFlagOffset);
-    // <conv.chunks.Comment object at 0x1056ac860>
-    // <conv.chunks.Comment object at 0x1056ac980>
-    // <conv.chunks.Comment object at 0x1056acad0>
+    // <conv.chunks.Comment object at 0x103808860>
+    // <conv.chunks.Comment object at 0x103808980>
+    // <conv.chunks.Comment object at 0x103808ad0>
     cmp(0x1);
     BNE(ExEPar);
     lda(VineObject);
@@ -10879,25 +10855,25 @@ int CheckFrenzyBuffer() {
 }
 
 int StrFre() {
-    // <conv.chunks.Comment object at 0x1056acc50>
-    // <conv.chunks.Comment object at 0x1056ace30>
-    // <conv.chunks.Comment object at 0x1056acf50>
+    // <conv.chunks.Comment object at 0x103808c50>
+    // <conv.chunks.Comment object at 0x103808e30>
+    // <conv.chunks.Comment object at 0x103808f50>
     sta(Enemy_ID, x);
     JMP(InitEnemyObject);
 }
 
 int InitEnemyObject() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1056ad130>
+    // <conv.chunks.Comment object at 0x103809130>
     sta(Enemy_State, x);
     JSR(CheckpointEnemyID);
     JMP(ExEPar);
 }
 
 int ExEPar() {
-    // <conv.chunks.Comment object at 0x1056ad370>
-    // <conv.chunks.Comment object at 0x1056ad490>
-    rts();
+    // <conv.chunks.Comment object at 0x103809370>
+    // <conv.chunks.Comment object at 0x103809490>
+    return 0;
     JMP(DoGroup);
 }
 
@@ -10908,13 +10884,13 @@ int DoGroup() {
 
 int ParseRow0e() {
     iny();
-    // <conv.chunks.Comment object at 0x1056ad790>
+    // <conv.chunks.Comment object at 0x103809790>
     iny();
     lda((EnemyData), y);
     lsr();
     lsr();
-    // <conv.chunks.Comment object at 0x1056ada30>
-    // <conv.chunks.Comment object at 0x1056adaf0>
+    // <conv.chunks.Comment object at 0x103809a30>
+    // <conv.chunks.Comment object at 0x103809af0>
     lsr();
     lsr();
     lsr();
@@ -10923,11 +10899,11 @@ int ParseRow0e() {
     dey();
     lda((EnemyData), y);
     sta(AreaPointer);
-    // <conv.chunks.Comment object at 0x1056add30>
-    // <conv.chunks.Comment object at 0x1056ade50>
-    // <conv.chunks.Comment object at 0x1056adfd0>
-    // <conv.chunks.Comment object at 0x1056ae060>
-    // <conv.chunks.Comment object at 0x1056ae1e0>
+    // <conv.chunks.Comment object at 0x103809d30>
+    // <conv.chunks.Comment object at 0x103809e50>
+    // <conv.chunks.Comment object at 0x103809fd0>
+    // <conv.chunks.Comment object at 0x10380a060>
+    // <conv.chunks.Comment object at 0x10380a1e0>
     iny();
     lda((EnemyData), y);
     anda(0b11111);
@@ -10944,29 +10920,29 @@ int CheckThreeBytes() {
     ldy(EnemyDataOffset);
     lda((EnemyData), y);
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x1056ae900>
-    // <conv.chunks.Comment object at 0x1056aea20>
-    // <conv.chunks.Comment object at 0x1056aeba0>
+    // <conv.chunks.Comment object at 0x10380a900>
+    // <conv.chunks.Comment object at 0x10380aa20>
+    // <conv.chunks.Comment object at 0x10380aba0>
     cmp(0xe);
     BNE(Inc2B);
     JMP(Inc3B);
 }
 
 int Inc3B() {
-    // <conv.chunks.Comment object at 0x1056aeed0>
+    // <conv.chunks.Comment object at 0x10380aed0>
     inc(EnemyDataOffset);
     JMP(Inc2B);
 }
 
 int Inc2B() {
-    // <conv.chunks.Comment object at 0x1056af050>
+    // <conv.chunks.Comment object at 0x10380b050>
     inc(EnemyDataOffset);
     inc(EnemyDataOffset);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1056af2c0>
+    // <conv.chunks.Comment object at 0x10380b2c0>
     sta(EnemyObjectPageSel);
     ldx(ObjectOffset);
-    rts();
+    return 0;
     JMP(CheckpointEnemyID);
 }
 
@@ -10975,14 +10951,14 @@ int CheckpointEnemyID() {
     cmp(0x15);
     BCS(InitEnemyRoutines);
     tay();
-    // <conv.chunks.Comment object at 0x1056af800>
-    // <conv.chunks.Comment object at 0x1056af890>
-    // <conv.chunks.Comment object at 0x1056afa70>
+    // <conv.chunks.Comment object at 0x10380b800>
+    // <conv.chunks.Comment object at 0x10380b890>
+    // <conv.chunks.Comment object at 0x10380ba70>
     lda(Enemy_Y_Position, x);
     adc(0x8);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1056afc20>
-    // <conv.chunks.Comment object at 0x1056afcb0>
+    // <conv.chunks.Comment object at 0x10380bc20>
+    // <conv.chunks.Comment object at 0x10380bcb0>
     lda(0x1);
     sta(EnemyOffscrBitsMasked, x);
     tya();
@@ -10990,12 +10966,11 @@ int CheckpointEnemyID() {
 }
 
 int InitEnemyRoutines() {
-    JSR(JumpEngine);
     JMP(NoInitCode);
 }
 
 int NoInitCode() {
-    rts();
+    return 0;
     JMP(InitGoomba);
 }
 
@@ -11008,12 +10983,12 @@ int InitGoomba() {
 int InitPodoboo() {
     lda(0x2);
     sta(Enemy_Y_HighPos, x);
-    // <conv.chunks.Comment object at 0x1056ba720>
-    // <conv.chunks.Comment object at 0x1056ba7b0>
+    // <conv.chunks.Comment object at 0x103816720>
+    // <conv.chunks.Comment object at 0x1038167b0>
     sta(Enemy_Y_Position, x);
     lsr();
     sta(EnemyIntervalTimer, x);
-    // <conv.chunks.Comment object at 0x1056bab40>
+    // <conv.chunks.Comment object at 0x103816b40>
     lsr();
     sta(Enemy_State, x);
     JMP(SmallBBox);
@@ -11023,31 +10998,31 @@ int InitPodoboo() {
 int InitRetainerObj() {
     lda(0xb8);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1056baff0>
-    // <conv.chunks.Comment object at 0x1056bb080>
-    rts();
+    // <conv.chunks.Comment object at 0x103816ff0>
+    // <conv.chunks.Comment object at 0x103817080>
+    return 0;
     JMP(InitNormalEnemy);
 }
 
 int InitNormalEnemy() {
     ldy(0x1);
     lda(PrimaryHardMode);
-    // <conv.chunks.Comment object at 0x1056bb3b0>
-    // <conv.chunks.Comment object at 0x1056bb530>
+    // <conv.chunks.Comment object at 0x1038173b0>
+    // <conv.chunks.Comment object at 0x103817530>
     BNE(GetESpd);
     dey();
     JMP(GetESpd);
 }
 
 int GetESpd() {
-    // <conv.chunks.Comment object at 0x1056bb830>
-    // <conv.chunks.Comment object at 0x1056bb8c0>
+    // <conv.chunks.Comment object at 0x103817830>
+    // <conv.chunks.Comment object at 0x1038178c0>
     lda(offsetof(G, NormalXSpdData), y);
     JMP(SetESpd);
 }
 
 int SetESpd() {
-    // <conv.chunks.Comment object at 0x1056bba70>
+    // <conv.chunks.Comment object at 0x103817a70>
     sta(Enemy_X_Speed, x);
     JMP(TallBBox);
     JMP(InitRedKoopa);
@@ -11056,46 +11031,46 @@ int SetESpd() {
 int InitRedKoopa() {
     JSR(InitNormalEnemy);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x1056bbda0>
-    // <conv.chunks.Comment object at 0x1056bbec0>
+    // <conv.chunks.Comment object at 0x103817da0>
+    // <conv.chunks.Comment object at 0x103817ec0>
     sta(Enemy_State, x);
-    rts();
+    return 0;
     JMP(InitHammerBro);
 }
 
 int InitHammerBro() {
     lda(0x0);
     sta(HammerThrowingTimer, x);
-    // <conv.chunks.Comment object at 0x1056c0290>
-    // <conv.chunks.Comment object at 0x1056c0410>
+    // <conv.chunks.Comment object at 0x10381c290>
+    // <conv.chunks.Comment object at 0x10381c410>
     sta(Enemy_X_Speed, x);
     ldy(SecondaryHardMode);
-    // <conv.chunks.Comment object at 0x1056c0710>
+    // <conv.chunks.Comment object at 0x10381c710>
     lda(offsetof(G, HBroWalkingTimerData), y);
     sta(EnemyIntervalTimer, x);
     lda(0xb);
-    // <conv.chunks.Comment object at 0x1056c0950>
-    // <conv.chunks.Comment object at 0x1056c0aa0>
+    // <conv.chunks.Comment object at 0x10381c950>
+    // <conv.chunks.Comment object at 0x10381caa0>
     JMP(SetBBox);
     JMP(InitHorizFlySwimEnemy);
 }
 
 int InitHorizFlySwimEnemy() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1056c0d40>
+    // <conv.chunks.Comment object at 0x10381cd40>
     JMP(SetESpd);
     JMP(InitBloober);
 }
 
 int InitBloober() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1056c0fe0>
+    // <conv.chunks.Comment object at 0x10381cfe0>
     sta(BlooperMoveSpeed, x);
     JMP(SmallBBox);
 }
 
 int SmallBBox() {
-    // <conv.chunks.Comment object at 0x1056c1220>
+    // <conv.chunks.Comment object at 0x10381d220>
     lda(0x9);
     BNE(SetBBox);
     JMP(InitRedPTroopa);
@@ -11111,12 +11086,12 @@ int InitRedPTroopa() {
 }
 
 int GetCent() {
-    // <conv.chunks.Comment object at 0x1056c1520>
-    // <conv.chunks.Comment object at 0x1056c15b0>
-    // <conv.chunks.Comment object at 0x1056c1790>
-    // <conv.chunks.Comment object at 0x1056c18e0>
-    // <conv.chunks.Comment object at 0x1056c1a30>
-    // <conv.chunks.Comment object at 0x1056c1ac0>
+    // <conv.chunks.Comment object at 0x10381d520>
+    // <conv.chunks.Comment object at 0x10381d5b0>
+    // <conv.chunks.Comment object at 0x10381d790>
+    // <conv.chunks.Comment object at 0x10381d8e0>
+    // <conv.chunks.Comment object at 0x10381da30>
+    // <conv.chunks.Comment object at 0x10381dac0>
     tya();
     adc(Enemy_Y_Position, x);
     sta(RedPTroopaCenterYPos, x);
@@ -11124,40 +11099,40 @@ int GetCent() {
 }
 
 int TallBBox() {
-    // <conv.chunks.Comment object at 0x1056c1c70>
-    // <conv.chunks.Comment object at 0x1056c1dc0>
-    // <conv.chunks.Comment object at 0x1056c1f10>
+    // <conv.chunks.Comment object at 0x10381dc70>
+    // <conv.chunks.Comment object at 0x10381ddc0>
+    // <conv.chunks.Comment object at 0x10381df10>
     lda(0x3);
     JMP(SetBBox);
 }
 
 int SetBBox() {
-    // <conv.chunks.Comment object at 0x1056c1fd0>
+    // <conv.chunks.Comment object at 0x10381dfd0>
     sta(Enemy_BoundBoxCtrl, x);
     lda(0x2);
-    // <conv.chunks.Comment object at 0x1056c2210>
+    // <conv.chunks.Comment object at 0x10381e210>
     sta(Enemy_MovingDir, x);
     JMP(InitVStf);
 }
 
 int InitVStf() {
-    // <conv.chunks.Comment object at 0x1056c2450>
+    // <conv.chunks.Comment object at 0x10381e450>
     lda(0x0);
     sta(Enemy_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x1056c2510>
+    // <conv.chunks.Comment object at 0x10381e510>
     sta(Enemy_Y_MoveForce, x);
-    rts();
+    return 0;
     JMP(InitBulletBill);
 }
 
 int InitBulletBill() {
     lda(0x2);
-    // <conv.chunks.Comment object at 0x1056c2900>
+    // <conv.chunks.Comment object at 0x10381e900>
     sta(Enemy_MovingDir, x);
     lda(0x9);
-    // <conv.chunks.Comment object at 0x1056c2b40>
+    // <conv.chunks.Comment object at 0x10381eb40>
     sta(Enemy_BoundBoxCtrl, x);
-    rts();
+    return 0;
     JMP(InitCheepCheep);
 }
 
@@ -11166,14 +11141,14 @@ int InitCheepCheep() {
     lda(PseudoRandomBitReg, x);
     anda(0b10000);
     sta(CheepCheepMoveMFlag, x);
-    // <conv.chunks.Comment object at 0x1056c2e70>
-    // <conv.chunks.Comment object at 0x1056c2f90>
-    // <conv.chunks.Comment object at 0x1056c30e0>
-    // <conv.chunks.Comment object at 0x1056c3200>
+    // <conv.chunks.Comment object at 0x10381ee70>
+    // <conv.chunks.Comment object at 0x10381ef90>
+    // <conv.chunks.Comment object at 0x10381f0e0>
+    // <conv.chunks.Comment object at 0x10381f200>
     lda(Enemy_Y_Position, x);
     sta(CheepCheepOrigYPos, x);
-    // <conv.chunks.Comment object at 0x1056c3470>
-    rts();
+    // <conv.chunks.Comment object at 0x10381f470>
+    return 0;
     JMP(InitLakitu);
 }
 
@@ -11185,7 +11160,7 @@ int InitLakitu() {
 
 int SetupLakitu() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1056c3920>
+    // <conv.chunks.Comment object at 0x10381f920>
     sta(LakituReappearTimer);
     JSR(InitHorizFlySwimEnemy);
     JMP(TallBBox2);
@@ -11199,32 +11174,32 @@ int KillLakitu() {
 
 int LakituAndSpinyHandler() {
     lda(FrenzyEnemyTimer);
-    // <conv.chunks.Comment object at 0x1056c3fe0>
+    // <conv.chunks.Comment object at 0x10381ffe0>
     BNE(ExLSHand);
     cpx(0x5);
-    // <conv.chunks.Comment object at 0x1056d0860>
+    // <conv.chunks.Comment object at 0x10382c860>
     BCS(ExLSHand);
     lda(0x80);
-    // <conv.chunks.Comment object at 0x1056d0a70>
+    // <conv.chunks.Comment object at 0x10382ca70>
     sta(FrenzyEnemyTimer);
     ldy(0x4);
     JMP(ChkLak);
 }
 
 int ChkLak() {
-    // <conv.chunks.Comment object at 0x1056d0c80>
-    // <conv.chunks.Comment object at 0x1056d0d10>
+    // <conv.chunks.Comment object at 0x10382cc80>
+    // <conv.chunks.Comment object at 0x10382cd10>
     lda(Enemy_ID, y);
     cmp(Lakitu);
     BEQ(CreateSpiny);
     dey();
     BPL(ChkLak);
     inc(LakituReappearTimer);
-    // <conv.chunks.Comment object at 0x1056d0f50>
-    // <conv.chunks.Comment object at 0x1056d0fb0>
-    // <conv.chunks.Comment object at 0x1056d11f0>
-    // <conv.chunks.Comment object at 0x1056d1280>
-    // <conv.chunks.Comment object at 0x1056d13d0>
+    // <conv.chunks.Comment object at 0x10382cf50>
+    // <conv.chunks.Comment object at 0x10382cfb0>
+    // <conv.chunks.Comment object at 0x10382d1f0>
+    // <conv.chunks.Comment object at 0x10382d280>
+    // <conv.chunks.Comment object at 0x10382d3d0>
     lda(LakituReappearTimer);
     cmp(0x7);
     BCC(ExLSHand);
@@ -11233,10 +11208,10 @@ int ChkLak() {
 }
 
 int ChkNoEn() {
-    // <conv.chunks.Comment object at 0x1056d15e0>
-    // <conv.chunks.Comment object at 0x1056d1670>
-    // <conv.chunks.Comment object at 0x1056d1820>
-    // <conv.chunks.Comment object at 0x1056d18b0>
+    // <conv.chunks.Comment object at 0x10382d5e0>
+    // <conv.chunks.Comment object at 0x10382d670>
+    // <conv.chunks.Comment object at 0x10382d820>
+    // <conv.chunks.Comment object at 0x10382d8b0>
     lda(Enemy_Flag, x);
     BEQ(CreateL);
     dex();
@@ -11246,59 +11221,59 @@ int ChkNoEn() {
 }
 
 int CreateL() {
-    // <conv.chunks.Comment object at 0x1056d1af0>
-    // <conv.chunks.Comment object at 0x1056d1c70>
-    // <conv.chunks.Comment object at 0x1056d1d00>
-    // <conv.chunks.Comment object at 0x1056d1e50>
-    // <conv.chunks.Comment object at 0x1056d1fa0>
+    // <conv.chunks.Comment object at 0x10382daf0>
+    // <conv.chunks.Comment object at 0x10382dc70>
+    // <conv.chunks.Comment object at 0x10382dd00>
+    // <conv.chunks.Comment object at 0x10382de50>
+    // <conv.chunks.Comment object at 0x10382dfa0>
     lda(0x0);
     sta(Enemy_State, x);
     lda(Lakitu);
-    // <conv.chunks.Comment object at 0x1056d2240>
+    // <conv.chunks.Comment object at 0x10382e240>
     sta(Enemy_ID, x);
     JSR(SetupLakitu);
-    // <conv.chunks.Comment object at 0x1056d24b0>
+    // <conv.chunks.Comment object at 0x10382e4b0>
     lda(0x20);
     JSR(PutAtRightExtent);
     JMP(RetEOfs);
 }
 
 int RetEOfs() {
-    // <conv.chunks.Comment object at 0x1056d2630>
-    // <conv.chunks.Comment object at 0x1056d27e0>
+    // <conv.chunks.Comment object at 0x10382e630>
+    // <conv.chunks.Comment object at 0x10382e7e0>
     ldx(ObjectOffset);
     JMP(ExLSHand);
 }
 
 int ExLSHand() {
-    rts();
+    return 0;
     JMP(CreateSpiny);
 }
 
 int CreateSpiny() {
     lda(Player_Y_Position);
-    // <conv.chunks.Comment object at 0x1056d2a80>
+    // <conv.chunks.Comment object at 0x10382ea80>
     cmp(0x2c);
     BCC(ExLSHand);
     lda(Enemy_State, y);
-    // <conv.chunks.Comment object at 0x1056d2d80>
+    // <conv.chunks.Comment object at 0x10382ed80>
     BNE(ExLSHand);
     lda(Enemy_PageLoc, y);
     sta(Enemy_PageLoc, x);
-    // <conv.chunks.Comment object at 0x1056d2fc0>
-    // <conv.chunks.Comment object at 0x1056d3110>
+    // <conv.chunks.Comment object at 0x10382efc0>
+    // <conv.chunks.Comment object at 0x10382f110>
     lda(Enemy_X_Position, y);
     sta(Enemy_X_Position, x);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x1056d34a0>
+    // <conv.chunks.Comment object at 0x10382f4a0>
     sta(Enemy_Y_HighPos, x);
     lda(Enemy_Y_Position, y);
-    // <conv.chunks.Comment object at 0x1056d36e0>
+    // <conv.chunks.Comment object at 0x10382f6e0>
     sec();
     sbc(0x8);
     sta(Enemy_Y_Position, x);
     lda(PseudoRandomBitReg, x);
-    // <conv.chunks.Comment object at 0x1056d3ad0>
+    // <conv.chunks.Comment object at 0x10382fad0>
     anda(0b11);
     tay();
     ldx(0x2);
@@ -11306,13 +11281,13 @@ int CreateSpiny() {
 }
 
 int DifLoop() {
-    // <conv.chunks.Comment object at 0x1056d3e00>
+    // <conv.chunks.Comment object at 0x10382fe00>
     lda(offsetof(G, PRDiffAdjustData), y);
     sta(0x1, x);
-    // <conv.chunks.Comment object at 0x1056dc080>
+    // <conv.chunks.Comment object at 0x103838080>
     iny();
     iny();
-    // <conv.chunks.Comment object at 0x1056dc290>
+    // <conv.chunks.Comment object at 0x103838290>
     iny();
     iny();
     dex();
@@ -11320,65 +11295,65 @@ int DifLoop() {
     ldx(ObjectOffset);
     JSR(PlayerLakituDiff);
     ldy(Player_X_Speed);
-    // <conv.chunks.Comment object at 0x1056dc470>
-    // <conv.chunks.Comment object at 0x1056dc500>
-    // <conv.chunks.Comment object at 0x1056dc650>
-    // <conv.chunks.Comment object at 0x1056dc770>
-    // <conv.chunks.Comment object at 0x1056dc890>
+    // <conv.chunks.Comment object at 0x103838470>
+    // <conv.chunks.Comment object at 0x103838500>
+    // <conv.chunks.Comment object at 0x103838650>
+    // <conv.chunks.Comment object at 0x103838770>
+    // <conv.chunks.Comment object at 0x103838890>
     cpy(0x8);
     BCS(SetSpSpd);
     tay();
-    // <conv.chunks.Comment object at 0x1056dca10>
-    // <conv.chunks.Comment object at 0x1056dcbf0>
+    // <conv.chunks.Comment object at 0x103838a10>
+    // <conv.chunks.Comment object at 0x103838bf0>
     lda(((PseudoRandomBitReg) + (1)), x);
     anda(0b11);
     BEQ(UsePosv);
-    // <conv.chunks.Comment object at 0x1056dce60>
-    // <conv.chunks.Comment object at 0x1056dcf80>
+    // <conv.chunks.Comment object at 0x103838e60>
+    // <conv.chunks.Comment object at 0x103838f80>
     tya();
     eor(0b11111111);
-    // <conv.chunks.Comment object at 0x1056dd160>
+    // <conv.chunks.Comment object at 0x103839160>
     tay();
     iny();
     JMP(UsePosv);
 }
 
 int UsePosv() {
-    // <conv.chunks.Comment object at 0x1056dd3a0>
+    // <conv.chunks.Comment object at 0x1038393a0>
     tya();
     JMP(SetSpSpd);
 }
 
 int SetSpSpd() {
-    // <conv.chunks.Comment object at 0x1056dd4c0>
+    // <conv.chunks.Comment object at 0x1038394c0>
     JSR(SmallBBox);
     ldy(0x2);
     sta(Enemy_X_Speed, x);
     cmp(0x0);
     BMI(SpinyRte);
-    // <conv.chunks.Comment object at 0x1056dd670>
-    // <conv.chunks.Comment object at 0x1056dd850>
-    // <conv.chunks.Comment object at 0x1056dd8e0>
+    // <conv.chunks.Comment object at 0x103839670>
+    // <conv.chunks.Comment object at 0x103839850>
+    // <conv.chunks.Comment object at 0x1038398e0>
     dey();
     JMP(SpinyRte);
 }
 
 int SpinyRte() {
-    // <conv.chunks.Comment object at 0x1056ddb20>
+    // <conv.chunks.Comment object at 0x103839b20>
     sty(Enemy_MovingDir, x);
     lda(0xfd);
     sta(Enemy_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x1056ddd00>
+    // <conv.chunks.Comment object at 0x103839d00>
     lda(0x1);
     sta(Enemy_Flag, x);
-    // <conv.chunks.Comment object at 0x1056ddf40>
+    // <conv.chunks.Comment object at 0x103839f40>
     lda(0x5);
     sta(Enemy_State, x);
     JMP(ChpChpEx);
 }
 
 int ChpChpEx() {
-    rts();
+    return 0;
     JMP(InitLongFirebar);
 }
 
@@ -11389,33 +11364,33 @@ int InitLongFirebar() {
 
 int InitShortFirebar() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1056debd0>
+    // <conv.chunks.Comment object at 0x10383abd0>
     sta(FirebarSpinState_Low, x);
     lda(Enemy_ID, x);
     sec();
-    // <conv.chunks.Comment object at 0x1056dee10>
-    // <conv.chunks.Comment object at 0x1056def90>
+    // <conv.chunks.Comment object at 0x10383ae10>
+    // <conv.chunks.Comment object at 0x10383af90>
     sbc(0x1b);
     tay();
     lda(offsetof(G, FirebarSpinSpdData), y);
-    // <conv.chunks.Comment object at 0x1056df1a0>
+    // <conv.chunks.Comment object at 0x10383b1a0>
     sta(FirebarSpinSpeed, x);
     lda(offsetof(G, FirebarSpinDirData), y);
-    // <conv.chunks.Comment object at 0x1056df410>
+    // <conv.chunks.Comment object at 0x10383b410>
     sta(FirebarSpinDirection, x);
     lda(Enemy_Y_Position, x);
     clc();
-    // <conv.chunks.Comment object at 0x1056df7d0>
+    // <conv.chunks.Comment object at 0x10383b7d0>
     adc(0x4);
     sta(Enemy_Y_Position, x);
     lda(Enemy_X_Position, x);
     clc();
-    // <conv.chunks.Comment object at 0x1056dfbc0>
+    // <conv.chunks.Comment object at 0x10383bbc0>
     adc(0x4);
     sta(Enemy_X_Position, x);
     lda(Enemy_PageLoc, x);
     adc(0x0);
-    // <conv.chunks.Comment object at 0x1056dff80>
+    // <conv.chunks.Comment object at 0x10383bf80>
     sta(Enemy_PageLoc, x);
     JMP(TallBBox2);
     JMP(InitFlyingCheepCheep);
@@ -11423,19 +11398,19 @@ int InitShortFirebar() {
 
 int InitFlyingCheepCheep() {
     lda(FrenzyEnemyTimer);
-    // <conv.chunks.Comment object at 0x1056e83e0>
+    // <conv.chunks.Comment object at 0x1038443e0>
     BNE(ChpChpEx);
     JSR(SmallBBox);
-    // <conv.chunks.Comment object at 0x1056e9850>
+    // <conv.chunks.Comment object at 0x103845850>
     lda(((PseudoRandomBitReg) + (1)), x);
     anda(0b11);
-    // <conv.chunks.Comment object at 0x1056e9b50>
+    // <conv.chunks.Comment object at 0x103845b50>
     tay();
     lda(offsetof(G, FlyCCTimerData), y);
-    // <conv.chunks.Comment object at 0x1056e9d00>
+    // <conv.chunks.Comment object at 0x103845d00>
     sta(FrenzyEnemyTimer);
     ldy(0x3);
-    // <conv.chunks.Comment object at 0x1056e9f40>
+    // <conv.chunks.Comment object at 0x103845f40>
     lda(SecondaryHardMode);
     BEQ(MaxCC);
     iny();
@@ -11443,29 +11418,29 @@ int InitFlyingCheepCheep() {
 }
 
 int MaxCC() {
-    // <conv.chunks.Comment object at 0x1056ea150>
-    // <conv.chunks.Comment object at 0x1056ea2d0>
-    // <conv.chunks.Comment object at 0x1056ea360>
+    // <conv.chunks.Comment object at 0x103846150>
+    // <conv.chunks.Comment object at 0x1038462d0>
+    // <conv.chunks.Comment object at 0x103846360>
     sty(0x0);
     cpx(0x0);
     BCS(ChpChpEx);
-    // <conv.chunks.Comment object at 0x1056ea3c0>
-    // <conv.chunks.Comment object at 0x1056ea5a0>
+    // <conv.chunks.Comment object at 0x1038463c0>
+    // <conv.chunks.Comment object at 0x1038465a0>
     lda(PseudoRandomBitReg, x);
     anda(0b11);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x1056ea840>
-    // <conv.chunks.Comment object at 0x1056ea990>
+    // <conv.chunks.Comment object at 0x103846840>
+    // <conv.chunks.Comment object at 0x103846990>
     sta(0x1);
     lda(0xfb);
-    // <conv.chunks.Comment object at 0x1056eaa20>
+    // <conv.chunks.Comment object at 0x103846a20>
     sta(Enemy_Y_Speed, x);
     lda(0x0);
     ldy(Player_X_Speed);
     BEQ(GSeed);
-    // <conv.chunks.Comment object at 0x1056eadb0>
-    // <conv.chunks.Comment object at 0x1056eae40>
-    // <conv.chunks.Comment object at 0x1056eaff0>
+    // <conv.chunks.Comment object at 0x103846db0>
+    // <conv.chunks.Comment object at 0x103846e40>
+    // <conv.chunks.Comment object at 0x103846ff0>
     lda(0x4);
     cpy(0x19);
     BCC(GSeed);
@@ -11474,21 +11449,21 @@ int MaxCC() {
 }
 
 int GSeed() {
-    // <conv.chunks.Comment object at 0x1056eb1a0>
-    // <conv.chunks.Comment object at 0x1056eb2c0>
-    // <conv.chunks.Comment object at 0x1056eb4d0>
-    // <conv.chunks.Comment object at 0x1056eb560>
+    // <conv.chunks.Comment object at 0x1038471a0>
+    // <conv.chunks.Comment object at 0x1038472c0>
+    // <conv.chunks.Comment object at 0x1038474d0>
+    // <conv.chunks.Comment object at 0x103847560>
     pha();
     clc();
     adc(0x0);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x1056eb740>
-    // <conv.chunks.Comment object at 0x1056eb710>
+    // <conv.chunks.Comment object at 0x103847740>
+    // <conv.chunks.Comment object at 0x103847710>
     lda(((PseudoRandomBitReg) + (1)), x);
     anda(0b11);
     BEQ(RSeed);
-    // <conv.chunks.Comment object at 0x1056ebb30>
-    // <conv.chunks.Comment object at 0x1056ebc50>
+    // <conv.chunks.Comment object at 0x103847b30>
+    // <conv.chunks.Comment object at 0x103847c50>
     lda(((PseudoRandomBitReg) + (2)), x);
     anda(0b1111);
     sta(0x0);
@@ -11496,67 +11471,67 @@ int GSeed() {
 }
 
 int RSeed() {
-    // <conv.chunks.Comment object at 0x1056ebf80>
-    // <conv.chunks.Comment object at 0x1056f0110>
-    // <conv.chunks.Comment object at 0x1056f01a0>
+    // <conv.chunks.Comment object at 0x103847f80>
+    // <conv.chunks.Comment object at 0x10384c110>
+    // <conv.chunks.Comment object at 0x10384c1a0>
     pla();
     clc();
     adc(0x1);
     tay();
     lda(offsetof(G, FlyCCXSpeedData), y);
-    // <conv.chunks.Comment object at 0x1056f03e0>
-    // <conv.chunks.Comment object at 0x1056f03b0>
-    // <conv.chunks.Comment object at 0x1056f0590>
+    // <conv.chunks.Comment object at 0x10384c3e0>
+    // <conv.chunks.Comment object at 0x10384c3b0>
+    // <conv.chunks.Comment object at 0x10384c590>
     sta(Enemy_X_Speed, x);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x1056f0800>
+    // <conv.chunks.Comment object at 0x10384c800>
     sta(Enemy_MovingDir, x);
     lda(Player_X_Speed);
-    // <conv.chunks.Comment object at 0x1056f0a40>
+    // <conv.chunks.Comment object at 0x10384ca40>
     BNE(D2XPos1);
     ldy(0x0);
     tya();
-    // <conv.chunks.Comment object at 0x1056f0cb0>
-    // <conv.chunks.Comment object at 0x1056f0c80>
+    // <conv.chunks.Comment object at 0x10384ccb0>
+    // <conv.chunks.Comment object at 0x10384cc80>
     anda(0b10);
     BEQ(D2XPos1);
-    // <conv.chunks.Comment object at 0x1056f0f50>
+    // <conv.chunks.Comment object at 0x10384cf50>
     lda(Enemy_X_Speed, x);
     eor(0xff);
     clc();
     adc(0x1);
-    // <conv.chunks.Comment object at 0x1056f11c0>
-    // <conv.chunks.Comment object at 0x1056f1310>
-    // <conv.chunks.Comment object at 0x1056f13a0>
+    // <conv.chunks.Comment object at 0x10384d1c0>
+    // <conv.chunks.Comment object at 0x10384d310>
+    // <conv.chunks.Comment object at 0x10384d3a0>
     sta(Enemy_X_Speed, x);
     inc(Enemy_MovingDir, x);
     JMP(D2XPos1);
 }
 
 int D2XPos1() {
-    // <conv.chunks.Comment object at 0x1056f15e0>
-    // <conv.chunks.Comment object at 0x1056f1730>
+    // <conv.chunks.Comment object at 0x10384d5e0>
+    // <conv.chunks.Comment object at 0x10384d730>
     tya();
     anda(0b10);
     BEQ(D2XPos2);
     lda(Player_X_Position);
-    // <conv.chunks.Comment object at 0x1056f1940>
-    // <conv.chunks.Comment object at 0x1056f1a90>
+    // <conv.chunks.Comment object at 0x10384d940>
+    // <conv.chunks.Comment object at 0x10384da90>
     clc();
     adc(offsetof(G, FlyCCXPositionData), y);
     sta(Enemy_X_Position, x);
     lda(Player_PageLoc);
     adc(0x0);
-    // <conv.chunks.Comment object at 0x1056f1c40>
-    // <conv.chunks.Comment object at 0x1056f1d90>
-    // <conv.chunks.Comment object at 0x1056f1ee0>
-    // <conv.chunks.Comment object at 0x1056f2000>
+    // <conv.chunks.Comment object at 0x10384dc40>
+    // <conv.chunks.Comment object at 0x10384dd90>
+    // <conv.chunks.Comment object at 0x10384dee0>
+    // <conv.chunks.Comment object at 0x10384e000>
     JMP(FinCCSt);
     JMP(D2XPos2);
 }
 
 int D2XPos2() {
-    // <conv.chunks.Comment object at 0x1056f2240>
+    // <conv.chunks.Comment object at 0x10384e240>
     lda(Player_X_Position);
     sec();
     sbc(offsetof(G, FlyCCXPositionData), y);
@@ -11567,53 +11542,53 @@ int D2XPos2() {
 }
 
 int FinCCSt() {
-    // <conv.chunks.Comment object at 0x1056f2450>
-    // <conv.chunks.Comment object at 0x1056f25a0>
-    // <conv.chunks.Comment object at 0x1056f26f0>
-    // <conv.chunks.Comment object at 0x1056f2810>
-    // <conv.chunks.Comment object at 0x1056f28a0>
+    // <conv.chunks.Comment object at 0x10384e450>
+    // <conv.chunks.Comment object at 0x10384e5a0>
+    // <conv.chunks.Comment object at 0x10384e6f0>
+    // <conv.chunks.Comment object at 0x10384e810>
+    // <conv.chunks.Comment object at 0x10384e8a0>
     sta(Enemy_PageLoc, x);
     lda(0x1);
     sta(Enemy_Flag, x);
     sta(Enemy_Y_HighPos, x);
-    // <conv.chunks.Comment object at 0x1056f2b40>
-    // <conv.chunks.Comment object at 0x1056f2d20>
+    // <conv.chunks.Comment object at 0x10384eb40>
+    // <conv.chunks.Comment object at 0x10384ed20>
     lda(0xf8);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1056f2ed0>
-    rts();
+    // <conv.chunks.Comment object at 0x10384eed0>
+    return 0;
     JMP(InitBowser);
 }
 
 int InitBowser() {
     JSR(DuplicateEnemyObj);
     stx(BowserFront_Offset);
-    // <conv.chunks.Comment object at 0x1056f31a0>
-    // <conv.chunks.Comment object at 0x1056f32c0>
+    // <conv.chunks.Comment object at 0x10384f1a0>
+    // <conv.chunks.Comment object at 0x10384f2c0>
     lda(0x0);
     sta(BowserBodyControls);
     sta(BridgeCollapseOffset);
-    // <conv.chunks.Comment object at 0x1056f3440>
-    // <conv.chunks.Comment object at 0x1056f35f0>
+    // <conv.chunks.Comment object at 0x10384f440>
+    // <conv.chunks.Comment object at 0x10384f5f0>
     lda(Enemy_X_Position, x);
     sta(BowserOrigXPos);
-    // <conv.chunks.Comment object at 0x1056f3830>
+    // <conv.chunks.Comment object at 0x10384f830>
     lda(0xdf);
     sta(BowserFireBreathTimer);
     sta(Enemy_MovingDir, x);
-    // <conv.chunks.Comment object at 0x1056f39b0>
-    // <conv.chunks.Comment object at 0x1056f3b60>
+    // <conv.chunks.Comment object at 0x10384f9b0>
+    // <conv.chunks.Comment object at 0x10384fb60>
     lda(0x20);
     sta(BowserFeetCounter);
-    // <conv.chunks.Comment object at 0x1056f3d10>
+    // <conv.chunks.Comment object at 0x10384fd10>
     sta(EnemyFrameTimer, x);
     lda(0x5);
     sta(BowserHitPoints);
-    // <conv.chunks.Comment object at 0x1056fc080>
+    // <conv.chunks.Comment object at 0x103858080>
     lsr();
     sta(BowserMovementSpeed);
-    // <conv.chunks.Comment object at 0x1056fc2c0>
-    rts();
+    // <conv.chunks.Comment object at 0x1038582c0>
+    return 0;
     JMP(DuplicateEnemyObj);
 }
 
@@ -11623,8 +11598,8 @@ int DuplicateEnemyObj() {
 }
 
 int FSLoop() {
-    // <conv.chunks.Comment object at 0x1056fc4d0>
-    // <conv.chunks.Comment object at 0x1056fc560>
+    // <conv.chunks.Comment object at 0x1038584d0>
+    // <conv.chunks.Comment object at 0x103858560>
     iny();
     lda(Enemy_Flag, y);
     BNE(FSLoop);
@@ -11632,68 +11607,68 @@ int FSLoop() {
     txa();
     ora(0b10000000);
     sta(Enemy_Flag, y);
-    // <conv.chunks.Comment object at 0x1056fc710>
-    // <conv.chunks.Comment object at 0x1056fc860>
-    // <conv.chunks.Comment object at 0x1056fc9b0>
-    // <conv.chunks.Comment object at 0x1056fcb00>
-    // <conv.chunks.Comment object at 0x1056fcb90>
-    // <conv.chunks.Comment object at 0x1056fccb0>
+    // <conv.chunks.Comment object at 0x103858710>
+    // <conv.chunks.Comment object at 0x103858860>
+    // <conv.chunks.Comment object at 0x1038589b0>
+    // <conv.chunks.Comment object at 0x103858b00>
+    // <conv.chunks.Comment object at 0x103858b90>
+    // <conv.chunks.Comment object at 0x103858cb0>
     lda(Enemy_PageLoc, x);
     sta(Enemy_PageLoc, y);
     lda(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x1056fcf20>
-    // <conv.chunks.Comment object at 0x1056fd070>
+    // <conv.chunks.Comment object at 0x103858f20>
+    // <conv.chunks.Comment object at 0x103859070>
     sta(Enemy_X_Position, y);
     lda(0x1);
     sta(Enemy_Flag, x);
     sta(Enemy_Y_HighPos, y);
-    // <conv.chunks.Comment object at 0x1056fd340>
-    // <conv.chunks.Comment object at 0x1056fd520>
+    // <conv.chunks.Comment object at 0x103859340>
+    // <conv.chunks.Comment object at 0x103859520>
     lda(Enemy_Y_Position, x);
     sta(Enemy_Y_Position, y);
     JMP(FlmEx);
 }
 
 int FlmEx() {
-    // <conv.chunks.Comment object at 0x1056fd790>
-    // <conv.chunks.Comment object at 0x1056fd8e0>
-    rts();
+    // <conv.chunks.Comment object at 0x103859790>
+    // <conv.chunks.Comment object at 0x1038598e0>
+    return 0;
     JMP(InitBowserFlame);
 }
 
 int InitBowserFlame() {
     lda(FrenzyEnemyTimer);
-    // <conv.chunks.Comment object at 0x1056fdb20>
+    // <conv.chunks.Comment object at 0x103859b20>
     BNE(FlmEx);
     sta(Enemy_Y_MoveForce, x);
-    // <conv.chunks.Comment object at 0x1056fe060>
+    // <conv.chunks.Comment object at 0x10385a060>
     lda(NoiseSoundQueue);
     ora(Sfx_BowserFlame);
-    // <conv.chunks.Comment object at 0x1056fe2a0>
+    // <conv.chunks.Comment object at 0x10385a2a0>
     sta(NoiseSoundQueue);
     ldy(BowserFront_Offset);
     lda(Enemy_ID, y);
-    // <conv.chunks.Comment object at 0x1056fe4b0>
-    // <conv.chunks.Comment object at 0x1056fe5d0>
+    // <conv.chunks.Comment object at 0x10385a4b0>
+    // <conv.chunks.Comment object at 0x10385a5d0>
     cmp(Bowser);
     BEQ(SpawnFromMouth);
     JSR(SetFlameTimer);
-    // <conv.chunks.Comment object at 0x1056fe750>
-    // <conv.chunks.Comment object at 0x1056fe960>
+    // <conv.chunks.Comment object at 0x10385a750>
+    // <conv.chunks.Comment object at 0x10385a960>
     clc();
     adc(0x20);
-    // <conv.chunks.Comment object at 0x1056feb10>
+    // <conv.chunks.Comment object at 0x10385ab10>
     ldy(SecondaryHardMode);
     BEQ(SetFrT);
-    // <conv.chunks.Comment object at 0x1056fed20>
+    // <conv.chunks.Comment object at 0x10385ad20>
     sec();
     sbc(0x10);
     JMP(SetFrT);
 }
 
 int SetFrT() {
-    // <conv.chunks.Comment object at 0x1056fef00>
-    // <conv.chunks.Comment object at 0x1056fef90>
+    // <conv.chunks.Comment object at 0x10385af00>
+    // <conv.chunks.Comment object at 0x10385af90>
     sta(FrenzyEnemyTimer);
     lda(PseudoRandomBitReg, x);
     anda(0b11);
@@ -11705,15 +11680,15 @@ int SetFrT() {
 
 int PutAtRightExtent() {
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1056ff770>
+    // <conv.chunks.Comment object at 0x10385b770>
     lda(ScreenRight_X_Pos);
     clc();
     adc(0x20);
-    // <conv.chunks.Comment object at 0x1056ffa40>
+    // <conv.chunks.Comment object at 0x10385ba40>
     sta(Enemy_X_Position, x);
     lda(ScreenRight_PageLoc);
     adc(0x0);
-    // <conv.chunks.Comment object at 0x1056ffd70>
+    // <conv.chunks.Comment object at 0x10385bd70>
     sta(Enemy_PageLoc, x);
     JMP(FinishFlame);
     JMP(SpawnFromMouth);
@@ -11721,21 +11696,21 @@ int PutAtRightExtent() {
 
 int SpawnFromMouth() {
     lda(Enemy_X_Position, y);
-    // <conv.chunks.Comment object at 0x105708140>
+    // <conv.chunks.Comment object at 0x103864140>
     sec();
     sbc(0xe);
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x105708320>
-    // <conv.chunks.Comment object at 0x1057083b0>
+    // <conv.chunks.Comment object at 0x103864320>
+    // <conv.chunks.Comment object at 0x1038643b0>
     lda(Enemy_PageLoc, y);
     sta(Enemy_PageLoc, x);
-    // <conv.chunks.Comment object at 0x1057086b0>
+    // <conv.chunks.Comment object at 0x1038646b0>
     lda(Enemy_Y_Position, y);
     clc();
-    // <conv.chunks.Comment object at 0x105708950>
+    // <conv.chunks.Comment object at 0x103864950>
     adc(0x8);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x105708a40>
+    // <conv.chunks.Comment object at 0x103864a40>
     lda(PseudoRandomBitReg, x);
     anda(0b11);
     sta(Enemy_YMF_Dummy, x);
@@ -11749,18 +11724,18 @@ int SpawnFromMouth() {
 }
 
 int SetMF() {
-    // <conv.chunks.Comment object at 0x105708d40>
-    // <conv.chunks.Comment object at 0x105708e60>
-    // <conv.chunks.Comment object at 0x105708fe0>
-    // <conv.chunks.Comment object at 0x105709070>
-    // <conv.chunks.Comment object at 0x1057091c0>
-    // <conv.chunks.Comment object at 0x105709250>
-    // <conv.chunks.Comment object at 0x105709430>
-    // <conv.chunks.Comment object at 0x1057095b0>
-    // <conv.chunks.Comment object at 0x105709640>
+    // <conv.chunks.Comment object at 0x103864d40>
+    // <conv.chunks.Comment object at 0x103864e60>
+    // <conv.chunks.Comment object at 0x103864fe0>
+    // <conv.chunks.Comment object at 0x103865070>
+    // <conv.chunks.Comment object at 0x1038651c0>
+    // <conv.chunks.Comment object at 0x103865250>
+    // <conv.chunks.Comment object at 0x103865430>
+    // <conv.chunks.Comment object at 0x1038655b0>
+    // <conv.chunks.Comment object at 0x103865640>
     lda(offsetof(G, FlameYMFAdderData), y);
     sta(Enemy_Y_MoveForce, x);
-    // <conv.chunks.Comment object at 0x1057097f0>
+    // <conv.chunks.Comment object at 0x1038657f0>
     lda(0x0);
     sta(EnemyFrenzyBuffer);
     JMP(FinishFlame);
@@ -11768,28 +11743,28 @@ int SetMF() {
 
 int FinishFlame() {
     lda(0x8);
-    // <conv.chunks.Comment object at 0x105709b80>
+    // <conv.chunks.Comment object at 0x103865b80>
     sta(Enemy_BoundBoxCtrl, x);
     lda(0x1);
     sta(Enemy_Y_HighPos, x);
-    // <conv.chunks.Comment object at 0x105709dc0>
-    // <conv.chunks.Comment object at 0x105709e50>
+    // <conv.chunks.Comment object at 0x103865dc0>
+    // <conv.chunks.Comment object at 0x103865e50>
     sta(Enemy_Flag, x);
     lsr();
     sta(Enemy_X_MoveForce, x);
     sta(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x10570a1e0>
-    // <conv.chunks.Comment object at 0x10570a330>
-    rts();
+    // <conv.chunks.Comment object at 0x1038661e0>
+    // <conv.chunks.Comment object at 0x103866330>
+    return 0;
     JMP(InitFireworks);
 }
 
 int InitFireworks() {
     lda(FrenzyEnemyTimer);
-    // <conv.chunks.Comment object at 0x10570a630>
+    // <conv.chunks.Comment object at 0x103866630>
     BNE(ExitFWk);
     lda(0x20);
-    // <conv.chunks.Comment object at 0x10570aed0>
+    // <conv.chunks.Comment object at 0x103866ed0>
     sta(FrenzyEnemyTimer);
     dec(FireworksCounter);
     ldy(0x6);
@@ -11801,76 +11776,76 @@ int StarFChk() {
     lda(Enemy_ID, y);
     cmp(StarFlagObject);
     BNE(StarFChk);
-    // <conv.chunks.Comment object at 0x10570b3e0>
-    // <conv.chunks.Comment object at 0x10570b530>
-    // <conv.chunks.Comment object at 0x10570b650>
+    // <conv.chunks.Comment object at 0x1038673e0>
+    // <conv.chunks.Comment object at 0x103867530>
+    // <conv.chunks.Comment object at 0x103867650>
     lda(Enemy_X_Position, y);
     sec();
     sbc(0x30);
     pha();
-    // <conv.chunks.Comment object at 0x10570b8c0>
-    // <conv.chunks.Comment object at 0x10570b950>
-    // <conv.chunks.Comment object at 0x10570baa0>
+    // <conv.chunks.Comment object at 0x1038678c0>
+    // <conv.chunks.Comment object at 0x103867950>
+    // <conv.chunks.Comment object at 0x103867aa0>
     lda(Enemy_PageLoc, y);
     sbc(0x0);
     sta(0x0);
     lda(FireworksCounter);
-    // <conv.chunks.Comment object at 0x10570bc50>
-    // <conv.chunks.Comment object at 0x10570bda0>
-    // <conv.chunks.Comment object at 0x10570be30>
+    // <conv.chunks.Comment object at 0x103867c50>
+    // <conv.chunks.Comment object at 0x103867da0>
+    // <conv.chunks.Comment object at 0x103867e30>
     clc();
     adc(Enemy_State, y);
     tay();
     pla();
-    // <conv.chunks.Comment object at 0x105710080>
-    // <conv.chunks.Comment object at 0x105710200>
-    // <conv.chunks.Comment object at 0x1057102c0>
+    // <conv.chunks.Comment object at 0x10386c080>
+    // <conv.chunks.Comment object at 0x10386c200>
+    // <conv.chunks.Comment object at 0x10386c2c0>
     clc();
     adc(offsetof(G, FireworksXPosData), y);
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x1057103e0>
-    // <conv.chunks.Comment object at 0x105710530>
+    // <conv.chunks.Comment object at 0x10386c3e0>
+    // <conv.chunks.Comment object at 0x10386c530>
     lda(0x0);
     adc(0x0);
     sta(Enemy_PageLoc, x);
     lda(offsetof(G, FireworksYPosData), y);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x105710680>
-    // <conv.chunks.Comment object at 0x105710800>
-    // <conv.chunks.Comment object at 0x1057109e0>
-    // <conv.chunks.Comment object at 0x105710b30>
+    // <conv.chunks.Comment object at 0x10386c680>
+    // <conv.chunks.Comment object at 0x10386c800>
+    // <conv.chunks.Comment object at 0x10386c9e0>
+    // <conv.chunks.Comment object at 0x10386cb30>
     lda(0x1);
     sta(Enemy_Y_HighPos, x);
     sta(Enemy_Flag, x);
-    // <conv.chunks.Comment object at 0x105710ce0>
-    // <conv.chunks.Comment object at 0x105710ec0>
+    // <conv.chunks.Comment object at 0x10386cce0>
+    // <conv.chunks.Comment object at 0x10386cec0>
     lsr();
     sta(ExplosionGfxCounter, x);
-    // <conv.chunks.Comment object at 0x1057110a0>
+    // <conv.chunks.Comment object at 0x10386d0a0>
     lda(0x8);
     sta(ExplosionTimerCounter, x);
     JMP(ExitFWk);
 }
 
 int ExitFWk() {
-    rts();
+    return 0;
     JMP(BulletBillCheepCheep);
 }
 
 int BulletBillCheepCheep() {
     lda(FrenzyEnemyTimer);
-    // <conv.chunks.Comment object at 0x105711af0>
+    // <conv.chunks.Comment object at 0x10386daf0>
     BNE(ExF17);
     lda(AreaType);
     BNE(DoBulletBills);
     cpx(0x3);
     BCS(ExF17);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x105712270>
-    // <conv.chunks.Comment object at 0x105712390>
-    // <conv.chunks.Comment object at 0x1057124b0>
-    // <conv.chunks.Comment object at 0x105712540>
-    // <conv.chunks.Comment object at 0x105712720>
+    // <conv.chunks.Comment object at 0x10386e270>
+    // <conv.chunks.Comment object at 0x10386e390>
+    // <conv.chunks.Comment object at 0x10386e4b0>
+    // <conv.chunks.Comment object at 0x10386e540>
+    // <conv.chunks.Comment object at 0x10386e720>
     lda(PseudoRandomBitReg, x);
     cmp(0xaa);
     BCC(ChkW2);
@@ -11879,10 +11854,10 @@ int BulletBillCheepCheep() {
 }
 
 int ChkW2() {
-    // <conv.chunks.Comment object at 0x105712960>
-    // <conv.chunks.Comment object at 0x1057129f0>
-    // <conv.chunks.Comment object at 0x105712c00>
-    // <conv.chunks.Comment object at 0x105712c90>
+    // <conv.chunks.Comment object at 0x10386e960>
+    // <conv.chunks.Comment object at 0x10386e9f0>
+    // <conv.chunks.Comment object at 0x10386ec00>
+    // <conv.chunks.Comment object at 0x10386ec90>
     lda(WorldNumber);
     cmp(World2);
     BEQ(Get17ID);
@@ -11893,44 +11868,44 @@ int ChkW2() {
 int Get17ID() {
     tya();
     anda(0b1);
-    // <conv.chunks.Comment object at 0x105713230>
+    // <conv.chunks.Comment object at 0x10386f230>
     tay();
     lda(offsetof(G, SwimCC_IDData), y);
     JMP(Set17ID);
 }
 
 int Set17ID() {
-    // <conv.chunks.Comment object at 0x1057133e0>
-    // <conv.chunks.Comment object at 0x105713530>
+    // <conv.chunks.Comment object at 0x10386f3e0>
+    // <conv.chunks.Comment object at 0x10386f530>
     sta(Enemy_ID, x);
     lda(BitMFilter);
     cmp(0xff);
-    // <conv.chunks.Comment object at 0x1057137d0>
+    // <conv.chunks.Comment object at 0x10386f7d0>
     BNE(GetRBit);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x105713a10>
+    // <conv.chunks.Comment object at 0x10386fa10>
     sta(BitMFilter);
     JMP(GetRBit);
 }
 
 int GetRBit() {
-    // <conv.chunks.Comment object at 0x105713c20>
+    // <conv.chunks.Comment object at 0x10386fc20>
     lda(PseudoRandomBitReg, x);
     anda(0b111);
     JMP(ChkRBit);
 }
 
 int ChkRBit() {
-    // <conv.chunks.Comment object at 0x105713dd0>
-    // <conv.chunks.Comment object at 0x105713ef0>
+    // <conv.chunks.Comment object at 0x10386fdd0>
+    // <conv.chunks.Comment object at 0x10386fef0>
     tay();
     lda(offsetof(G, Bitmasks), y);
     bit(BitMFilter);
-    // <conv.chunks.Comment object at 0x10571c050>
-    // <conv.chunks.Comment object at 0x10571c1a0>
+    // <conv.chunks.Comment object at 0x103878050>
+    // <conv.chunks.Comment object at 0x1038781a0>
     BEQ(AddFBit);
     iny();
-    // <conv.chunks.Comment object at 0x10571c410>
+    // <conv.chunks.Comment object at 0x103878410>
     tya();
     anda(0b111);
     JMP(ChkRBit);
@@ -11938,20 +11913,20 @@ int ChkRBit() {
 }
 
 int AddFBit() {
-    // <conv.chunks.Comment object at 0x10571c530>
-    // <conv.chunks.Comment object at 0x10571c650>
-    // <conv.chunks.Comment object at 0x10571c7a0>
+    // <conv.chunks.Comment object at 0x103878530>
+    // <conv.chunks.Comment object at 0x103878650>
+    // <conv.chunks.Comment object at 0x1038787a0>
     ora(BitMFilter);
     sta(BitMFilter);
     lda(offsetof(G, Enemy17YPosData), y);
     JSR(PutAtRightExtent);
     sta(Enemy_YMF_Dummy, x);
     lda(0x20);
-    // <conv.chunks.Comment object at 0x10571c920>
-    // <conv.chunks.Comment object at 0x10571ca40>
-    // <conv.chunks.Comment object at 0x10571cb90>
-    // <conv.chunks.Comment object at 0x10571ccb0>
-    // <conv.chunks.Comment object at 0x10571ce00>
+    // <conv.chunks.Comment object at 0x103878920>
+    // <conv.chunks.Comment object at 0x103878a40>
+    // <conv.chunks.Comment object at 0x103878b90>
+    // <conv.chunks.Comment object at 0x103878cb0>
+    // <conv.chunks.Comment object at 0x103878e00>
     sta(FrenzyEnemyTimer);
     JMP(CheckpointEnemyID);
     JMP(DoBulletBills);
@@ -11963,16 +11938,16 @@ int DoBulletBills() {
 }
 
 int BB_SLoop() {
-    // <conv.chunks.Comment object at 0x10571d160>
-    // <conv.chunks.Comment object at 0x10571d1f0>
+    // <conv.chunks.Comment object at 0x103879160>
+    // <conv.chunks.Comment object at 0x1038791f0>
     iny();
     cpy(0x5);
-    // <conv.chunks.Comment object at 0x10571d370>
+    // <conv.chunks.Comment object at 0x103879370>
     BCS(FireBulletBill);
     lda(Enemy_Flag, y);
     BEQ(BB_SLoop);
-    // <conv.chunks.Comment object at 0x10571d580>
-    // <conv.chunks.Comment object at 0x10571d6d0>
+    // <conv.chunks.Comment object at 0x103879580>
+    // <conv.chunks.Comment object at 0x1038796d0>
     lda(Enemy_ID, y);
     cmp(BulletBill_FrenzyVar);
     BNE(BB_SLoop);
@@ -11980,17 +11955,17 @@ int BB_SLoop() {
 }
 
 int ExF17() {
-    // <conv.chunks.Comment object at 0x10571d910>
-    // <conv.chunks.Comment object at 0x10571da30>
-    // <conv.chunks.Comment object at 0x10571db50>
-    rts();
+    // <conv.chunks.Comment object at 0x103879910>
+    // <conv.chunks.Comment object at 0x103879a30>
+    // <conv.chunks.Comment object at 0x103879b50>
+    return 0;
     JMP(FireBulletBill);
 }
 
 int FireBulletBill() {
     lda(Square2SoundQueue);
     ora(Sfx_Blast);
-    // <conv.chunks.Comment object at 0x10571dd90>
+    // <conv.chunks.Comment object at 0x103879d90>
     sta(Square2SoundQueue);
     lda(BulletBill_FrenzyVar);
     BNE(Set17ID);
@@ -11999,7 +11974,7 @@ int FireBulletBill() {
 
 int HandleGroupEnemies() {
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x10571e330>
+    // <conv.chunks.Comment object at 0x10387a330>
     sec();
     sbc(0x37);
     pha();
@@ -12014,22 +11989,22 @@ int HandleGroupEnemies() {
 }
 
 int PullID() {
-    // <conv.chunks.Comment object at 0x10571e4e0>
-    // <conv.chunks.Comment object at 0x10571e630>
-    // <conv.chunks.Comment object at 0x10571e6c0>
-    // <conv.chunks.Comment object at 0x10571e750>
-    // <conv.chunks.Comment object at 0x10571e960>
-    // <conv.chunks.Comment object at 0x10571e9f0>
-    // <conv.chunks.Comment object at 0x10571ea50>
-    // <conv.chunks.Comment object at 0x10571ec60>
-    // <conv.chunks.Comment object at 0x10571edb0>
-    // <conv.chunks.Comment object at 0x10571eed0>
+    // <conv.chunks.Comment object at 0x10387a4e0>
+    // <conv.chunks.Comment object at 0x10387a630>
+    // <conv.chunks.Comment object at 0x10387a6c0>
+    // <conv.chunks.Comment object at 0x10387a750>
+    // <conv.chunks.Comment object at 0x10387a960>
+    // <conv.chunks.Comment object at 0x10387a9f0>
+    // <conv.chunks.Comment object at 0x10387aa50>
+    // <conv.chunks.Comment object at 0x10387ac60>
+    // <conv.chunks.Comment object at 0x10387adb0>
+    // <conv.chunks.Comment object at 0x10387aed0>
     pla();
     JMP(SnglID);
 }
 
 int SnglID() {
-    // <conv.chunks.Comment object at 0x10571eff0>
+    // <conv.chunks.Comment object at 0x10387aff0>
     sty(0x1);
     ldy(0xb0);
     anda(0x2);
@@ -12039,11 +12014,11 @@ int SnglID() {
 }
 
 int SetYGp() {
-    // <conv.chunks.Comment object at 0x10571f110>
-    // <conv.chunks.Comment object at 0x10571f200>
-    // <conv.chunks.Comment object at 0x10571f320>
-    // <conv.chunks.Comment object at 0x10571f500>
-    // <conv.chunks.Comment object at 0x10571f590>
+    // <conv.chunks.Comment object at 0x10387b110>
+    // <conv.chunks.Comment object at 0x10387b200>
+    // <conv.chunks.Comment object at 0x10387b320>
+    // <conv.chunks.Comment object at 0x10387b500>
+    // <conv.chunks.Comment object at 0x10387b590>
     sty(0x0);
     lda(ScreenRight_PageLoc);
     sta(0x2);
@@ -12058,92 +12033,92 @@ int SetYGp() {
 }
 
 int CntGrp() {
-    // <conv.chunks.Comment object at 0x10571f740>
-    // <conv.chunks.Comment object at 0x10571f8f0>
-    // <conv.chunks.Comment object at 0x10571f980>
-    // <conv.chunks.Comment object at 0x10571fb30>
-    // <conv.chunks.Comment object at 0x10571fbc0>
-    // <conv.chunks.Comment object at 0x10571fd70>
-    // <conv.chunks.Comment object at 0x10571fe30>
-    // <conv.chunks.Comment object at 0x10571fec0>
-    // <conv.chunks.Comment object at 0x105724080>
-    // <conv.chunks.Comment object at 0x105724110>
+    // <conv.chunks.Comment object at 0x10387b740>
+    // <conv.chunks.Comment object at 0x10387b8f0>
+    // <conv.chunks.Comment object at 0x10387b980>
+    // <conv.chunks.Comment object at 0x10387bb30>
+    // <conv.chunks.Comment object at 0x10387bbc0>
+    // <conv.chunks.Comment object at 0x10387bd70>
+    // <conv.chunks.Comment object at 0x10387be30>
+    // <conv.chunks.Comment object at 0x10387bec0>
+    // <conv.chunks.Comment object at 0x103880080>
+    // <conv.chunks.Comment object at 0x103880110>
     sty(NumberofGroupEnemies);
     JMP(GrLoop);
 }
 
 int GrLoop() {
-    // <conv.chunks.Comment object at 0x105724290>
+    // <conv.chunks.Comment object at 0x103880290>
     ldx(0xff);
     JMP(GSltLp);
 }
 
 int GSltLp() {
-    // <conv.chunks.Comment object at 0x105724380>
+    // <conv.chunks.Comment object at 0x103880380>
     inx();
     cpx(0x5);
-    // <conv.chunks.Comment object at 0x105724530>
+    // <conv.chunks.Comment object at 0x103880530>
     BCS(NextED);
     lda(Enemy_Flag, x);
     BNE(GSltLp);
-    // <conv.chunks.Comment object at 0x105724770>
-    // <conv.chunks.Comment object at 0x1057248c0>
+    // <conv.chunks.Comment object at 0x103880770>
+    // <conv.chunks.Comment object at 0x1038808c0>
     lda(0x1);
     sta(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x105724a10>
+    // <conv.chunks.Comment object at 0x103880a10>
     lda(0x2);
     sta(Enemy_PageLoc, x);
-    // <conv.chunks.Comment object at 0x105724c50>
+    // <conv.chunks.Comment object at 0x103880c50>
     lda(0x3);
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x105724e90>
+    // <conv.chunks.Comment object at 0x103880e90>
     clc();
     adc(0x18);
-    // <conv.chunks.Comment object at 0x105725160>
+    // <conv.chunks.Comment object at 0x103881160>
     sta(0x3);
     lda(0x2);
     adc(0x0);
-    // <conv.chunks.Comment object at 0x105725310>
-    // <conv.chunks.Comment object at 0x105725430>
+    // <conv.chunks.Comment object at 0x103881310>
+    // <conv.chunks.Comment object at 0x103881430>
     sta(0x2);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x105725640>
+    // <conv.chunks.Comment object at 0x103881640>
     sta(Enemy_Y_Position, x);
     lda(0x1);
     sta(Enemy_Y_HighPos, x);
-    // <conv.chunks.Comment object at 0x1057258e0>
-    // <conv.chunks.Comment object at 0x105725970>
+    // <conv.chunks.Comment object at 0x1038818e0>
+    // <conv.chunks.Comment object at 0x103881970>
     sta(Enemy_Flag, x);
     JSR(CheckpointEnemyID);
     dec(NumberofGroupEnemies);
-    // <conv.chunks.Comment object at 0x105725c70>
-    // <conv.chunks.Comment object at 0x105725d90>
+    // <conv.chunks.Comment object at 0x103881c70>
+    // <conv.chunks.Comment object at 0x103881d90>
     BNE(GrLoop);
     JMP(NextED);
 }
 
 int NextED() {
-    // <conv.chunks.Comment object at 0x105725fd0>
+    // <conv.chunks.Comment object at 0x103881fd0>
     JMP(Inc2B);
     JMP(InitPiranhaPlant);
 }
 
 int InitPiranhaPlant() {
     lda(0x1);
-    // <conv.chunks.Comment object at 0x1057261e0>
+    // <conv.chunks.Comment object at 0x1038821e0>
     sta(PiranhaPlant_Y_Speed, x);
     lsr();
     sta(Enemy_State, x);
     sta(PiranhaPlant_MoveFlag, x);
-    // <conv.chunks.Comment object at 0x1057264b0>
-    // <conv.chunks.Comment object at 0x105726600>
+    // <conv.chunks.Comment object at 0x1038824b0>
+    // <conv.chunks.Comment object at 0x103882600>
     lda(Enemy_Y_Position, x);
     sta(PiranhaPlantDownYPos, x);
-    // <conv.chunks.Comment object at 0x105726870>
+    // <conv.chunks.Comment object at 0x103882870>
     sec();
     sbc(0x18);
     sta(PiranhaPlantUpYPos, x);
-    // <conv.chunks.Comment object at 0x105726ab0>
+    // <conv.chunks.Comment object at 0x103882ab0>
     lda(0x9);
     JMP(SetBBox2);
     JMP(InitEnemyFrenzy);
@@ -12152,17 +12127,15 @@ int InitPiranhaPlant() {
 int InitEnemyFrenzy() {
     lda(Enemy_ID, x);
     sta(EnemyFrenzyBuffer);
-    // <conv.chunks.Comment object at 0x105726f00>
-    // <conv.chunks.Comment object at 0x105727050>
+    // <conv.chunks.Comment object at 0x103882f00>
+    // <conv.chunks.Comment object at 0x103883050>
     sec();
     sbc(0x12);
-    // <conv.chunks.Comment object at 0x105727200>
-    JSR(JumpEngine);
     JMP(NoFrenzyCode);
 }
 
 int NoFrenzyCode() {
-    rts();
+    return 0;
     JMP(EndFrenzy);
 }
 
@@ -12172,58 +12145,58 @@ int EndFrenzy() {
 }
 
 int LakituChk() {
-    // <conv.chunks.Comment object at 0x1057278f0>
-    // <conv.chunks.Comment object at 0x105727980>
+    // <conv.chunks.Comment object at 0x1038838f0>
+    // <conv.chunks.Comment object at 0x103883980>
     lda(Enemy_ID, y);
     cmp(Lakitu);
-    // <conv.chunks.Comment object at 0x105727b90>
+    // <conv.chunks.Comment object at 0x103883b90>
     BNE(NextFSlot);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x105727dd0>
+    // <conv.chunks.Comment object at 0x103883dd0>
     sta(Enemy_State, y);
     JMP(NextFSlot);
 }
 
 int NextFSlot() {
-    // <conv.chunks.Comment object at 0x10572c050>
+    // <conv.chunks.Comment object at 0x103888050>
     dey();
     BPL(LakituChk);
-    // <conv.chunks.Comment object at 0x10572c140>
+    // <conv.chunks.Comment object at 0x103888140>
     lda(0x0);
     sta(EnemyFrenzyBuffer);
     sta(Enemy_Flag, x);
-    // <conv.chunks.Comment object at 0x10572c2c0>
-    // <conv.chunks.Comment object at 0x10572c470>
-    rts();
+    // <conv.chunks.Comment object at 0x1038882c0>
+    // <conv.chunks.Comment object at 0x103888470>
+    return 0;
     JMP(InitJumpGPTroopa);
 }
 
 int InitJumpGPTroopa() {
     lda(0x2);
-    // <conv.chunks.Comment object at 0x10572c6b0>
+    // <conv.chunks.Comment object at 0x1038886b0>
     sta(Enemy_MovingDir, x);
     lda(0xf8);
-    // <conv.chunks.Comment object at 0x10572c8f0>
+    // <conv.chunks.Comment object at 0x1038888f0>
     sta(Enemy_X_Speed, x);
     JMP(TallBBox2);
 }
 
 int TallBBox2() {
-    // <conv.chunks.Comment object at 0x10572cb30>
+    // <conv.chunks.Comment object at 0x103888b30>
     lda(0x3);
     JMP(SetBBox2);
 }
 
 int SetBBox2() {
-    // <conv.chunks.Comment object at 0x10572cbf0>
+    // <conv.chunks.Comment object at 0x103888bf0>
     sta(Enemy_BoundBoxCtrl, x);
-    rts();
+    return 0;
     JMP(InitBalPlatform);
 }
 
 int InitBalPlatform() {
     dec(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x10572cef0>
+    // <conv.chunks.Comment object at 0x103888ef0>
     dec(Enemy_Y_Position, x);
     ldy(SecondaryHardMode);
     BNE(AlignP);
@@ -12233,11 +12206,11 @@ int InitBalPlatform() {
 }
 
 int AlignP() {
-    // <conv.chunks.Comment object at 0x10572d160>
-    // <conv.chunks.Comment object at 0x10572d280>
-    // <conv.chunks.Comment object at 0x10572d3d0>
-    // <conv.chunks.Comment object at 0x10572d460>
-    // <conv.chunks.Comment object at 0x10572d610>
+    // <conv.chunks.Comment object at 0x103889160>
+    // <conv.chunks.Comment object at 0x103889280>
+    // <conv.chunks.Comment object at 0x1038893d0>
+    // <conv.chunks.Comment object at 0x103889460>
+    // <conv.chunks.Comment object at 0x103889610>
     ldy(0xff);
     lda(BalPlatformAlignment);
     sta(Enemy_State, x);
@@ -12248,12 +12221,12 @@ int AlignP() {
 }
 
 int SetBPA() {
-    // <conv.chunks.Comment object at 0x10572d700>
-    // <conv.chunks.Comment object at 0x10572d8b0>
-    // <conv.chunks.Comment object at 0x10572da00>
-    // <conv.chunks.Comment object at 0x10572db80>
-    // <conv.chunks.Comment object at 0x10572dc40>
-    // <conv.chunks.Comment object at 0x10572dcd0>
+    // <conv.chunks.Comment object at 0x103889700>
+    // <conv.chunks.Comment object at 0x1038898b0>
+    // <conv.chunks.Comment object at 0x103889a00>
+    // <conv.chunks.Comment object at 0x103889b80>
+    // <conv.chunks.Comment object at 0x103889c40>
+    // <conv.chunks.Comment object at 0x103889cd0>
     sty(BalPlatformAlignment);
     lda(0x0);
     sta(Enemy_MovingDir, x);
@@ -12280,20 +12253,20 @@ int InitVertPlatform() {
     ldy(0x40);
     lda(Enemy_Y_Position, x);
     BPL(SetYO);
-    // <conv.chunks.Comment object at 0x10572ea80>
-    // <conv.chunks.Comment object at 0x10572eb10>
-    // <conv.chunks.Comment object at 0x10572ecf0>
+    // <conv.chunks.Comment object at 0x10388aa80>
+    // <conv.chunks.Comment object at 0x10388ab10>
+    // <conv.chunks.Comment object at 0x10388acf0>
     eor(0xff);
     clc();
-    // <conv.chunks.Comment object at 0x10572ef60>
+    // <conv.chunks.Comment object at 0x10388af60>
     adc(0x1);
     ldy(0xc0);
     JMP(SetYO);
 }
 
 int SetYO() {
-    // <conv.chunks.Comment object at 0x10572f050>
-    // <conv.chunks.Comment object at 0x10572f170>
+    // <conv.chunks.Comment object at 0x10388b050>
+    // <conv.chunks.Comment object at 0x10388b170>
     sta(YPlatformTopYPos, x);
     tya();
     clc();
@@ -12308,8 +12281,8 @@ int CommonPlatCode() {
 }
 
 int SPBBox() {
-    // <conv.chunks.Comment object at 0x10572f800>
-    // <conv.chunks.Comment object at 0x10572f920>
+    // <conv.chunks.Comment object at 0x10388b800>
+    // <conv.chunks.Comment object at 0x10388b920>
     lda(0x5);
     ldy(AreaType);
     cpy(0x3);
@@ -12321,14 +12294,14 @@ int SPBBox() {
 }
 
 int CasPBB() {
-    // <conv.chunks.Comment object at 0x10572fb90>
-    // <conv.chunks.Comment object at 0x10572fc20>
-    // <conv.chunks.Comment object at 0x10572fe00>
-    // <conv.chunks.Comment object at 0x10572ff20>
-    // <conv.chunks.Comment object at 0x10573c0b0>
-    // <conv.chunks.Comment object at 0x10573c140>
+    // <conv.chunks.Comment object at 0x10388bb90>
+    // <conv.chunks.Comment object at 0x10388bc20>
+    // <conv.chunks.Comment object at 0x10388be00>
+    // <conv.chunks.Comment object at 0x10388bf20>
+    // <conv.chunks.Comment object at 0x1038980b0>
+    // <conv.chunks.Comment object at 0x103898140>
     sta(Enemy_BoundBoxCtrl, x);
-    rts();
+    return 0;
     JMP(LargeLiftUp);
 }
 
@@ -12350,10 +12323,10 @@ int LargeLiftBBox() {
 
 int PlatLiftUp() {
     lda(0x10);
-    // <conv.chunks.Comment object at 0x10573c9e0>
+    // <conv.chunks.Comment object at 0x1038989e0>
     sta(Enemy_Y_MoveForce, x);
     lda(0xff);
-    // <conv.chunks.Comment object at 0x10573cc20>
+    // <conv.chunks.Comment object at 0x103898c20>
     sta(Enemy_Y_Speed, x);
     JMP(CommonSmallLift);
     JMP(PlatLiftDown);
@@ -12361,10 +12334,10 @@ int PlatLiftUp() {
 
 int PlatLiftDown() {
     lda(0xf0);
-    // <conv.chunks.Comment object at 0x10573cfe0>
+    // <conv.chunks.Comment object at 0x103898fe0>
     sta(Enemy_Y_MoveForce, x);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x10573d220>
+    // <conv.chunks.Comment object at 0x103899220>
     sta(Enemy_Y_Speed, x);
     JMP(CommonSmallLift);
 }
@@ -12372,42 +12345,42 @@ int PlatLiftDown() {
 int CommonSmallLift() {
     ldy(0x1);
     JSR(PosPlatform);
-    // <conv.chunks.Comment object at 0x10573d520>
+    // <conv.chunks.Comment object at 0x103899520>
     lda(0x4);
     sta(Enemy_BoundBoxCtrl, x);
-    // <conv.chunks.Comment object at 0x10573d730>
-    rts();
+    // <conv.chunks.Comment object at 0x103899730>
+    return 0;
     JMP(PosPlatform);
 }
 
 int PosPlatform() {
     lda(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x10573da00>
+    // <conv.chunks.Comment object at 0x103899a00>
     clc();
     adc(offsetof(G, PlatPosDataLow), y);
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x10573dfa0>
-    // <conv.chunks.Comment object at 0x10573e0f0>
+    // <conv.chunks.Comment object at 0x103899fa0>
+    // <conv.chunks.Comment object at 0x10389a0f0>
     lda(Enemy_PageLoc, x);
     adc(offsetof(G, PlatPosDataHigh), y);
     sta(Enemy_PageLoc, x);
-    rts();
+    return 0;
     JMP(EndOfEnemyInitCode);
 }
 
 int EndOfEnemyInitCode() {
-    rts();
+    return 0;
     JMP(RunEnemyObjectsCore);
 }
 
 int RunEnemyObjectsCore() {
     ldx(ObjectOffset);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x10573e810>
-    // <conv.chunks.Comment object at 0x10573e930>
+    // <conv.chunks.Comment object at 0x10389a810>
+    // <conv.chunks.Comment object at 0x10389a930>
     ldy(Enemy_ID, x);
     cpy(0x15);
-    // <conv.chunks.Comment object at 0x10573eb70>
+    // <conv.chunks.Comment object at 0x10389ab70>
     BCC(JmpEO);
     tya();
     sbc(0x14);
@@ -12415,12 +12388,11 @@ int RunEnemyObjectsCore() {
 }
 
 int JmpEO() {
-    JSR(JumpEngine);
     JMP(NoRunCode);
 }
 
 int NoRunCode() {
-    rts();
+    return 0;
     JMP(RunRetainerObj);
 }
 
@@ -12433,7 +12405,7 @@ int RunRetainerObj() {
 
 int RunNormalEnemies() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x105748980>
+    // <conv.chunks.Comment object at 0x1038a4980>
     sta(Enemy_SprAttrib, x);
     JSR(GetEnemyOffscreenBits);
     JSR(RelativeEnemyPosition);
@@ -12443,7 +12415,7 @@ int RunNormalEnemies() {
     JSR(EnemiesCollision);
     JSR(PlayerEnemyCollision);
     ldy(TimerControl);
-    // <conv.chunks.Comment object at 0x105749250>
+    // <conv.chunks.Comment object at 0x1038a5250>
     BNE(SkipMove);
     JSR(EnemyMovementSubs);
     JMP(SkipMove);
@@ -12456,12 +12428,11 @@ int SkipMove() {
 
 int EnemyMovementSubs() {
     lda(Enemy_ID, x);
-    JSR(JumpEngine);
     JMP(NoMoveCode);
 }
 
 int NoMoveCode() {
-    rts();
+    return 0;
     JMP(RunBowserFlame);
 }
 
@@ -12500,8 +12471,8 @@ int RunLargePlatform() {
     JSR(LargePlatformCollision);
     lda(TimerControl);
     BNE(SkipPT);
-    // <conv.chunks.Comment object at 0x10574ba40>
-    // <conv.chunks.Comment object at 0x10574bb60>
+    // <conv.chunks.Comment object at 0x1038a7a40>
+    // <conv.chunks.Comment object at 0x1038a7b60>
     JSR(LargePlatformSubroutines);
     JMP(SkipPT);
 }
@@ -12515,16 +12486,15 @@ int SkipPT() {
 
 int LargePlatformSubroutines() {
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x105754170>
+    // <conv.chunks.Comment object at 0x1038b4170>
     sec();
     sbc(0x24);
-    JSR(JumpEngine);
     JMP(EraseEnemyObject);
 }
 
 int EraseEnemyObject() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1057549b0>
+    // <conv.chunks.Comment object at 0x1038b49b0>
     sta(Enemy_Flag, x);
     sta(Enemy_ID, x);
     sta(Enemy_State, x);
@@ -12533,7 +12503,7 @@ int EraseEnemyObject() {
     sta(ShellChainCounter, x);
     sta(Enemy_SprAttrib, x);
     sta(EnemyFrameTimer, x);
-    rts();
+    return 0;
     JMP(MovePodoboo);
 }
 
@@ -12547,30 +12517,30 @@ int MovePodoboo() {
     anda(0b1111);
     ora(0x6);
     sta(EnemyIntervalTimer, x);
-    // <conv.chunks.Comment object at 0x1057554c0>
-    // <conv.chunks.Comment object at 0x105755610>
-    // <conv.chunks.Comment object at 0x105755760>
-    // <conv.chunks.Comment object at 0x105755880>
-    // <conv.chunks.Comment object at 0x105755ac0>
-    // <conv.chunks.Comment object at 0x105755be0>
-    // <conv.chunks.Comment object at 0x105755d30>
-    // <conv.chunks.Comment object at 0x105755e50>
-    // <conv.chunks.Comment object at 0x105755ee0>
+    // <conv.chunks.Comment object at 0x1038b54c0>
+    // <conv.chunks.Comment object at 0x1038b5610>
+    // <conv.chunks.Comment object at 0x1038b5760>
+    // <conv.chunks.Comment object at 0x1038b5880>
+    // <conv.chunks.Comment object at 0x1038b5ac0>
+    // <conv.chunks.Comment object at 0x1038b5be0>
+    // <conv.chunks.Comment object at 0x1038b5d30>
+    // <conv.chunks.Comment object at 0x1038b5e50>
+    // <conv.chunks.Comment object at 0x1038b5ee0>
     lda(0xf9);
     sta(Enemy_Y_Speed, x);
     JMP(PdbM);
 }
 
 int PdbM() {
-    // <conv.chunks.Comment object at 0x105756120>
-    // <conv.chunks.Comment object at 0x105756300>
+    // <conv.chunks.Comment object at 0x1038b6120>
+    // <conv.chunks.Comment object at 0x1038b6300>
     JMP(MoveJ_EnemyVertically);
     JMP(ProcHammerBro);
 }
 
 int ProcHammerBro() {
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x105756720>
+    // <conv.chunks.Comment object at 0x1038b6720>
     anda(0b100000);
     BEQ(ChkJH);
     JMP(MoveDefeatedEnemy);
@@ -12578,14 +12548,14 @@ int ProcHammerBro() {
 }
 
 int ChkJH() {
-    // <conv.chunks.Comment object at 0x105756d80>
-    // <conv.chunks.Comment object at 0x105756ed0>
-    // <conv.chunks.Comment object at 0x105756ff0>
+    // <conv.chunks.Comment object at 0x1038b6d80>
+    // <conv.chunks.Comment object at 0x1038b6ed0>
+    // <conv.chunks.Comment object at 0x1038b6ff0>
     lda(HammerBroJumpTimer, x);
     BEQ(HammerBroJumpCode);
     dec(HammerBroJumpTimer, x);
-    // <conv.chunks.Comment object at 0x1057571a0>
-    // <conv.chunks.Comment object at 0x1057572c0>
+    // <conv.chunks.Comment object at 0x1038b71a0>
+    // <conv.chunks.Comment object at 0x1038b72c0>
     lda(Enemy_OffscreenBits);
     anda(0b1100);
     BNE(MoveHammerBroXDir);
@@ -12596,26 +12566,26 @@ int ChkJH() {
     sta(HammerThrowingTimer, x);
     JSR(SpawnHammerObj);
     BCC(DecHT);
-    // <conv.chunks.Comment object at 0x105757500>
-    // <conv.chunks.Comment object at 0x105757620>
-    // <conv.chunks.Comment object at 0x105757740>
-    // <conv.chunks.Comment object at 0x105757890>
-    // <conv.chunks.Comment object at 0x1057579e0>
-    // <conv.chunks.Comment object at 0x105757b00>
-    // <conv.chunks.Comment object at 0x105757c50>
-    // <conv.chunks.Comment object at 0x105757da0>
-    // <conv.chunks.Comment object at 0x105757ec0>
+    // <conv.chunks.Comment object at 0x1038b7500>
+    // <conv.chunks.Comment object at 0x1038b7620>
+    // <conv.chunks.Comment object at 0x1038b7740>
+    // <conv.chunks.Comment object at 0x1038b7890>
+    // <conv.chunks.Comment object at 0x1038b79e0>
+    // <conv.chunks.Comment object at 0x1038b7b00>
+    // <conv.chunks.Comment object at 0x1038b7c50>
+    // <conv.chunks.Comment object at 0x1038b7da0>
+    // <conv.chunks.Comment object at 0x1038b7ec0>
     lda(Enemy_State, x);
     ora(0b1000);
-    // <conv.chunks.Comment object at 0x105760170>
+    // <conv.chunks.Comment object at 0x1038bc170>
     sta(Enemy_State, x);
     JMP(MoveHammerBroXDir);
     JMP(DecHT);
 }
 
 int DecHT() {
-    // <conv.chunks.Comment object at 0x1057603b0>
-    // <conv.chunks.Comment object at 0x1057604d0>
+    // <conv.chunks.Comment object at 0x1038bc3b0>
+    // <conv.chunks.Comment object at 0x1038bc4d0>
     dec(HammerThrowingTimer, x);
     JMP(MoveHammerBroXDir);
     JMP(HammerBroJumpCode);
@@ -12637,21 +12607,21 @@ int HammerBroJumpCode() {
     BCC(SetHJ);
     dec(0x0);
     lda(((PseudoRandomBitReg) + (1)), x);
-    // <conv.chunks.Comment object at 0x105760830>
-    // <conv.chunks.Comment object at 0x105760a70>
-    // <conv.chunks.Comment object at 0x105760b90>
-    // <conv.chunks.Comment object at 0x105760c20>
-    // <conv.chunks.Comment object at 0x105760dd0>
-    // <conv.chunks.Comment object at 0x105760f20>
-    // <conv.chunks.Comment object at 0x105760fb0>
-    // <conv.chunks.Comment object at 0x1057610a0>
-    // <conv.chunks.Comment object at 0x105761280>
-    // <conv.chunks.Comment object at 0x1057613d0>
-    // <conv.chunks.Comment object at 0x105761460>
-    // <conv.chunks.Comment object at 0x105761640>
-    // <conv.chunks.Comment object at 0x1057616d0>
-    // <conv.chunks.Comment object at 0x1057618b0>
-    // <conv.chunks.Comment object at 0x105761940>
+    // <conv.chunks.Comment object at 0x1038bc830>
+    // <conv.chunks.Comment object at 0x1038bca70>
+    // <conv.chunks.Comment object at 0x1038bcb90>
+    // <conv.chunks.Comment object at 0x1038bcc20>
+    // <conv.chunks.Comment object at 0x1038bcdd0>
+    // <conv.chunks.Comment object at 0x1038bcf20>
+    // <conv.chunks.Comment object at 0x1038bcfb0>
+    // <conv.chunks.Comment object at 0x1038bd0a0>
+    // <conv.chunks.Comment object at 0x1038bd280>
+    // <conv.chunks.Comment object at 0x1038bd3d0>
+    // <conv.chunks.Comment object at 0x1038bd460>
+    // <conv.chunks.Comment object at 0x1038bd640>
+    // <conv.chunks.Comment object at 0x1038bd6d0>
+    // <conv.chunks.Comment object at 0x1038bd8b0>
+    // <conv.chunks.Comment object at 0x1038bd940>
     anda(0x1);
     BNE(SetHJ);
     ldy(0xfa);
@@ -12659,33 +12629,33 @@ int HammerBroJumpCode() {
 }
 
 int SetHJ() {
-    // <conv.chunks.Comment object at 0x105761c10>
-    // <conv.chunks.Comment object at 0x105761df0>
-    // <conv.chunks.Comment object at 0x105761e80>
+    // <conv.chunks.Comment object at 0x1038bdc10>
+    // <conv.chunks.Comment object at 0x1038bddf0>
+    // <conv.chunks.Comment object at 0x1038bde80>
     sty(Enemy_Y_Speed, x);
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x1057620c0>
+    // <conv.chunks.Comment object at 0x1038be0c0>
     ora(0x1);
     sta(Enemy_State, x);
     lda(0x0);
     anda(((PseudoRandomBitReg) + (2)), x);
     tay();
     lda(SecondaryHardMode);
-    // <conv.chunks.Comment object at 0x105762450>
-    // <conv.chunks.Comment object at 0x1057624e0>
-    // <conv.chunks.Comment object at 0x105762780>
-    // <conv.chunks.Comment object at 0x105762810>
+    // <conv.chunks.Comment object at 0x1038be450>
+    // <conv.chunks.Comment object at 0x1038be4e0>
+    // <conv.chunks.Comment object at 0x1038be780>
+    // <conv.chunks.Comment object at 0x1038be810>
     BNE(HJump);
     tay();
     JMP(HJump);
 }
 
 int HJump() {
-    // <conv.chunks.Comment object at 0x105762a80>
-    // <conv.chunks.Comment object at 0x105762b10>
+    // <conv.chunks.Comment object at 0x1038bea80>
+    // <conv.chunks.Comment object at 0x1038beb10>
     lda(offsetof(G, HammerBroJumpLData), y);
     sta(EnemyFrameTimer, x);
-    // <conv.chunks.Comment object at 0x105762cc0>
+    // <conv.chunks.Comment object at 0x1038becc0>
     lda(((PseudoRandomBitReg) + (1)), x);
     ora(0b11000000);
     sta(HammerBroJumpTimer, x);
@@ -12694,18 +12664,18 @@ int HJump() {
 
 int MoveHammerBroXDir() {
     ldy(0xfc);
-    // <conv.chunks.Comment object at 0x105763290>
+    // <conv.chunks.Comment object at 0x1038bf290>
     lda(FrameCounter);
     anda(0b1000000);
-    // <conv.chunks.Comment object at 0x1057634a0>
+    // <conv.chunks.Comment object at 0x1038bf4a0>
     BNE(Shimmy);
     ldy(0x4);
     JMP(Shimmy);
 }
 
 int Shimmy() {
-    // <conv.chunks.Comment object at 0x1057636e0>
-    // <conv.chunks.Comment object at 0x105763770>
+    // <conv.chunks.Comment object at 0x1038bf6e0>
+    // <conv.chunks.Comment object at 0x1038bf770>
     sty(Enemy_X_Speed, x);
     ldy(0x1);
     JSR(PlayerEnemyDiff);
@@ -12713,97 +12683,97 @@ int Shimmy() {
     iny();
     lda(EnemyIntervalTimer, x);
     BNE(SetShim);
-    // <conv.chunks.Comment object at 0x1057639b0>
-    // <conv.chunks.Comment object at 0x105763a40>
-    // <conv.chunks.Comment object at 0x105763bf0>
-    // <conv.chunks.Comment object at 0x105763d70>
-    // <conv.chunks.Comment object at 0x105763e00>
-    // <conv.chunks.Comment object at 0x105763f50>
+    // <conv.chunks.Comment object at 0x1038bf9b0>
+    // <conv.chunks.Comment object at 0x1038bfa40>
+    // <conv.chunks.Comment object at 0x1038bfbf0>
+    // <conv.chunks.Comment object at 0x1038bfd70>
+    // <conv.chunks.Comment object at 0x1038bfe00>
+    // <conv.chunks.Comment object at 0x1038bff50>
     lda(0xf8);
     sta(Enemy_X_Speed, x);
     JMP(SetShim);
 }
 
 int SetShim() {
-    // <conv.chunks.Comment object at 0x105768140>
-    // <conv.chunks.Comment object at 0x105768320>
+    // <conv.chunks.Comment object at 0x1038c4140>
+    // <conv.chunks.Comment object at 0x1038c4320>
     sty(Enemy_MovingDir, x);
     JMP(MoveNormalEnemy);
 }
 
 int MoveNormalEnemy() {
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x105768500>
+    // <conv.chunks.Comment object at 0x1038c4500>
     lda(Enemy_State, x);
     anda(0b1000000);
     BNE(FallE);
-    // <conv.chunks.Comment object at 0x105768740>
-    // <conv.chunks.Comment object at 0x105768860>
+    // <conv.chunks.Comment object at 0x1038c4740>
+    // <conv.chunks.Comment object at 0x1038c4860>
     lda(Enemy_State, x);
     asl();
     BCS(SteadM);
-    // <conv.chunks.Comment object at 0x105768b00>
-    // <conv.chunks.Comment object at 0x105768b90>
+    // <conv.chunks.Comment object at 0x1038c4b00>
+    // <conv.chunks.Comment object at 0x1038c4b90>
     lda(Enemy_State, x);
     anda(0b100000);
     BNE(MoveDefeatedEnemy);
-    // <conv.chunks.Comment object at 0x105768e00>
-    // <conv.chunks.Comment object at 0x105768f20>
+    // <conv.chunks.Comment object at 0x1038c4e00>
+    // <conv.chunks.Comment object at 0x1038c4f20>
     lda(Enemy_State, x);
     anda(0b111);
     BEQ(SteadM);
-    // <conv.chunks.Comment object at 0x105769160>
-    // <conv.chunks.Comment object at 0x105769280>
+    // <conv.chunks.Comment object at 0x1038c5160>
+    // <conv.chunks.Comment object at 0x1038c5280>
     cmp(0x5);
     BEQ(FallE);
-    // <conv.chunks.Comment object at 0x105769430>
+    // <conv.chunks.Comment object at 0x1038c5430>
     cmp(0x3);
     BCS(ReviveStunned);
     JMP(FallE);
 }
 
 int FallE() {
-    // <conv.chunks.Comment object at 0x105769670>
-    // <conv.chunks.Comment object at 0x105769820>
+    // <conv.chunks.Comment object at 0x1038c5670>
+    // <conv.chunks.Comment object at 0x1038c5820>
     JSR(MoveD_EnemyVertically);
     ldy(0x0);
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x105769a00>
+    // <conv.chunks.Comment object at 0x1038c5a00>
     cmp(0x2);
     BEQ(MEHor);
     anda(0b1000000);
     BEQ(SteadM);
-    // <conv.chunks.Comment object at 0x105769c40>
-    // <conv.chunks.Comment object at 0x105769e20>
-    // <conv.chunks.Comment object at 0x105769f40>
+    // <conv.chunks.Comment object at 0x1038c5c40>
+    // <conv.chunks.Comment object at 0x1038c5e20>
+    // <conv.chunks.Comment object at 0x1038c5f40>
     lda(Enemy_ID, x);
     cmp(PowerUpObject);
-    // <conv.chunks.Comment object at 0x10576a1b0>
+    // <conv.chunks.Comment object at 0x1038c61b0>
     BEQ(SteadM);
     BNE(SlowM);
     JMP(MEHor);
 }
 
 int MEHor() {
-    // <conv.chunks.Comment object at 0x10576a3f0>
-    // <conv.chunks.Comment object at 0x10576a540>
+    // <conv.chunks.Comment object at 0x1038c63f0>
+    // <conv.chunks.Comment object at 0x1038c6540>
     JMP(MoveEnemyHorizontally);
     JMP(SlowM);
 }
 
 int SlowM() {
-    // <conv.chunks.Comment object at 0x10576a6c0>
+    // <conv.chunks.Comment object at 0x1038c66c0>
     ldy(0x1);
     JMP(SteadM);
 }
 
 int SteadM() {
-    // <conv.chunks.Comment object at 0x10576a7b0>
+    // <conv.chunks.Comment object at 0x1038c67b0>
     lda(Enemy_X_Speed, x);
     pha();
     BPL(AddHS);
-    // <conv.chunks.Comment object at 0x10576aa20>
-    // <conv.chunks.Comment object at 0x10576aab0>
+    // <conv.chunks.Comment object at 0x1038c6a20>
+    // <conv.chunks.Comment object at 0x1038c6ab0>
     iny();
     iny();
     JMP(AddHS);
@@ -12814,12 +12784,12 @@ int AddHS() {
     adc(offsetof(G, XSpeedAdderData), y);
     sta(Enemy_X_Speed, x);
     JSR(MoveEnemyHorizontally);
-    // <conv.chunks.Comment object at 0x10576ae40>
-    // <conv.chunks.Comment object at 0x10576af90>
-    // <conv.chunks.Comment object at 0x10576b0e0>
+    // <conv.chunks.Comment object at 0x1038c6e40>
+    // <conv.chunks.Comment object at 0x1038c6f90>
+    // <conv.chunks.Comment object at 0x1038c70e0>
     pla();
     sta(Enemy_X_Speed, x);
-    rts();
+    return 0;
     JMP(ReviveStunned);
 }
 
@@ -12827,35 +12797,35 @@ int ReviveStunned() {
     lda(EnemyIntervalTimer, x);
     BNE(ChkKillGoomba);
     sta(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x10576b4d0>
-    // <conv.chunks.Comment object at 0x10576b620>
-    // <conv.chunks.Comment object at 0x10576b740>
+    // <conv.chunks.Comment object at 0x1038c74d0>
+    // <conv.chunks.Comment object at 0x1038c7620>
+    // <conv.chunks.Comment object at 0x1038c7740>
     lda(FrameCounter);
     anda(0x1);
     tay();
-    // <conv.chunks.Comment object at 0x10576b980>
-    // <conv.chunks.Comment object at 0x10576bad0>
+    // <conv.chunks.Comment object at 0x1038c7980>
+    // <conv.chunks.Comment object at 0x1038c7ad0>
     iny();
     sty(Enemy_MovingDir, x);
     dey();
     lda(PrimaryHardMode);
     BEQ(SetRSpd);
-    // <conv.chunks.Comment object at 0x10576bbf0>
-    // <conv.chunks.Comment object at 0x10576bd70>
-    // <conv.chunks.Comment object at 0x10576be00>
-    // <conv.chunks.Comment object at 0x10576bf20>
+    // <conv.chunks.Comment object at 0x1038c7bf0>
+    // <conv.chunks.Comment object at 0x1038c7d70>
+    // <conv.chunks.Comment object at 0x1038c7e00>
+    // <conv.chunks.Comment object at 0x1038c7f20>
     iny();
     iny();
     JMP(SetRSpd);
 }
 
 int SetRSpd() {
-    // <conv.chunks.Comment object at 0x105774170>
-    // <conv.chunks.Comment object at 0x105774200>
+    // <conv.chunks.Comment object at 0x1038d0170>
+    // <conv.chunks.Comment object at 0x1038d0200>
     lda(offsetof(G, RevivedXSpeed), y);
     sta(Enemy_X_Speed, x);
-    // <conv.chunks.Comment object at 0x1057743b0>
-    rts();
+    // <conv.chunks.Comment object at 0x1038d03b0>
+    return 0;
     JMP(MoveDefeatedEnemy);
 }
 
@@ -12868,8 +12838,8 @@ int MoveDefeatedEnemy() {
 int ChkKillGoomba() {
     cmp(0xe);
     BNE(NKGmba);
-    // <conv.chunks.Comment object at 0x105774830>
-    // <conv.chunks.Comment object at 0x1057748c0>
+    // <conv.chunks.Comment object at 0x1038d0830>
+    // <conv.chunks.Comment object at 0x1038d08c0>
     lda(Enemy_ID, x);
     cmp(Goomba);
     BNE(NKGmba);
@@ -12878,11 +12848,11 @@ int ChkKillGoomba() {
 }
 
 int NKGmba() {
-    // <conv.chunks.Comment object at 0x105774bc0>
-    // <conv.chunks.Comment object at 0x105774c20>
-    // <conv.chunks.Comment object at 0x105774e60>
-    // <conv.chunks.Comment object at 0x105774fb0>
-    rts();
+    // <conv.chunks.Comment object at 0x1038d0bc0>
+    // <conv.chunks.Comment object at 0x1038d0c20>
+    // <conv.chunks.Comment object at 0x1038d0e60>
+    // <conv.chunks.Comment object at 0x1038d0fb0>
+    return 0;
     JMP(MoveJumpingEnemy);
 }
 
@@ -12898,10 +12868,10 @@ int ProcMoveRedPTroopa() {
     BNE(MoveRedPTUpOrDown);
     sta(Enemy_YMF_Dummy, x);
     lda(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1057754f0>
-    // <conv.chunks.Comment object at 0x105775640>
-    // <conv.chunks.Comment object at 0x105775760>
-    // <conv.chunks.Comment object at 0x1057758b0>
+    // <conv.chunks.Comment object at 0x1038d14f0>
+    // <conv.chunks.Comment object at 0x1038d1640>
+    // <conv.chunks.Comment object at 0x1038d1760>
+    // <conv.chunks.Comment object at 0x1038d18b0>
     cmp(RedPTroopaOrigXPos, x);
     BCS(MoveRedPTUpOrDown);
     lda(FrameCounter);
@@ -12912,19 +12882,19 @@ int ProcMoveRedPTroopa() {
 }
 
 int NoIncPT() {
-    // <conv.chunks.Comment object at 0x105775b20>
-    // <conv.chunks.Comment object at 0x105775c40>
-    // <conv.chunks.Comment object at 0x105775d60>
-    // <conv.chunks.Comment object at 0x105775e80>
-    // <conv.chunks.Comment object at 0x105775fd0>
-    // <conv.chunks.Comment object at 0x105776150>
-    rts();
+    // <conv.chunks.Comment object at 0x1038d1b20>
+    // <conv.chunks.Comment object at 0x1038d1c40>
+    // <conv.chunks.Comment object at 0x1038d1d60>
+    // <conv.chunks.Comment object at 0x1038d1e80>
+    // <conv.chunks.Comment object at 0x1038d1fd0>
+    // <conv.chunks.Comment object at 0x1038d2150>
+    return 0;
     JMP(MoveRedPTUpOrDown);
 }
 
 int MoveRedPTUpOrDown() {
     lda(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1057762a0>
+    // <conv.chunks.Comment object at 0x1038d22a0>
     cmp(RedPTroopaCenterYPos, x);
     BCC(MovPTDwn);
     JMP(MoveRedPTroopaUp);
@@ -12932,9 +12902,9 @@ int MoveRedPTUpOrDown() {
 }
 
 int MovPTDwn() {
-    // <conv.chunks.Comment object at 0x105776510>
-    // <conv.chunks.Comment object at 0x105776630>
-    // <conv.chunks.Comment object at 0x105776750>
+    // <conv.chunks.Comment object at 0x1038d2510>
+    // <conv.chunks.Comment object at 0x1038d2630>
+    // <conv.chunks.Comment object at 0x1038d2750>
     JMP(MoveRedPTroopaDown);
     JMP(MoveFlyGreenPTroopa);
 }
@@ -12943,14 +12913,14 @@ int MoveFlyGreenPTroopa() {
     JSR(XMoveCntr_GreenPTroopa);
     JSR(MoveWithXMCntrs);
     ldy(0x1);
-    // <conv.chunks.Comment object at 0x105776960>
-    // <conv.chunks.Comment object at 0x105776a80>
-    // <conv.chunks.Comment object at 0x105776ba0>
+    // <conv.chunks.Comment object at 0x1038d2960>
+    // <conv.chunks.Comment object at 0x1038d2a80>
+    // <conv.chunks.Comment object at 0x1038d2ba0>
     lda(FrameCounter);
     anda(0b11);
     BNE(NoMGPT);
-    // <conv.chunks.Comment object at 0x105776db0>
-    // <conv.chunks.Comment object at 0x105776ed0>
+    // <conv.chunks.Comment object at 0x1038d2db0>
+    // <conv.chunks.Comment object at 0x1038d2ed0>
     lda(FrameCounter);
     anda(0b1000000);
     BNE(YSway);
@@ -12959,23 +12929,23 @@ int MoveFlyGreenPTroopa() {
 }
 
 int YSway() {
-    // <conv.chunks.Comment object at 0x105777110>
-    // <conv.chunks.Comment object at 0x105777230>
-    // <conv.chunks.Comment object at 0x105777380>
-    // <conv.chunks.Comment object at 0x105777410>
+    // <conv.chunks.Comment object at 0x1038d3110>
+    // <conv.chunks.Comment object at 0x1038d3230>
+    // <conv.chunks.Comment object at 0x1038d3380>
+    // <conv.chunks.Comment object at 0x1038d3410>
     sty(0x0);
     lda(Enemy_Y_Position, x);
     clc();
     adc(0x0);
-    // <conv.chunks.Comment object at 0x105777770>
-    // <conv.chunks.Comment object at 0x105777830>
+    // <conv.chunks.Comment object at 0x1038d3770>
+    // <conv.chunks.Comment object at 0x1038d3830>
     sta(Enemy_Y_Position, x);
     JMP(NoMGPT);
 }
 
 int NoMGPT() {
-    // <conv.chunks.Comment object at 0x105777a70>
-    rts();
+    // <conv.chunks.Comment object at 0x1038d3a70>
+    return 0;
     JMP(XMoveCntr_GreenPTroopa);
 }
 
@@ -12986,16 +12956,16 @@ int XMoveCntr_GreenPTroopa() {
 
 int XMoveCntr_Platform() {
     sta(0x1);
-    // <conv.chunks.Comment object at 0x105777d40>
+    // <conv.chunks.Comment object at 0x1038d3d40>
     lda(FrameCounter);
     anda(0b11);
     BNE(NoIncXM);
     ldy(XMoveSecondaryCounter, x);
     lda(XMovePrimaryCounter, x);
-    // <conv.chunks.Comment object at 0x105777f20>
-    // <conv.chunks.Comment object at 0x10577c080>
-    // <conv.chunks.Comment object at 0x10577c1d0>
-    // <conv.chunks.Comment object at 0x10577c320>
+    // <conv.chunks.Comment object at 0x1038d3f20>
+    // <conv.chunks.Comment object at 0x1038d8080>
+    // <conv.chunks.Comment object at 0x1038d81d0>
+    // <conv.chunks.Comment object at 0x1038d8320>
     lsr();
     BCS(DecSeXM);
     cpy(0x1);
@@ -13005,44 +12975,44 @@ int XMoveCntr_Platform() {
 }
 
 int NoIncXM() {
-    rts();
+    return 0;
     JMP(IncPXM);
 }
 
 int IncPXM() {
-    // <conv.chunks.Comment object at 0x10577cb00>
+    // <conv.chunks.Comment object at 0x1038d8b00>
     inc(XMovePrimaryCounter, x);
-    rts();
+    return 0;
     JMP(DecSeXM);
 }
 
 int DecSeXM() {
-    // <conv.chunks.Comment object at 0x10577cd40>
+    // <conv.chunks.Comment object at 0x1038d8d40>
     tya();
     BEQ(IncPXM);
     dec(XMoveSecondaryCounter, x);
-    // <conv.chunks.Comment object at 0x10577ce60>
-    // <conv.chunks.Comment object at 0x10577cfb0>
-    rts();
+    // <conv.chunks.Comment object at 0x1038d8e60>
+    // <conv.chunks.Comment object at 0x1038d8fb0>
+    return 0;
     JMP(MoveWithXMCntrs);
 }
 
 int MoveWithXMCntrs() {
     lda(XMoveSecondaryCounter, x);
-    // <conv.chunks.Comment object at 0x10577d1c0>
+    // <conv.chunks.Comment object at 0x1038d91c0>
     pha();
     ldy(0x1);
-    // <conv.chunks.Comment object at 0x10577d3a0>
+    // <conv.chunks.Comment object at 0x1038d93a0>
     lda(XMovePrimaryCounter, x);
     anda(0b10);
     BNE(XMRight);
-    // <conv.chunks.Comment object at 0x10577d5e0>
-    // <conv.chunks.Comment object at 0x10577d700>
+    // <conv.chunks.Comment object at 0x1038d95e0>
+    // <conv.chunks.Comment object at 0x1038d9700>
     lda(XMoveSecondaryCounter, x);
     eor(0xff);
     clc();
-    // <conv.chunks.Comment object at 0x10577d970>
-    // <conv.chunks.Comment object at 0x10577dac0>
+    // <conv.chunks.Comment object at 0x1038d9970>
+    // <conv.chunks.Comment object at 0x1038d9ac0>
     adc(0x1);
     sta(XMoveSecondaryCounter, x);
     ldy(0x2);
@@ -13050,17 +13020,17 @@ int MoveWithXMCntrs() {
 }
 
 int XMRight() {
-    // <conv.chunks.Comment object at 0x10577dd60>
-    // <conv.chunks.Comment object at 0x10577ddf0>
+    // <conv.chunks.Comment object at 0x1038d9d60>
+    // <conv.chunks.Comment object at 0x1038d9df0>
     sty(Enemy_MovingDir, x);
     JSR(MoveEnemyHorizontally);
     sta(0x0);
     pla();
     sta(XMoveSecondaryCounter, x);
-    // <conv.chunks.Comment object at 0x10577e150>
-    // <conv.chunks.Comment object at 0x10577e120>
-    // <conv.chunks.Comment object at 0x10577e300>
-    rts();
+    // <conv.chunks.Comment object at 0x1038da150>
+    // <conv.chunks.Comment object at 0x1038da120>
+    // <conv.chunks.Comment object at 0x1038da300>
+    return 0;
     JMP(MoveBloober);
 }
 
@@ -13072,12 +13042,12 @@ int MoveBloober() {
     lda(((PseudoRandomBitReg) + (1)), x);
     anda(offsetof(G, BlooberBitmasks), y);
     BNE(BlooberSwim);
-    // <conv.chunks.Comment object at 0x10577e7b0>
-    // <conv.chunks.Comment object at 0x10577e8d0>
-    // <conv.chunks.Comment object at 0x10577e9f0>
-    // <conv.chunks.Comment object at 0x10577eb10>
-    // <conv.chunks.Comment object at 0x10577ed20>
-    // <conv.chunks.Comment object at 0x10577ee70>
+    // <conv.chunks.Comment object at 0x1038da7b0>
+    // <conv.chunks.Comment object at 0x1038da8d0>
+    // <conv.chunks.Comment object at 0x1038da9f0>
+    // <conv.chunks.Comment object at 0x1038dab10>
+    // <conv.chunks.Comment object at 0x1038dad20>
+    // <conv.chunks.Comment object at 0x1038dae70>
     txa();
     lsr();
     BCC(FBLeft);
@@ -13087,11 +13057,11 @@ int MoveBloober() {
 }
 
 int FBLeft() {
-    // <conv.chunks.Comment object at 0x10577f050>
-    // <conv.chunks.Comment object at 0x10577f0e0>
-    // <conv.chunks.Comment object at 0x10577f230>
-    // <conv.chunks.Comment object at 0x10577f350>
-    // <conv.chunks.Comment object at 0x10577f4a0>
+    // <conv.chunks.Comment object at 0x1038db050>
+    // <conv.chunks.Comment object at 0x1038db0e0>
+    // <conv.chunks.Comment object at 0x1038db230>
+    // <conv.chunks.Comment object at 0x1038db350>
+    // <conv.chunks.Comment object at 0x1038db4a0>
     ldy(0x2);
     JSR(PlayerEnemyDiff);
     BPL(SBMDir);
@@ -13100,10 +13070,10 @@ int FBLeft() {
 }
 
 int SBMDir() {
-    // <conv.chunks.Comment object at 0x10577f590>
-    // <conv.chunks.Comment object at 0x10577f740>
-    // <conv.chunks.Comment object at 0x10577f8c0>
-    // <conv.chunks.Comment object at 0x10577f950>
+    // <conv.chunks.Comment object at 0x1038db590>
+    // <conv.chunks.Comment object at 0x1038db740>
+    // <conv.chunks.Comment object at 0x1038db8c0>
+    // <conv.chunks.Comment object at 0x1038db950>
     sty(Enemy_MovingDir, x);
     JMP(BlooberSwim);
 }
@@ -13111,8 +13081,8 @@ int SBMDir() {
 int BlooberSwim() {
     JSR(ProcSwimmingB);
     lda(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x10577fb30>
-    // <conv.chunks.Comment object at 0x10577fc50>
+    // <conv.chunks.Comment object at 0x1038dbb30>
+    // <conv.chunks.Comment object at 0x1038dbc50>
     sec();
     sbc(Enemy_Y_MoveForce, x);
     cmp(0x20);
@@ -13122,43 +13092,43 @@ int BlooberSwim() {
 }
 
 int SwimX() {
-    // <conv.chunks.Comment object at 0x10577fe30>
-    // <conv.chunks.Comment object at 0x10577ff80>
-    // <conv.chunks.Comment object at 0x105788050>
-    // <conv.chunks.Comment object at 0x105788230>
-    // <conv.chunks.Comment object at 0x105788380>
+    // <conv.chunks.Comment object at 0x1038dbe30>
+    // <conv.chunks.Comment object at 0x1038dbf80>
+    // <conv.chunks.Comment object at 0x1038e4050>
+    // <conv.chunks.Comment object at 0x1038e4230>
+    // <conv.chunks.Comment object at 0x1038e4380>
     ldy(Enemy_MovingDir, x);
     dey();
     BNE(LeftSwim);
-    // <conv.chunks.Comment object at 0x1057885c0>
+    // <conv.chunks.Comment object at 0x1038e45c0>
     lda(Enemy_X_Position, x);
     clc();
-    // <conv.chunks.Comment object at 0x105788830>
+    // <conv.chunks.Comment object at 0x1038e4830>
     adc(BlooperMoveSpeed, x);
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x1057889e0>
+    // <conv.chunks.Comment object at 0x1038e49e0>
     lda(Enemy_PageLoc, x);
     adc(0x0);
     sta(Enemy_PageLoc, x);
-    // <conv.chunks.Comment object at 0x105788c50>
-    // <conv.chunks.Comment object at 0x105788ce0>
-    rts();
+    // <conv.chunks.Comment object at 0x1038e4c50>
+    // <conv.chunks.Comment object at 0x1038e4ce0>
+    return 0;
     JMP(LeftSwim);
 }
 
 int LeftSwim() {
     lda(Enemy_X_Position, x);
     sec();
-    // <conv.chunks.Comment object at 0x1057890d0>
+    // <conv.chunks.Comment object at 0x1038e50d0>
     sbc(BlooperMoveSpeed, x);
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x105789280>
+    // <conv.chunks.Comment object at 0x1038e5280>
     lda(Enemy_PageLoc, x);
     sbc(0x0);
     sta(Enemy_PageLoc, x);
-    // <conv.chunks.Comment object at 0x1057894f0>
-    // <conv.chunks.Comment object at 0x105789580>
-    rts();
+    // <conv.chunks.Comment object at 0x1038e54f0>
+    // <conv.chunks.Comment object at 0x1038e5580>
+    return 0;
     JMP(MoveDefeatedBloober);
 }
 
@@ -13171,9 +13141,9 @@ int ProcSwimmingB() {
     lda(BlooperMoveCounter, x);
     anda(0b10);
     BNE(ChkForFloatdown);
-    // <conv.chunks.Comment object at 0x105789970>
-    // <conv.chunks.Comment object at 0x105789ac0>
-    // <conv.chunks.Comment object at 0x105789be0>
+    // <conv.chunks.Comment object at 0x1038e5970>
+    // <conv.chunks.Comment object at 0x1038e5ac0>
+    // <conv.chunks.Comment object at 0x1038e5be0>
     lda(FrameCounter);
     anda(0b111);
     pha();
@@ -13182,21 +13152,21 @@ int ProcSwimmingB() {
     BCS(SlowSwim);
     pla();
     BNE(BSwimE);
-    // <conv.chunks.Comment object at 0x105789df0>
-    // <conv.chunks.Comment object at 0x105789f40>
-    // <conv.chunks.Comment object at 0x105789fd0>
-    // <conv.chunks.Comment object at 0x10578a150>
-    // <conv.chunks.Comment object at 0x10578a1e0>
-    // <conv.chunks.Comment object at 0x10578a330>
-    // <conv.chunks.Comment object at 0x10578a3c0>
+    // <conv.chunks.Comment object at 0x1038e5df0>
+    // <conv.chunks.Comment object at 0x1038e5f40>
+    // <conv.chunks.Comment object at 0x1038e5fd0>
+    // <conv.chunks.Comment object at 0x1038e6150>
+    // <conv.chunks.Comment object at 0x1038e61e0>
+    // <conv.chunks.Comment object at 0x1038e6330>
+    // <conv.chunks.Comment object at 0x1038e63c0>
     lda(Enemy_Y_MoveForce, x);
     clc();
-    // <conv.chunks.Comment object at 0x10578a660>
+    // <conv.chunks.Comment object at 0x1038e6660>
     adc(0x1);
     sta(Enemy_Y_MoveForce, x);
     sta(BlooperMoveSpeed, x);
-    // <conv.chunks.Comment object at 0x10578a750>
-    // <conv.chunks.Comment object at 0x10578a930>
+    // <conv.chunks.Comment object at 0x1038e6750>
+    // <conv.chunks.Comment object at 0x1038e6930>
     cmp(0x2);
     BNE(BSwimE);
     inc(BlooperMoveCounter, x);
@@ -13204,36 +13174,36 @@ int ProcSwimmingB() {
 }
 
 int BSwimE() {
-    rts();
+    return 0;
     JMP(SlowSwim);
 }
 
 int SlowSwim() {
     pla();
     BNE(NoSSw);
-    // <conv.chunks.Comment object at 0x10578af60>
-    // <conv.chunks.Comment object at 0x10578aff0>
+    // <conv.chunks.Comment object at 0x1038e6f60>
+    // <conv.chunks.Comment object at 0x1038e6ff0>
     lda(Enemy_Y_MoveForce, x);
     sec();
-    // <conv.chunks.Comment object at 0x10578b290>
+    // <conv.chunks.Comment object at 0x1038e7290>
     sbc(0x1);
     sta(Enemy_Y_MoveForce, x);
     sta(BlooperMoveSpeed, x);
     BNE(NoSSw);
     inc(BlooperMoveCounter, x);
-    // <conv.chunks.Comment object at 0x10578b380>
-    // <conv.chunks.Comment object at 0x10578b560>
-    // <conv.chunks.Comment object at 0x10578b6b0>
-    // <conv.chunks.Comment object at 0x10578b800>
+    // <conv.chunks.Comment object at 0x1038e7380>
+    // <conv.chunks.Comment object at 0x1038e7560>
+    // <conv.chunks.Comment object at 0x1038e76b0>
+    // <conv.chunks.Comment object at 0x1038e7800>
     lda(0x2);
     sta(EnemyIntervalTimer, x);
     JMP(NoSSw);
 }
 
 int NoSSw() {
-    // <conv.chunks.Comment object at 0x10578b9b0>
-    // <conv.chunks.Comment object at 0x10578bbc0>
-    rts();
+    // <conv.chunks.Comment object at 0x1038e79b0>
+    // <conv.chunks.Comment object at 0x1038e7bc0>
+    return 0;
     JMP(ChkForFloatdown);
 }
 
@@ -13252,12 +13222,12 @@ int Floatdown() {
 }
 
 int NoFD() {
-    // <conv.chunks.Comment object at 0x10578bfb0>
-    // <conv.chunks.Comment object at 0x105794140>
-    // <conv.chunks.Comment object at 0x1057941d0>
-    // <conv.chunks.Comment object at 0x105794320>
-    // <conv.chunks.Comment object at 0x1057944a0>
-    rts();
+    // <conv.chunks.Comment object at 0x1038e7fb0>
+    // <conv.chunks.Comment object at 0x1038f0140>
+    // <conv.chunks.Comment object at 0x1038f01d0>
+    // <conv.chunks.Comment object at 0x1038f0320>
+    // <conv.chunks.Comment object at 0x1038f04a0>
+    return 0;
     JMP(ChkNearPlayer);
 }
 
@@ -13266,20 +13236,20 @@ int ChkNearPlayer() {
     adc(0x10);
     cmp(Player_Y_Position);
     BCC(Floatdown);
-    // <conv.chunks.Comment object at 0x1057945f0>
-    // <conv.chunks.Comment object at 0x105794740>
-    // <conv.chunks.Comment object at 0x1057947d0>
-    // <conv.chunks.Comment object at 0x105794980>
+    // <conv.chunks.Comment object at 0x1038f05f0>
+    // <conv.chunks.Comment object at 0x1038f0740>
+    // <conv.chunks.Comment object at 0x1038f07d0>
+    // <conv.chunks.Comment object at 0x1038f0980>
     lda(0x0);
     sta(BlooperMoveCounter, x);
-    // <conv.chunks.Comment object at 0x105794b00>
-    rts();
+    // <conv.chunks.Comment object at 0x1038f0b00>
+    return 0;
     JMP(MoveBulletBill);
 }
 
 int MoveBulletBill() {
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x105794dd0>
+    // <conv.chunks.Comment object at 0x1038f0dd0>
     anda(0b100000);
     BEQ(NotDefB);
     JMP(MoveJ_EnemyVertically);
@@ -13287,9 +13257,9 @@ int MoveBulletBill() {
 }
 
 int NotDefB() {
-    // <conv.chunks.Comment object at 0x105795010>
-    // <conv.chunks.Comment object at 0x105795160>
-    // <conv.chunks.Comment object at 0x105795280>
+    // <conv.chunks.Comment object at 0x1038f1010>
+    // <conv.chunks.Comment object at 0x1038f1160>
+    // <conv.chunks.Comment object at 0x1038f1280>
     lda(0xe8);
     sta(Enemy_X_Speed, x);
     JMP(MoveEnemyHorizontally);
@@ -13305,40 +13275,40 @@ int MoveSwimmingCheepCheep() {
 }
 
 int CCSwim() {
-    // <conv.chunks.Comment object at 0x1057957c0>
-    // <conv.chunks.Comment object at 0x105795b20>
-    // <conv.chunks.Comment object at 0x105795c40>
-    // <conv.chunks.Comment object at 0x105795d90>
-    // <conv.chunks.Comment object at 0x105795eb0>
+    // <conv.chunks.Comment object at 0x1038f17c0>
+    // <conv.chunks.Comment object at 0x1038f1b20>
+    // <conv.chunks.Comment object at 0x1038f1c40>
+    // <conv.chunks.Comment object at 0x1038f1d90>
+    // <conv.chunks.Comment object at 0x1038f1eb0>
     sta(0x3);
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x105795fd0>
+    // <conv.chunks.Comment object at 0x1038f1fd0>
     sec();
     sbc(0xa);
     tay();
     lda(offsetof(G, SwimCCXMoveData), y);
-    // <conv.chunks.Comment object at 0x105796210>
-    // <conv.chunks.Comment object at 0x105796360>
-    // <conv.chunks.Comment object at 0x1057963f0>
+    // <conv.chunks.Comment object at 0x1038f2210>
+    // <conv.chunks.Comment object at 0x1038f2360>
+    // <conv.chunks.Comment object at 0x1038f23f0>
     sta(0x2);
     lda(Enemy_X_MoveForce, x);
-    // <conv.chunks.Comment object at 0x105796540>
+    // <conv.chunks.Comment object at 0x1038f2540>
     sec();
     sbc(0x2);
     sta(Enemy_X_MoveForce, x);
     lda(Enemy_X_Position, x);
     sbc(0x0);
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x105796840>
-    // <conv.chunks.Comment object at 0x1057968d0>
-    // <conv.chunks.Comment object at 0x105796a80>
-    // <conv.chunks.Comment object at 0x105796bd0>
-    // <conv.chunks.Comment object at 0x105796c60>
+    // <conv.chunks.Comment object at 0x1038f2840>
+    // <conv.chunks.Comment object at 0x1038f28d0>
+    // <conv.chunks.Comment object at 0x1038f2a80>
+    // <conv.chunks.Comment object at 0x1038f2bd0>
+    // <conv.chunks.Comment object at 0x1038f2c60>
     lda(Enemy_PageLoc, x);
     sbc(0x0);
     sta(Enemy_PageLoc, x);
-    // <conv.chunks.Comment object at 0x105796f60>
-    // <conv.chunks.Comment object at 0x105796ff0>
+    // <conv.chunks.Comment object at 0x1038f2f60>
+    // <conv.chunks.Comment object at 0x1038f2ff0>
     lda(0x20);
     sta(0x2);
     cpx(0x2);
@@ -13346,12 +13316,12 @@ int CCSwim() {
     lda(CheepCheepMoveMFlag, x);
     cmp(0x10);
     BCC(CCSwimUpwards);
-    // <conv.chunks.Comment object at 0x1057972f0>
-    // <conv.chunks.Comment object at 0x105797380>
-    // <conv.chunks.Comment object at 0x105797470>
-    // <conv.chunks.Comment object at 0x105797650>
-    // <conv.chunks.Comment object at 0x1057977a0>
-    // <conv.chunks.Comment object at 0x105797830>
+    // <conv.chunks.Comment object at 0x1038f32f0>
+    // <conv.chunks.Comment object at 0x1038f3380>
+    // <conv.chunks.Comment object at 0x1038f3470>
+    // <conv.chunks.Comment object at 0x1038f3650>
+    // <conv.chunks.Comment object at 0x1038f37a0>
+    // <conv.chunks.Comment object at 0x1038f3830>
     lda(Enemy_YMF_Dummy, x);
     clc();
     adc(0x2);
@@ -13359,11 +13329,11 @@ int CCSwim() {
     lda(Enemy_Y_Position, x);
     adc(0x3);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x105797bc0>
-    // <conv.chunks.Comment object at 0x105797c50>
-    // <conv.chunks.Comment object at 0x105797e00>
-    // <conv.chunks.Comment object at 0x105797f80>
-    // <conv.chunks.Comment object at 0x105797f50>
+    // <conv.chunks.Comment object at 0x1038f3bc0>
+    // <conv.chunks.Comment object at 0x1038f3c50>
+    // <conv.chunks.Comment object at 0x1038f3e00>
+    // <conv.chunks.Comment object at 0x1038f3f80>
+    // <conv.chunks.Comment object at 0x1038f3f50>
     lda(Enemy_Y_HighPos, x);
     adc(0x0);
     JMP(ChkSwimYPos);
@@ -13378,11 +13348,11 @@ int CCSwimUpwards() {
     lda(Enemy_Y_Position, x);
     sbc(0x3);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1057a0770>
-    // <conv.chunks.Comment object at 0x1057a0800>
-    // <conv.chunks.Comment object at 0x1057a09b0>
-    // <conv.chunks.Comment object at 0x1057a0b30>
-    // <conv.chunks.Comment object at 0x1057a0bc0>
+    // <conv.chunks.Comment object at 0x1038fc770>
+    // <conv.chunks.Comment object at 0x1038fc800>
+    // <conv.chunks.Comment object at 0x1038fc9b0>
+    // <conv.chunks.Comment object at 0x1038fcb30>
+    // <conv.chunks.Comment object at 0x1038fcbc0>
     lda(Enemy_Y_HighPos, x);
     sbc(0x0);
     JMP(ChkSwimYPos);
@@ -13392,16 +13362,16 @@ int ChkSwimYPos() {
     sta(Enemy_Y_HighPos, x);
     ldy(0x0);
     lda(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1057a0fe0>
-    // <conv.chunks.Comment object at 0x1057a1130>
-    // <conv.chunks.Comment object at 0x1057a11c0>
+    // <conv.chunks.Comment object at 0x1038fcfe0>
+    // <conv.chunks.Comment object at 0x1038fd130>
+    // <conv.chunks.Comment object at 0x1038fd1c0>
     sec();
     sbc(CheepCheepOrigYPos, x);
     BPL(YPDiff);
     ldy(0x10);
-    // <conv.chunks.Comment object at 0x1057a1430>
-    // <conv.chunks.Comment object at 0x1057a1580>
-    // <conv.chunks.Comment object at 0x1057a16d0>
+    // <conv.chunks.Comment object at 0x1038fd430>
+    // <conv.chunks.Comment object at 0x1038fd580>
+    // <conv.chunks.Comment object at 0x1038fd6d0>
     eor(0xff);
     clc();
     adc(0x1);
@@ -13409,21 +13379,21 @@ int ChkSwimYPos() {
 }
 
 int YPDiff() {
-    // <conv.chunks.Comment object at 0x1057a1910>
-    // <conv.chunks.Comment object at 0x1057a19a0>
-    // <conv.chunks.Comment object at 0x1057a1a30>
+    // <conv.chunks.Comment object at 0x1038fd910>
+    // <conv.chunks.Comment object at 0x1038fd9a0>
+    // <conv.chunks.Comment object at 0x1038fda30>
     cmp(0xf);
     BCC(ExSwCC);
-    // <conv.chunks.Comment object at 0x1057a1bb0>
+    // <conv.chunks.Comment object at 0x1038fdbb0>
     tya();
     sta(CheepCheepMoveMFlag, x);
     JMP(ExSwCC);
 }
 
 int ExSwCC() {
-    // <conv.chunks.Comment object at 0x1057a1e20>
-    // <conv.chunks.Comment object at 0x1057a1fa0>
-    rts();
+    // <conv.chunks.Comment object at 0x1038fde20>
+    // <conv.chunks.Comment object at 0x1038fdfa0>
+    return 0;
     JMP(ProcFirebar);
 }
 
@@ -13431,9 +13401,9 @@ int ProcFirebar() {
     JSR(GetEnemyOffscreenBits);
     lda(Enemy_OffscreenBits);
     anda(0b1000);
-    // <conv.chunks.Comment object at 0x1057a2450>
-    // <conv.chunks.Comment object at 0x1057aa780>
-    // <conv.chunks.Comment object at 0x1057aa8a0>
+    // <conv.chunks.Comment object at 0x1038fe450>
+    // <conv.chunks.Comment object at 0x103906780>
+    // <conv.chunks.Comment object at 0x1039068a0>
     BNE(SkipFBar);
     lda(TimerControl);
     BNE(SusFbar);
@@ -13445,23 +13415,23 @@ int ProcFirebar() {
 }
 
 int SusFbar() {
-    // <conv.chunks.Comment object at 0x1057aaab0>
-    // <conv.chunks.Comment object at 0x1057aabd0>
-    // <conv.chunks.Comment object at 0x1057aad20>
-    // <conv.chunks.Comment object at 0x1057aae70>
-    // <conv.chunks.Comment object at 0x1057aaf90>
-    // <conv.chunks.Comment object at 0x1057ab0b0>
-    // <conv.chunks.Comment object at 0x1057ab200>
+    // <conv.chunks.Comment object at 0x103906ab0>
+    // <conv.chunks.Comment object at 0x103906bd0>
+    // <conv.chunks.Comment object at 0x103906d20>
+    // <conv.chunks.Comment object at 0x103906e70>
+    // <conv.chunks.Comment object at 0x103906f90>
+    // <conv.chunks.Comment object at 0x1039070b0>
+    // <conv.chunks.Comment object at 0x103907200>
     lda(FirebarSpinState_High, x);
     ldy(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x1057ab3b0>
+    // <conv.chunks.Comment object at 0x1039073b0>
     cpy(0x1f);
     BCC(SetupGFB);
     cmp(0x8);
     BEQ(SkpFSte);
-    // <conv.chunks.Comment object at 0x1057ab560>
-    // <conv.chunks.Comment object at 0x1057ab710>
-    // <conv.chunks.Comment object at 0x1057ab7a0>
+    // <conv.chunks.Comment object at 0x103907560>
+    // <conv.chunks.Comment object at 0x103907710>
+    // <conv.chunks.Comment object at 0x1039077a0>
     cmp(0x18);
     BNE(SetupGFB);
     JMP(SkpFSte);
@@ -13470,13 +13440,13 @@ int SusFbar() {
 int SkpFSte() {
     clc();
     adc(0x1);
-    // <conv.chunks.Comment object at 0x1057abc80>
+    // <conv.chunks.Comment object at 0x103907c80>
     sta(FirebarSpinState_High, x);
     JMP(SetupGFB);
 }
 
 int SetupGFB() {
-    // <conv.chunks.Comment object at 0x1057abec0>
+    // <conv.chunks.Comment object at 0x103907ec0>
     sta(0xef);
     JSR(RelativeEnemyPosition);
     JSR(GetFirebarPosition);
@@ -13487,22 +13457,22 @@ int SetupGFB() {
     lda(Enemy_Rel_XPos);
     sta(Sprite_X_Position, y);
     sta(0x6);
-    // <conv.chunks.Comment object at 0x1057abfb0>
-    // <conv.chunks.Comment object at 0x1057b4170>
-    // <conv.chunks.Comment object at 0x1057b4290>
-    // <conv.chunks.Comment object at 0x1057b43e0>
-    // <conv.chunks.Comment object at 0x1057b4500>
-    // <conv.chunks.Comment object at 0x1057b4680>
-    // <conv.chunks.Comment object at 0x1057b4710>
-    // <conv.chunks.Comment object at 0x1057b4890>
-    // <conv.chunks.Comment object at 0x1057b4a10>
+    // <conv.chunks.Comment object at 0x103907fb0>
+    // <conv.chunks.Comment object at 0x103910170>
+    // <conv.chunks.Comment object at 0x103910290>
+    // <conv.chunks.Comment object at 0x1039103e0>
+    // <conv.chunks.Comment object at 0x103910500>
+    // <conv.chunks.Comment object at 0x103910680>
+    // <conv.chunks.Comment object at 0x103910710>
+    // <conv.chunks.Comment object at 0x103910890>
+    // <conv.chunks.Comment object at 0x103910a10>
     lda(0x1);
     sta(0x0);
     JSR(FirebarCollision);
     ldy(0x5);
-    // <conv.chunks.Comment object at 0x1057b4c20>
-    // <conv.chunks.Comment object at 0x1057b4cb0>
-    // <conv.chunks.Comment object at 0x1057b4e30>
+    // <conv.chunks.Comment object at 0x103910c20>
+    // <conv.chunks.Comment object at 0x103910cb0>
+    // <conv.chunks.Comment object at 0x103910e30>
     lda(Enemy_ID, x);
     cmp(0x1f);
     BCC(SetMFbar);
@@ -13511,10 +13481,10 @@ int SetupGFB() {
 }
 
 int SetMFbar() {
-    // <conv.chunks.Comment object at 0x1057b5070>
-    // <conv.chunks.Comment object at 0x1057b5100>
-    // <conv.chunks.Comment object at 0x1057b52b0>
-    // <conv.chunks.Comment object at 0x1057b5340>
+    // <conv.chunks.Comment object at 0x103911070>
+    // <conv.chunks.Comment object at 0x103911100>
+    // <conv.chunks.Comment object at 0x1039112b0>
+    // <conv.chunks.Comment object at 0x103911340>
     sty(0xed);
     lda(0x0);
     sta(0x0);
@@ -13522,15 +13492,15 @@ int SetMFbar() {
 }
 
 int DrawFbar() {
-    // <conv.chunks.Comment object at 0x1057b5640>
-    // <conv.chunks.Comment object at 0x1057b56d0>
+    // <conv.chunks.Comment object at 0x103911640>
+    // <conv.chunks.Comment object at 0x1039116d0>
     lda(0xef);
     JSR(GetFirebarPosition);
     JSR(DrawFirebar_Collision);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1057b5820>
-    // <conv.chunks.Comment object at 0x1057b59a0>
-    // <conv.chunks.Comment object at 0x1057b5af0>
+    // <conv.chunks.Comment object at 0x103911820>
+    // <conv.chunks.Comment object at 0x1039119a0>
+    // <conv.chunks.Comment object at 0x103911af0>
     cmp(0x4);
     BNE(NextFbar);
     ldy(DuplicateObj_Offset);
@@ -13540,10 +13510,10 @@ int DrawFbar() {
 }
 
 int NextFbar() {
-    // <conv.chunks.Comment object at 0x1057b5dc0>
-    // <conv.chunks.Comment object at 0x1057b5ee0>
-    // <conv.chunks.Comment object at 0x1057b6060>
-    // <conv.chunks.Comment object at 0x1057b60f0>
+    // <conv.chunks.Comment object at 0x103911dc0>
+    // <conv.chunks.Comment object at 0x103911ee0>
+    // <conv.chunks.Comment object at 0x103912060>
+    // <conv.chunks.Comment object at 0x1039120f0>
     inc(0x0);
     lda(0x0);
     cmp(0xed);
@@ -13552,60 +13522,60 @@ int NextFbar() {
 }
 
 int SkipFBar() {
-    rts();
+    return 0;
     JMP(DrawFirebar_Collision);
 }
 
 int DrawFirebar_Collision() {
     lda(0x3);
-    // <conv.chunks.Comment object at 0x1057b66f0>
+    // <conv.chunks.Comment object at 0x1039126f0>
     sta(0x5);
     ldy(0x6);
     lda(0x1);
     lsr(0x5);
     BCS(AddHA);
-    // <conv.chunks.Comment object at 0x1057b6870>
-    // <conv.chunks.Comment object at 0x1057b6780>
-    // <conv.chunks.Comment object at 0x1057b6990>
-    // <conv.chunks.Comment object at 0x1057b6bd0>
+    // <conv.chunks.Comment object at 0x103912870>
+    // <conv.chunks.Comment object at 0x103912780>
+    // <conv.chunks.Comment object at 0x103912990>
+    // <conv.chunks.Comment object at 0x103912bd0>
     eor(0xff);
     adc(0x1);
     JMP(AddHA);
 }
 
 int AddHA() {
-    // <conv.chunks.Comment object at 0x1057b6de0>
-    // <conv.chunks.Comment object at 0x1057b6f00>
+    // <conv.chunks.Comment object at 0x103912de0>
+    // <conv.chunks.Comment object at 0x103912f00>
     clc();
     adc(Enemy_Rel_XPos);
     sta(Sprite_X_Position, y);
     sta(0x6);
     cmp(Enemy_Rel_XPos);
     BCS(SubtR1);
-    // <conv.chunks.Comment object at 0x1057b70b0>
-    // <conv.chunks.Comment object at 0x1057b71d0>
-    // <conv.chunks.Comment object at 0x1057b7350>
-    // <conv.chunks.Comment object at 0x1057b73e0>
-    // <conv.chunks.Comment object at 0x1057b7560>
+    // <conv.chunks.Comment object at 0x1039130b0>
+    // <conv.chunks.Comment object at 0x1039131d0>
+    // <conv.chunks.Comment object at 0x103913350>
+    // <conv.chunks.Comment object at 0x1039133e0>
+    // <conv.chunks.Comment object at 0x103913560>
     lda(Enemy_Rel_XPos);
     sec();
     sbc(0x6);
-    // <conv.chunks.Comment object at 0x1057b77d0>
-    // <conv.chunks.Comment object at 0x1057b7890>
+    // <conv.chunks.Comment object at 0x1039137d0>
+    // <conv.chunks.Comment object at 0x103913890>
     JMP(ChkFOfs);
     JMP(SubtR1);
 }
 
 int SubtR1() {
-    // <conv.chunks.Comment object at 0x1057b7aa0>
+    // <conv.chunks.Comment object at 0x103913aa0>
     sec();
     sbc(Enemy_Rel_XPos);
     JMP(ChkFOfs);
 }
 
 int ChkFOfs() {
-    // <conv.chunks.Comment object at 0x1057b7bc0>
-    // <conv.chunks.Comment object at 0x1057b7ce0>
+    // <conv.chunks.Comment object at 0x103913bc0>
+    // <conv.chunks.Comment object at 0x103913ce0>
     cmp(0x59);
     BCC(VAHandl);
     lda(0xf8);
@@ -13614,36 +13584,36 @@ int ChkFOfs() {
 }
 
 int VAHandl() {
-    // <conv.chunks.Comment object at 0x1057b7dd0>
-    // <conv.chunks.Comment object at 0x1057b7fb0>
-    // <conv.chunks.Comment object at 0x1057bc080>
-    // <conv.chunks.Comment object at 0x1057bc260>
+    // <conv.chunks.Comment object at 0x103913dd0>
+    // <conv.chunks.Comment object at 0x103913fb0>
+    // <conv.chunks.Comment object at 0x103918080>
+    // <conv.chunks.Comment object at 0x103918260>
     lda(Enemy_Rel_YPos);
     cmp(0xf8);
-    // <conv.chunks.Comment object at 0x1057bc3e0>
+    // <conv.chunks.Comment object at 0x1039183e0>
     BEQ(SetVFbr);
     lda(0x2);
     lsr(0x5);
     BCS(AddVA);
-    // <conv.chunks.Comment object at 0x1057bc650>
-    // <conv.chunks.Comment object at 0x1057bc620>
-    // <conv.chunks.Comment object at 0x1057bc800>
+    // <conv.chunks.Comment object at 0x103918650>
+    // <conv.chunks.Comment object at 0x103918620>
+    // <conv.chunks.Comment object at 0x103918800>
     eor(0xff);
     adc(0x1);
     JMP(AddVA);
 }
 
 int AddVA() {
-    // <conv.chunks.Comment object at 0x1057bca10>
-    // <conv.chunks.Comment object at 0x1057bcb30>
+    // <conv.chunks.Comment object at 0x103918a10>
+    // <conv.chunks.Comment object at 0x103918b30>
     clc();
     adc(Enemy_Rel_YPos);
     JMP(SetVFbr);
 }
 
 int SetVFbr() {
-    // <conv.chunks.Comment object at 0x1057bcce0>
-    // <conv.chunks.Comment object at 0x1057bce00>
+    // <conv.chunks.Comment object at 0x103918ce0>
+    // <conv.chunks.Comment object at 0x103918e00>
     sta(Sprite_Y_Position, y);
     sta(0x7);
     JMP(FirebarCollision);
@@ -13657,76 +13627,76 @@ int FirebarCollision() {
     ora(TimerControl);
     BNE(NoColFB);
     sta(0x5);
-    // <conv.chunks.Comment object at 0x1057bcfb0>
-    // <conv.chunks.Comment object at 0x1057bd250>
-    // <conv.chunks.Comment object at 0x1057bd310>
-    // <conv.chunks.Comment object at 0x1057bd3a0>
-    // <conv.chunks.Comment object at 0x1057bd4c0>
-    // <conv.chunks.Comment object at 0x1057bd5e0>
-    // <conv.chunks.Comment object at 0x1057bd760>
+    // <conv.chunks.Comment object at 0x103918fb0>
+    // <conv.chunks.Comment object at 0x103919250>
+    // <conv.chunks.Comment object at 0x103919310>
+    // <conv.chunks.Comment object at 0x1039193a0>
+    // <conv.chunks.Comment object at 0x1039194c0>
+    // <conv.chunks.Comment object at 0x1039195e0>
+    // <conv.chunks.Comment object at 0x103919760>
     ldy(Player_Y_HighPos);
     dey();
     BNE(NoColFB);
     ldy(Player_Y_Position);
     lda(PlayerSize);
     BNE(AdjSm);
-    // <conv.chunks.Comment object at 0x1057bd970>
-    // <conv.chunks.Comment object at 0x1057bda00>
-    // <conv.chunks.Comment object at 0x1057bdb50>
-    // <conv.chunks.Comment object at 0x1057bdc70>
-    // <conv.chunks.Comment object at 0x1057bdd90>
+    // <conv.chunks.Comment object at 0x103919970>
+    // <conv.chunks.Comment object at 0x103919a00>
+    // <conv.chunks.Comment object at 0x103919b50>
+    // <conv.chunks.Comment object at 0x103919c70>
+    // <conv.chunks.Comment object at 0x103919d90>
     lda(CrouchingFlag);
     BEQ(BigJp);
     JMP(AdjSm);
 }
 
 int AdjSm() {
-    // <conv.chunks.Comment object at 0x1057bdfd0>
-    // <conv.chunks.Comment object at 0x1057be120>
+    // <conv.chunks.Comment object at 0x103919fd0>
+    // <conv.chunks.Comment object at 0x10391a120>
     inc(0x5);
     inc(0x5);
-    // <conv.chunks.Comment object at 0x1057be180>
+    // <conv.chunks.Comment object at 0x10391a180>
     tya();
     clc();
     adc(0x18);
-    // <conv.chunks.Comment object at 0x1057be480>
-    // <conv.chunks.Comment object at 0x1057be510>
+    // <conv.chunks.Comment object at 0x10391a480>
+    // <conv.chunks.Comment object at 0x10391a510>
     tay();
     JMP(BigJp);
 }
 
 int BigJp() {
-    // <conv.chunks.Comment object at 0x1057be6c0>
+    // <conv.chunks.Comment object at 0x10391a6c0>
     tya();
     JMP(FBCLoop);
 }
 
 int FBCLoop() {
-    // <conv.chunks.Comment object at 0x1057be7e0>
+    // <conv.chunks.Comment object at 0x10391a7e0>
     sec();
     sbc(0x7);
     BPL(ChkVFBD);
     eor(0xff);
     clc();
-    // <conv.chunks.Comment object at 0x1057be930>
-    // <conv.chunks.Comment object at 0x1057be9c0>
-    // <conv.chunks.Comment object at 0x1057beb70>
-    // <conv.chunks.Comment object at 0x1057becc0>
+    // <conv.chunks.Comment object at 0x10391a930>
+    // <conv.chunks.Comment object at 0x10391a9c0>
+    // <conv.chunks.Comment object at 0x10391ab70>
+    // <conv.chunks.Comment object at 0x10391acc0>
     adc(0x1);
     JMP(ChkVFBD);
 }
 
 int ChkVFBD() {
-    // <conv.chunks.Comment object at 0x1057bedb0>
+    // <conv.chunks.Comment object at 0x10391adb0>
     cmp(0x8);
     BCS(Chk2Ofs);
     lda(0x6);
     cmp(0xf0);
-    // <conv.chunks.Comment object at 0x1057bf110>
-    // <conv.chunks.Comment object at 0x1057bf1a0>
+    // <conv.chunks.Comment object at 0x10391b110>
+    // <conv.chunks.Comment object at 0x10391b1a0>
     BCS(Chk2Ofs);
     lda(((Sprite_X_Position) + (4)));
-    // <conv.chunks.Comment object at 0x1057bf440>
+    // <conv.chunks.Comment object at 0x10391b440>
     clc();
     adc(0x4);
     sta(0x4);
@@ -13735,45 +13705,45 @@ int ChkVFBD() {
     BPL(ChkFBCl);
     eor(0xff);
     clc();
-    // <conv.chunks.Comment object at 0x1057bf6b0>
-    // <conv.chunks.Comment object at 0x1057bf800>
-    // <conv.chunks.Comment object at 0x1057bf740>
-    // <conv.chunks.Comment object at 0x1057bf9e0>
-    // <conv.chunks.Comment object at 0x1057bfa70>
-    // <conv.chunks.Comment object at 0x1057bfc20>
-    // <conv.chunks.Comment object at 0x1057bfd70>
+    // <conv.chunks.Comment object at 0x10391b6b0>
+    // <conv.chunks.Comment object at 0x10391b800>
+    // <conv.chunks.Comment object at 0x10391b740>
+    // <conv.chunks.Comment object at 0x10391b9e0>
+    // <conv.chunks.Comment object at 0x10391ba70>
+    // <conv.chunks.Comment object at 0x10391bc20>
+    // <conv.chunks.Comment object at 0x10391bd70>
     adc(0x1);
     JMP(ChkFBCl);
 }
 
 int ChkFBCl() {
-    // <conv.chunks.Comment object at 0x1057bfe60>
+    // <conv.chunks.Comment object at 0x10391be60>
     cmp(0x8);
     BCC(ChgSDir);
     JMP(Chk2Ofs);
 }
 
 int Chk2Ofs() {
-    // <conv.chunks.Comment object at 0x1057bffe0>
-    // <conv.chunks.Comment object at 0x1057c4200>
+    // <conv.chunks.Comment object at 0x10391bfe0>
+    // <conv.chunks.Comment object at 0x103920200>
     lda(0x5);
     cmp(0x2);
-    // <conv.chunks.Comment object at 0x1057c4320>
+    // <conv.chunks.Comment object at 0x103920320>
     BEQ(NoColFB);
     ldy(0x5);
-    // <conv.chunks.Comment object at 0x1057c45f0>
+    // <conv.chunks.Comment object at 0x1039205f0>
     lda(Player_Y_Position);
     clc();
     adc(offsetof(G, FirebarYPos), y);
     inc(0x5);
-    // <conv.chunks.Comment object at 0x1057c4860>
-    // <conv.chunks.Comment object at 0x1057c49e0>
+    // <conv.chunks.Comment object at 0x103920860>
+    // <conv.chunks.Comment object at 0x1039209e0>
     JMP(FBCLoop);
     JMP(ChgSDir);
 }
 
 int ChgSDir() {
-    // <conv.chunks.Comment object at 0x1057c4bf0>
+    // <conv.chunks.Comment object at 0x103920bf0>
     ldx(0x1);
     lda(0x4);
     cmp(0x6);
@@ -13783,112 +13753,112 @@ int ChgSDir() {
 }
 
 int SetSDir() {
-    // <conv.chunks.Comment object at 0x1057c4da0>
-    // <conv.chunks.Comment object at 0x1057c4ce0>
-    // <conv.chunks.Comment object at 0x1057c4f50>
-    // <conv.chunks.Comment object at 0x1057c5130>
-    // <conv.chunks.Comment object at 0x1057c51c0>
+    // <conv.chunks.Comment object at 0x103920da0>
+    // <conv.chunks.Comment object at 0x103920ce0>
+    // <conv.chunks.Comment object at 0x103920f50>
+    // <conv.chunks.Comment object at 0x103921130>
+    // <conv.chunks.Comment object at 0x1039211c0>
     stx(Enemy_MovingDir);
     ldx(0x0);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1057c5460>
+    // <conv.chunks.Comment object at 0x103921460>
     pha();
     JSR(InjurePlayer);
-    // <conv.chunks.Comment object at 0x1057c55e0>
+    // <conv.chunks.Comment object at 0x1039215e0>
     pla();
     sta(0x0);
     JMP(NoColFB);
 }
 
 int NoColFB() {
-    // <conv.chunks.Comment object at 0x1057c57c0>
-    // <conv.chunks.Comment object at 0x1057c5850>
+    // <conv.chunks.Comment object at 0x1039217c0>
+    // <conv.chunks.Comment object at 0x103921850>
     pla();
     clc();
-    // <conv.chunks.Comment object at 0x1057c5a00>
+    // <conv.chunks.Comment object at 0x103921a00>
     adc(0x4);
     sta(0x6);
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x1057c5af0>
-    rts();
+    // <conv.chunks.Comment object at 0x103921af0>
+    return 0;
     JMP(GetFirebarPosition);
 }
 
 int GetFirebarPosition() {
     pha();
     anda(0b1111);
-    // <conv.chunks.Comment object at 0x1057c5e80>
-    // <conv.chunks.Comment object at 0x1057c5f10>
+    // <conv.chunks.Comment object at 0x103921e80>
+    // <conv.chunks.Comment object at 0x103921f10>
     cmp(0x9);
     BCC(GetHAdder);
     eor(0b1111);
-    // <conv.chunks.Comment object at 0x1057c6090>
-    // <conv.chunks.Comment object at 0x1057c6240>
+    // <conv.chunks.Comment object at 0x103922090>
+    // <conv.chunks.Comment object at 0x103922240>
     clc();
     adc(0x1);
     JMP(GetHAdder);
 }
 
 int GetHAdder() {
-    // <conv.chunks.Comment object at 0x1057c6450>
+    // <conv.chunks.Comment object at 0x103922450>
     sta(0x1);
     ldy(0x0);
     lda(offsetof(G, FirebarTblOffsets), y);
-    // <conv.chunks.Comment object at 0x1057c6510>
-    // <conv.chunks.Comment object at 0x1057c66f0>
+    // <conv.chunks.Comment object at 0x103922510>
+    // <conv.chunks.Comment object at 0x1039226f0>
     clc();
     adc(0x1);
     tay();
     lda(offsetof(G, FirebarPosLookupTbl), y);
-    // <conv.chunks.Comment object at 0x1057c6960>
-    // <conv.chunks.Comment object at 0x1057c6930>
-    // <conv.chunks.Comment object at 0x1057c6b10>
+    // <conv.chunks.Comment object at 0x103922960>
+    // <conv.chunks.Comment object at 0x103922930>
+    // <conv.chunks.Comment object at 0x103922b10>
     sta(0x1);
     pla();
     pha();
-    // <conv.chunks.Comment object at 0x1057c6cf0>
-    // <conv.chunks.Comment object at 0x1057c6e40>
+    // <conv.chunks.Comment object at 0x103922cf0>
+    // <conv.chunks.Comment object at 0x103922e40>
     clc();
     adc(0x8);
     anda(0b1111);
     cmp(0x9);
-    // <conv.chunks.Comment object at 0x1057c6f60>
-    // <conv.chunks.Comment object at 0x1057c6ff0>
-    // <conv.chunks.Comment object at 0x1057c71a0>
+    // <conv.chunks.Comment object at 0x103922f60>
+    // <conv.chunks.Comment object at 0x103922ff0>
+    // <conv.chunks.Comment object at 0x1039231a0>
     BCC(GetVAdder);
     eor(0b1111);
-    // <conv.chunks.Comment object at 0x1057c73b0>
+    // <conv.chunks.Comment object at 0x1039233b0>
     clc();
     adc(0x1);
     JMP(GetVAdder);
 }
 
 int GetVAdder() {
-    // <conv.chunks.Comment object at 0x1057c75c0>
+    // <conv.chunks.Comment object at 0x1039235c0>
     sta(0x2);
     ldy(0x0);
     lda(offsetof(G, FirebarTblOffsets), y);
-    // <conv.chunks.Comment object at 0x1057c7740>
+    // <conv.chunks.Comment object at 0x103923740>
     clc();
     adc(0x2);
-    // <conv.chunks.Comment object at 0x1057c7aa0>
+    // <conv.chunks.Comment object at 0x103923aa0>
     tay();
     lda(offsetof(G, FirebarPosLookupTbl), y);
-    // <conv.chunks.Comment object at 0x1057c7c20>
+    // <conv.chunks.Comment object at 0x103923c20>
     sta(0x2);
     pla();
     lsr();
-    // <conv.chunks.Comment object at 0x1057c7e00>
-    // <conv.chunks.Comment object at 0x1057c7f50>
+    // <conv.chunks.Comment object at 0x103923e00>
+    // <conv.chunks.Comment object at 0x103923f50>
     lsr();
     lsr();
     tay();
     lda(offsetof(G, FirebarMirrorData), y);
     sta(0x3);
-    // <conv.chunks.Comment object at 0x1057cc170>
-    // <conv.chunks.Comment object at 0x1057cc200>
-    // <conv.chunks.Comment object at 0x1057cc3b0>
-    rts();
+    // <conv.chunks.Comment object at 0x103928170>
+    // <conv.chunks.Comment object at 0x103928200>
+    // <conv.chunks.Comment object at 0x1039283b0>
+    return 0;
     JMP(MoveFlyingCheepCheep);
 }
 
@@ -13896,9 +13866,9 @@ int MoveFlyingCheepCheep() {
     lda(Enemy_State, x);
     anda(0b100000);
     BEQ(FlyCC);
-    // <conv.chunks.Comment object at 0x1057cc650>
-    // <conv.chunks.Comment object at 0x1057ccce0>
-    // <conv.chunks.Comment object at 0x1057cce00>
+    // <conv.chunks.Comment object at 0x103928650>
+    // <conv.chunks.Comment object at 0x103928ce0>
+    // <conv.chunks.Comment object at 0x103928e00>
     lda(0x0);
     sta(Enemy_SprAttrib, x);
     JMP(MoveJ_EnemyVertically);
@@ -13906,51 +13876,51 @@ int MoveFlyingCheepCheep() {
 }
 
 int FlyCC() {
-    // <conv.chunks.Comment object at 0x1057ccfb0>
-    // <conv.chunks.Comment object at 0x1057cd190>
-    // <conv.chunks.Comment object at 0x1057cd2b0>
+    // <conv.chunks.Comment object at 0x103928fb0>
+    // <conv.chunks.Comment object at 0x103929190>
+    // <conv.chunks.Comment object at 0x1039292b0>
     JSR(MoveEnemyHorizontally);
     ldy(0xd);
     lda(0x5);
     JSR(SetXMoveAmt);
-    // <conv.chunks.Comment object at 0x1057cd430>
-    // <conv.chunks.Comment object at 0x1057cd4c0>
-    // <conv.chunks.Comment object at 0x1057cd5e0>
+    // <conv.chunks.Comment object at 0x103929430>
+    // <conv.chunks.Comment object at 0x1039294c0>
+    // <conv.chunks.Comment object at 0x1039295e0>
     lda(Enemy_Y_MoveForce, x);
     lsr();
     lsr();
-    // <conv.chunks.Comment object at 0x1057cd8e0>
-    // <conv.chunks.Comment object at 0x1057cd9a0>
+    // <conv.chunks.Comment object at 0x1039298e0>
+    // <conv.chunks.Comment object at 0x1039299a0>
     lsr();
     lsr();
     tay();
     lda(Enemy_Y_Position, x);
     sec();
-    // <conv.chunks.Comment object at 0x1057cdb80>
-    // <conv.chunks.Comment object at 0x1057cdc10>
-    // <conv.chunks.Comment object at 0x1057cdd90>
+    // <conv.chunks.Comment object at 0x103929b80>
+    // <conv.chunks.Comment object at 0x103929c10>
+    // <conv.chunks.Comment object at 0x103929d90>
     sbc(offsetof(G, PRandomSubtracter), y);
     BPL(AddCCF);
-    // <conv.chunks.Comment object at 0x1057cdf40>
+    // <conv.chunks.Comment object at 0x103929f40>
     eor(0xff);
     clc();
-    // <conv.chunks.Comment object at 0x1057ce1b0>
+    // <conv.chunks.Comment object at 0x10392a1b0>
     adc(0x1);
     JMP(AddCCF);
 }
 
 int AddCCF() {
-    // <conv.chunks.Comment object at 0x1057ce2a0>
+    // <conv.chunks.Comment object at 0x10392a2a0>
     cmp(0x8);
     BCS(BPGet);
-    // <conv.chunks.Comment object at 0x1057ce420>
+    // <conv.chunks.Comment object at 0x10392a420>
     lda(Enemy_Y_MoveForce, x);
     clc();
     adc(0x10);
-    // <conv.chunks.Comment object at 0x1057ce7b0>
+    // <conv.chunks.Comment object at 0x10392a7b0>
     sta(Enemy_Y_MoveForce, x);
     lsr();
-    // <conv.chunks.Comment object at 0x1057cea20>
+    // <conv.chunks.Comment object at 0x10392aa20>
     lsr();
     lsr();
     lsr();
@@ -13959,10 +13929,10 @@ int AddCCF() {
 }
 
 int BPGet() {
-    // <conv.chunks.Comment object at 0x1057cecf0>
+    // <conv.chunks.Comment object at 0x10392acf0>
     lda(offsetof(G, FlyCCBPriority), y);
     sta(Enemy_SprAttrib, x);
-    rts();
+    return 0;
     JMP(MoveLakitu);
 }
 
@@ -13975,19 +13945,19 @@ int MoveLakitu() {
 }
 
 int ChkLS() {
-    // <conv.chunks.Comment object at 0x1057cf1d0>
-    // <conv.chunks.Comment object at 0x1057cf4a0>
-    // <conv.chunks.Comment object at 0x1057cf5c0>
-    // <conv.chunks.Comment object at 0x1057cf710>
-    // <conv.chunks.Comment object at 0x1057cf830>
+    // <conv.chunks.Comment object at 0x10392b1d0>
+    // <conv.chunks.Comment object at 0x10392b4a0>
+    // <conv.chunks.Comment object at 0x10392b5c0>
+    // <conv.chunks.Comment object at 0x10392b710>
+    // <conv.chunks.Comment object at 0x10392b830>
     lda(Enemy_State, x);
     BEQ(Fr12S);
-    // <conv.chunks.Comment object at 0x1057cf9e0>
+    // <conv.chunks.Comment object at 0x10392b9e0>
     lda(0x0);
     sta(LakituMoveDirection, x);
     sta(EnemyFrenzyBuffer);
-    // <conv.chunks.Comment object at 0x1057cfb90>
-    // <conv.chunks.Comment object at 0x1057cfd70>
+    // <conv.chunks.Comment object at 0x10392bb90>
+    // <conv.chunks.Comment object at 0x10392bd70>
     lda(0x10);
     BNE(SetLSpd);
     JMP(Fr12S);
@@ -13996,16 +13966,16 @@ int ChkLS() {
 int Fr12S() {
     lda(Spiny);
     sta(EnemyFrenzyBuffer);
-    // <conv.chunks.Comment object at 0x1057e01d0>
+    // <conv.chunks.Comment object at 0x10393c1d0>
     ldy(0x2);
     JMP(LdLDa);
 }
 
 int LdLDa() {
-    // <conv.chunks.Comment object at 0x1057e0410>
+    // <conv.chunks.Comment object at 0x10393c410>
     lda(offsetof(G, LakituDiffAdj), y);
     sta(0x1, y);
-    // <conv.chunks.Comment object at 0x1057e0650>
+    // <conv.chunks.Comment object at 0x10393c650>
     dey();
     BPL(LdLDa);
     JSR(PlayerLakituDiff);
@@ -14013,20 +13983,20 @@ int LdLDa() {
 }
 
 int SetLSpd() {
-    // <conv.chunks.Comment object at 0x1057e0830>
-    // <conv.chunks.Comment object at 0x1057e0980>
-    // <conv.chunks.Comment object at 0x1057e0aa0>
+    // <conv.chunks.Comment object at 0x10393c830>
+    // <conv.chunks.Comment object at 0x10393c980>
+    // <conv.chunks.Comment object at 0x10393caa0>
     sta(LakituMoveSpeed, x);
     ldy(0x1);
-    // <conv.chunks.Comment object at 0x1057e0c50>
+    // <conv.chunks.Comment object at 0x10393cc50>
     lda(LakituMoveDirection, x);
     anda(0x1);
     BNE(SetLMov);
-    // <conv.chunks.Comment object at 0x1057e0e90>
-    // <conv.chunks.Comment object at 0x1057e0f20>
+    // <conv.chunks.Comment object at 0x10393ce90>
+    // <conv.chunks.Comment object at 0x10393cf20>
     lda(LakituMoveSpeed, x);
     eor(0xff);
-    // <conv.chunks.Comment object at 0x1057e1220>
+    // <conv.chunks.Comment object at 0x10393d220>
     clc();
     adc(0x1);
     sta(LakituMoveSpeed, x);
@@ -14035,9 +14005,9 @@ int SetLSpd() {
 }
 
 int SetLMov() {
-    // <conv.chunks.Comment object at 0x1057e1430>
-    // <conv.chunks.Comment object at 0x1057e1640>
-    // <conv.chunks.Comment object at 0x1057e16d0>
+    // <conv.chunks.Comment object at 0x10393d430>
+    // <conv.chunks.Comment object at 0x10393d640>
+    // <conv.chunks.Comment object at 0x10393d6d0>
     sty(Enemy_MovingDir, x);
     JMP(MoveEnemyHorizontally);
     JMP(PlayerLakituDiff);
@@ -14048,31 +14018,31 @@ int PlayerLakituDiff() {
     JSR(PlayerEnemyDiff);
     BPL(ChkLakDif);
     iny();
-    // <conv.chunks.Comment object at 0x1057e19d0>
-    // <conv.chunks.Comment object at 0x1057e1a60>
-    // <conv.chunks.Comment object at 0x1057e1c10>
-    // <conv.chunks.Comment object at 0x1057e1d60>
+    // <conv.chunks.Comment object at 0x10393d9d0>
+    // <conv.chunks.Comment object at 0x10393da60>
+    // <conv.chunks.Comment object at 0x10393dc10>
+    // <conv.chunks.Comment object at 0x10393dd60>
     lda(0x0);
     eor(0xff);
-    // <conv.chunks.Comment object at 0x1057e1df0>
+    // <conv.chunks.Comment object at 0x10393ddf0>
     clc();
     adc(0x1);
-    // <conv.chunks.Comment object at 0x1057e2090>
+    // <conv.chunks.Comment object at 0x10393e090>
     sta(0x0);
     JMP(ChkLakDif);
 }
 
 int ChkLakDif() {
-    // <conv.chunks.Comment object at 0x1057e2120>
+    // <conv.chunks.Comment object at 0x10393e120>
     lda(0x0);
     cmp(0x3c);
-    // <conv.chunks.Comment object at 0x1057e2390>
+    // <conv.chunks.Comment object at 0x10393e390>
     BCC(ChkPSpeed);
     lda(0x3c);
-    // <conv.chunks.Comment object at 0x1057e2600>
+    // <conv.chunks.Comment object at 0x10393e600>
     sta(0x0);
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x1057e2690>
+    // <conv.chunks.Comment object at 0x10393e690>
     cmp(Lakitu);
     BNE(ChkPSpeed);
     tya();
@@ -14082,20 +14052,20 @@ int ChkLakDif() {
     BEQ(SetLMovD);
     dec(LakituMoveSpeed, x);
     lda(LakituMoveSpeed, x);
-    // <conv.chunks.Comment object at 0x1057e2990>
-    // <conv.chunks.Comment object at 0x1057e2bd0>
-    // <conv.chunks.Comment object at 0x1057e2c60>
-    // <conv.chunks.Comment object at 0x1057e2db0>
-    // <conv.chunks.Comment object at 0x1057e2ed0>
-    // <conv.chunks.Comment object at 0x1057e3020>
-    // <conv.chunks.Comment object at 0x1057e3140>
-    // <conv.chunks.Comment object at 0x1057e3290>
+    // <conv.chunks.Comment object at 0x10393e990>
+    // <conv.chunks.Comment object at 0x10393ebd0>
+    // <conv.chunks.Comment object at 0x10393ec60>
+    // <conv.chunks.Comment object at 0x10393edb0>
+    // <conv.chunks.Comment object at 0x10393eed0>
+    // <conv.chunks.Comment object at 0x10393f020>
+    // <conv.chunks.Comment object at 0x10393f140>
+    // <conv.chunks.Comment object at 0x10393f290>
     BNE(ExMoveLak);
     JMP(SetLMovD);
 }
 
 int SetLMovD() {
-    // <conv.chunks.Comment object at 0x1057e34d0>
+    // <conv.chunks.Comment object at 0x10393f4d0>
     tya();
     sta(LakituMoveDirection, x);
     JMP(ChkPSpeed);
@@ -14105,24 +14075,24 @@ int ChkPSpeed() {
     lda(0x0);
     anda(0b111100);
     lsr();
-    // <conv.chunks.Comment object at 0x1057e37d0>
-    // <conv.chunks.Comment object at 0x1057e3980>
+    // <conv.chunks.Comment object at 0x10393f7d0>
+    // <conv.chunks.Comment object at 0x10393f980>
     lsr();
     sta(0x0);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x1057e3ad0>
-    // <conv.chunks.Comment object at 0x1057e3b60>
+    // <conv.chunks.Comment object at 0x10393fad0>
+    // <conv.chunks.Comment object at 0x10393fb60>
     lda(Player_X_Speed);
     BEQ(SubDifAdj);
-    // <conv.chunks.Comment object at 0x1057e3dd0>
+    // <conv.chunks.Comment object at 0x10393fdd0>
     lda(ScrollAmount);
     BEQ(SubDifAdj);
     iny();
-    // <conv.chunks.Comment object at 0x1057e3fe0>
-    // <conv.chunks.Comment object at 0x1057e8170>
+    // <conv.chunks.Comment object at 0x10393ffe0>
+    // <conv.chunks.Comment object at 0x103944170>
     lda(Player_X_Speed);
     cmp(0x19);
-    // <conv.chunks.Comment object at 0x1057e82f0>
+    // <conv.chunks.Comment object at 0x1039442f0>
     BCC(ChkSpinyO);
     lda(ScrollAmount);
     cmp(0x2);
@@ -14132,22 +14102,22 @@ int ChkPSpeed() {
 }
 
 int ChkSpinyO() {
-    // <conv.chunks.Comment object at 0x1057e85f0>
-    // <conv.chunks.Comment object at 0x1057e8680>
-    // <conv.chunks.Comment object at 0x1057e8860>
-    // <conv.chunks.Comment object at 0x1057e88f0>
+    // <conv.chunks.Comment object at 0x1039445f0>
+    // <conv.chunks.Comment object at 0x103944680>
+    // <conv.chunks.Comment object at 0x103944860>
+    // <conv.chunks.Comment object at 0x1039448f0>
     lda(Enemy_ID, x);
     cmp(Spiny);
     BNE(ChkEmySpd);
     lda(Player_X_Speed);
-    // <conv.chunks.Comment object at 0x1057e8ad0>
-    // <conv.chunks.Comment object at 0x1057e8cb0>
+    // <conv.chunks.Comment object at 0x103944ad0>
+    // <conv.chunks.Comment object at 0x103944cb0>
     BNE(SubDifAdj);
     JMP(ChkEmySpd);
 }
 
 int ChkEmySpd() {
-    // <conv.chunks.Comment object at 0x1057e8ec0>
+    // <conv.chunks.Comment object at 0x103944ec0>
     lda(Enemy_Y_Speed, x);
     BNE(SubDifAdj);
     ldy(0x0);
@@ -14155,29 +14125,29 @@ int ChkEmySpd() {
 }
 
 int SubDifAdj() {
-    // <conv.chunks.Comment object at 0x1057e9040>
-    // <conv.chunks.Comment object at 0x1057e9160>
-    // <conv.chunks.Comment object at 0x1057e91f0>
+    // <conv.chunks.Comment object at 0x103945040>
+    // <conv.chunks.Comment object at 0x103945160>
+    // <conv.chunks.Comment object at 0x1039451f0>
     lda(0x1, y);
     ldy(0x0);
     JMP(SPixelLak);
 }
 
 int SPixelLak() {
-    // <conv.chunks.Comment object at 0x1057e9430>
-    // <conv.chunks.Comment object at 0x1057e94c0>
+    // <conv.chunks.Comment object at 0x103945430>
+    // <conv.chunks.Comment object at 0x1039454c0>
     sec();
     sbc(0x1);
-    // <conv.chunks.Comment object at 0x1057e9610>
+    // <conv.chunks.Comment object at 0x103945610>
     dey();
     BPL(SPixelLak);
     JMP(ExMoveLak);
 }
 
 int ExMoveLak() {
-    // <conv.chunks.Comment object at 0x1057e97c0>
-    // <conv.chunks.Comment object at 0x1057e98e0>
-    rts();
+    // <conv.chunks.Comment object at 0x1039457c0>
+    // <conv.chunks.Comment object at 0x1039458e0>
+    return 0;
     JMP(BridgeCollapse);
 }
 
@@ -14188,26 +14158,26 @@ int BridgeCollapse() {
     BNE(SetM2);
     stx(ObjectOffset);
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x1057e9d30>
-    // <conv.chunks.Comment object at 0x1057e9b20>
-    // <conv.chunks.Comment object at 0x1057ea690>
-    // <conv.chunks.Comment object at 0x1057ea6f0>
-    // <conv.chunks.Comment object at 0x1057ea930>
-    // <conv.chunks.Comment object at 0x1057eaa50>
+    // <conv.chunks.Comment object at 0x103945d30>
+    // <conv.chunks.Comment object at 0x103945b20>
+    // <conv.chunks.Comment object at 0x103946690>
+    // <conv.chunks.Comment object at 0x1039466f0>
+    // <conv.chunks.Comment object at 0x103946930>
+    // <conv.chunks.Comment object at 0x103946a50>
     BEQ(RemoveBridge);
     anda(0b1000000);
-    // <conv.chunks.Comment object at 0x1057eac90>
+    // <conv.chunks.Comment object at 0x103946c90>
     BEQ(SetM2);
     lda(Enemy_Y_Position, x);
     cmp(0xe0);
-    // <conv.chunks.Comment object at 0x1057eaed0>
-    // <conv.chunks.Comment object at 0x1057eb020>
+    // <conv.chunks.Comment object at 0x103946ed0>
+    // <conv.chunks.Comment object at 0x103947020>
     BCC(MoveD_Bowser);
     JMP(SetM2);
 }
 
 int SetM2() {
-    // <conv.chunks.Comment object at 0x1057eb230>
+    // <conv.chunks.Comment object at 0x103947230>
     lda(Silence);
     sta(EventMusicQueue);
     inc(OperMode_Task);
@@ -14224,25 +14194,25 @@ int MoveD_Bowser() {
 int RemoveBridge() {
     dec(BowserFeetCounter);
     BNE(NoBFall);
-    // <conv.chunks.Comment object at 0x1057eb9b0>
-    // <conv.chunks.Comment object at 0x1057ebad0>
+    // <conv.chunks.Comment object at 0x1039479b0>
+    // <conv.chunks.Comment object at 0x103947ad0>
     lda(0x4);
     sta(BowserFeetCounter);
-    // <conv.chunks.Comment object at 0x1057ebc80>
+    // <conv.chunks.Comment object at 0x103947c80>
     lda(BowserBodyControls);
     eor(0x1);
-    // <conv.chunks.Comment object at 0x1057ebf20>
+    // <conv.chunks.Comment object at 0x103947f20>
     sta(BowserBodyControls);
     lda(0x22);
-    // <conv.chunks.Comment object at 0x1057f0170>
+    // <conv.chunks.Comment object at 0x10394c170>
     sta(0x5);
     ldy(BridgeCollapseOffset);
     lda(offsetof(G, BridgeCollapseData), y);
-    // <conv.chunks.Comment object at 0x1057f0200>
-    // <conv.chunks.Comment object at 0x1057f04a0>
+    // <conv.chunks.Comment object at 0x10394c200>
+    // <conv.chunks.Comment object at 0x10394c4a0>
     sta(0x4);
     ldy(VRAM_Buffer1_Offset);
-    // <conv.chunks.Comment object at 0x1057f05f0>
+    // <conv.chunks.Comment object at 0x10394c5f0>
     iny();
     ldx(0xc);
     JSR(RemBridge);
@@ -14253,33 +14223,33 @@ int RemoveBridge() {
     lda(Sfx_BrickShatter);
     sta(NoiseSoundQueue);
     inc(BridgeCollapseOffset);
-    // <conv.chunks.Comment object at 0x1057f0890>
-    // <conv.chunks.Comment object at 0x1057f0920>
-    // <conv.chunks.Comment object at 0x1057f0ad0>
-    // <conv.chunks.Comment object at 0x1057f0bf0>
-    // <conv.chunks.Comment object at 0x1057f0d10>
-    // <conv.chunks.Comment object at 0x1057f0e30>
-    // <conv.chunks.Comment object at 0x1057f0f50>
-    // <conv.chunks.Comment object at 0x1057f1070>
-    // <conv.chunks.Comment object at 0x1057f1190>
+    // <conv.chunks.Comment object at 0x10394c890>
+    // <conv.chunks.Comment object at 0x10394c920>
+    // <conv.chunks.Comment object at 0x10394cad0>
+    // <conv.chunks.Comment object at 0x10394cbf0>
+    // <conv.chunks.Comment object at 0x10394cd10>
+    // <conv.chunks.Comment object at 0x10394ce30>
+    // <conv.chunks.Comment object at 0x10394cf50>
+    // <conv.chunks.Comment object at 0x10394d070>
+    // <conv.chunks.Comment object at 0x10394d190>
     lda(BridgeCollapseOffset);
     cmp(0xf);
     BNE(NoBFall);
     JSR(InitVStf);
-    // <conv.chunks.Comment object at 0x1057f13a0>
-    // <conv.chunks.Comment object at 0x1057f1430>
-    // <conv.chunks.Comment object at 0x1057f1610>
+    // <conv.chunks.Comment object at 0x10394d3a0>
+    // <conv.chunks.Comment object at 0x10394d430>
+    // <conv.chunks.Comment object at 0x10394d610>
     lda(0b1000000);
     sta(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x1057f1820>
+    // <conv.chunks.Comment object at 0x10394d820>
     lda(Sfx_BowserFall);
     sta(Square2SoundQueue);
     JMP(NoBFall);
 }
 
 int NoBFall() {
-    // <conv.chunks.Comment object at 0x1057f1a60>
-    // <conv.chunks.Comment object at 0x1057f1b80>
+    // <conv.chunks.Comment object at 0x10394da60>
+    // <conv.chunks.Comment object at 0x10394db80>
     JMP(BowserGfxHandler);
     JMP(RunBowser);
 }
@@ -14287,8 +14257,8 @@ int NoBFall() {
 int RunBowser() {
     lda(Enemy_State, x);
     anda(0b100000);
-    // <conv.chunks.Comment object at 0x1057f1dc0>
-    // <conv.chunks.Comment object at 0x1057f2120>
+    // <conv.chunks.Comment object at 0x10394ddc0>
+    // <conv.chunks.Comment object at 0x10394e120>
     BEQ(BowserControl);
     lda(Enemy_Y_Position, x);
     cmp(0xe0);
@@ -14302,18 +14272,18 @@ int KillAllEnemies() {
 }
 
 int KillLoop() {
-    // <conv.chunks.Comment object at 0x1057f26f0>
-    // <conv.chunks.Comment object at 0x1057f2780>
+    // <conv.chunks.Comment object at 0x10394e6f0>
+    // <conv.chunks.Comment object at 0x10394e780>
     JSR(EraseEnemyObject);
     dex();
     BPL(KillLoop);
     sta(EnemyFrenzyBuffer);
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x1057f2990>
-    // <conv.chunks.Comment object at 0x1057f2a20>
-    // <conv.chunks.Comment object at 0x1057f2b40>
-    // <conv.chunks.Comment object at 0x1057f2c60>
-    rts();
+    // <conv.chunks.Comment object at 0x10394e990>
+    // <conv.chunks.Comment object at 0x10394ea20>
+    // <conv.chunks.Comment object at 0x10394eb40>
+    // <conv.chunks.Comment object at 0x10394ec60>
+    return 0;
     JMP(BowserControl);
 }
 
@@ -14327,11 +14297,11 @@ int BowserControl() {
 }
 
 int ChkMouth() {
-    // <conv.chunks.Comment object at 0x1057f2ea0>
-    // <conv.chunks.Comment object at 0x1057f3050>
-    // <conv.chunks.Comment object at 0x1057f3170>
-    // <conv.chunks.Comment object at 0x1057f3290>
-    // <conv.chunks.Comment object at 0x1057f33b0>
+    // <conv.chunks.Comment object at 0x10394eea0>
+    // <conv.chunks.Comment object at 0x10394f050>
+    // <conv.chunks.Comment object at 0x10394f170>
+    // <conv.chunks.Comment object at 0x10394f290>
+    // <conv.chunks.Comment object at 0x10394f3b0>
     lda(BowserBodyControls);
     BPL(FeetTmr);
     JMP(HammerChk);
@@ -14339,25 +14309,25 @@ int ChkMouth() {
 }
 
 int FeetTmr() {
-    // <conv.chunks.Comment object at 0x1057f3500>
-    // <conv.chunks.Comment object at 0x1057f3650>
-    // <conv.chunks.Comment object at 0x1057f3770>
+    // <conv.chunks.Comment object at 0x10394f500>
+    // <conv.chunks.Comment object at 0x10394f650>
+    // <conv.chunks.Comment object at 0x10394f770>
     dec(BowserFeetCounter);
     BNE(ResetMDr);
     lda(0x20);
-    // <conv.chunks.Comment object at 0x1057f38f0>
-    // <conv.chunks.Comment object at 0x1057f3a10>
+    // <conv.chunks.Comment object at 0x10394f8f0>
+    // <conv.chunks.Comment object at 0x10394fa10>
     sta(BowserFeetCounter);
     lda(BowserBodyControls);
     eor(0b1);
-    // <conv.chunks.Comment object at 0x1057f3c20>
-    // <conv.chunks.Comment object at 0x1057f3d40>
+    // <conv.chunks.Comment object at 0x10394fc20>
+    // <conv.chunks.Comment object at 0x10394fd40>
     sta(BowserBodyControls);
     JMP(ResetMDr);
 }
 
 int ResetMDr() {
-    // <conv.chunks.Comment object at 0x1057f3f50>
+    // <conv.chunks.Comment object at 0x10394ff50>
     lda(FrameCounter);
     anda(0b1111);
     BNE(B_FaceP);
@@ -14367,29 +14337,29 @@ int ResetMDr() {
 }
 
 int B_FaceP() {
-    // <conv.chunks.Comment object at 0x1057fc0e0>
-    // <conv.chunks.Comment object at 0x1057fc200>
-    // <conv.chunks.Comment object at 0x1057fc350>
-    // <conv.chunks.Comment object at 0x1057fc3e0>
-    // <conv.chunks.Comment object at 0x1057fc5c0>
+    // <conv.chunks.Comment object at 0x1039580e0>
+    // <conv.chunks.Comment object at 0x103958200>
+    // <conv.chunks.Comment object at 0x103958350>
+    // <conv.chunks.Comment object at 0x1039583e0>
+    // <conv.chunks.Comment object at 0x1039585c0>
     lda(EnemyFrameTimer, x);
     BEQ(GetPRCmp);
     JSR(PlayerEnemyDiff);
     BPL(GetPRCmp);
-    // <conv.chunks.Comment object at 0x1057fc770>
-    // <conv.chunks.Comment object at 0x1057fc890>
-    // <conv.chunks.Comment object at 0x1057fc9b0>
+    // <conv.chunks.Comment object at 0x103958770>
+    // <conv.chunks.Comment object at 0x103958890>
+    // <conv.chunks.Comment object at 0x1039589b0>
     lda(0x1);
     sta(Enemy_MovingDir, x);
-    // <conv.chunks.Comment object at 0x1057fcb30>
+    // <conv.chunks.Comment object at 0x103958b30>
     lda(0x2);
     sta(BowserMovementSpeed);
-    // <conv.chunks.Comment object at 0x1057fcd70>
+    // <conv.chunks.Comment object at 0x103958d70>
     lda(0x20);
     sta(EnemyFrameTimer, x);
     sta(BowserFireBreathTimer);
-    // <conv.chunks.Comment object at 0x1057fcf80>
-    // <conv.chunks.Comment object at 0x1057fd160>
+    // <conv.chunks.Comment object at 0x103958f80>
+    // <conv.chunks.Comment object at 0x103959160>
     lda(Enemy_X_Position, x);
     cmp(0xc8);
     BCS(HammerChk);
@@ -14397,21 +14367,21 @@ int B_FaceP() {
 }
 
 int GetPRCmp() {
-    // <conv.chunks.Comment object at 0x1057fd3a0>
-    // <conv.chunks.Comment object at 0x1057fd430>
-    // <conv.chunks.Comment object at 0x1057fd5e0>
+    // <conv.chunks.Comment object at 0x1039593a0>
+    // <conv.chunks.Comment object at 0x103959430>
+    // <conv.chunks.Comment object at 0x1039595e0>
     lda(FrameCounter);
     anda(0b11);
     BNE(HammerChk);
-    // <conv.chunks.Comment object at 0x1057fd820>
+    // <conv.chunks.Comment object at 0x103959820>
     lda(Enemy_X_Position, x);
     cmp(BowserOrigXPos);
     BNE(GetDToO);
-    // <conv.chunks.Comment object at 0x1057fda60>
-    // <conv.chunks.Comment object at 0x1057fdb80>
+    // <conv.chunks.Comment object at 0x103959a60>
+    // <conv.chunks.Comment object at 0x103959b80>
     lda(PseudoRandomBitReg, x);
     anda(0b11);
-    // <conv.chunks.Comment object at 0x1057fddf0>
+    // <conv.chunks.Comment object at 0x103959df0>
     tay();
     lda(offsetof(G, PRandomRange), y);
     sta(MaxRangeFromOrigin);
@@ -14422,32 +14392,32 @@ int GetDToO() {
     lda(Enemy_X_Position, x);
     clc();
     adc(BowserMovementSpeed);
-    // <conv.chunks.Comment object at 0x1057fe3c0>
-    // <conv.chunks.Comment object at 0x1057fe450>
+    // <conv.chunks.Comment object at 0x10395a3c0>
+    // <conv.chunks.Comment object at 0x10395a450>
     sta(Enemy_X_Position, x);
     ldy(Enemy_MovingDir, x);
     cpy(0x1);
-    // <conv.chunks.Comment object at 0x1057fe7b0>
+    // <conv.chunks.Comment object at 0x10395a7b0>
     BEQ(HammerChk);
     ldy(0xff);
     sec();
     sbc(BowserOrigXPos);
     BPL(CompDToO);
-    // <conv.chunks.Comment object at 0x1057fe9c0>
-    // <conv.chunks.Comment object at 0x1057feb10>
-    // <conv.chunks.Comment object at 0x1057feba0>
-    // <conv.chunks.Comment object at 0x1057fecc0>
+    // <conv.chunks.Comment object at 0x10395a9c0>
+    // <conv.chunks.Comment object at 0x10395ab10>
+    // <conv.chunks.Comment object at 0x10395aba0>
+    // <conv.chunks.Comment object at 0x10395acc0>
     eor(0xff);
     clc();
-    // <conv.chunks.Comment object at 0x1057fef00>
+    // <conv.chunks.Comment object at 0x10395af00>
     adc(0x1);
     ldy(0x1);
     JMP(CompDToO);
 }
 
 int CompDToO() {
-    // <conv.chunks.Comment object at 0x1057feff0>
-    // <conv.chunks.Comment object at 0x1057ff110>
+    // <conv.chunks.Comment object at 0x10395aff0>
+    // <conv.chunks.Comment object at 0x10395b110>
     cmp(MaxRangeFromOrigin);
     BCC(HammerChk);
     sty(BowserMovementSpeed);
@@ -14455,19 +14425,19 @@ int CompDToO() {
 }
 
 int HammerChk() {
-    // <conv.chunks.Comment object at 0x1057ff2f0>
-    // <conv.chunks.Comment object at 0x1057ff410>
-    // <conv.chunks.Comment object at 0x1057ff530>
+    // <conv.chunks.Comment object at 0x10395b2f0>
+    // <conv.chunks.Comment object at 0x10395b410>
+    // <conv.chunks.Comment object at 0x10395b530>
     lda(EnemyFrameTimer, x);
     BNE(MakeBJump);
     JSR(MoveEnemySlowVert);
     lda(WorldNumber);
-    // <conv.chunks.Comment object at 0x1057ff6b0>
-    // <conv.chunks.Comment object at 0x1057ff7d0>
-    // <conv.chunks.Comment object at 0x1057ff8f0>
+    // <conv.chunks.Comment object at 0x10395b6b0>
+    // <conv.chunks.Comment object at 0x10395b7d0>
+    // <conv.chunks.Comment object at 0x10395b8f0>
     cmp(World6);
     BCC(SetHmrTmr);
-    // <conv.chunks.Comment object at 0x1057ffa40>
+    // <conv.chunks.Comment object at 0x10395ba40>
     lda(FrameCounter);
     anda(0b11);
     BNE(SetHmrTmr);
@@ -14476,18 +14446,18 @@ int HammerChk() {
 }
 
 int SetHmrTmr() {
-    // <conv.chunks.Comment object at 0x1057ffd40>
-    // <conv.chunks.Comment object at 0x1057ffe60>
-    // <conv.chunks.Comment object at 0x1057fff80>
-    // <conv.chunks.Comment object at 0x1058040e0>
+    // <conv.chunks.Comment object at 0x10395bd40>
+    // <conv.chunks.Comment object at 0x10395be60>
+    // <conv.chunks.Comment object at 0x10395bf80>
+    // <conv.chunks.Comment object at 0x1039600e0>
     lda(Enemy_Y_Position, x);
     cmp(0x80);
     BCC(ChkFireB);
-    // <conv.chunks.Comment object at 0x105804260>
-    // <conv.chunks.Comment object at 0x1058042f0>
+    // <conv.chunks.Comment object at 0x103960260>
+    // <conv.chunks.Comment object at 0x1039602f0>
     lda(PseudoRandomBitReg, x);
     anda(0b11);
-    // <conv.chunks.Comment object at 0x1058045c0>
+    // <conv.chunks.Comment object at 0x1039605c0>
     tay();
     lda(offsetof(G, PRandomRange), y);
     sta(EnemyFrameTimer, x);
@@ -14495,30 +14465,30 @@ int SetHmrTmr() {
 }
 
 int SkipToFB() {
-    // <conv.chunks.Comment object at 0x105804770>
-    // <conv.chunks.Comment object at 0x1058048c0>
-    // <conv.chunks.Comment object at 0x105804a10>
+    // <conv.chunks.Comment object at 0x103960770>
+    // <conv.chunks.Comment object at 0x1039608c0>
+    // <conv.chunks.Comment object at 0x103960a10>
     JMP(ChkFireB);
     JMP(MakeBJump);
 }
 
 int MakeBJump() {
-    // <conv.chunks.Comment object at 0x105804b60>
+    // <conv.chunks.Comment object at 0x103960b60>
     cmp(0x1);
     BNE(ChkFireB);
     dec(Enemy_Y_Position, x);
     JSR(InitVStf);
-    // <conv.chunks.Comment object at 0x105804c20>
-    // <conv.chunks.Comment object at 0x105804dd0>
-    // <conv.chunks.Comment object at 0x105804f20>
+    // <conv.chunks.Comment object at 0x103960c20>
+    // <conv.chunks.Comment object at 0x103960dd0>
+    // <conv.chunks.Comment object at 0x103960f20>
     lda(0xfe);
     sta(Enemy_Y_Speed, x);
     JMP(ChkFireB);
 }
 
 int ChkFireB() {
-    // <conv.chunks.Comment object at 0x1058050a0>
-    // <conv.chunks.Comment object at 0x105805280>
+    // <conv.chunks.Comment object at 0x1039610a0>
+    // <conv.chunks.Comment object at 0x103961280>
     lda(WorldNumber);
     cmp(World8);
     BEQ(SpawnFBr);
@@ -14528,37 +14498,37 @@ int ChkFireB() {
 }
 
 int SpawnFBr() {
-    // <conv.chunks.Comment object at 0x1058053d0>
-    // <conv.chunks.Comment object at 0x105805430>
-    // <conv.chunks.Comment object at 0x105805640>
-    // <conv.chunks.Comment object at 0x1058056a0>
-    // <conv.chunks.Comment object at 0x1058058b0>
+    // <conv.chunks.Comment object at 0x1039613d0>
+    // <conv.chunks.Comment object at 0x103961430>
+    // <conv.chunks.Comment object at 0x103961640>
+    // <conv.chunks.Comment object at 0x1039616a0>
+    // <conv.chunks.Comment object at 0x1039618b0>
     lda(BowserFireBreathTimer);
     BNE(BowserGfxHandler);
-    // <conv.chunks.Comment object at 0x105805a00>
+    // <conv.chunks.Comment object at 0x103961a00>
     lda(0x20);
     sta(BowserFireBreathTimer);
-    // <conv.chunks.Comment object at 0x105805b80>
+    // <conv.chunks.Comment object at 0x103961b80>
     lda(BowserBodyControls);
     eor(0b10000000);
     sta(BowserBodyControls);
     BMI(ChkFireB);
     JSR(SetFlameTimer);
-    // <conv.chunks.Comment object at 0x105805e20>
-    // <conv.chunks.Comment object at 0x105805f40>
-    // <conv.chunks.Comment object at 0x105806060>
-    // <conv.chunks.Comment object at 0x105806180>
+    // <conv.chunks.Comment object at 0x103961e20>
+    // <conv.chunks.Comment object at 0x103961f40>
+    // <conv.chunks.Comment object at 0x103962060>
+    // <conv.chunks.Comment object at 0x103962180>
     ldy(SecondaryHardMode);
     BEQ(SetFBTmr);
-    // <conv.chunks.Comment object at 0x105806390>
+    // <conv.chunks.Comment object at 0x103962390>
     sec();
     sbc(0x10);
     JMP(SetFBTmr);
 }
 
 int SetFBTmr() {
-    // <conv.chunks.Comment object at 0x105806540>
-    // <conv.chunks.Comment object at 0x1058065d0>
+    // <conv.chunks.Comment object at 0x103962540>
+    // <conv.chunks.Comment object at 0x1039625d0>
     sta(BowserFireBreathTimer);
     lda(BowserFlame);
     sta(EnemyFrenzyBuffer);
@@ -14569,9 +14539,9 @@ int BowserGfxHandler() {
     JSR(ProcessBowserHalf);
     ldy(0x10);
     lda(Enemy_MovingDir, x);
-    // <conv.chunks.Comment object at 0x105806a50>
-    // <conv.chunks.Comment object at 0x105806b70>
-    // <conv.chunks.Comment object at 0x105806c00>
+    // <conv.chunks.Comment object at 0x103962a50>
+    // <conv.chunks.Comment object at 0x103962b70>
+    // <conv.chunks.Comment object at 0x103962c00>
     lsr();
     BCC(CopyFToR);
     ldy(0xf0);
@@ -14579,66 +14549,66 @@ int BowserGfxHandler() {
 }
 
 int CopyFToR() {
-    // <conv.chunks.Comment object at 0x105806e70>
-    // <conv.chunks.Comment object at 0x105806f90>
-    // <conv.chunks.Comment object at 0x105807020>
+    // <conv.chunks.Comment object at 0x103962e70>
+    // <conv.chunks.Comment object at 0x103962f90>
+    // <conv.chunks.Comment object at 0x103963020>
     tya();
     clc();
     adc(Enemy_X_Position, x);
     ldy(DuplicateObj_Offset);
     sta(Enemy_X_Position, y);
-    // <conv.chunks.Comment object at 0x105807230>
-    // <conv.chunks.Comment object at 0x105807380>
-    // <conv.chunks.Comment object at 0x1058074a0>
+    // <conv.chunks.Comment object at 0x103963230>
+    // <conv.chunks.Comment object at 0x103963380>
+    // <conv.chunks.Comment object at 0x1039634a0>
     lda(Enemy_Y_Position, x);
     clc();
     adc(0x8);
     sta(Enemy_Y_Position, y);
-    // <conv.chunks.Comment object at 0x105807740>
-    // <conv.chunks.Comment object at 0x1058077d0>
-    // <conv.chunks.Comment object at 0x105807860>
+    // <conv.chunks.Comment object at 0x103963740>
+    // <conv.chunks.Comment object at 0x1039637d0>
+    // <conv.chunks.Comment object at 0x103963860>
     lda(Enemy_State, x);
     sta(Enemy_State, y);
-    // <conv.chunks.Comment object at 0x105807b60>
+    // <conv.chunks.Comment object at 0x103963b60>
     lda(Enemy_MovingDir, x);
     sta(Enemy_MovingDir, y);
     lda(ObjectOffset);
-    // <conv.chunks.Comment object at 0x105807dd0>
-    // <conv.chunks.Comment object at 0x105807f20>
+    // <conv.chunks.Comment object at 0x103963dd0>
+    // <conv.chunks.Comment object at 0x103963f20>
     pha();
     ldx(DuplicateObj_Offset);
-    // <conv.chunks.Comment object at 0x105810110>
+    // <conv.chunks.Comment object at 0x10396c110>
     stx(ObjectOffset);
     lda(Bowser);
     sta(Enemy_ID, x);
     JSR(ProcessBowserHalf);
-    // <conv.chunks.Comment object at 0x105810320>
-    // <conv.chunks.Comment object at 0x105810380>
-    // <conv.chunks.Comment object at 0x1058105c0>
+    // <conv.chunks.Comment object at 0x10396c320>
+    // <conv.chunks.Comment object at 0x10396c380>
+    // <conv.chunks.Comment object at 0x10396c5c0>
     pla();
     sta(ObjectOffset);
-    // <conv.chunks.Comment object at 0x105810770>
+    // <conv.chunks.Comment object at 0x10396c770>
     tax();
     lda(0x0);
-    // <conv.chunks.Comment object at 0x105810920>
+    // <conv.chunks.Comment object at 0x10396c920>
     sta(BowserGfxFlag);
     JMP(ExBGfxH);
 }
 
 int ExBGfxH() {
-    // <conv.chunks.Comment object at 0x105810b60>
-    rts();
+    // <conv.chunks.Comment object at 0x10396cb60>
+    return 0;
     JMP(ProcessBowserHalf);
 }
 
 int ProcessBowserHalf() {
     inc(BowserGfxFlag);
     JSR(RunRetainerObj);
-    // <conv.chunks.Comment object at 0x105810cb0>
-    // <conv.chunks.Comment object at 0x105810dd0>
+    // <conv.chunks.Comment object at 0x10396ccb0>
+    // <conv.chunks.Comment object at 0x10396cdd0>
     lda(Enemy_State, x);
     BNE(ExBGfxH);
-    // <conv.chunks.Comment object at 0x105811010>
+    // <conv.chunks.Comment object at 0x10396d010>
     lda(0xa);
     sta(Enemy_BoundBoxCtrl, x);
     JSR(GetEnemyBoundBox);
@@ -14651,17 +14621,17 @@ int SetFlameTimer() {
     inc(BowserFlameTimerCtrl);
     lda(BowserFlameTimerCtrl);
     anda(0b111);
-    // <conv.chunks.Comment object at 0x105811700>
-    // <conv.chunks.Comment object at 0x105811820>
-    // <conv.chunks.Comment object at 0x105811d90>
-    // <conv.chunks.Comment object at 0x105811eb0>
+    // <conv.chunks.Comment object at 0x10396d700>
+    // <conv.chunks.Comment object at 0x10396d820>
+    // <conv.chunks.Comment object at 0x10396dd90>
+    // <conv.chunks.Comment object at 0x10396deb0>
     sta(BowserFlameTimerCtrl);
     lda(offsetof(G, FlameTimerData), y);
     JMP(ExFl);
 }
 
 int ExFl() {
-    rts();
+    return 0;
     JMP(ProcBowserFlame);
 }
 
@@ -14669,9 +14639,9 @@ int ProcBowserFlame() {
     lda(TimerControl);
     BNE(SetGfxF);
     lda(0x40);
-    // <conv.chunks.Comment object at 0x105812330>
-    // <conv.chunks.Comment object at 0x105812450>
-    // <conv.chunks.Comment object at 0x1058125a0>
+    // <conv.chunks.Comment object at 0x10396e330>
+    // <conv.chunks.Comment object at 0x10396e450>
+    // <conv.chunks.Comment object at 0x10396e5a0>
     ldy(SecondaryHardMode);
     BEQ(SFlmX);
     lda(0x60);
@@ -14679,33 +14649,33 @@ int ProcBowserFlame() {
 }
 
 int SFlmX() {
-    // <conv.chunks.Comment object at 0x1058127b0>
-    // <conv.chunks.Comment object at 0x105812900>
-    // <conv.chunks.Comment object at 0x105812990>
+    // <conv.chunks.Comment object at 0x10396e7b0>
+    // <conv.chunks.Comment object at 0x10396e900>
+    // <conv.chunks.Comment object at 0x10396e990>
     sta(0x0);
     lda(Enemy_X_MoveForce, x);
     sec();
-    // <conv.chunks.Comment object at 0x105812cf0>
+    // <conv.chunks.Comment object at 0x10396ecf0>
     sbc(0x0);
     sta(Enemy_X_MoveForce, x);
-    // <conv.chunks.Comment object at 0x105812d80>
+    // <conv.chunks.Comment object at 0x10396ed80>
     lda(Enemy_X_Position, x);
     sbc(0x1);
     sta(Enemy_X_Position, x);
-    // <conv.chunks.Comment object at 0x1058130e0>
-    // <conv.chunks.Comment object at 0x105813170>
+    // <conv.chunks.Comment object at 0x10396f0e0>
+    // <conv.chunks.Comment object at 0x10396f170>
     lda(Enemy_PageLoc, x);
     sbc(0x0);
-    // <conv.chunks.Comment object at 0x105813470>
+    // <conv.chunks.Comment object at 0x10396f470>
     sta(Enemy_PageLoc, x);
     ldy(BowserFlamePRandomOfs, x);
     lda(Enemy_Y_Position, x);
     cmp(offsetof(G, FlameYPosData), y);
     BEQ(SetGfxF);
-    // <conv.chunks.Comment object at 0x1058136b0>
-    // <conv.chunks.Comment object at 0x105813800>
-    // <conv.chunks.Comment object at 0x105813950>
-    // <conv.chunks.Comment object at 0x105813aa0>
+    // <conv.chunks.Comment object at 0x10396f6b0>
+    // <conv.chunks.Comment object at 0x10396f800>
+    // <conv.chunks.Comment object at 0x10396f950>
+    // <conv.chunks.Comment object at 0x10396faa0>
     clc();
     adc(Enemy_Y_MoveForce, x);
     sta(Enemy_Y_Position, x);
@@ -14713,20 +14683,20 @@ int SFlmX() {
 }
 
 int SetGfxF() {
-    // <conv.chunks.Comment object at 0x105813c80>
-    // <conv.chunks.Comment object at 0x105813dd0>
-    // <conv.chunks.Comment object at 0x105813f20>
+    // <conv.chunks.Comment object at 0x10396fc80>
+    // <conv.chunks.Comment object at 0x10396fdd0>
+    // <conv.chunks.Comment object at 0x10396ff20>
     JSR(RelativeEnemyPosition);
     lda(Enemy_State, x);
     BNE(ExFl);
     lda(0x51);
     sta(0x0);
     ldy(0x2);
-    // <conv.chunks.Comment object at 0x10581c0e0>
-    // <conv.chunks.Comment object at 0x10581c230>
-    // <conv.chunks.Comment object at 0x10581c380>
-    // <conv.chunks.Comment object at 0x10581c4d0>
-    // <conv.chunks.Comment object at 0x10581c560>
+    // <conv.chunks.Comment object at 0x1039780e0>
+    // <conv.chunks.Comment object at 0x103978230>
+    // <conv.chunks.Comment object at 0x103978380>
+    // <conv.chunks.Comment object at 0x1039784d0>
+    // <conv.chunks.Comment object at 0x103978560>
     lda(FrameCounter);
     anda(0b10);
     BEQ(FlmeAt);
@@ -14735,13 +14705,13 @@ int SetGfxF() {
 }
 
 int FlmeAt() {
-    // <conv.chunks.Comment object at 0x10581c7d0>
-    // <conv.chunks.Comment object at 0x10581c8f0>
-    // <conv.chunks.Comment object at 0x10581ca40>
-    // <conv.chunks.Comment object at 0x10581cad0>
+    // <conv.chunks.Comment object at 0x1039787d0>
+    // <conv.chunks.Comment object at 0x1039788f0>
+    // <conv.chunks.Comment object at 0x103978a40>
+    // <conv.chunks.Comment object at 0x103978ad0>
     sty(0x1);
     ldy(Enemy_SprDataOffset, x);
-    // <conv.chunks.Comment object at 0x10581cc80>
+    // <conv.chunks.Comment object at 0x103978c80>
     ldx(0x0);
     JMP(DrawFlameLoop);
 }
@@ -14749,43 +14719,43 @@ int FlmeAt() {
 int DrawFlameLoop() {
     lda(Enemy_Rel_YPos);
     sta(Sprite_Y_Position, y);
-    // <conv.chunks.Comment object at 0x10581cf50>
-    // <conv.chunks.Comment object at 0x10581d070>
+    // <conv.chunks.Comment object at 0x103978f50>
+    // <conv.chunks.Comment object at 0x103979070>
     lda(0x0);
     sta(Sprite_Tilenumber, y);
     inc(0x0);
-    // <conv.chunks.Comment object at 0x10581d1c0>
-    // <conv.chunks.Comment object at 0x10581d430>
+    // <conv.chunks.Comment object at 0x1039791c0>
+    // <conv.chunks.Comment object at 0x103979430>
     lda(0x1);
     sta(Sprite_Attributes, y);
-    // <conv.chunks.Comment object at 0x10581d4c0>
+    // <conv.chunks.Comment object at 0x1039794c0>
     lda(Enemy_Rel_XPos);
     sta(Sprite_X_Position, y);
-    // <conv.chunks.Comment object at 0x10581d850>
+    // <conv.chunks.Comment object at 0x103979850>
     clc();
     adc(0x8);
     sta(Enemy_Rel_XPos);
-    // <conv.chunks.Comment object at 0x10581da90>
+    // <conv.chunks.Comment object at 0x103979a90>
     iny();
     iny();
     iny();
     iny();
     inx();
     cpx(0x3);
-    // <conv.chunks.Comment object at 0x10581de20>
-    // <conv.chunks.Comment object at 0x10581dee0>
-    // <conv.chunks.Comment object at 0x10581df70>
+    // <conv.chunks.Comment object at 0x103979e20>
+    // <conv.chunks.Comment object at 0x103979ee0>
+    // <conv.chunks.Comment object at 0x103979f70>
     BCC(DrawFlameLoop);
     ldx(ObjectOffset);
     JSR(GetEnemyOffscreenBits);
     ldy(Enemy_SprDataOffset, x);
     lda(Enemy_OffscreenBits);
     lsr();
-    // <conv.chunks.Comment object at 0x10581e180>
-    // <conv.chunks.Comment object at 0x10581e2a0>
-    // <conv.chunks.Comment object at 0x10581e3c0>
-    // <conv.chunks.Comment object at 0x10581e510>
-    // <conv.chunks.Comment object at 0x10581e660>
+    // <conv.chunks.Comment object at 0x10397a180>
+    // <conv.chunks.Comment object at 0x10397a2a0>
+    // <conv.chunks.Comment object at 0x10397a3c0>
+    // <conv.chunks.Comment object at 0x10397a510>
+    // <conv.chunks.Comment object at 0x10397a660>
     pha();
     BCC(M3FOfs);
     lda(0xf8);
@@ -14794,65 +14764,65 @@ int DrawFlameLoop() {
 }
 
 int M3FOfs() {
-    // <conv.chunks.Comment object at 0x10581e780>
-    // <conv.chunks.Comment object at 0x10581e8d0>
-    // <conv.chunks.Comment object at 0x10581e960>
-    // <conv.chunks.Comment object at 0x10581ec00>
+    // <conv.chunks.Comment object at 0x10397a780>
+    // <conv.chunks.Comment object at 0x10397a8d0>
+    // <conv.chunks.Comment object at 0x10397a960>
+    // <conv.chunks.Comment object at 0x10397ac00>
     pla();
     lsr();
-    // <conv.chunks.Comment object at 0x10581ed50>
+    // <conv.chunks.Comment object at 0x10397ad50>
     pha();
     BCC(M2FOfs);
     lda(0xf8);
-    // <conv.chunks.Comment object at 0x10581ee70>
-    // <conv.chunks.Comment object at 0x10581efc0>
+    // <conv.chunks.Comment object at 0x10397ae70>
+    // <conv.chunks.Comment object at 0x10397afc0>
     sta(((Sprite_Y_Position) + (8)), y);
     JMP(M2FOfs);
 }
 
 int M2FOfs() {
-    // <conv.chunks.Comment object at 0x10581f2c0>
+    // <conv.chunks.Comment object at 0x10397b2c0>
     pla();
     lsr();
-    // <conv.chunks.Comment object at 0x10581f410>
+    // <conv.chunks.Comment object at 0x10397b410>
     pha();
     BCC(M1FOfs);
     lda(0xf8);
-    // <conv.chunks.Comment object at 0x10581f530>
-    // <conv.chunks.Comment object at 0x10581f680>
+    // <conv.chunks.Comment object at 0x10397b530>
+    // <conv.chunks.Comment object at 0x10397b680>
     sta(((Sprite_Y_Position) + (4)), y);
     JMP(M1FOfs);
 }
 
 int M1FOfs() {
-    // <conv.chunks.Comment object at 0x10581f980>
+    // <conv.chunks.Comment object at 0x10397b980>
     pla();
     lsr();
     BCC(ExFlmeD);
-    // <conv.chunks.Comment object at 0x10581fad0>
-    // <conv.chunks.Comment object at 0x10581fb60>
+    // <conv.chunks.Comment object at 0x10397bad0>
+    // <conv.chunks.Comment object at 0x10397bb60>
     lda(0xf8);
     sta(Sprite_Y_Position, y);
     JMP(ExFlmeD);
 }
 
 int ExFlmeD() {
-    // <conv.chunks.Comment object at 0x10581fd10>
-    // <conv.chunks.Comment object at 0x10581ff20>
-    rts();
+    // <conv.chunks.Comment object at 0x10397bd10>
+    // <conv.chunks.Comment object at 0x10397bf20>
+    return 0;
     JMP(RunFireworks);
 }
 
 int RunFireworks() {
     dec(ExplosionTimerCounter, x);
     BNE(SetupExpl);
-    // <conv.chunks.Comment object at 0x1058280e0>
-    // <conv.chunks.Comment object at 0x105828230>
+    // <conv.chunks.Comment object at 0x1039840e0>
+    // <conv.chunks.Comment object at 0x103984230>
     lda(0x8);
     sta(ExplosionTimerCounter, x);
     inc(ExplosionGfxCounter, x);
-    // <conv.chunks.Comment object at 0x1058283b0>
-    // <conv.chunks.Comment object at 0x105828590>
+    // <conv.chunks.Comment object at 0x1039843b0>
+    // <conv.chunks.Comment object at 0x103984590>
     lda(ExplosionGfxCounter, x);
     cmp(0x3);
     BCS(FireworksSoundScore);
@@ -14860,36 +14830,36 @@ int RunFireworks() {
 }
 
 int SetupExpl() {
-    // <conv.chunks.Comment object at 0x105828800>
-    // <conv.chunks.Comment object at 0x105828890>
-    // <conv.chunks.Comment object at 0x105828a40>
+    // <conv.chunks.Comment object at 0x103984800>
+    // <conv.chunks.Comment object at 0x103984890>
+    // <conv.chunks.Comment object at 0x103984a40>
     JSR(RelativeEnemyPosition);
     lda(Enemy_Rel_YPos);
     sta(Fireball_Rel_YPos);
     lda(Enemy_Rel_XPos);
-    // <conv.chunks.Comment object at 0x105828b90>
-    // <conv.chunks.Comment object at 0x105828cb0>
-    // <conv.chunks.Comment object at 0x105828dd0>
+    // <conv.chunks.Comment object at 0x103984b90>
+    // <conv.chunks.Comment object at 0x103984cb0>
+    // <conv.chunks.Comment object at 0x103984dd0>
     sta(Fireball_Rel_XPos);
     ldy(Enemy_SprDataOffset, x);
     lda(ExplosionGfxCounter, x);
     JSR(DrawExplosion_Fireworks);
-    // <conv.chunks.Comment object at 0x105828fe0>
-    // <conv.chunks.Comment object at 0x105829130>
-    // <conv.chunks.Comment object at 0x105829280>
-    rts();
+    // <conv.chunks.Comment object at 0x103984fe0>
+    // <conv.chunks.Comment object at 0x103985130>
+    // <conv.chunks.Comment object at 0x103985280>
+    return 0;
     JMP(FireworksSoundScore);
 }
 
 int FireworksSoundScore() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x105829460>
+    // <conv.chunks.Comment object at 0x103985460>
     sta(Enemy_Flag, x);
     lda(Sfx_Blast);
-    // <conv.chunks.Comment object at 0x1058296a0>
+    // <conv.chunks.Comment object at 0x1039856a0>
     sta(Square2SoundQueue);
     lda(0x5);
-    // <conv.chunks.Comment object at 0x1058298b0>
+    // <conv.chunks.Comment object at 0x1039858b0>
     sta(((DigitModifier) + (4)));
     JMP(EndAreaPoints);
     JMP(RunStarFlagObj);
@@ -14897,32 +14867,31 @@ int FireworksSoundScore() {
 
 int RunStarFlagObj() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x105829df0>
+    // <conv.chunks.Comment object at 0x103985df0>
     sta(EnemyFrenzyBuffer);
     lda(StarFlagTaskControl);
     cmp(0x5);
-    // <conv.chunks.Comment object at 0x10582a660>
-    // <conv.chunks.Comment object at 0x10582a780>
+    // <conv.chunks.Comment object at 0x103986660>
+    // <conv.chunks.Comment object at 0x103986780>
     BCS(StarFlagExit);
-    JSR(JumpEngine);
     JMP(GameTimerFireworks);
 }
 
 int GameTimerFireworks() {
     ldy(0x5);
     lda(((GameTimerDisplay) + (2)));
-    // <conv.chunks.Comment object at 0x10582aae0>
-    // <conv.chunks.Comment object at 0x10582ae40>
+    // <conv.chunks.Comment object at 0x103986ae0>
+    // <conv.chunks.Comment object at 0x103986e40>
     cmp(0x1);
     BEQ(SetFWC);
     ldy(0x3);
-    // <conv.chunks.Comment object at 0x10582b110>
-    // <conv.chunks.Comment object at 0x10582b2f0>
+    // <conv.chunks.Comment object at 0x103987110>
+    // <conv.chunks.Comment object at 0x1039872f0>
     cmp(0x3);
     BEQ(SetFWC);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x10582b470>
-    // <conv.chunks.Comment object at 0x10582b650>
+    // <conv.chunks.Comment object at 0x103987470>
+    // <conv.chunks.Comment object at 0x103987650>
     cmp(0x6);
     BEQ(SetFWC);
     lda(0xff);
@@ -14930,9 +14899,9 @@ int GameTimerFireworks() {
 }
 
 int SetFWC() {
-    // <conv.chunks.Comment object at 0x10582b7d0>
-    // <conv.chunks.Comment object at 0x10582b9b0>
-    // <conv.chunks.Comment object at 0x10582ba40>
+    // <conv.chunks.Comment object at 0x1039877d0>
+    // <conv.chunks.Comment object at 0x1039879b0>
+    // <conv.chunks.Comment object at 0x103987a40>
     sta(FireworksCounter);
     sty(Enemy_State, x);
     JMP(IncrementSFTask1);
@@ -14944,30 +14913,30 @@ int IncrementSFTask1() {
 }
 
 int StarFlagExit() {
-    rts();
+    return 0;
     JMP(AwardGameTimerPoints);
 }
 
 int AwardGameTimerPoints() {
     lda(GameTimerDisplay);
-    // <conv.chunks.Comment object at 0x105830080>
+    // <conv.chunks.Comment object at 0x10398c080>
     ora(((GameTimerDisplay) + (1)));
     ora(((GameTimerDisplay) + (2)));
     BEQ(IncrementSFTask1);
-    // <conv.chunks.Comment object at 0x105830500>
+    // <conv.chunks.Comment object at 0x10398c500>
     lda(FrameCounter);
     anda(0b100);
     BEQ(NoTTick);
-    // <conv.chunks.Comment object at 0x105830710>
-    // <conv.chunks.Comment object at 0x105830830>
+    // <conv.chunks.Comment object at 0x10398c710>
+    // <conv.chunks.Comment object at 0x10398c830>
     lda(Sfx_TimerTick);
     sta(Square2SoundQueue);
     JMP(NoTTick);
 }
 
 int NoTTick() {
-    // <conv.chunks.Comment object at 0x105830a70>
-    // <conv.chunks.Comment object at 0x105830b90>
+    // <conv.chunks.Comment object at 0x10398ca70>
+    // <conv.chunks.Comment object at 0x10398cb90>
     ldy(0x23);
     lda(0xff);
     sta(((DigitModifier) + (5)));
@@ -14986,18 +14955,18 @@ int EndAreaPoints() {
 }
 
 int ELPGive() {
-    // <conv.chunks.Comment object at 0x105831460>
-    // <conv.chunks.Comment object at 0x1058314f0>
-    // <conv.chunks.Comment object at 0x1058316a0>
-    // <conv.chunks.Comment object at 0x1058317f0>
-    // <conv.chunks.Comment object at 0x105831880>
+    // <conv.chunks.Comment object at 0x10398d460>
+    // <conv.chunks.Comment object at 0x10398d4f0>
+    // <conv.chunks.Comment object at 0x10398d6a0>
+    // <conv.chunks.Comment object at 0x10398d7f0>
+    // <conv.chunks.Comment object at 0x10398d880>
     JSR(DigitsMathRoutine);
     lda(CurrentPlayer);
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x105831a90>
-    // <conv.chunks.Comment object at 0x105831be0>
-    // <conv.chunks.Comment object at 0x105831ca0>
+    // <conv.chunks.Comment object at 0x10398da90>
+    // <conv.chunks.Comment object at 0x10398dbe0>
+    // <conv.chunks.Comment object at 0x10398dca0>
     asl();
     asl();
     ora(0b100);
@@ -15015,17 +14984,17 @@ int RaiseFlagSetoffFWorks() {
 }
 
 int SetoffF() {
-    // <conv.chunks.Comment object at 0x1058320c0>
-    // <conv.chunks.Comment object at 0x105832210>
-    // <conv.chunks.Comment object at 0x1058322a0>
-    // <conv.chunks.Comment object at 0x105832480>
-    // <conv.chunks.Comment object at 0x1058325d0>
-    // <conv.chunks.Comment object at 0x1058326f0>
+    // <conv.chunks.Comment object at 0x10398e0c0>
+    // <conv.chunks.Comment object at 0x10398e210>
+    // <conv.chunks.Comment object at 0x10398e2a0>
+    // <conv.chunks.Comment object at 0x10398e480>
+    // <conv.chunks.Comment object at 0x10398e5d0>
+    // <conv.chunks.Comment object at 0x10398e6f0>
     lda(FireworksCounter);
     BEQ(DrawFlagSetTimer);
     BMI(DrawFlagSetTimer);
-    // <conv.chunks.Comment object at 0x105832870>
-    // <conv.chunks.Comment object at 0x105832990>
+    // <conv.chunks.Comment object at 0x10398e870>
+    // <conv.chunks.Comment object at 0x10398e990>
     lda(Fireworks);
     sta(EnemyFrenzyBuffer);
     JMP(DrawStarFlag);
@@ -15039,10 +15008,10 @@ int DrawStarFlag() {
 }
 
 int DSFLoop() {
-    // <conv.chunks.Comment object at 0x105832cf0>
-    // <conv.chunks.Comment object at 0x105832e10>
-    // <conv.chunks.Comment object at 0x105832f60>
-    // <conv.chunks.Comment object at 0x105832ff0>
+    // <conv.chunks.Comment object at 0x10398ecf0>
+    // <conv.chunks.Comment object at 0x10398ee10>
+    // <conv.chunks.Comment object at 0x10398ef60>
+    // <conv.chunks.Comment object at 0x10398eff0>
     lda(Enemy_Rel_YPos);
     clc();
     adc(offsetof(G, StarFlagYPosAdder), x);
@@ -15052,37 +15021,37 @@ int DSFLoop() {
     lda(0x22);
     sta(Sprite_Attributes, y);
     lda(Enemy_Rel_XPos);
-    // <conv.chunks.Comment object at 0x105833290>
-    // <conv.chunks.Comment object at 0x1058333e0>
-    // <conv.chunks.Comment object at 0x105833530>
-    // <conv.chunks.Comment object at 0x105833680>
-    // <conv.chunks.Comment object at 0x1058337d0>
-    // <conv.chunks.Comment object at 0x105833860>
-    // <conv.chunks.Comment object at 0x105833a40>
+    // <conv.chunks.Comment object at 0x10398f290>
+    // <conv.chunks.Comment object at 0x10398f3e0>
+    // <conv.chunks.Comment object at 0x10398f530>
+    // <conv.chunks.Comment object at 0x10398f680>
+    // <conv.chunks.Comment object at 0x10398f7d0>
+    // <conv.chunks.Comment object at 0x10398f860>
+    // <conv.chunks.Comment object at 0x10398fa40>
     clc();
     adc(offsetof(G, StarFlagXPosAdder), x);
     sta(Sprite_X_Position, y);
-    // <conv.chunks.Comment object at 0x105833bf0>
-    // <conv.chunks.Comment object at 0x105833d40>
+    // <conv.chunks.Comment object at 0x10398fbf0>
+    // <conv.chunks.Comment object at 0x10398fd40>
     iny();
     iny();
     iny();
-    // <conv.chunks.Comment object at 0x105833f50>
-    // <conv.chunks.Comment object at 0x105840050>
+    // <conv.chunks.Comment object at 0x10398ff50>
+    // <conv.chunks.Comment object at 0x10399c050>
     iny();
     dex();
     BPL(DSFLoop);
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x1058401a0>
-    // <conv.chunks.Comment object at 0x105840230>
-    // <conv.chunks.Comment object at 0x105840380>
-    rts();
+    // <conv.chunks.Comment object at 0x10399c1a0>
+    // <conv.chunks.Comment object at 0x10399c230>
+    // <conv.chunks.Comment object at 0x10399c380>
+    return 0;
     JMP(DrawFlagSetTimer);
 }
 
 int DrawFlagSetTimer() {
     JSR(DrawStarFlag);
-    // <conv.chunks.Comment object at 0x105840560>
+    // <conv.chunks.Comment object at 0x10399c560>
     lda(0x6);
     sta(EnemyIntervalTimer, x);
     JMP(IncrementSFTask2);
@@ -15090,8 +15059,8 @@ int DrawFlagSetTimer() {
 
 int IncrementSFTask2() {
     inc(StarFlagTaskControl);
-    // <conv.chunks.Comment object at 0x1058408f0>
-    rts();
+    // <conv.chunks.Comment object at 0x10399c8f0>
+    return 0;
     JMP(DelayToAreaEnd);
 }
 
@@ -15105,7 +15074,7 @@ int DelayToAreaEnd() {
 }
 
 int StarFlagExit2() {
-    rts();
+    return 0;
     JMP(MovePiranhaPlant);
 }
 
@@ -15121,22 +15090,22 @@ int MovePiranhaPlant() {
     JSR(PlayerEnemyDiff);
     BPL(ChkPlayerNearPipe);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x105841100>
-    // <conv.chunks.Comment object at 0x1058411c0>
-    // <conv.chunks.Comment object at 0x105841220>
-    // <conv.chunks.Comment object at 0x105841370>
-    // <conv.chunks.Comment object at 0x105841490>
-    // <conv.chunks.Comment object at 0x1058415e0>
-    // <conv.chunks.Comment object at 0x105841700>
-    // <conv.chunks.Comment object at 0x105841850>
-    // <conv.chunks.Comment object at 0x105841970>
-    // <conv.chunks.Comment object at 0x105841ac0>
-    // <conv.chunks.Comment object at 0x105841be0>
-    // <conv.chunks.Comment object at 0x105841d00>
-    // <conv.chunks.Comment object at 0x105841e50>
+    // <conv.chunks.Comment object at 0x10399d100>
+    // <conv.chunks.Comment object at 0x10399d1c0>
+    // <conv.chunks.Comment object at 0x10399d220>
+    // <conv.chunks.Comment object at 0x10399d370>
+    // <conv.chunks.Comment object at 0x10399d490>
+    // <conv.chunks.Comment object at 0x10399d5e0>
+    // <conv.chunks.Comment object at 0x10399d700>
+    // <conv.chunks.Comment object at 0x10399d850>
+    // <conv.chunks.Comment object at 0x10399d970>
+    // <conv.chunks.Comment object at 0x10399dac0>
+    // <conv.chunks.Comment object at 0x10399dbe0>
+    // <conv.chunks.Comment object at 0x10399dd00>
+    // <conv.chunks.Comment object at 0x10399de50>
     eor(0xff);
     clc();
-    // <conv.chunks.Comment object at 0x105842060>
+    // <conv.chunks.Comment object at 0x10399e060>
     adc(0x1);
     sta(0x0);
     JMP(ChkPlayerNearPipe);
@@ -15144,7 +15113,7 @@ int MovePiranhaPlant() {
 
 int ChkPlayerNearPipe() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x105842360>
+    // <conv.chunks.Comment object at 0x10399e360>
     cmp(0x21);
     BCC(PutinPipe);
     JMP(ReversePlantSpeed);
@@ -15152,10 +15121,10 @@ int ChkPlayerNearPipe() {
 
 int ReversePlantSpeed() {
     lda(PiranhaPlant_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x105842690>
+    // <conv.chunks.Comment object at 0x10399e690>
     eor(0xff);
     clc();
-    // <conv.chunks.Comment object at 0x105842900>
+    // <conv.chunks.Comment object at 0x10399e900>
     adc(0x1);
     sta(PiranhaPlant_Y_Speed, x);
     inc(PiranhaPlant_MoveFlag, x);
@@ -15173,29 +15142,29 @@ int SetupToMovePPlant() {
 int RiseFallPiranhaPlant() {
     sta(0x0);
     lda(FrameCounter);
-    // <conv.chunks.Comment object at 0x1058432c0>
-    // <conv.chunks.Comment object at 0x105843350>
+    // <conv.chunks.Comment object at 0x10399f2c0>
+    // <conv.chunks.Comment object at 0x10399f350>
     lsr();
     BCC(PutinPipe);
     lda(TimerControl);
     BNE(PutinPipe);
     lda(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x105843560>
-    // <conv.chunks.Comment object at 0x105843680>
-    // <conv.chunks.Comment object at 0x1058437a0>
-    // <conv.chunks.Comment object at 0x1058438c0>
+    // <conv.chunks.Comment object at 0x10399f560>
+    // <conv.chunks.Comment object at 0x10399f680>
+    // <conv.chunks.Comment object at 0x10399f7a0>
+    // <conv.chunks.Comment object at 0x10399f8c0>
     clc();
     adc(PiranhaPlant_Y_Speed, x);
     sta(Enemy_Y_Position, x);
     cmp(0x0);
     BNE(PutinPipe);
-    // <conv.chunks.Comment object at 0x105843aa0>
-    // <conv.chunks.Comment object at 0x105843bf0>
-    // <conv.chunks.Comment object at 0x105843d70>
-    // <conv.chunks.Comment object at 0x105843e00>
+    // <conv.chunks.Comment object at 0x10399faa0>
+    // <conv.chunks.Comment object at 0x10399fbf0>
+    // <conv.chunks.Comment object at 0x10399fd70>
+    // <conv.chunks.Comment object at 0x10399fe00>
     lda(0x0);
     sta(PiranhaPlant_MoveFlag, x);
-    // <conv.chunks.Comment object at 0x105843fe0>
+    // <conv.chunks.Comment object at 0x10399ffe0>
     lda(0x40);
     sta(EnemyFrameTimer, x);
     JMP(PutinPipe);
@@ -15204,7 +15173,7 @@ int RiseFallPiranhaPlant() {
 int PutinPipe() {
     lda(0b100000);
     sta(Enemy_SprAttrib, x);
-    rts();
+    return 0;
     JMP(FirebarSpin);
 }
 
@@ -15213,48 +15182,48 @@ int FirebarSpin() {
     lda(FirebarSpinDirection, x);
     BNE(SpinCounterClockwise);
     ldy(0x18);
-    // <conv.chunks.Comment object at 0x105848470>
-    // <conv.chunks.Comment object at 0x105848590>
-    // <conv.chunks.Comment object at 0x105848710>
-    // <conv.chunks.Comment object at 0x1058487d0>
-    // <conv.chunks.Comment object at 0x105848860>
-    // <conv.chunks.Comment object at 0x1058488f0>
-    // <conv.chunks.Comment object at 0x105848aa0>
-    // <conv.chunks.Comment object at 0x105848bc0>
+    // <conv.chunks.Comment object at 0x1039a4470>
+    // <conv.chunks.Comment object at 0x1039a4590>
+    // <conv.chunks.Comment object at 0x1039a4710>
+    // <conv.chunks.Comment object at 0x1039a47d0>
+    // <conv.chunks.Comment object at 0x1039a4860>
+    // <conv.chunks.Comment object at 0x1039a48f0>
+    // <conv.chunks.Comment object at 0x1039a4aa0>
+    // <conv.chunks.Comment object at 0x1039a4bc0>
     lda(FirebarSpinState_Low, x);
     clc();
     adc(0x7);
-    // <conv.chunks.Comment object at 0x105848e30>
-    // <conv.chunks.Comment object at 0x105848ef0>
+    // <conv.chunks.Comment object at 0x1039a4e30>
+    // <conv.chunks.Comment object at 0x1039a4ef0>
     sta(FirebarSpinState_Low, x);
     lda(FirebarSpinState_High, x);
-    // <conv.chunks.Comment object at 0x105849100>
+    // <conv.chunks.Comment object at 0x1039a5100>
     adc(0x0);
-    rts();
+    return 0;
     JMP(SpinCounterClockwise);
 }
 
 int SpinCounterClockwise() {
     ldy(0x8);
-    // <conv.chunks.Comment object at 0x105849400>
+    // <conv.chunks.Comment object at 0x1039a5400>
     lda(FirebarSpinState_Low, x);
     sec();
     sbc(0x7);
-    // <conv.chunks.Comment object at 0x105849670>
-    // <conv.chunks.Comment object at 0x105849730>
+    // <conv.chunks.Comment object at 0x1039a5670>
+    // <conv.chunks.Comment object at 0x1039a5730>
     sta(FirebarSpinState_Low, x);
     lda(FirebarSpinState_High, x);
-    // <conv.chunks.Comment object at 0x105849940>
+    // <conv.chunks.Comment object at 0x1039a5940>
     sbc(0x0);
-    rts();
+    return 0;
     JMP(BalancePlatform);
 }
 
 int BalancePlatform() {
     lda(Enemy_Y_HighPos, x);
-    // <conv.chunks.Comment object at 0x105849c40>
-    // <conv.chunks.Comment object at 0x105849ca0>
-    // <conv.chunks.Comment object at 0x105849d00>
+    // <conv.chunks.Comment object at 0x1039a5c40>
+    // <conv.chunks.Comment object at 0x1039a5ca0>
+    // <conv.chunks.Comment object at 0x1039a5d00>
     cmp(0x3);
     BNE(DoBPl);
     JMP(EraseEnemyObject);
@@ -15262,12 +15231,12 @@ int BalancePlatform() {
 }
 
 int DoBPl() {
-    // <conv.chunks.Comment object at 0x10584a060>
-    // <conv.chunks.Comment object at 0x10584a180>
+    // <conv.chunks.Comment object at 0x1039a6060>
+    // <conv.chunks.Comment object at 0x1039a6180>
     lda(Enemy_State, x);
     BPL(CheckBalPlatform);
-    // <conv.chunks.Comment object at 0x10584a330>
-    rts();
+    // <conv.chunks.Comment object at 0x1039a6330>
+    return 0;
     JMP(CheckBalPlatform);
 }
 
@@ -15276,10 +15245,10 @@ int CheckBalPlatform() {
     lda(PlatformCollisionFlag, x);
     sta(0x0);
     lda(Enemy_MovingDir, x);
-    // <conv.chunks.Comment object at 0x10584a540>
-    // <conv.chunks.Comment object at 0x10584a5d0>
-    // <conv.chunks.Comment object at 0x10584a750>
-    // <conv.chunks.Comment object at 0x10584a7e0>
+    // <conv.chunks.Comment object at 0x1039a6540>
+    // <conv.chunks.Comment object at 0x1039a65d0>
+    // <conv.chunks.Comment object at 0x1039a6750>
+    // <conv.chunks.Comment object at 0x1039a67e0>
     BEQ(ChkForFall);
     JMP(PlatformFall);
     JMP(ChkForFall);
@@ -15287,14 +15256,14 @@ int CheckBalPlatform() {
 
 int ChkForFall() {
     lda(0x2d);
-    // <conv.chunks.Comment object at 0x10584abd0>
+    // <conv.chunks.Comment object at 0x1039a6bd0>
     cmp(Enemy_Y_Position, x);
     BCC(ChkOtherForFall);
     cpy(0x0);
     BEQ(MakePlatformFall);
-    // <conv.chunks.Comment object at 0x10584ae10>
-    // <conv.chunks.Comment object at 0x10584af60>
-    // <conv.chunks.Comment object at 0x10584aff0>
+    // <conv.chunks.Comment object at 0x1039a6e10>
+    // <conv.chunks.Comment object at 0x1039a6f60>
+    // <conv.chunks.Comment object at 0x1039a6ff0>
     clc();
     adc(0x2);
     sta(Enemy_Y_Position, x);
@@ -15312,10 +15281,10 @@ int ChkOtherForFall() {
     BCC(ChkToMoveBalPlat);
     cpx(0x0);
     BEQ(MakePlatformFall);
-    // <conv.chunks.Comment object at 0x10584b710>
-    // <conv.chunks.Comment object at 0x10584b860>
-    // <conv.chunks.Comment object at 0x10584b9b0>
-    // <conv.chunks.Comment object at 0x10584ba40>
+    // <conv.chunks.Comment object at 0x1039a7710>
+    // <conv.chunks.Comment object at 0x1039a7860>
+    // <conv.chunks.Comment object at 0x1039a79b0>
+    // <conv.chunks.Comment object at 0x1039a7a40>
     clc();
     adc(0x2);
     sta(Enemy_Y_Position, y);
@@ -15325,25 +15294,25 @@ int ChkOtherForFall() {
 
 int ChkToMoveBalPlat() {
     lda(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x105850050>
+    // <conv.chunks.Comment object at 0x1039ac050>
     pha();
     lda(PlatformCollisionFlag, x);
     BPL(ColFlg);
-    // <conv.chunks.Comment object at 0x105850230>
-    // <conv.chunks.Comment object at 0x105850380>
+    // <conv.chunks.Comment object at 0x1039ac230>
+    // <conv.chunks.Comment object at 0x1039ac380>
     lda(Enemy_Y_MoveForce, x);
     clc();
-    // <conv.chunks.Comment object at 0x105850620>
+    // <conv.chunks.Comment object at 0x1039ac620>
     adc(0x5);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x1058507d0>
+    // <conv.chunks.Comment object at 0x1039ac7d0>
     lda(Enemy_Y_Speed, x);
     adc(0x0);
     BMI(PlatDn);
     BNE(PlatUp);
-    // <conv.chunks.Comment object at 0x1058509e0>
-    // <conv.chunks.Comment object at 0x105850a70>
-    // <conv.chunks.Comment object at 0x105850c50>
+    // <conv.chunks.Comment object at 0x1039ac9e0>
+    // <conv.chunks.Comment object at 0x1039aca70>
+    // <conv.chunks.Comment object at 0x1039acc50>
     lda(0x0);
     cmp(0xb);
     BCC(PlatSt);
@@ -15352,34 +15321,34 @@ int ChkToMoveBalPlat() {
 }
 
 int ColFlg() {
-    // <conv.chunks.Comment object at 0x105850da0>
-    // <conv.chunks.Comment object at 0x105850f20>
-    // <conv.chunks.Comment object at 0x105851100>
-    // <conv.chunks.Comment object at 0x105851250>
+    // <conv.chunks.Comment object at 0x1039acda0>
+    // <conv.chunks.Comment object at 0x1039acf20>
+    // <conv.chunks.Comment object at 0x1039ad100>
+    // <conv.chunks.Comment object at 0x1039ad250>
     cmp(ObjectOffset);
     BEQ(PlatDn);
     JMP(PlatUp);
 }
 
 int PlatUp() {
-    // <conv.chunks.Comment object at 0x1058513d0>
-    // <conv.chunks.Comment object at 0x105851520>
+    // <conv.chunks.Comment object at 0x1039ad3d0>
+    // <conv.chunks.Comment object at 0x1039ad520>
     JSR(MovePlatformUp);
     JMP(DoOtherPlatform);
     JMP(PlatSt);
 }
 
 int PlatSt() {
-    // <conv.chunks.Comment object at 0x1058516a0>
-    // <conv.chunks.Comment object at 0x1058517c0>
+    // <conv.chunks.Comment object at 0x1039ad6a0>
+    // <conv.chunks.Comment object at 0x1039ad7c0>
     JSR(StopPlatforms);
     JMP(DoOtherPlatform);
     JMP(PlatDn);
 }
 
 int PlatDn() {
-    // <conv.chunks.Comment object at 0x105851940>
-    // <conv.chunks.Comment object at 0x105851a60>
+    // <conv.chunks.Comment object at 0x1039ad940>
+    // <conv.chunks.Comment object at 0x1039ada60>
     JSR(MovePlatformDown);
     JMP(DoOtherPlatform);
 }
@@ -15387,18 +15356,18 @@ int PlatDn() {
 int DoOtherPlatform() {
     ldy(Enemy_State, x);
     pla();
-    // <conv.chunks.Comment object at 0x105851c10>
-    // <conv.chunks.Comment object at 0x105851d90>
+    // <conv.chunks.Comment object at 0x1039adc10>
+    // <conv.chunks.Comment object at 0x1039add90>
     sec();
     sbc(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x105851eb0>
+    // <conv.chunks.Comment object at 0x1039adeb0>
     clc();
     adc(Enemy_Y_Position, y);
     sta(Enemy_Y_Position, y);
     lda(PlatformCollisionFlag, x);
-    // <conv.chunks.Comment object at 0x105852090>
-    // <conv.chunks.Comment object at 0x1058521e0>
-    // <conv.chunks.Comment object at 0x105852330>
+    // <conv.chunks.Comment object at 0x1039ae090>
+    // <conv.chunks.Comment object at 0x1039ae1e0>
+    // <conv.chunks.Comment object at 0x1039ae330>
     BMI(DrawEraseRope);
     tax();
     JSR(PositionPlayerOnVPlat);
@@ -15413,48 +15382,48 @@ int DrawEraseRope() {
     ldx(VRAM_Buffer1_Offset);
     cpx(0x20);
     BCS(ExitRp);
-    // <conv.chunks.Comment object at 0x105852780>
-    // <conv.chunks.Comment object at 0x1058528a0>
-    // <conv.chunks.Comment object at 0x1058529f0>
-    // <conv.chunks.Comment object at 0x105852b40>
-    // <conv.chunks.Comment object at 0x105852c90>
-    // <conv.chunks.Comment object at 0x105852db0>
-    // <conv.chunks.Comment object at 0x105852e40>
+    // <conv.chunks.Comment object at 0x1039ae780>
+    // <conv.chunks.Comment object at 0x1039ae8a0>
+    // <conv.chunks.Comment object at 0x1039ae9f0>
+    // <conv.chunks.Comment object at 0x1039aeb40>
+    // <conv.chunks.Comment object at 0x1039aec90>
+    // <conv.chunks.Comment object at 0x1039aedb0>
+    // <conv.chunks.Comment object at 0x1039aee40>
     lda(Enemy_Y_Speed, y);
     pha();
-    // <conv.chunks.Comment object at 0x105853170>
+    // <conv.chunks.Comment object at 0x1039af170>
     pha();
     JSR(SetupPlatformRope);
     lda(0x1);
     sta(VRAM_Buffer1, x);
-    // <conv.chunks.Comment object at 0x105853290>
-    // <conv.chunks.Comment object at 0x1058533e0>
-    // <conv.chunks.Comment object at 0x105853470>
+    // <conv.chunks.Comment object at 0x1039af290>
+    // <conv.chunks.Comment object at 0x1039af3e0>
+    // <conv.chunks.Comment object at 0x1039af470>
     lda(0x0);
     sta(((VRAM_Buffer1) + (1)), x);
     lda(0x2);
-    // <conv.chunks.Comment object at 0x1058538f0>
+    // <conv.chunks.Comment object at 0x1039af8f0>
     sta(((VRAM_Buffer1) + (2)), x);
     lda(Enemy_Y_Speed, y);
     BMI(EraseR1);
-    // <conv.chunks.Comment object at 0x105853bf0>
-    // <conv.chunks.Comment object at 0x105853d40>
+    // <conv.chunks.Comment object at 0x1039afbf0>
+    // <conv.chunks.Comment object at 0x1039afd40>
     lda(0xa2);
     sta(((VRAM_Buffer1) + (3)), x);
     lda(0xa3);
-    // <conv.chunks.Comment object at 0x105853ef0>
-    // <conv.chunks.Comment object at 0x1058601d0>
+    // <conv.chunks.Comment object at 0x1039afef0>
+    // <conv.chunks.Comment object at 0x1039bc1d0>
     sta(((VRAM_Buffer1) + (4)), x);
     JMP(OtherRope);
     JMP(EraseR1);
 }
 
 int EraseR1() {
-    // <conv.chunks.Comment object at 0x1058604d0>
-    // <conv.chunks.Comment object at 0x1058605f0>
+    // <conv.chunks.Comment object at 0x1039bc4d0>
+    // <conv.chunks.Comment object at 0x1039bc5f0>
     lda(0x24);
     sta(((VRAM_Buffer1) + (3)), x);
-    // <conv.chunks.Comment object at 0x1058606e0>
+    // <conv.chunks.Comment object at 0x1039bc6e0>
     sta(((VRAM_Buffer1) + (4)), x);
     JMP(OtherRope);
 }
@@ -15468,22 +15437,22 @@ int OtherRope() {
     lda(0x1);
     sta(((VRAM_Buffer1) + (5)), x);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x105860b90>
-    // <conv.chunks.Comment object at 0x105860d10>
-    // <conv.chunks.Comment object at 0x105860dd0>
-    // <conv.chunks.Comment object at 0x105860e60>
-    // <conv.chunks.Comment object at 0x105860ef0>
-    // <conv.chunks.Comment object at 0x1058610d0>
-    // <conv.chunks.Comment object at 0x105861160>
-    // <conv.chunks.Comment object at 0x105861400>
+    // <conv.chunks.Comment object at 0x1039bcb90>
+    // <conv.chunks.Comment object at 0x1039bcd10>
+    // <conv.chunks.Comment object at 0x1039bcdd0>
+    // <conv.chunks.Comment object at 0x1039bce60>
+    // <conv.chunks.Comment object at 0x1039bcef0>
+    // <conv.chunks.Comment object at 0x1039bd0d0>
+    // <conv.chunks.Comment object at 0x1039bd160>
+    // <conv.chunks.Comment object at 0x1039bd400>
     sta(((VRAM_Buffer1) + (6)), x);
     lda(0x2);
     sta(((VRAM_Buffer1) + (7)), x);
     pla();
     BPL(EraseR2);
-    // <conv.chunks.Comment object at 0x105861730>
-    // <conv.chunks.Comment object at 0x105861a00>
-    // <conv.chunks.Comment object at 0x105861a90>
+    // <conv.chunks.Comment object at 0x1039bd730>
+    // <conv.chunks.Comment object at 0x1039bda00>
+    // <conv.chunks.Comment object at 0x1039bda90>
     lda(0xa2);
     sta(((VRAM_Buffer1) + (8)), x);
     lda(0xa3);
@@ -15493,58 +15462,58 @@ int OtherRope() {
 }
 
 int EraseR2() {
-    // <conv.chunks.Comment object at 0x105861c40>
-    // <conv.chunks.Comment object at 0x105861ee0>
-    // <conv.chunks.Comment object at 0x105861f70>
-    // <conv.chunks.Comment object at 0x105862210>
-    // <conv.chunks.Comment object at 0x105862360>
+    // <conv.chunks.Comment object at 0x1039bdc40>
+    // <conv.chunks.Comment object at 0x1039bdee0>
+    // <conv.chunks.Comment object at 0x1039bdf70>
+    // <conv.chunks.Comment object at 0x1039be210>
+    // <conv.chunks.Comment object at 0x1039be360>
     lda(0x24);
     sta(((VRAM_Buffer1) + (8)), x);
-    // <conv.chunks.Comment object at 0x105862450>
+    // <conv.chunks.Comment object at 0x1039be450>
     sta(((VRAM_Buffer1) + (9)), x);
     JMP(EndRp);
 }
 
 int EndRp() {
-    // <conv.chunks.Comment object at 0x1058628d0>
+    // <conv.chunks.Comment object at 0x1039be8d0>
     lda(0x0);
     sta(((VRAM_Buffer1) + (10)), x);
     lda(VRAM_Buffer1_Offset);
     clc();
-    // <conv.chunks.Comment object at 0x105862c30>
-    // <conv.chunks.Comment object at 0x105862d80>
+    // <conv.chunks.Comment object at 0x1039bec30>
+    // <conv.chunks.Comment object at 0x1039bed80>
     adc(10);
     sta(VRAM_Buffer1_Offset);
     JMP(ExitRp);
 }
 
 int ExitRp() {
-    // <conv.chunks.Comment object at 0x105862ff0>
+    // <conv.chunks.Comment object at 0x1039beff0>
     ldx(ObjectOffset);
-    rts();
+    return 0;
     JMP(SetupPlatformRope);
 }
 
 int SetupPlatformRope() {
     pha();
     lda(Enemy_X_Position, y);
-    // <conv.chunks.Comment object at 0x105863260>
-    // <conv.chunks.Comment object at 0x1058632f0>
+    // <conv.chunks.Comment object at 0x1039bf260>
+    // <conv.chunks.Comment object at 0x1039bf2f0>
     clc();
     adc(0x8);
     ldx(SecondaryHardMode);
     BNE(GetLRp);
-    // <conv.chunks.Comment object at 0x1058634d0>
-    // <conv.chunks.Comment object at 0x105863560>
-    // <conv.chunks.Comment object at 0x105863710>
+    // <conv.chunks.Comment object at 0x1039bf4d0>
+    // <conv.chunks.Comment object at 0x1039bf560>
+    // <conv.chunks.Comment object at 0x1039bf710>
     clc();
     adc(0x10);
     JMP(GetLRp);
 }
 
 int GetLRp() {
-    // <conv.chunks.Comment object at 0x1058638f0>
-    // <conv.chunks.Comment object at 0x105863980>
+    // <conv.chunks.Comment object at 0x1039bf8f0>
+    // <conv.chunks.Comment object at 0x1039bf980>
     pha();
     lda(Enemy_PageLoc, y);
     adc(0x0);
@@ -15552,21 +15521,21 @@ int GetLRp() {
     pla();
     anda(0b11110000);
     lsr();
-    // <conv.chunks.Comment object at 0x105863c50>
-    // <conv.chunks.Comment object at 0x105863da0>
-    // <conv.chunks.Comment object at 0x105863ce0>
-    // <conv.chunks.Comment object at 0x105863f50>
-    // <conv.chunks.Comment object at 0x1058680e0>
+    // <conv.chunks.Comment object at 0x1039bfc50>
+    // <conv.chunks.Comment object at 0x1039bfda0>
+    // <conv.chunks.Comment object at 0x1039bfce0>
+    // <conv.chunks.Comment object at 0x1039bff50>
+    // <conv.chunks.Comment object at 0x1039c40e0>
     lsr();
     lsr();
     sta(0x0);
     ldx(Enemy_Y_Position, y);
     pla();
     BPL(GetHRp);
-    // <conv.chunks.Comment object at 0x1058682c0>
-    // <conv.chunks.Comment object at 0x105868350>
-    // <conv.chunks.Comment object at 0x105868530>
-    // <conv.chunks.Comment object at 0x1058685c0>
+    // <conv.chunks.Comment object at 0x1039c42c0>
+    // <conv.chunks.Comment object at 0x1039c4350>
+    // <conv.chunks.Comment object at 0x1039c4530>
+    // <conv.chunks.Comment object at 0x1039c45c0>
     txa();
     clc();
     adc(0x8);
@@ -15575,12 +15544,12 @@ int GetLRp() {
 }
 
 int GetHRp() {
-    // <conv.chunks.Comment object at 0x105868830>
-    // <conv.chunks.Comment object at 0x105868980>
-    // <conv.chunks.Comment object at 0x105868a10>
+    // <conv.chunks.Comment object at 0x1039c4830>
+    // <conv.chunks.Comment object at 0x1039c4980>
+    // <conv.chunks.Comment object at 0x1039c4a10>
     txa();
     ldx(VRAM_Buffer1_Offset);
-    // <conv.chunks.Comment object at 0x105868b30>
+    // <conv.chunks.Comment object at 0x1039c4b30>
     asl();
     rol();
     pha();
@@ -15590,60 +15559,60 @@ int GetHRp() {
     sta(0x1);
     lda(0x2);
     anda(0x1);
-    // <conv.chunks.Comment object at 0x105868d10>
-    // <conv.chunks.Comment object at 0x105868dd0>
-    // <conv.chunks.Comment object at 0x105868e90>
-    // <conv.chunks.Comment object at 0x105868f20>
-    // <conv.chunks.Comment object at 0x105869040>
-    // <conv.chunks.Comment object at 0x105869190>
-    // <conv.chunks.Comment object at 0x105869160>
-    // <conv.chunks.Comment object at 0x105869340>
+    // <conv.chunks.Comment object at 0x1039c4d10>
+    // <conv.chunks.Comment object at 0x1039c4dd0>
+    // <conv.chunks.Comment object at 0x1039c4e90>
+    // <conv.chunks.Comment object at 0x1039c4f20>
+    // <conv.chunks.Comment object at 0x1039c5040>
+    // <conv.chunks.Comment object at 0x1039c5190>
+    // <conv.chunks.Comment object at 0x1039c5160>
+    // <conv.chunks.Comment object at 0x1039c5340>
     asl();
     asl();
     ora(0x1);
     sta(0x1);
     pla();
     anda(0b11100000);
-    // <conv.chunks.Comment object at 0x105869580>
-    // <conv.chunks.Comment object at 0x105869640>
-    // <conv.chunks.Comment object at 0x105869610>
-    // <conv.chunks.Comment object at 0x1058696d0>
-    // <conv.chunks.Comment object at 0x105869910>
+    // <conv.chunks.Comment object at 0x1039c5580>
+    // <conv.chunks.Comment object at 0x1039c5640>
+    // <conv.chunks.Comment object at 0x1039c5610>
+    // <conv.chunks.Comment object at 0x1039c56d0>
+    // <conv.chunks.Comment object at 0x1039c5910>
     clc();
     adc(0x0);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x105869af0>
-    // <conv.chunks.Comment object at 0x105869ac0>
+    // <conv.chunks.Comment object at 0x1039c5af0>
+    // <conv.chunks.Comment object at 0x1039c5ac0>
     lda(Enemy_Y_Position, y);
     cmp(0xe8);
     BCC(ExPRp);
-    // <conv.chunks.Comment object at 0x105869e20>
-    // <conv.chunks.Comment object at 0x105869eb0>
+    // <conv.chunks.Comment object at 0x1039c5e20>
+    // <conv.chunks.Comment object at 0x1039c5eb0>
     lda(0x0);
     anda(0b10111111);
-    // <conv.chunks.Comment object at 0x10586a090>
+    // <conv.chunks.Comment object at 0x1039c6090>
     sta(0x0);
     JMP(ExPRp);
 }
 
 int ExPRp() {
-    // <conv.chunks.Comment object at 0x10586a330>
-    rts();
+    // <conv.chunks.Comment object at 0x1039c6330>
+    return 0;
     JMP(InitPlatformFall);
 }
 
 int InitPlatformFall() {
     tya();
-    // <conv.chunks.Comment object at 0x10586a540>
+    // <conv.chunks.Comment object at 0x1039c6540>
     tax();
     JSR(GetEnemyOffscreenBits);
-    // <conv.chunks.Comment object at 0x10586a660>
+    // <conv.chunks.Comment object at 0x1039c6660>
     lda(0x6);
     JSR(SetupFloateyNumber);
-    // <conv.chunks.Comment object at 0x10586a7e0>
+    // <conv.chunks.Comment object at 0x1039c67e0>
     lda(Player_Rel_XPos);
     sta(FloateyNum_X_Pos, x);
-    // <conv.chunks.Comment object at 0x10586aa80>
+    // <conv.chunks.Comment object at 0x1039c6a80>
     lda(Player_Y_Position);
     sta(FloateyNum_Y_Pos, x);
     lda(0x1);
@@ -15654,24 +15623,24 @@ int InitPlatformFall() {
 int StopPlatforms() {
     JSR(InitVStf);
     sta(Enemy_Y_Speed, y);
-    // <conv.chunks.Comment object at 0x10586b080>
-    // <conv.chunks.Comment object at 0x10586b1a0>
+    // <conv.chunks.Comment object at 0x1039c7080>
+    // <conv.chunks.Comment object at 0x1039c71a0>
     sta(Enemy_Y_MoveForce, y);
-    rts();
+    return 0;
     JMP(PlatformFall);
 }
 
 int PlatformFall() {
     tya();
-    // <conv.chunks.Comment object at 0x10586b500>
+    // <conv.chunks.Comment object at 0x1039c7500>
     pha();
     JSR(MoveFallingPlatform);
-    // <conv.chunks.Comment object at 0x10586b620>
+    // <conv.chunks.Comment object at 0x1039c7620>
     pla();
     tax();
     JSR(MoveFallingPlatform);
-    // <conv.chunks.Comment object at 0x10586b800>
-    // <conv.chunks.Comment object at 0x10586b890>
+    // <conv.chunks.Comment object at 0x1039c7800>
+    // <conv.chunks.Comment object at 0x1039c7890>
     ldx(ObjectOffset);
     lda(PlatformCollisionFlag, x);
     BMI(ExPF);
@@ -15681,40 +15650,40 @@ int PlatformFall() {
 }
 
 int ExPF() {
-    // <conv.chunks.Comment object at 0x10586baa0>
-    // <conv.chunks.Comment object at 0x10586bbf0>
-    // <conv.chunks.Comment object at 0x10586bd70>
-    // <conv.chunks.Comment object at 0x10586be00>
-    // <conv.chunks.Comment object at 0x10586bf20>
+    // <conv.chunks.Comment object at 0x1039c7aa0>
+    // <conv.chunks.Comment object at 0x1039c7bf0>
+    // <conv.chunks.Comment object at 0x1039c7d70>
+    // <conv.chunks.Comment object at 0x1039c7e00>
+    // <conv.chunks.Comment object at 0x1039c7f20>
     ldx(ObjectOffset);
-    rts();
+    return 0;
     JMP(YMovingPlatform);
 }
 
 int YMovingPlatform() {
     lda(Enemy_Y_Speed, x);
     ora(Enemy_Y_MoveForce, x);
-    // <conv.chunks.Comment object at 0x1058741d0>
-    // <conv.chunks.Comment object at 0x105874320>
+    // <conv.chunks.Comment object at 0x1039d01d0>
+    // <conv.chunks.Comment object at 0x1039d0320>
     BNE(ChkYCenterPos);
     sta(Enemy_YMF_Dummy, x);
-    // <conv.chunks.Comment object at 0x105874560>
+    // <conv.chunks.Comment object at 0x1039d0560>
     lda(Enemy_Y_Position, x);
     cmp(YPlatformTopYPos, x);
     BCS(ChkYCenterPos);
-    // <conv.chunks.Comment object at 0x1058747d0>
-    // <conv.chunks.Comment object at 0x105874920>
+    // <conv.chunks.Comment object at 0x1039d07d0>
+    // <conv.chunks.Comment object at 0x1039d0920>
     lda(FrameCounter);
     anda(0b111);
-    // <conv.chunks.Comment object at 0x105874b30>
+    // <conv.chunks.Comment object at 0x1039d0b30>
     BNE(SkipIY);
     inc(Enemy_Y_Position, x);
     JMP(SkipIY);
 }
 
 int SkipIY() {
-    // <conv.chunks.Comment object at 0x105874d70>
-    // <conv.chunks.Comment object at 0x105874ec0>
+    // <conv.chunks.Comment object at 0x1039d0d70>
+    // <conv.chunks.Comment object at 0x1039d0ec0>
     JMP(ChkYPCollision);
     JMP(ChkYCenterPos);
 }
@@ -15722,17 +15691,17 @@ int SkipIY() {
 int ChkYCenterPos() {
     lda(Enemy_Y_Position, x);
     cmp(YPlatformCenterYPos, x);
-    // <conv.chunks.Comment object at 0x105875070>
-    // <conv.chunks.Comment object at 0x1058751c0>
+    // <conv.chunks.Comment object at 0x1039d1070>
+    // <conv.chunks.Comment object at 0x1039d11c0>
     BCC(YMDown);
     JSR(MovePlatformUp);
-    // <conv.chunks.Comment object at 0x105875430>
+    // <conv.chunks.Comment object at 0x1039d1430>
     JMP(ChkYPCollision);
     JMP(YMDown);
 }
 
 int YMDown() {
-    // <conv.chunks.Comment object at 0x105875640>
+    // <conv.chunks.Comment object at 0x1039d1640>
     JSR(MovePlatformDown);
     JMP(ChkYPCollision);
 }
@@ -15745,11 +15714,11 @@ int ChkYPCollision() {
 }
 
 int ExYPl() {
-    // <conv.chunks.Comment object at 0x1058757f0>
-    // <conv.chunks.Comment object at 0x105875940>
-    // <conv.chunks.Comment object at 0x105875a90>
-    // <conv.chunks.Comment object at 0x105875be0>
-    rts();
+    // <conv.chunks.Comment object at 0x1039d17f0>
+    // <conv.chunks.Comment object at 0x1039d1940>
+    // <conv.chunks.Comment object at 0x1039d1a90>
+    // <conv.chunks.Comment object at 0x1039d1be0>
+    return 0;
     JMP(XMovingPlatform);
 }
 
@@ -15776,21 +15745,21 @@ int PositionPlayerOnHPlat() {
 }
 
 int PPHSubt() {
-    // <conv.chunks.Comment object at 0x1058764e0>
-    // <conv.chunks.Comment object at 0x1058765a0>
-    // <conv.chunks.Comment object at 0x105876630>
-    // <conv.chunks.Comment object at 0x1058767b0>
-    // <conv.chunks.Comment object at 0x105876900>
-    // <conv.chunks.Comment object at 0x105876990>
-    // <conv.chunks.Comment object at 0x105876b40>
-    // <conv.chunks.Comment object at 0x105876bd0>
-    // <conv.chunks.Comment object at 0x105876db0>
+    // <conv.chunks.Comment object at 0x1039d24e0>
+    // <conv.chunks.Comment object at 0x1039d25a0>
+    // <conv.chunks.Comment object at 0x1039d2630>
+    // <conv.chunks.Comment object at 0x1039d27b0>
+    // <conv.chunks.Comment object at 0x1039d2900>
+    // <conv.chunks.Comment object at 0x1039d2990>
+    // <conv.chunks.Comment object at 0x1039d2b40>
+    // <conv.chunks.Comment object at 0x1039d2bd0>
+    // <conv.chunks.Comment object at 0x1039d2db0>
     sbc(0x0);
     JMP(SetPVar);
 }
 
 int SetPVar() {
-    // <conv.chunks.Comment object at 0x105876ea0>
+    // <conv.chunks.Comment object at 0x1039d2ea0>
     sta(Player_PageLoc);
     sty(Platform_X_Scroll);
     JSR(PositionPlayerOnVPlat);
@@ -15798,10 +15767,10 @@ int SetPVar() {
 }
 
 int ExXMP() {
-    // <conv.chunks.Comment object at 0x1058770b0>
-    // <conv.chunks.Comment object at 0x1058771d0>
-    // <conv.chunks.Comment object at 0x1058772f0>
-    rts();
+    // <conv.chunks.Comment object at 0x1039d30b0>
+    // <conv.chunks.Comment object at 0x1039d31d0>
+    // <conv.chunks.Comment object at 0x1039d32f0>
+    return 0;
     JMP(DropPlatform);
 }
 
@@ -15814,12 +15783,12 @@ int DropPlatform() {
 }
 
 int ExDPl() {
-    // <conv.chunks.Comment object at 0x105877470>
-    // <conv.chunks.Comment object at 0x1058775c0>
-    // <conv.chunks.Comment object at 0x105877710>
-    // <conv.chunks.Comment object at 0x105877830>
-    // <conv.chunks.Comment object at 0x105877980>
-    rts();
+    // <conv.chunks.Comment object at 0x1039d3470>
+    // <conv.chunks.Comment object at 0x1039d35c0>
+    // <conv.chunks.Comment object at 0x1039d3710>
+    // <conv.chunks.Comment object at 0x1039d3830>
+    // <conv.chunks.Comment object at 0x1039d3980>
+    return 0;
     JMP(RightPlatform);
 }
 
@@ -15828,11 +15797,11 @@ int RightPlatform() {
     sta(0x0);
     lda(PlatformCollisionFlag, x);
     BMI(ExRPl);
-    // <conv.chunks.Comment object at 0x105877ad0>
-    // <conv.chunks.Comment object at 0x105877b30>
-    // <conv.chunks.Comment object at 0x105877c80>
-    // <conv.chunks.Comment object at 0x105877d10>
-    // <conv.chunks.Comment object at 0x105877ec0>
+    // <conv.chunks.Comment object at 0x1039d3ad0>
+    // <conv.chunks.Comment object at 0x1039d3b30>
+    // <conv.chunks.Comment object at 0x1039d3c80>
+    // <conv.chunks.Comment object at 0x1039d3d10>
+    // <conv.chunks.Comment object at 0x1039d3ec0>
     lda(0x10);
     sta(Enemy_X_Speed, x);
     JSR(PositionPlayerOnHPlat);
@@ -15840,10 +15809,10 @@ int RightPlatform() {
 }
 
 int ExRPl() {
-    // <conv.chunks.Comment object at 0x1058800b0>
-    // <conv.chunks.Comment object at 0x105880290>
-    // <conv.chunks.Comment object at 0x1058803b0>
-    rts();
+    // <conv.chunks.Comment object at 0x1039dc0b0>
+    // <conv.chunks.Comment object at 0x1039dc290>
+    // <conv.chunks.Comment object at 0x1039dc3b0>
+    return 0;
     JMP(MoveLargeLiftPlat);
 }
 
@@ -15862,20 +15831,20 @@ int MoveSmallPlatform() {
 int MoveLiftPlatforms() {
     lda(TimerControl);
     BNE(ExLiftP);
-    // <conv.chunks.Comment object at 0x105880a10>
-    // <conv.chunks.Comment object at 0x105880b30>
+    // <conv.chunks.Comment object at 0x1039dca10>
+    // <conv.chunks.Comment object at 0x1039dcb30>
     lda(Enemy_YMF_Dummy, x);
     clc();
-    // <conv.chunks.Comment object at 0x105880dd0>
+    // <conv.chunks.Comment object at 0x1039dcdd0>
     adc(Enemy_Y_MoveForce, x);
     sta(Enemy_YMF_Dummy, x);
     lda(Enemy_Y_Position, x);
     adc(Enemy_Y_Speed, x);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1058810a0>
-    // <conv.chunks.Comment object at 0x1058811f0>
-    // <conv.chunks.Comment object at 0x105881340>
-    rts();
+    // <conv.chunks.Comment object at 0x1039dd0a0>
+    // <conv.chunks.Comment object at 0x1039dd1f0>
+    // <conv.chunks.Comment object at 0x1039dd340>
+    return 0;
     JMP(ChkSmallPlatCollision);
 }
 
@@ -15887,25 +15856,25 @@ int ChkSmallPlatCollision() {
 }
 
 int ExLiftP() {
-    // <conv.chunks.Comment object at 0x105881550>
-    // <conv.chunks.Comment object at 0x1058816a0>
-    // <conv.chunks.Comment object at 0x1058817f0>
-    // <conv.chunks.Comment object at 0x105881910>
-    rts();
+    // <conv.chunks.Comment object at 0x1039dd550>
+    // <conv.chunks.Comment object at 0x1039dd6a0>
+    // <conv.chunks.Comment object at 0x1039dd7f0>
+    // <conv.chunks.Comment object at 0x1039dd910>
+    return 0;
     JMP(OffscreenBoundsCheck);
 }
 
 int OffscreenBoundsCheck() {
     lda(Enemy_ID, x);
     cmp(FlyingCheepCheep);
-    // <conv.chunks.Comment object at 0x105881b50>
-    // <conv.chunks.Comment object at 0x105881ca0>
+    // <conv.chunks.Comment object at 0x1039ddb50>
+    // <conv.chunks.Comment object at 0x1039ddca0>
     BEQ(ExScrnBd);
     lda(ScreenLeft_X_Pos);
-    // <conv.chunks.Comment object at 0x105881eb0>
+    // <conv.chunks.Comment object at 0x1039ddeb0>
     ldy(Enemy_ID, x);
     cpy(HammerBro);
-    // <conv.chunks.Comment object at 0x1058820f0>
+    // <conv.chunks.Comment object at 0x1039de0f0>
     BEQ(LimitB);
     cpy(PiranhaPlant);
     BNE(ExtendLB);
@@ -15913,64 +15882,64 @@ int OffscreenBoundsCheck() {
 }
 
 int LimitB() {
-    // <conv.chunks.Comment object at 0x105882330>
-    // <conv.chunks.Comment object at 0x105882450>
-    // <conv.chunks.Comment object at 0x105882570>
+    // <conv.chunks.Comment object at 0x1039de330>
+    // <conv.chunks.Comment object at 0x1039de450>
+    // <conv.chunks.Comment object at 0x1039de570>
     adc(0x38);
     JMP(ExtendLB);
 }
 
 int ExtendLB() {
-    // <conv.chunks.Comment object at 0x105882660>
+    // <conv.chunks.Comment object at 0x1039de660>
     sbc(0x48);
     sta(0x1);
-    // <conv.chunks.Comment object at 0x105882870>
+    // <conv.chunks.Comment object at 0x1039de870>
     lda(ScreenLeft_PageLoc);
     sbc(0x0);
     sta(0x0);
     lda(ScreenRight_X_Pos);
-    // <conv.chunks.Comment object at 0x105882a50>
-    // <conv.chunks.Comment object at 0x105882ba0>
-    // <conv.chunks.Comment object at 0x105882c30>
+    // <conv.chunks.Comment object at 0x1039dea50>
+    // <conv.chunks.Comment object at 0x1039deba0>
+    // <conv.chunks.Comment object at 0x1039dec30>
     adc(0x48);
     sta(0x3);
-    // <conv.chunks.Comment object at 0x105882ed0>
+    // <conv.chunks.Comment object at 0x1039deed0>
     lda(ScreenRight_PageLoc);
     adc(0x0);
     sta(0x2);
     lda(Enemy_X_Position, x);
     cmp(0x1);
-    // <conv.chunks.Comment object at 0x1058830b0>
-    // <conv.chunks.Comment object at 0x105883200>
-    // <conv.chunks.Comment object at 0x105883290>
-    // <conv.chunks.Comment object at 0x105883470>
+    // <conv.chunks.Comment object at 0x1039df0b0>
+    // <conv.chunks.Comment object at 0x1039df200>
+    // <conv.chunks.Comment object at 0x1039df290>
+    // <conv.chunks.Comment object at 0x1039df470>
     lda(Enemy_PageLoc, x);
     sbc(0x0);
     BMI(TooFar);
     lda(Enemy_X_Position, x);
     cmp(0x3);
-    // <conv.chunks.Comment object at 0x1058836b0>
-    // <conv.chunks.Comment object at 0x105883740>
-    // <conv.chunks.Comment object at 0x1058838f0>
-    // <conv.chunks.Comment object at 0x105883a70>
+    // <conv.chunks.Comment object at 0x1039df6b0>
+    // <conv.chunks.Comment object at 0x1039df740>
+    // <conv.chunks.Comment object at 0x1039df8f0>
+    // <conv.chunks.Comment object at 0x1039dfa70>
     lda(Enemy_PageLoc, x);
     sbc(0x2);
     BMI(ExScrnBd);
     lda(Enemy_State, x);
     cmp(HammerBro);
-    // <conv.chunks.Comment object at 0x105883cb0>
-    // <conv.chunks.Comment object at 0x105883d40>
-    // <conv.chunks.Comment object at 0x105883ec0>
-    // <conv.chunks.Comment object at 0x105888050>
+    // <conv.chunks.Comment object at 0x1039dfcb0>
+    // <conv.chunks.Comment object at 0x1039dfd40>
+    // <conv.chunks.Comment object at 0x1039dfec0>
+    // <conv.chunks.Comment object at 0x1039e4050>
     BEQ(ExScrnBd);
     cpy(PiranhaPlant);
-    // <conv.chunks.Comment object at 0x105888260>
+    // <conv.chunks.Comment object at 0x1039e4260>
     BEQ(ExScrnBd);
     cpy(FlagpoleFlagObject);
-    // <conv.chunks.Comment object at 0x105888470>
+    // <conv.chunks.Comment object at 0x1039e4470>
     BEQ(ExScrnBd);
     cpy(StarFlagObject);
-    // <conv.chunks.Comment object at 0x105888680>
+    // <conv.chunks.Comment object at 0x1039e4680>
     BEQ(ExScrnBd);
     cpy(JumpspringObject);
     BEQ(ExScrnBd);
@@ -15978,74 +15947,74 @@ int ExtendLB() {
 }
 
 int TooFar() {
-    // <conv.chunks.Comment object at 0x105888890>
-    // <conv.chunks.Comment object at 0x1058889b0>
-    // <conv.chunks.Comment object at 0x105888ad0>
+    // <conv.chunks.Comment object at 0x1039e4890>
+    // <conv.chunks.Comment object at 0x1039e49b0>
+    // <conv.chunks.Comment object at 0x1039e4ad0>
     JSR(EraseEnemyObject);
     JMP(ExScrnBd);
 }
 
 int ExScrnBd() {
-    // <conv.chunks.Comment object at 0x105888c80>
-    rts();
+    // <conv.chunks.Comment object at 0x1039e4c80>
+    return 0;
     JMP(FireballEnemyCollision);
 }
 
 int FireballEnemyCollision() {
     lda(Fireball_State, x);
     BEQ(ExitFBallEnemy);
-    // <conv.chunks.Comment object at 0x105888e30>
-    // <conv.chunks.Comment object at 0x105888dd0>
-    // <conv.chunks.Comment object at 0x105889160>
+    // <conv.chunks.Comment object at 0x1039e4e30>
+    // <conv.chunks.Comment object at 0x1039e4dd0>
+    // <conv.chunks.Comment object at 0x1039e5160>
     asl();
     BCS(ExitFBallEnemy);
-    // <conv.chunks.Comment object at 0x105889310>
+    // <conv.chunks.Comment object at 0x1039e5310>
     lda(FrameCounter);
     lsr();
     BCS(ExitFBallEnemy);
-    // <conv.chunks.Comment object at 0x105889550>
-    // <conv.chunks.Comment object at 0x1058895e0>
+    // <conv.chunks.Comment object at 0x1039e5550>
+    // <conv.chunks.Comment object at 0x1039e55e0>
     txa();
     asl();
-    // <conv.chunks.Comment object at 0x1058897c0>
+    // <conv.chunks.Comment object at 0x1039e57c0>
     asl();
     clc();
     adc(0x1c);
     tay();
-    // <conv.chunks.Comment object at 0x105889970>
-    // <conv.chunks.Comment object at 0x105889ac0>
+    // <conv.chunks.Comment object at 0x1039e5970>
+    // <conv.chunks.Comment object at 0x1039e5ac0>
     ldx(0x4);
     JMP(FireballEnemyCDLoop);
 }
 
 int FireballEnemyCDLoop() {
     stx(0x1);
-    // <conv.chunks.Comment object at 0x105889ca0>
+    // <conv.chunks.Comment object at 0x1039e5ca0>
     tya();
     pha();
-    // <conv.chunks.Comment object at 0x105889e50>
+    // <conv.chunks.Comment object at 0x1039e5e50>
     lda(Enemy_State, x);
     anda(0b100000);
     BNE(NoFToECol);
     lda(Enemy_Flag, x);
     BEQ(NoFToECol);
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x10588a000>
-    // <conv.chunks.Comment object at 0x10588a120>
-    // <conv.chunks.Comment object at 0x10588a240>
-    // <conv.chunks.Comment object at 0x10588a390>
-    // <conv.chunks.Comment object at 0x10588a4b0>
+    // <conv.chunks.Comment object at 0x1039e6000>
+    // <conv.chunks.Comment object at 0x1039e6120>
+    // <conv.chunks.Comment object at 0x1039e6240>
+    // <conv.chunks.Comment object at 0x1039e6390>
+    // <conv.chunks.Comment object at 0x1039e64b0>
     cmp(0x24);
     BCC(GoombaDie);
-    // <conv.chunks.Comment object at 0x10588a660>
+    // <conv.chunks.Comment object at 0x1039e6660>
     cmp(0x2b);
     BCC(NoFToECol);
     JMP(GoombaDie);
 }
 
 int GoombaDie() {
-    // <conv.chunks.Comment object at 0x10588a870>
-    // <conv.chunks.Comment object at 0x10588aa20>
+    // <conv.chunks.Comment object at 0x1039e6870>
+    // <conv.chunks.Comment object at 0x1039e6a20>
     cmp(Goomba);
     BNE(NotGoomba);
     lda(Enemy_State, x);
@@ -16055,17 +16024,17 @@ int GoombaDie() {
 }
 
 int NotGoomba() {
-    // <conv.chunks.Comment object at 0x10588aab0>
-    // <conv.chunks.Comment object at 0x10588acc0>
-    // <conv.chunks.Comment object at 0x10588ae10>
-    // <conv.chunks.Comment object at 0x10588aea0>
-    // <conv.chunks.Comment object at 0x10588b050>
+    // <conv.chunks.Comment object at 0x1039e6ab0>
+    // <conv.chunks.Comment object at 0x1039e6cc0>
+    // <conv.chunks.Comment object at 0x1039e6e10>
+    // <conv.chunks.Comment object at 0x1039e6ea0>
+    // <conv.chunks.Comment object at 0x1039e7050>
     lda(EnemyOffscrBitsMasked, x);
     BNE(NoFToECol);
-    // <conv.chunks.Comment object at 0x10588b1d0>
+    // <conv.chunks.Comment object at 0x1039e71d0>
     txa();
     asl();
-    // <conv.chunks.Comment object at 0x10588b3b0>
+    // <conv.chunks.Comment object at 0x1039e73b0>
     asl();
     clc();
     adc(0x4);
@@ -16073,11 +16042,11 @@ int NotGoomba() {
     JSR(SprObjectCollisionCore);
     ldx(ObjectOffset);
     BCC(NoFToECol);
-    // <conv.chunks.Comment object at 0x10588b560>
-    // <conv.chunks.Comment object at 0x10588b6b0>
-    // <conv.chunks.Comment object at 0x10588b740>
-    // <conv.chunks.Comment object at 0x10588b860>
-    // <conv.chunks.Comment object at 0x10588b980>
+    // <conv.chunks.Comment object at 0x1039e7560>
+    // <conv.chunks.Comment object at 0x1039e76b0>
+    // <conv.chunks.Comment object at 0x1039e7740>
+    // <conv.chunks.Comment object at 0x1039e7860>
+    // <conv.chunks.Comment object at 0x1039e7980>
     lda(0b10000000);
     sta(Fireball_State, x);
     ldx(0x1);
@@ -16086,10 +16055,10 @@ int NotGoomba() {
 }
 
 int NoFToECol() {
-    // <conv.chunks.Comment object at 0x10588bb90>
-    // <conv.chunks.Comment object at 0x10588bd10>
-    // <conv.chunks.Comment object at 0x10588bda0>
-    // <conv.chunks.Comment object at 0x10588bf20>
+    // <conv.chunks.Comment object at 0x1039e7b90>
+    // <conv.chunks.Comment object at 0x1039e7d10>
+    // <conv.chunks.Comment object at 0x1039e7da0>
+    // <conv.chunks.Comment object at 0x1039e7f20>
     pla();
     tay();
     ldx(0x1);
@@ -16100,8 +16069,8 @@ int NoFToECol() {
 
 int ExitFBallEnemy() {
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x105890440>
-    rts();
+    // <conv.chunks.Comment object at 0x1039ec440>
+    return 0;
     JMP(HandleEnemyFBallCol);
 }
 
@@ -16112,12 +16081,12 @@ int HandleEnemyFBallCol() {
     BPL(ChkBuzzyBeetle);
     anda(0b1111);
     tax();
-    // <conv.chunks.Comment object at 0x105890740>
-    // <conv.chunks.Comment object at 0x105890d10>
-    // <conv.chunks.Comment object at 0x105890da0>
-    // <conv.chunks.Comment object at 0x105890f50>
-    // <conv.chunks.Comment object at 0x105891070>
-    // <conv.chunks.Comment object at 0x1058911c0>
+    // <conv.chunks.Comment object at 0x1039ec740>
+    // <conv.chunks.Comment object at 0x1039ecd10>
+    // <conv.chunks.Comment object at 0x1039ecda0>
+    // <conv.chunks.Comment object at 0x1039ecf50>
+    // <conv.chunks.Comment object at 0x1039ed070>
+    // <conv.chunks.Comment object at 0x1039ed1c0>
     lda(Enemy_ID, x);
     cmp(Bowser);
     BEQ(HurtBowser);
@@ -16140,11 +16109,11 @@ int HurtBowser() {
     JSR(InitVStf);
     sta(Enemy_X_Speed, x);
     sta(EnemyFrenzyBuffer);
-    // <conv.chunks.Comment object at 0x105891d60>
-    // <conv.chunks.Comment object at 0x105891e80>
-    // <conv.chunks.Comment object at 0x105891fd0>
-    // <conv.chunks.Comment object at 0x1058920f0>
-    // <conv.chunks.Comment object at 0x105892240>
+    // <conv.chunks.Comment object at 0x1039edd60>
+    // <conv.chunks.Comment object at 0x1039ede80>
+    // <conv.chunks.Comment object at 0x1039edfd0>
+    // <conv.chunks.Comment object at 0x1039ee0f0>
+    // <conv.chunks.Comment object at 0x1039ee240>
     lda(0xfe);
     sta(Enemy_Y_Speed, x);
     ldy(WorldNumber);
@@ -16158,15 +16127,15 @@ int HurtBowser() {
 }
 
 int SetDBSte() {
-    // <conv.chunks.Comment object at 0x1058923c0>
-    // <conv.chunks.Comment object at 0x1058925a0>
-    // <conv.chunks.Comment object at 0x1058926c0>
-    // <conv.chunks.Comment object at 0x105892810>
-    // <conv.chunks.Comment object at 0x105892960>
-    // <conv.chunks.Comment object at 0x1058929f0>
-    // <conv.chunks.Comment object at 0x105892b10>
-    // <conv.chunks.Comment object at 0x105892cc0>
-    // <conv.chunks.Comment object at 0x105892d50>
+    // <conv.chunks.Comment object at 0x1039ee3c0>
+    // <conv.chunks.Comment object at 0x1039ee5a0>
+    // <conv.chunks.Comment object at 0x1039ee6c0>
+    // <conv.chunks.Comment object at 0x1039ee810>
+    // <conv.chunks.Comment object at 0x1039ee960>
+    // <conv.chunks.Comment object at 0x1039ee9f0>
+    // <conv.chunks.Comment object at 0x1039eeb10>
+    // <conv.chunks.Comment object at 0x1039eecc0>
+    // <conv.chunks.Comment object at 0x1039eed50>
     sta(Enemy_State, x);
     lda(Sfx_BowserFall);
     sta(Square2SoundQueue);
@@ -16179,10 +16148,10 @@ int SetDBSte() {
 int ChkOtherEnemies() {
     cmp(BulletBill_FrenzyVar);
     BEQ(ExHCF);
-    // <conv.chunks.Comment object at 0x1058935f0>
+    // <conv.chunks.Comment object at 0x1039ef5f0>
     cmp(Podoboo);
     BEQ(ExHCF);
-    // <conv.chunks.Comment object at 0x105893860>
+    // <conv.chunks.Comment object at 0x1039ef860>
     cmp(0x15);
     BCS(ExHCF);
     JMP(ShellOrBlockDefeat);
@@ -16190,30 +16159,30 @@ int ChkOtherEnemies() {
 
 int ShellOrBlockDefeat() {
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x105893c20>
+    // <conv.chunks.Comment object at 0x1039efc20>
     cmp(PiranhaPlant);
     BNE(StnE);
-    // <conv.chunks.Comment object at 0x105893e60>
+    // <conv.chunks.Comment object at 0x1039efe60>
     lda(Enemy_Y_Position, x);
     adc(0x18);
-    // <conv.chunks.Comment object at 0x1058a0110>
+    // <conv.chunks.Comment object at 0x1039fc110>
     sta(Enemy_Y_Position, x);
     JMP(StnE);
 }
 
 int StnE() {
-    // <conv.chunks.Comment object at 0x1058a0350>
+    // <conv.chunks.Comment object at 0x1039fc350>
     JSR(ChkToStunEnemies);
     lda(Enemy_State, x);
     anda(0b11111);
     ora(0b100000);
-    // <conv.chunks.Comment object at 0x1058a05f0>
-    // <conv.chunks.Comment object at 0x1058a0710>
+    // <conv.chunks.Comment object at 0x1039fc5f0>
+    // <conv.chunks.Comment object at 0x1039fc710>
     sta(Enemy_State, x);
     lda(0x2);
     ldy(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x1058a0950>
-    // <conv.chunks.Comment object at 0x1058a09e0>
+    // <conv.chunks.Comment object at 0x1039fc950>
+    // <conv.chunks.Comment object at 0x1039fc9e0>
     cpy(HammerBro);
     BNE(GoombaPoints);
     lda(0x6);
@@ -16230,15 +16199,15 @@ int GoombaPoints() {
 int EnemySmackScore() {
     JSR(SetupFloateyNumber);
     lda(Sfx_EnemySmack);
-    // <conv.chunks.Comment object at 0x1058a12e0>
-    // <conv.chunks.Comment object at 0x1058a1400>
+    // <conv.chunks.Comment object at 0x1039fd2e0>
+    // <conv.chunks.Comment object at 0x1039fd400>
     sta(Square1SoundQueue);
     JMP(ExHCF);
 }
 
 int ExHCF() {
-    // <conv.chunks.Comment object at 0x1058a1610>
-    rts();
+    // <conv.chunks.Comment object at 0x1039fd610>
+    return 0;
     JMP(PlayerHammerCollision);
 }
 
@@ -16249,15 +16218,15 @@ int PlayerHammerCollision() {
     lda(TimerControl);
     ora(Misc_OffscreenBits);
     BNE(ExPHC);
-    // <conv.chunks.Comment object at 0x1058a1790>
-    // <conv.chunks.Comment object at 0x1058a18e0>
-    // <conv.chunks.Comment object at 0x1058a1970>
-    // <conv.chunks.Comment object at 0x1058a1ac0>
-    // <conv.chunks.Comment object at 0x1058a1be0>
-    // <conv.chunks.Comment object at 0x1058a1d00>
+    // <conv.chunks.Comment object at 0x1039fd790>
+    // <conv.chunks.Comment object at 0x1039fd8e0>
+    // <conv.chunks.Comment object at 0x1039fd970>
+    // <conv.chunks.Comment object at 0x1039fdac0>
+    // <conv.chunks.Comment object at 0x1039fdbe0>
+    // <conv.chunks.Comment object at 0x1039fdd00>
     txa();
     asl();
-    // <conv.chunks.Comment object at 0x1058a1f10>
+    // <conv.chunks.Comment object at 0x1039fdf10>
     asl();
     clc();
     adc(0x24);
@@ -16267,21 +16236,21 @@ int PlayerHammerCollision() {
     BCC(ClHCol);
     lda(Misc_Collision_Flag, x);
     BNE(ExPHC);
-    // <conv.chunks.Comment object at 0x1058a20c0>
-    // <conv.chunks.Comment object at 0x1058a2210>
-    // <conv.chunks.Comment object at 0x1058a22a0>
-    // <conv.chunks.Comment object at 0x1058a23c0>
-    // <conv.chunks.Comment object at 0x1058a24e0>
-    // <conv.chunks.Comment object at 0x1058a2630>
-    // <conv.chunks.Comment object at 0x1058a2780>
+    // <conv.chunks.Comment object at 0x1039fe0c0>
+    // <conv.chunks.Comment object at 0x1039fe210>
+    // <conv.chunks.Comment object at 0x1039fe2a0>
+    // <conv.chunks.Comment object at 0x1039fe3c0>
+    // <conv.chunks.Comment object at 0x1039fe4e0>
+    // <conv.chunks.Comment object at 0x1039fe630>
+    // <conv.chunks.Comment object at 0x1039fe780>
     lda(0x1);
     sta(Misc_Collision_Flag, x);
-    // <conv.chunks.Comment object at 0x1058a2930>
+    // <conv.chunks.Comment object at 0x1039fe930>
     lda(Misc_X_Speed, x);
     eor(0xff);
     clc();
-    // <conv.chunks.Comment object at 0x1058a2c30>
-    // <conv.chunks.Comment object at 0x1058a2d80>
+    // <conv.chunks.Comment object at 0x1039fec30>
+    // <conv.chunks.Comment object at 0x1039fed80>
     adc(0x1);
     sta(Misc_X_Speed, x);
     lda(StarInvincibleTimer);
@@ -16291,60 +16260,60 @@ int PlayerHammerCollision() {
 }
 
 int ClHCol() {
-    // <conv.chunks.Comment object at 0x1058a2e70>
-    // <conv.chunks.Comment object at 0x1058a3050>
-    // <conv.chunks.Comment object at 0x1058a3170>
-    // <conv.chunks.Comment object at 0x1058a32c0>
-    // <conv.chunks.Comment object at 0x1058a33e0>
+    // <conv.chunks.Comment object at 0x1039fee70>
+    // <conv.chunks.Comment object at 0x1039ff050>
+    // <conv.chunks.Comment object at 0x1039ff170>
+    // <conv.chunks.Comment object at 0x1039ff2c0>
+    // <conv.chunks.Comment object at 0x1039ff3e0>
     lda(0x0);
     sta(Misc_Collision_Flag, x);
     JMP(ExPHC);
 }
 
 int ExPHC() {
-    rts();
+    return 0;
     JMP(HandlePowerUpCollision);
 }
 
 int HandlePowerUpCollision() {
     JSR(EraseEnemyObject);
-    // <conv.chunks.Comment object at 0x1058a37d0>
+    // <conv.chunks.Comment object at 0x1039ff7d0>
     lda(0x6);
     JSR(SetupFloateyNumber);
-    // <conv.chunks.Comment object at 0x1058a3950>
+    // <conv.chunks.Comment object at 0x1039ff950>
     lda(Sfx_PowerUpGrab);
     sta(Square2SoundQueue);
     lda(PowerUpType);
-    // <conv.chunks.Comment object at 0x1058a3bf0>
-    // <conv.chunks.Comment object at 0x1058a3d10>
+    // <conv.chunks.Comment object at 0x1039ffbf0>
+    // <conv.chunks.Comment object at 0x1039ffd10>
     cmp(0x2);
     BCC(Shroom_Flower_PUp);
-    // <conv.chunks.Comment object at 0x1058a3e90>
+    // <conv.chunks.Comment object at 0x1039ffe90>
     cmp(0x3);
     BEQ(SetFor1Up);
     lda(0x23);
     sta(StarInvincibleTimer);
     lda(StarPowerMusic);
-    // <conv.chunks.Comment object at 0x1058a80e0>
-    // <conv.chunks.Comment object at 0x1058a8290>
-    // <conv.chunks.Comment object at 0x1058a8320>
-    // <conv.chunks.Comment object at 0x1058a84d0>
+    // <conv.chunks.Comment object at 0x103a040e0>
+    // <conv.chunks.Comment object at 0x103a04290>
+    // <conv.chunks.Comment object at 0x103a04320>
+    // <conv.chunks.Comment object at 0x103a044d0>
     sta(AreaMusicQueue);
-    rts();
+    return 0;
     JMP(Shroom_Flower_PUp);
 }
 
 int Shroom_Flower_PUp() {
     lda(PlayerStatus);
-    // <conv.chunks.Comment object at 0x1058a87a0>
+    // <conv.chunks.Comment object at 0x103a047a0>
     BEQ(UpToSuper);
     cmp(0x1);
-    // <conv.chunks.Comment object at 0x1058a89b0>
+    // <conv.chunks.Comment object at 0x103a049b0>
     BNE(NoPUp);
     ldx(ObjectOffset);
     lda(0x2);
-    // <conv.chunks.Comment object at 0x1058a8bf0>
-    // <conv.chunks.Comment object at 0x1058a8d10>
+    // <conv.chunks.Comment object at 0x103a04bf0>
+    // <conv.chunks.Comment object at 0x103a04d10>
     sta(PlayerStatus);
     JSR(GetPlayerColors);
     ldx(ObjectOffset);
@@ -16356,15 +16325,15 @@ int Shroom_Flower_PUp() {
 int SetFor1Up() {
     lda(0xb);
     sta(FloateyNum_Control, x);
-    // <conv.chunks.Comment object at 0x1058a93d0>
-    // <conv.chunks.Comment object at 0x1058a9460>
-    rts();
+    // <conv.chunks.Comment object at 0x103a053d0>
+    // <conv.chunks.Comment object at 0x103a05460>
+    return 0;
     JMP(UpToSuper);
 }
 
 int UpToSuper() {
     lda(0x1);
-    // <conv.chunks.Comment object at 0x1058a9700>
+    // <conv.chunks.Comment object at 0x103a05700>
     sta(PlayerStatus);
     lda(0x9);
     JMP(UpToFiery);
@@ -16377,41 +16346,41 @@ int UpToFiery() {
 }
 
 int NoPUp() {
-    rts();
+    return 0;
     JMP(PlayerEnemyCollision);
 }
 
 int PlayerEnemyCollision() {
     lda(FrameCounter);
-    // <conv.chunks.Comment object at 0x1058a9fd0>
+    // <conv.chunks.Comment object at 0x103a05fd0>
     lsr();
     BCS(NoPUp);
     JSR(CheckPlayerVertical);
     BCS(NoPECol);
     lda(EnemyOffscrBitsMasked, x);
     BNE(NoPECol);
-    // <conv.chunks.Comment object at 0x1058aa390>
-    // <conv.chunks.Comment object at 0x1058aa4e0>
-    // <conv.chunks.Comment object at 0x1058aa600>
-    // <conv.chunks.Comment object at 0x1058aa750>
-    // <conv.chunks.Comment object at 0x1058aa8a0>
+    // <conv.chunks.Comment object at 0x103a06390>
+    // <conv.chunks.Comment object at 0x103a064e0>
+    // <conv.chunks.Comment object at 0x103a06600>
+    // <conv.chunks.Comment object at 0x103a06750>
+    // <conv.chunks.Comment object at 0x103a068a0>
     lda(GameEngineSubroutine);
     cmp(0x8);
     BNE(NoPECol);
-    // <conv.chunks.Comment object at 0x1058aaae0>
-    // <conv.chunks.Comment object at 0x1058aab70>
+    // <conv.chunks.Comment object at 0x103a06ae0>
+    // <conv.chunks.Comment object at 0x103a06b70>
     lda(Enemy_State, x);
     anda(0b100000);
-    // <conv.chunks.Comment object at 0x1058aae70>
+    // <conv.chunks.Comment object at 0x103a06e70>
     BNE(NoPECol);
     JSR(GetEnemyBoundBoxOfs);
     JSR(PlayerCollisionCore);
     ldx(ObjectOffset);
     BCS(CheckForPUpCollision);
-    // <conv.chunks.Comment object at 0x1058ab0b0>
-    // <conv.chunks.Comment object at 0x1058ab1d0>
-    // <conv.chunks.Comment object at 0x1058ab2f0>
-    // <conv.chunks.Comment object at 0x1058ab410>
+    // <conv.chunks.Comment object at 0x103a070b0>
+    // <conv.chunks.Comment object at 0x103a071d0>
+    // <conv.chunks.Comment object at 0x103a072f0>
+    // <conv.chunks.Comment object at 0x103a07410>
     lda(Enemy_CollisionBits, x);
     anda(0b11111110);
     sta(Enemy_CollisionBits, x);
@@ -16419,7 +16388,7 @@ int PlayerEnemyCollision() {
 }
 
 int NoPECol() {
-    rts();
+    return 0;
     JMP(CheckForPUpCollision);
 }
 
@@ -16432,10 +16401,10 @@ int CheckForPUpCollision() {
 }
 
 int EColl() {
-    // <conv.chunks.Comment object at 0x1058abb00>
-    // <conv.chunks.Comment object at 0x1058abc20>
-    // <conv.chunks.Comment object at 0x1058abd70>
-    // <conv.chunks.Comment object at 0x1058abe90>
+    // <conv.chunks.Comment object at 0x103a07b00>
+    // <conv.chunks.Comment object at 0x103a07c20>
+    // <conv.chunks.Comment object at 0x103a07d70>
+    // <conv.chunks.Comment object at 0x103a07e90>
     lda(StarInvincibleTimer);
     BEQ(HandlePECollisions);
     JMP(ShellOrBlockDefeat);
@@ -16445,63 +16414,63 @@ int EColl() {
 int HandlePECollisions() {
     lda(Enemy_CollisionBits, x);
     anda(0b1);
-    // <conv.chunks.Comment object at 0x1058b0320>
-    // <conv.chunks.Comment object at 0x1058b05f0>
+    // <conv.chunks.Comment object at 0x103a0c320>
+    // <conv.chunks.Comment object at 0x103a0c5f0>
     ora(EnemyOffscrBitsMasked, x);
     BNE(ExPEC);
-    // <conv.chunks.Comment object at 0x1058b0830>
+    // <conv.chunks.Comment object at 0x103a0c830>
     lda(0x1);
     ora(Enemy_CollisionBits, x);
-    // <conv.chunks.Comment object at 0x1058b09e0>
+    // <conv.chunks.Comment object at 0x103a0c9e0>
     sta(Enemy_CollisionBits, x);
     cpy(Spiny);
-    // <conv.chunks.Comment object at 0x1058b0ce0>
+    // <conv.chunks.Comment object at 0x103a0cce0>
     BEQ(ChkForPlayerInjury);
     cpy(PiranhaPlant);
-    // <conv.chunks.Comment object at 0x1058b0f20>
+    // <conv.chunks.Comment object at 0x103a0cf20>
     BEQ(InjurePlayer);
     cpy(Podoboo);
-    // <conv.chunks.Comment object at 0x1058b1130>
+    // <conv.chunks.Comment object at 0x103a0d130>
     BEQ(InjurePlayer);
     cpy(BulletBill_CannonVar);
-    // <conv.chunks.Comment object at 0x1058b1370>
+    // <conv.chunks.Comment object at 0x103a0d370>
     BEQ(ChkForPlayerInjury);
     cpy(0x15);
-    // <conv.chunks.Comment object at 0x1058b1580>
+    // <conv.chunks.Comment object at 0x103a0d580>
     BCS(InjurePlayer);
     lda(AreaType);
-    // <conv.chunks.Comment object at 0x1058b1790>
+    // <conv.chunks.Comment object at 0x103a0d790>
     BEQ(InjurePlayer);
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x1058b19a0>
+    // <conv.chunks.Comment object at 0x103a0d9a0>
     asl();
     BCS(ChkForPlayerInjury);
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x1058b1c70>
+    // <conv.chunks.Comment object at 0x103a0dc70>
     anda(0b111);
     cmp(0x2);
-    // <conv.chunks.Comment object at 0x1058b1eb0>
+    // <conv.chunks.Comment object at 0x103a0deb0>
     BCC(ChkForPlayerInjury);
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x1058b20c0>
+    // <conv.chunks.Comment object at 0x103a0e0c0>
     cmp(Goomba);
     BEQ(ExPEC);
     lda(Sfx_EnemySmack);
-    // <conv.chunks.Comment object at 0x1058b2450>
+    // <conv.chunks.Comment object at 0x103a0e450>
     sta(Square1SoundQueue);
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x1058b2660>
+    // <conv.chunks.Comment object at 0x103a0e660>
     ora(0b10000000);
     sta(Enemy_State, x);
     JSR(EnemyFacePlayer);
     lda(offsetof(G, KickedShellXSpdData), y);
-    // <conv.chunks.Comment object at 0x1058b29c0>
-    // <conv.chunks.Comment object at 0x1058b2ae0>
+    // <conv.chunks.Comment object at 0x103a0e9c0>
+    // <conv.chunks.Comment object at 0x103a0eae0>
     sta(Enemy_X_Speed, x);
     lda(0x3);
     clc();
-    // <conv.chunks.Comment object at 0x1058b2d50>
-    // <conv.chunks.Comment object at 0x1058b2ea0>
+    // <conv.chunks.Comment object at 0x103a0ed50>
+    // <conv.chunks.Comment object at 0x103a0eea0>
     adc(StompChainCounter);
     ldy(EnemyIntervalTimer, x);
     cpy(0x3);
@@ -16511,18 +16480,18 @@ int HandlePECollisions() {
 }
 
 int KSPts() {
-    // <conv.chunks.Comment object at 0x1058b3020>
-    // <conv.chunks.Comment object at 0x1058b3170>
-    // <conv.chunks.Comment object at 0x1058b3200>
-    // <conv.chunks.Comment object at 0x1058b33e0>
-    // <conv.chunks.Comment object at 0x1058b3530>
+    // <conv.chunks.Comment object at 0x103a0f020>
+    // <conv.chunks.Comment object at 0x103a0f170>
+    // <conv.chunks.Comment object at 0x103a0f200>
+    // <conv.chunks.Comment object at 0x103a0f3e0>
+    // <conv.chunks.Comment object at 0x103a0f530>
     JSR(SetupFloateyNumber);
     JMP(ExPEC);
 }
 
 int ExPEC() {
-    // <conv.chunks.Comment object at 0x1058b36b0>
-    rts();
+    // <conv.chunks.Comment object at 0x103a0f6b0>
+    return 0;
     JMP(ChkForPlayerInjury);
 }
 
@@ -16534,15 +16503,15 @@ int ChkForPlayerInjury() {
 }
 
 int ChkInj() {
-    // <conv.chunks.Comment object at 0x1058b3800>
-    // <conv.chunks.Comment object at 0x1058b3920>
-    // <conv.chunks.Comment object at 0x1058b3a70>
-    // <conv.chunks.Comment object at 0x1058b3b90>
+    // <conv.chunks.Comment object at 0x103a0f800>
+    // <conv.chunks.Comment object at 0x103a0f920>
+    // <conv.chunks.Comment object at 0x103a0fa70>
+    // <conv.chunks.Comment object at 0x103a0fb90>
     lda(Enemy_ID, x);
     cmp(Bloober);
     BCC(ChkETmrs);
     lda(Player_Y_Position);
-    // <conv.chunks.Comment object at 0x1058b3f50>
+    // <conv.chunks.Comment object at 0x103a0ff50>
     clc();
     adc(0xc);
     cmp(Enemy_Y_Position, x);
@@ -16551,16 +16520,16 @@ int ChkInj() {
 }
 
 int ChkETmrs() {
-    // <conv.chunks.Comment object at 0x1058c01a0>
-    // <conv.chunks.Comment object at 0x1058c0380>
-    // <conv.chunks.Comment object at 0x1058c04a0>
+    // <conv.chunks.Comment object at 0x103a1c1a0>
+    // <conv.chunks.Comment object at 0x103a1c380>
+    // <conv.chunks.Comment object at 0x103a1c4a0>
     lda(StompTimer);
     BNE(EnemyStomped);
     lda(InjuryTimer);
     BNE(ExInjColRoutines);
-    // <conv.chunks.Comment object at 0x1058c05f0>
-    // <conv.chunks.Comment object at 0x1058c0710>
-    // <conv.chunks.Comment object at 0x1058c0830>
+    // <conv.chunks.Comment object at 0x103a1c5f0>
+    // <conv.chunks.Comment object at 0x103a1c710>
+    // <conv.chunks.Comment object at 0x103a1c830>
     lda(Player_Rel_XPos);
     cmp(Enemy_Rel_XPos);
     BCC(TInjE);
@@ -16569,15 +16538,15 @@ int ChkETmrs() {
 }
 
 int TInjE() {
-    // <conv.chunks.Comment object at 0x1058c0a40>
-    // <conv.chunks.Comment object at 0x1058c0b60>
-    // <conv.chunks.Comment object at 0x1058c0cb0>
-    // <conv.chunks.Comment object at 0x1058c0dd0>
+    // <conv.chunks.Comment object at 0x103a1ca40>
+    // <conv.chunks.Comment object at 0x103a1cb60>
+    // <conv.chunks.Comment object at 0x103a1ccb0>
+    // <conv.chunks.Comment object at 0x103a1cdd0>
     lda(Enemy_MovingDir, x);
     cmp(0x1);
     BNE(InjurePlayer);
-    // <conv.chunks.Comment object at 0x1058c0f80>
-    // <conv.chunks.Comment object at 0x1058c1010>
+    // <conv.chunks.Comment object at 0x103a1cf80>
+    // <conv.chunks.Comment object at 0x103a1d010>
     JMP(LInj);
     JMP(InjurePlayer);
 }
@@ -16592,12 +16561,12 @@ int ForceInjury() {
     ldx(PlayerStatus);
     BEQ(KillPlayer);
     sta(PlayerStatus);
-    // <conv.chunks.Comment object at 0x1058c1580>
-    // <conv.chunks.Comment object at 0x1058c16a0>
-    // <conv.chunks.Comment object at 0x1058c17c0>
+    // <conv.chunks.Comment object at 0x103a1d580>
+    // <conv.chunks.Comment object at 0x103a1d6a0>
+    // <conv.chunks.Comment object at 0x103a1d7c0>
     lda(0x8);
     sta(InjuryTimer);
-    // <conv.chunks.Comment object at 0x1058c1940>
+    // <conv.chunks.Comment object at 0x103a1d940>
     asl();
     sta(Square1SoundQueue);
     JSR(GetPlayerColors);
@@ -16606,22 +16575,22 @@ int ForceInjury() {
 }
 
 int SetKRout() {
-    // <conv.chunks.Comment object at 0x1058c1b80>
-    // <conv.chunks.Comment object at 0x1058c1ca0>
-    // <conv.chunks.Comment object at 0x1058c1dc0>
-    // <conv.chunks.Comment object at 0x1058c1e50>
+    // <conv.chunks.Comment object at 0x103a1db80>
+    // <conv.chunks.Comment object at 0x103a1dca0>
+    // <conv.chunks.Comment object at 0x103a1ddc0>
+    // <conv.chunks.Comment object at 0x103a1de50>
     ldy(0x1);
     JMP(SetPRout);
 }
 
 int SetPRout() {
-    // <conv.chunks.Comment object at 0x1058c1fa0>
+    // <conv.chunks.Comment object at 0x103a1dfa0>
     sta(GameEngineSubroutine);
     sty(Player_State);
-    // <conv.chunks.Comment object at 0x1058c2180>
+    // <conv.chunks.Comment object at 0x103a1e180>
     ldy(0xff);
     sty(TimerControl);
-    // <conv.chunks.Comment object at 0x1058c2300>
+    // <conv.chunks.Comment object at 0x103a1e300>
     iny();
     sty(ScrollAmount);
     JMP(ExInjColRoutines);
@@ -16629,17 +16598,17 @@ int SetPRout() {
 
 int ExInjColRoutines() {
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x1058c2690>
-    rts();
+    // <conv.chunks.Comment object at 0x103a1e690>
+    return 0;
     JMP(KillPlayer);
 }
 
 int KillPlayer() {
     stx(Player_X_Speed);
-    // <conv.chunks.Comment object at 0x1058c2870>
+    // <conv.chunks.Comment object at 0x103a1e870>
     inx();
     stx(EventMusicQueue);
-    // <conv.chunks.Comment object at 0x1058c2a20>
+    // <conv.chunks.Comment object at 0x103a1ea20>
     lda(0xfc);
     sta(Player_Y_Speed);
     lda(0xb);
@@ -16650,20 +16619,20 @@ int KillPlayer() {
 int EnemyStomped() {
     lda(Enemy_ID, x);
     cmp(Spiny);
-    // <conv.chunks.Comment object at 0x1058c3020>
-    // <conv.chunks.Comment object at 0x1058c3380>
+    // <conv.chunks.Comment object at 0x103a1f020>
+    // <conv.chunks.Comment object at 0x103a1f380>
     BEQ(InjurePlayer);
     lda(Sfx_EnemyStomp);
-    // <conv.chunks.Comment object at 0x1058c35c0>
+    // <conv.chunks.Comment object at 0x103a1f5c0>
     sta(Square1SoundQueue);
     lda(Enemy_ID, x);
     ldy(0x0);
     cmp(FlyingCheepCheep);
-    // <conv.chunks.Comment object at 0x1058c38f0>
-    // <conv.chunks.Comment object at 0x1058c3980>
+    // <conv.chunks.Comment object at 0x103a1f8f0>
+    // <conv.chunks.Comment object at 0x103a1f980>
     BEQ(EnemyStompedPts);
     cmp(BulletBill_FrenzyVar);
-    // <conv.chunks.Comment object at 0x1058c3c20>
+    // <conv.chunks.Comment object at 0x103a1fc20>
     BEQ(EnemyStompedPts);
     cmp(BulletBill_CannonVar);
     BEQ(EnemyStompedPts);
@@ -16671,20 +16640,20 @@ int EnemyStomped() {
     BEQ(EnemyStompedPts);
     iny();
     cmp(HammerBro);
-    // <conv.chunks.Comment object at 0x1058cc050>
-    // <conv.chunks.Comment object at 0x1058cc1a0>
-    // <conv.chunks.Comment object at 0x1058cc2f0>
-    // <conv.chunks.Comment object at 0x1058cc380>
+    // <conv.chunks.Comment object at 0x103a28050>
+    // <conv.chunks.Comment object at 0x103a281a0>
+    // <conv.chunks.Comment object at 0x103a282f0>
+    // <conv.chunks.Comment object at 0x103a28380>
     BEQ(EnemyStompedPts);
     iny();
     cmp(Lakitu);
-    // <conv.chunks.Comment object at 0x1058cc5c0>
-    // <conv.chunks.Comment object at 0x1058cc650>
+    // <conv.chunks.Comment object at 0x103a285c0>
+    // <conv.chunks.Comment object at 0x103a28650>
     BEQ(EnemyStompedPts);
     iny();
     cmp(Bloober);
-    // <conv.chunks.Comment object at 0x1058cc8c0>
-    // <conv.chunks.Comment object at 0x1058cc950>
+    // <conv.chunks.Comment object at 0x103a288c0>
+    // <conv.chunks.Comment object at 0x103a28950>
     BNE(ChkForDemoteKoopa);
     JMP(EnemyStompedPts);
 }
@@ -16692,47 +16661,47 @@ int EnemyStomped() {
 int EnemyStompedPts() {
     lda(offsetof(G, StompedEnemyPtsData), y);
     JSR(SetupFloateyNumber);
-    // <conv.chunks.Comment object at 0x1058ccbc0>
-    // <conv.chunks.Comment object at 0x1058ccd10>
+    // <conv.chunks.Comment object at 0x103a28bc0>
+    // <conv.chunks.Comment object at 0x103a28d10>
     lda(Enemy_MovingDir, x);
     pha();
     JSR(SetStun);
-    // <conv.chunks.Comment object at 0x1058ccf80>
-    // <conv.chunks.Comment object at 0x1058cd010>
+    // <conv.chunks.Comment object at 0x103a28f80>
+    // <conv.chunks.Comment object at 0x103a29010>
     pla();
     sta(Enemy_MovingDir, x);
-    // <conv.chunks.Comment object at 0x1058cd1f0>
+    // <conv.chunks.Comment object at 0x103a291f0>
     lda(0b100000);
     sta(Enemy_State, x);
     JSR(InitVStf);
     sta(Enemy_X_Speed, x);
     lda(0xfd);
-    // <conv.chunks.Comment object at 0x1058cd430>
-    // <conv.chunks.Comment object at 0x1058cd580>
-    // <conv.chunks.Comment object at 0x1058cd6a0>
-    // <conv.chunks.Comment object at 0x1058cd7f0>
+    // <conv.chunks.Comment object at 0x103a29430>
+    // <conv.chunks.Comment object at 0x103a29580>
+    // <conv.chunks.Comment object at 0x103a296a0>
+    // <conv.chunks.Comment object at 0x103a297f0>
     sta(Player_Y_Speed);
-    rts();
+    return 0;
     JMP(ChkForDemoteKoopa);
 }
 
 int ChkForDemoteKoopa() {
     cmp(0x9);
-    // <conv.chunks.Comment object at 0x1058cdac0>
+    // <conv.chunks.Comment object at 0x103a29ac0>
     BCC(HandleStompedShellE);
     anda(0b1);
-    // <conv.chunks.Comment object at 0x1058cdcd0>
+    // <conv.chunks.Comment object at 0x103a29cd0>
     sta(Enemy_ID, x);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x1058cdf10>
+    // <conv.chunks.Comment object at 0x103a29f10>
     sty(Enemy_State, x);
     lda(0x3);
-    // <conv.chunks.Comment object at 0x1058ce150>
+    // <conv.chunks.Comment object at 0x103a2a150>
     JSR(SetupFloateyNumber);
     JSR(InitVStf);
     JSR(EnemyFacePlayer);
-    // <conv.chunks.Comment object at 0x1058ce360>
-    // <conv.chunks.Comment object at 0x1058ce480>
+    // <conv.chunks.Comment object at 0x103a2a360>
+    // <conv.chunks.Comment object at 0x103a2a480>
     lda(offsetof(G, DemotedKoopaXSpdData), y);
     sta(Enemy_X_Speed, x);
     JMP(SBnce);
@@ -16741,14 +16710,14 @@ int ChkForDemoteKoopa() {
 
 int HandleStompedShellE() {
     lda(0x4);
-    // <conv.chunks.Comment object at 0x1058ce9f0>
+    // <conv.chunks.Comment object at 0x103a2a9f0>
     sta(Enemy_State, x);
     inc(StompChainCounter);
     lda(StompChainCounter);
     clc();
-    // <conv.chunks.Comment object at 0x1058ced20>
-    // <conv.chunks.Comment object at 0x1058cee40>
-    // <conv.chunks.Comment object at 0x1058cef90>
+    // <conv.chunks.Comment object at 0x103a2ad20>
+    // <conv.chunks.Comment object at 0x103a2ae40>
+    // <conv.chunks.Comment object at 0x103a2af90>
     adc(StompTimer);
     JSR(SetupFloateyNumber);
     inc(StompTimer);
@@ -16759,22 +16728,22 @@ int HandleStompedShellE() {
 }
 
 int SBnce() {
-    // <conv.chunks.Comment object at 0x1058cf110>
-    // <conv.chunks.Comment object at 0x1058cf230>
-    // <conv.chunks.Comment object at 0x1058cf350>
-    // <conv.chunks.Comment object at 0x1058cf470>
-    // <conv.chunks.Comment object at 0x1058cf5c0>
-    // <conv.chunks.Comment object at 0x1058cf710>
+    // <conv.chunks.Comment object at 0x103a2b110>
+    // <conv.chunks.Comment object at 0x103a2b230>
+    // <conv.chunks.Comment object at 0x103a2b350>
+    // <conv.chunks.Comment object at 0x103a2b470>
+    // <conv.chunks.Comment object at 0x103a2b5c0>
+    // <conv.chunks.Comment object at 0x103a2b710>
     lda(0xfc);
     sta(Player_Y_Speed);
-    // <conv.chunks.Comment object at 0x1058cf800>
-    rts();
+    // <conv.chunks.Comment object at 0x103a2b800>
+    return 0;
     JMP(ChkEnemyFaceRight);
 }
 
 int ChkEnemyFaceRight() {
     lda(Enemy_MovingDir, x);
-    // <conv.chunks.Comment object at 0x1058cfa70>
+    // <conv.chunks.Comment object at 0x103a2ba70>
     cmp(0x1);
     BNE(LInj);
     JMP(InjurePlayer);
@@ -16782,9 +16751,9 @@ int ChkEnemyFaceRight() {
 }
 
 int LInj() {
-    // <conv.chunks.Comment object at 0x1058cfc20>
-    // <conv.chunks.Comment object at 0x1058cfe00>
-    // <conv.chunks.Comment object at 0x1058cff20>
+    // <conv.chunks.Comment object at 0x103a2bc20>
+    // <conv.chunks.Comment object at 0x103a2be00>
+    // <conv.chunks.Comment object at 0x103a2bf20>
     JSR(EnemyTurnAround);
     JMP(InjurePlayer);
     JMP(EnemyFacePlayer);
@@ -16799,58 +16768,58 @@ int EnemyFacePlayer() {
 }
 
 int SFcRt() {
-    // <conv.chunks.Comment object at 0x1058d8230>
-    // <conv.chunks.Comment object at 0x1058d82c0>
-    // <conv.chunks.Comment object at 0x1058d8470>
-    // <conv.chunks.Comment object at 0x1058d85f0>
-    // <conv.chunks.Comment object at 0x1058d8680>
+    // <conv.chunks.Comment object at 0x103a34230>
+    // <conv.chunks.Comment object at 0x103a342c0>
+    // <conv.chunks.Comment object at 0x103a34470>
+    // <conv.chunks.Comment object at 0x103a345f0>
+    // <conv.chunks.Comment object at 0x103a34680>
     sty(Enemy_MovingDir, x);
     dey();
-    // <conv.chunks.Comment object at 0x1058d8860>
-    rts();
+    // <conv.chunks.Comment object at 0x103a34860>
+    return 0;
     JMP(SetupFloateyNumber);
 }
 
 int SetupFloateyNumber() {
     sta(FloateyNum_Control, x);
-    // <conv.chunks.Comment object at 0x1058d89b0>
+    // <conv.chunks.Comment object at 0x103a349b0>
     lda(0x30);
     sta(FloateyNum_Timer, x);
-    // <conv.chunks.Comment object at 0x1058d8b60>
+    // <conv.chunks.Comment object at 0x103a34b60>
     lda(Enemy_Y_Position, x);
     sta(FloateyNum_Y_Pos, x);
-    // <conv.chunks.Comment object at 0x1058d8e60>
+    // <conv.chunks.Comment object at 0x103a34e60>
     lda(Enemy_Rel_XPos);
     sta(FloateyNum_X_Pos, x);
     JMP(ExSFN);
 }
 
 int ExSFN() {
-    rts();
+    return 0;
     JMP(EnemiesCollision);
 }
 
 int EnemiesCollision() {
     lda(FrameCounter);
-    // <conv.chunks.Comment object at 0x1058d97c0>
+    // <conv.chunks.Comment object at 0x103a357c0>
     lsr();
     BCC(ExSFN);
-    // <conv.chunks.Comment object at 0x1058d9d60>
+    // <conv.chunks.Comment object at 0x103a35d60>
     lda(AreaType);
     BEQ(ExSFN);
-    // <conv.chunks.Comment object at 0x1058d9fa0>
+    // <conv.chunks.Comment object at 0x103a35fa0>
     lda(Enemy_ID, x);
     cmp(0x15);
-    // <conv.chunks.Comment object at 0x1058da210>
+    // <conv.chunks.Comment object at 0x103a36210>
     BCS(ExitECRoutine);
     cmp(Lakitu);
-    // <conv.chunks.Comment object at 0x1058da420>
+    // <conv.chunks.Comment object at 0x103a36420>
     BEQ(ExitECRoutine);
     cmp(PiranhaPlant);
-    // <conv.chunks.Comment object at 0x1058da660>
+    // <conv.chunks.Comment object at 0x103a36660>
     BEQ(ExitECRoutine);
     lda(EnemyOffscrBitsMasked, x);
-    // <conv.chunks.Comment object at 0x1058da870>
+    // <conv.chunks.Comment object at 0x103a36870>
     BNE(ExitECRoutine);
     JSR(GetEnemyBoundBoxOfs);
     dex();
@@ -16859,36 +16828,36 @@ int EnemiesCollision() {
 }
 
 int ECLoop() {
-    // <conv.chunks.Comment object at 0x1058daab0>
-    // <conv.chunks.Comment object at 0x1058dac00>
-    // <conv.chunks.Comment object at 0x1058dac90>
-    // <conv.chunks.Comment object at 0x1058dadb0>
+    // <conv.chunks.Comment object at 0x103a36ab0>
+    // <conv.chunks.Comment object at 0x103a36c00>
+    // <conv.chunks.Comment object at 0x103a36c90>
+    // <conv.chunks.Comment object at 0x103a36db0>
     stx(0x1);
     tya();
-    // <conv.chunks.Comment object at 0x1058dae10>
+    // <conv.chunks.Comment object at 0x103a36e10>
     pha();
     lda(Enemy_Flag, x);
     BEQ(ReadyNextEnemy);
-    // <conv.chunks.Comment object at 0x1058db080>
-    // <conv.chunks.Comment object at 0x1058db1d0>
+    // <conv.chunks.Comment object at 0x103a37080>
+    // <conv.chunks.Comment object at 0x103a371d0>
     lda(Enemy_ID, x);
     cmp(0x15);
     BCS(ReadyNextEnemy);
-    // <conv.chunks.Comment object at 0x1058db410>
-    // <conv.chunks.Comment object at 0x1058db4a0>
+    // <conv.chunks.Comment object at 0x103a37410>
+    // <conv.chunks.Comment object at 0x103a374a0>
     cmp(Lakitu);
     BEQ(ReadyNextEnemy);
-    // <conv.chunks.Comment object at 0x1058db680>
+    // <conv.chunks.Comment object at 0x103a37680>
     cmp(PiranhaPlant);
     BEQ(ReadyNextEnemy);
-    // <conv.chunks.Comment object at 0x1058db980>
+    // <conv.chunks.Comment object at 0x103a37980>
     lda(EnemyOffscrBitsMasked, x);
     BNE(ReadyNextEnemy);
     txa();
     asl();
-    // <conv.chunks.Comment object at 0x1058dbbc0>
-    // <conv.chunks.Comment object at 0x1058dbd10>
-    // <conv.chunks.Comment object at 0x1058dbdd0>
+    // <conv.chunks.Comment object at 0x103a37bc0>
+    // <conv.chunks.Comment object at 0x103a37d10>
+    // <conv.chunks.Comment object at 0x103a37dd0>
     asl();
     clc();
     adc(0x4);
@@ -16897,32 +16866,32 @@ int ECLoop() {
     ldx(ObjectOffset);
     ldy(0x1);
     BCC(NoEnemyCollision);
-    // <conv.chunks.Comment object at 0x1058e40e0>
-    // <conv.chunks.Comment object at 0x1058e4170>
-    // <conv.chunks.Comment object at 0x1058e4290>
-    // <conv.chunks.Comment object at 0x1058e43e0>
-    // <conv.chunks.Comment object at 0x1058e4470>
+    // <conv.chunks.Comment object at 0x103a400e0>
+    // <conv.chunks.Comment object at 0x103a40170>
+    // <conv.chunks.Comment object at 0x103a40290>
+    // <conv.chunks.Comment object at 0x103a403e0>
+    // <conv.chunks.Comment object at 0x103a40470>
     lda(Enemy_State, x);
     ora(Enemy_State, y);
-    // <conv.chunks.Comment object at 0x1058e4710>
+    // <conv.chunks.Comment object at 0x103a40710>
     anda(0b10000000);
     BNE(YesEC);
     lda(Enemy_CollisionBits, y);
     anda(offsetof(G, SetBitsMask), x);
     BNE(ReadyNextEnemy);
-    // <conv.chunks.Comment object at 0x1058e4950>
-    // <conv.chunks.Comment object at 0x1058e4aa0>
-    // <conv.chunks.Comment object at 0x1058e4bf0>
-    // <conv.chunks.Comment object at 0x1058e4d40>
+    // <conv.chunks.Comment object at 0x103a40950>
+    // <conv.chunks.Comment object at 0x103a40aa0>
+    // <conv.chunks.Comment object at 0x103a40bf0>
+    // <conv.chunks.Comment object at 0x103a40d40>
     lda(Enemy_CollisionBits, y);
     ora(offsetof(G, SetBitsMask), x);
-    // <conv.chunks.Comment object at 0x1058e4f80>
+    // <conv.chunks.Comment object at 0x103a40f80>
     sta(Enemy_CollisionBits, y);
     JMP(YesEC);
 }
 
 int YesEC() {
-    // <conv.chunks.Comment object at 0x1058e51f0>
+    // <conv.chunks.Comment object at 0x103a411f0>
     JSR(ProcEnemyCollisions);
     JMP(ReadyNextEnemy);
     JMP(NoEnemyCollision);
@@ -16939,9 +16908,9 @@ int ReadyNextEnemy() {
     pla();
     tay();
     ldx(0x1);
-    // <conv.chunks.Comment object at 0x1058e5910>
-    // <conv.chunks.Comment object at 0x1058e59d0>
-    // <conv.chunks.Comment object at 0x1058e5a90>
+    // <conv.chunks.Comment object at 0x103a41910>
+    // <conv.chunks.Comment object at 0x103a419d0>
+    // <conv.chunks.Comment object at 0x103a41a90>
     dex();
     BPL(ECLoop);
     JMP(ExitECRoutine);
@@ -16949,32 +16918,32 @@ int ReadyNextEnemy() {
 
 int ExitECRoutine() {
     ldx(ObjectOffset);
-    rts();
+    return 0;
     JMP(ProcEnemyCollisions);
 }
 
 int ProcEnemyCollisions() {
     lda(Enemy_State, y);
-    // <conv.chunks.Comment object at 0x1058e5fd0>
+    // <conv.chunks.Comment object at 0x103a41fd0>
     ora(Enemy_State, x);
     anda(0b100000);
     BNE(ExitProcessEColl);
-    // <conv.chunks.Comment object at 0x1058e6240>
-    // <conv.chunks.Comment object at 0x1058e6360>
+    // <conv.chunks.Comment object at 0x103a42240>
+    // <conv.chunks.Comment object at 0x103a42360>
     lda(Enemy_State, x);
     cmp(0x6);
-    // <conv.chunks.Comment object at 0x1058e65a0>
+    // <conv.chunks.Comment object at 0x103a425a0>
     BCC(ProcSecondEnemyColl);
     lda(Enemy_ID, x);
     cmp(HammerBro);
-    // <conv.chunks.Comment object at 0x1058e67b0>
-    // <conv.chunks.Comment object at 0x1058e6900>
+    // <conv.chunks.Comment object at 0x103a427b0>
+    // <conv.chunks.Comment object at 0x103a42900>
     BEQ(ExitProcessEColl);
     lda(Enemy_State, y);
-    // <conv.chunks.Comment object at 0x1058e6b10>
+    // <conv.chunks.Comment object at 0x103a42b10>
     asl();
     BCC(ShellCollisions);
-    // <conv.chunks.Comment object at 0x1058e6cf0>
+    // <conv.chunks.Comment object at 0x103a42cf0>
     lda(0x6);
     JSR(SetupFloateyNumber);
     JSR(ShellOrBlockDefeat);
@@ -16984,16 +16953,16 @@ int ProcEnemyCollisions() {
 
 int ShellCollisions() {
     tya();
-    // <conv.chunks.Comment object at 0x1058e72c0>
+    // <conv.chunks.Comment object at 0x103a432c0>
     tax();
     JSR(ShellOrBlockDefeat);
-    // <conv.chunks.Comment object at 0x1058e73e0>
+    // <conv.chunks.Comment object at 0x103a433e0>
     ldx(ObjectOffset);
     lda(ShellChainCounter, x);
-    // <conv.chunks.Comment object at 0x1058e75f0>
+    // <conv.chunks.Comment object at 0x103a435f0>
     clc();
     adc(0x4);
-    // <conv.chunks.Comment object at 0x1058e77d0>
+    // <conv.chunks.Comment object at 0x103a437d0>
     ldx(0x1);
     JSR(SetupFloateyNumber);
     ldx(ObjectOffset);
@@ -17002,39 +16971,39 @@ int ShellCollisions() {
 }
 
 int ExitProcessEColl() {
-    rts();
+    return 0;
     JMP(ProcSecondEnemyColl);
 }
 
 int ProcSecondEnemyColl() {
     lda(Enemy_State, y);
-    // <conv.chunks.Comment object at 0x1058e7e90>
+    // <conv.chunks.Comment object at 0x103a43e90>
     cmp(0x6);
     BCC(MoveEOfs);
     lda(Enemy_ID, y);
     cmp(HammerBro);
-    // <conv.chunks.Comment object at 0x1058ec200>
-    // <conv.chunks.Comment object at 0x1058ec350>
+    // <conv.chunks.Comment object at 0x103a48200>
+    // <conv.chunks.Comment object at 0x103a48350>
     BEQ(ExitProcessEColl);
     JSR(ShellOrBlockDefeat);
-    // <conv.chunks.Comment object at 0x1058ec560>
+    // <conv.chunks.Comment object at 0x103a48560>
     ldy(0x1);
     lda(ShellChainCounter, y);
-    // <conv.chunks.Comment object at 0x1058ec680>
+    // <conv.chunks.Comment object at 0x103a48680>
     clc();
     adc(0x4);
-    // <conv.chunks.Comment object at 0x1058ec950>
+    // <conv.chunks.Comment object at 0x103a48950>
     ldx(ObjectOffset);
     JSR(SetupFloateyNumber);
     ldx(0x1);
     inc(ShellChainCounter, x);
-    rts();
+    return 0;
     JMP(MoveEOfs);
 }
 
 int MoveEOfs() {
     tya();
-    // <conv.chunks.Comment object at 0x1058ed010>
+    // <conv.chunks.Comment object at 0x103a49010>
     tax();
     JSR(EnemyTurnAround);
     ldx(ObjectOffset);
@@ -17043,37 +17012,37 @@ int MoveEOfs() {
 
 int EnemyTurnAround() {
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x1058ed3a0>
+    // <conv.chunks.Comment object at 0x103a493a0>
     cmp(PiranhaPlant);
     BEQ(ExTA);
-    // <conv.chunks.Comment object at 0x1058ed5e0>
+    // <conv.chunks.Comment object at 0x103a495e0>
     cmp(Lakitu);
     BEQ(ExTA);
-    // <conv.chunks.Comment object at 0x1058ed760>
+    // <conv.chunks.Comment object at 0x103a49760>
     cmp(HammerBro);
     BEQ(ExTA);
-    // <conv.chunks.Comment object at 0x1058eda90>
+    // <conv.chunks.Comment object at 0x103a49a90>
     cmp(Spiny);
     BEQ(RXSpd);
-    // <conv.chunks.Comment object at 0x1058edc40>
+    // <conv.chunks.Comment object at 0x103a49c40>
     cmp(GreenParatroopaJump);
     BEQ(RXSpd);
-    // <conv.chunks.Comment object at 0x1058edf40>
+    // <conv.chunks.Comment object at 0x103a49f40>
     cmp(0x7);
     BCS(ExTA);
     JMP(RXSpd);
 }
 
 int RXSpd() {
-    // <conv.chunks.Comment object at 0x1058ee0f0>
-    // <conv.chunks.Comment object at 0x1058ee2d0>
+    // <conv.chunks.Comment object at 0x103a4a0f0>
+    // <conv.chunks.Comment object at 0x103a4a2d0>
     lda(Enemy_X_Speed, x);
     eor(0xff);
-    // <conv.chunks.Comment object at 0x1058ee480>
+    // <conv.chunks.Comment object at 0x103a4a480>
     tay();
     iny();
     sty(Enemy_X_Speed, x);
-    // <conv.chunks.Comment object at 0x1058ee6c0>
+    // <conv.chunks.Comment object at 0x103a4a6c0>
     lda(Enemy_MovingDir, x);
     eor(0b11);
     sta(Enemy_MovingDir, x);
@@ -17081,31 +17050,31 @@ int RXSpd() {
 }
 
 int ExTA() {
-    // <conv.chunks.Comment object at 0x1058ee930>
-    // <conv.chunks.Comment object at 0x1058eea50>
-    // <conv.chunks.Comment object at 0x1058eeba0>
-    rts();
+    // <conv.chunks.Comment object at 0x103a4a930>
+    // <conv.chunks.Comment object at 0x103a4aa50>
+    // <conv.chunks.Comment object at 0x103a4aba0>
+    return 0;
     JMP(LargePlatformCollision);
 }
 
 int LargePlatformCollision() {
     lda(0xff);
-    // <conv.chunks.Comment object at 0x1058eecf0>
-    // <conv.chunks.Comment object at 0x1058eed50>
+    // <conv.chunks.Comment object at 0x103a4acf0>
+    // <conv.chunks.Comment object at 0x103a4ad50>
     sta(PlatformCollisionFlag, x);
     lda(TimerControl);
     BNE(ExLPC);
     lda(Enemy_State, x);
     BMI(ExLPC);
-    // <conv.chunks.Comment object at 0x1058eef90>
-    // <conv.chunks.Comment object at 0x1058ef0b0>
-    // <conv.chunks.Comment object at 0x1058ef200>
-    // <conv.chunks.Comment object at 0x1058ef350>
+    // <conv.chunks.Comment object at 0x103a4af90>
+    // <conv.chunks.Comment object at 0x103a4b0b0>
+    // <conv.chunks.Comment object at 0x103a4b200>
+    // <conv.chunks.Comment object at 0x103a4b350>
     lda(Enemy_ID, x);
     cmp(0x24);
     BNE(ChkForPlayerC_LargeP);
-    // <conv.chunks.Comment object at 0x1058ef5c0>
-    // <conv.chunks.Comment object at 0x1058ef650>
+    // <conv.chunks.Comment object at 0x103a4b5c0>
+    // <conv.chunks.Comment object at 0x103a4b650>
     lda(Enemy_State, x);
     tax();
     JSR(ChkForPlayerC_LargeP);
@@ -17115,22 +17084,22 @@ int LargePlatformCollision() {
 int ChkForPlayerC_LargeP() {
     JSR(CheckPlayerVertical);
     BCS(ExLPC);
-    // <conv.chunks.Comment object at 0x1058efb30>
-    // <conv.chunks.Comment object at 0x1058efc50>
+    // <conv.chunks.Comment object at 0x103a4bb30>
+    // <conv.chunks.Comment object at 0x103a4bc50>
     txa();
     JSR(GetEnemyBoundBoxOfsArg);
     lda(Enemy_Y_Position, x);
     sta(0x0);
     txa();
-    // <conv.chunks.Comment object at 0x1058efe30>
-    // <conv.chunks.Comment object at 0x1058eff50>
-    // <conv.chunks.Comment object at 0x1058f8110>
-    // <conv.chunks.Comment object at 0x1058f80e0>
+    // <conv.chunks.Comment object at 0x103a4be30>
+    // <conv.chunks.Comment object at 0x103a4bf50>
+    // <conv.chunks.Comment object at 0x103a54110>
+    // <conv.chunks.Comment object at 0x103a540e0>
     pha();
     JSR(PlayerCollisionCore);
     pla();
-    // <conv.chunks.Comment object at 0x1058f8350>
-    // <conv.chunks.Comment object at 0x1058f84a0>
+    // <conv.chunks.Comment object at 0x103a54350>
+    // <conv.chunks.Comment object at 0x103a544a0>
     tax();
     BCC(ExLPC);
     JSR(ProcLPlatCollisions);
@@ -17138,11 +17107,11 @@ int ChkForPlayerC_LargeP() {
 }
 
 int ExLPC() {
-    // <conv.chunks.Comment object at 0x1058f85c0>
-    // <conv.chunks.Comment object at 0x1058f8710>
-    // <conv.chunks.Comment object at 0x1058f8830>
+    // <conv.chunks.Comment object at 0x103a545c0>
+    // <conv.chunks.Comment object at 0x103a54710>
+    // <conv.chunks.Comment object at 0x103a54830>
     ldx(ObjectOffset);
-    rts();
+    return 0;
     JMP(SmallPlatformCollision);
 }
 
@@ -17152,12 +17121,12 @@ int SmallPlatformCollision() {
     sta(PlatformCollisionFlag, x);
     JSR(CheckPlayerVertical);
     BCS(ExSPC);
-    // <conv.chunks.Comment object at 0x1058f8a70>
-    // <conv.chunks.Comment object at 0x1058f8ad0>
-    // <conv.chunks.Comment object at 0x1058f8bf0>
-    // <conv.chunks.Comment object at 0x1058f8d40>
-    // <conv.chunks.Comment object at 0x1058f8e90>
-    // <conv.chunks.Comment object at 0x1058f8fb0>
+    // <conv.chunks.Comment object at 0x103a54a70>
+    // <conv.chunks.Comment object at 0x103a54ad0>
+    // <conv.chunks.Comment object at 0x103a54bf0>
+    // <conv.chunks.Comment object at 0x103a54d40>
+    // <conv.chunks.Comment object at 0x103a54e90>
+    // <conv.chunks.Comment object at 0x103a54fb0>
     lda(0x2);
     sta(0x0);
     JMP(ChkSmallPlatLoop);
@@ -17179,8 +17148,8 @@ int ChkSmallPlatLoop() {
 int MoveBoundBox() {
     lda(BoundingBox_UL_YPos, y);
     clc();
-    // <conv.chunks.Comment object at 0x1058f9df0>
-    // <conv.chunks.Comment object at 0x1058f9f70>
+    // <conv.chunks.Comment object at 0x103a55df0>
+    // <conv.chunks.Comment object at 0x103a55f70>
     adc(0x80);
     sta(BoundingBox_UL_YPos, y);
     lda(BoundingBox_DR_YPos, y);
@@ -17193,11 +17162,11 @@ int MoveBoundBox() {
 }
 
 int ExSPC() {
-    // <conv.chunks.Comment object at 0x1058fa600>
-    // <conv.chunks.Comment object at 0x1058fa690>
-    // <conv.chunks.Comment object at 0x1058fa810>
+    // <conv.chunks.Comment object at 0x103a56600>
+    // <conv.chunks.Comment object at 0x103a56690>
+    // <conv.chunks.Comment object at 0x103a56810>
     ldx(ObjectOffset);
-    rts();
+    return 0;
     JMP(ProcSPlatCollisions);
 }
 
@@ -17223,24 +17192,24 @@ int ChkForTopCollision() {
     lda(BoundingBox_DR_YPos);
     sec();
     sbc(BoundingBox_UL_YPos, y);
-    // <conv.chunks.Comment object at 0x1058fb5f0>
-    // <conv.chunks.Comment object at 0x1058fb740>
-    // <conv.chunks.Comment object at 0x1058fb7d0>
+    // <conv.chunks.Comment object at 0x103a575f0>
+    // <conv.chunks.Comment object at 0x103a57740>
+    // <conv.chunks.Comment object at 0x103a577d0>
     cmp(0x6);
     BCS(PlatformSideCollisions);
-    // <conv.chunks.Comment object at 0x1058fb980>
+    // <conv.chunks.Comment object at 0x103a57980>
     lda(Player_Y_Speed);
     BMI(PlatformSideCollisions);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x1058fbc20>
-    // <conv.chunks.Comment object at 0x1058fbd70>
+    // <conv.chunks.Comment object at 0x103a57c20>
+    // <conv.chunks.Comment object at 0x103a57d70>
     ldy(Enemy_ID, x);
     cpy(0x2b);
     BEQ(SetCollisionFlag);
     cpy(0x2c);
-    // <conv.chunks.Comment object at 0x1058fbf80>
-    // <conv.chunks.Comment object at 0x105904050>
-    // <conv.chunks.Comment object at 0x105904200>
+    // <conv.chunks.Comment object at 0x103a57f80>
+    // <conv.chunks.Comment object at 0x103a60050>
+    // <conv.chunks.Comment object at 0x103a60200>
     BEQ(SetCollisionFlag);
     txa();
     JMP(SetCollisionFlag);
@@ -17249,12 +17218,12 @@ int ChkForTopCollision() {
 int SetCollisionFlag() {
     ldx(ObjectOffset);
     sta(PlatformCollisionFlag, x);
-    // <conv.chunks.Comment object at 0x105904500>
-    // <conv.chunks.Comment object at 0x105904620>
+    // <conv.chunks.Comment object at 0x103a60500>
+    // <conv.chunks.Comment object at 0x103a60620>
     lda(0x0);
     sta(Player_State);
-    // <conv.chunks.Comment object at 0x1059047d0>
-    rts();
+    // <conv.chunks.Comment object at 0x103a607d0>
+    return 0;
     JMP(PlatformSideCollisions);
 }
 
@@ -17263,20 +17232,20 @@ int PlatformSideCollisions() {
     sta(0x0);
     lda(BoundingBox_DR_XPos);
     sec();
-    // <conv.chunks.Comment object at 0x105904a40>
-    // <conv.chunks.Comment object at 0x105904b90>
-    // <conv.chunks.Comment object at 0x105904c20>
-    // <conv.chunks.Comment object at 0x105904dd0>
+    // <conv.chunks.Comment object at 0x103a60a40>
+    // <conv.chunks.Comment object at 0x103a60b90>
+    // <conv.chunks.Comment object at 0x103a60c20>
+    // <conv.chunks.Comment object at 0x103a60dd0>
     sbc(BoundingBox_UL_XPos, y);
     cmp(0x8);
-    // <conv.chunks.Comment object at 0x105904f80>
+    // <conv.chunks.Comment object at 0x103a60f80>
     BCC(SideC);
     inc(0x0);
     lda(BoundingBox_DR_XPos, y);
     clc();
-    // <conv.chunks.Comment object at 0x1059051f0>
-    // <conv.chunks.Comment object at 0x105905280>
-    // <conv.chunks.Comment object at 0x105905460>
+    // <conv.chunks.Comment object at 0x103a611f0>
+    // <conv.chunks.Comment object at 0x103a61280>
+    // <conv.chunks.Comment object at 0x103a61460>
     sbc(BoundingBox_UL_XPos);
     cmp(0x9);
     BCS(NoSideC);
@@ -17284,17 +17253,17 @@ int PlatformSideCollisions() {
 }
 
 int SideC() {
-    // <conv.chunks.Comment object at 0x1059055e0>
-    // <conv.chunks.Comment object at 0x105905670>
-    // <conv.chunks.Comment object at 0x105905850>
+    // <conv.chunks.Comment object at 0x103a615e0>
+    // <conv.chunks.Comment object at 0x103a61670>
+    // <conv.chunks.Comment object at 0x103a61850>
     JSR(ImpedePlayerMove);
     JMP(NoSideC);
 }
 
 int NoSideC() {
-    // <conv.chunks.Comment object at 0x1059059d0>
+    // <conv.chunks.Comment object at 0x103a619d0>
     ldx(ObjectOffset);
-    rts();
+    return 0;
     JMP(PositionPlayerOnS_Plat);
 }
 
@@ -17308,27 +17277,27 @@ int PositionPlayerOnS_Plat() {
 
 int PositionPlayerOnVPlat() {
     lda(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x105906300>
+    // <conv.chunks.Comment object at 0x103a62300>
     ldy(GameEngineSubroutine);
     cpy(0xb);
     BEQ(ExPlPos);
-    // <conv.chunks.Comment object at 0x1059065a0>
-    // <conv.chunks.Comment object at 0x105906630>
+    // <conv.chunks.Comment object at 0x103a625a0>
+    // <conv.chunks.Comment object at 0x103a62630>
     ldy(Enemy_Y_HighPos, x);
     cpy(0x1);
-    // <conv.chunks.Comment object at 0x105906930>
+    // <conv.chunks.Comment object at 0x103a62930>
     BNE(ExPlPos);
     sec();
     sbc(0x20);
     sta(Player_Y_Position);
-    // <conv.chunks.Comment object at 0x105906ba0>
-    // <conv.chunks.Comment object at 0x105906c30>
-    // <conv.chunks.Comment object at 0x105906cc0>
+    // <conv.chunks.Comment object at 0x103a62ba0>
+    // <conv.chunks.Comment object at 0x103a62c30>
+    // <conv.chunks.Comment object at 0x103a62cc0>
     tya();
     sbc(0x0);
     sta(Player_Y_HighPos);
-    // <conv.chunks.Comment object at 0x105906f00>
-    // <conv.chunks.Comment object at 0x105906f90>
+    // <conv.chunks.Comment object at 0x103a62f00>
+    // <conv.chunks.Comment object at 0x103a62f90>
     lda(0x0);
     sta(Player_Y_Speed);
     sta(Player_Y_MoveForce);
@@ -17336,20 +17305,20 @@ int PositionPlayerOnVPlat() {
 }
 
 int ExPlPos() {
-    rts();
+    return 0;
     JMP(CheckPlayerVertical);
 }
 
 int CheckPlayerVertical() {
     lda(Player_OffscreenBits);
     cmp(0xf0);
-    // <conv.chunks.Comment object at 0x1059075c0>
-    // <conv.chunks.Comment object at 0x1059076e0>
+    // <conv.chunks.Comment object at 0x103a635c0>
+    // <conv.chunks.Comment object at 0x103a636e0>
     BCS(ExCPV);
     ldy(Player_Y_HighPos);
     dey();
-    // <conv.chunks.Comment object at 0x105907920>
-    // <conv.chunks.Comment object at 0x105907a70>
+    // <conv.chunks.Comment object at 0x103a63920>
+    // <conv.chunks.Comment object at 0x103a63a70>
     BNE(ExCPV);
     lda(Player_Y_Position);
     cmp(0xd0);
@@ -17357,7 +17326,7 @@ int CheckPlayerVertical() {
 }
 
 int ExCPV() {
-    rts();
+    return 0;
     JMP(GetEnemyBoundBoxOfs);
 }
 
@@ -17369,32 +17338,32 @@ int GetEnemyBoundBoxOfs() {
 int GetEnemyBoundBoxOfsArg() {
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x10590c170>
-    // <conv.chunks.Comment object at 0x10590c230>
+    // <conv.chunks.Comment object at 0x103a68170>
+    // <conv.chunks.Comment object at 0x103a68230>
     clc();
     adc(0x4);
     tay();
     lda(Enemy_OffscreenBits);
     anda(0b1111);
     cmp(0b1111);
-    // <conv.chunks.Comment object at 0x10590c470>
-    // <conv.chunks.Comment object at 0x10590c500>
-    // <conv.chunks.Comment object at 0x10590c620>
-    // <conv.chunks.Comment object at 0x10590c740>
-    rts();
+    // <conv.chunks.Comment object at 0x103a68470>
+    // <conv.chunks.Comment object at 0x103a68500>
+    // <conv.chunks.Comment object at 0x103a68620>
+    // <conv.chunks.Comment object at 0x103a68740>
+    return 0;
     JMP(PlayerBGCollision);
 }
 
 int PlayerBGCollision() {
     lda(DisableCollisionDet);
     BNE(ExPBGCol);
-    // <conv.chunks.Comment object at 0x10590ca40>
-    // <conv.chunks.Comment object at 0x10590cc50>
+    // <conv.chunks.Comment object at 0x103a68a40>
+    // <conv.chunks.Comment object at 0x103a68c50>
     lda(GameEngineSubroutine);
     cmp(0xb);
     BEQ(ExPBGCol);
-    // <conv.chunks.Comment object at 0x10590ce60>
-    // <conv.chunks.Comment object at 0x10590cef0>
+    // <conv.chunks.Comment object at 0x103a68e60>
+    // <conv.chunks.Comment object at 0x103a68ef0>
     cmp(0x4);
     BCC(ExPBGCol);
     lda(0x1);
@@ -17402,26 +17371,26 @@ int PlayerBGCollision() {
     BNE(SetPSte);
     lda(Player_State);
     BEQ(SetFallS);
-    // <conv.chunks.Comment object at 0x10590d100>
-    // <conv.chunks.Comment object at 0x10590d2b0>
-    // <conv.chunks.Comment object at 0x10590d340>
-    // <conv.chunks.Comment object at 0x10590d4f0>
-    // <conv.chunks.Comment object at 0x10590d640>
-    // <conv.chunks.Comment object at 0x10590d760>
+    // <conv.chunks.Comment object at 0x103a69100>
+    // <conv.chunks.Comment object at 0x103a692b0>
+    // <conv.chunks.Comment object at 0x103a69340>
+    // <conv.chunks.Comment object at 0x103a694f0>
+    // <conv.chunks.Comment object at 0x103a69640>
+    // <conv.chunks.Comment object at 0x103a69760>
     cmp(0x3);
     BNE(ChkOnScr);
     JMP(SetFallS);
 }
 
 int SetFallS() {
-    // <conv.chunks.Comment object at 0x10590d8e0>
-    // <conv.chunks.Comment object at 0x10590da90>
+    // <conv.chunks.Comment object at 0x103a698e0>
+    // <conv.chunks.Comment object at 0x103a69a90>
     lda(0x2);
     JMP(SetPSte);
 }
 
 int SetPSte() {
-    // <conv.chunks.Comment object at 0x10590db50>
+    // <conv.chunks.Comment object at 0x103a69b50>
     sta(Player_State);
     JMP(ChkOnScr);
 }
@@ -17430,11 +17399,11 @@ int ChkOnScr() {
     lda(Player_Y_HighPos);
     cmp(0x1);
     BNE(ExPBGCol);
-    // <conv.chunks.Comment object at 0x10590de80>
-    // <conv.chunks.Comment object at 0x10590df10>
+    // <conv.chunks.Comment object at 0x103a69e80>
+    // <conv.chunks.Comment object at 0x103a69f10>
     lda(0xff);
     sta(Player_CollisionBits);
-    // <conv.chunks.Comment object at 0x10590e120>
+    // <conv.chunks.Comment object at 0x103a6a120>
     lda(Player_Y_Position);
     cmp(0xcf);
     BCC(ChkCollSize);
@@ -17442,24 +17411,24 @@ int ChkOnScr() {
 }
 
 int ExPBGCol() {
-    // <conv.chunks.Comment object at 0x10590e3c0>
-    // <conv.chunks.Comment object at 0x10590e450>
-    // <conv.chunks.Comment object at 0x10590e600>
-    rts();
+    // <conv.chunks.Comment object at 0x103a6a3c0>
+    // <conv.chunks.Comment object at 0x103a6a450>
+    // <conv.chunks.Comment object at 0x103a6a600>
+    return 0;
     JMP(ChkCollSize);
 }
 
 int ChkCollSize() {
     ldy(0x2);
-    // <conv.chunks.Comment object at 0x10590e720>
+    // <conv.chunks.Comment object at 0x103a6a720>
     lda(CrouchingFlag);
     BNE(GBBAdr);
-    // <conv.chunks.Comment object at 0x10590e930>
+    // <conv.chunks.Comment object at 0x103a6a930>
     lda(PlayerSize);
     BNE(GBBAdr);
     dey();
-    // <conv.chunks.Comment object at 0x10590eb70>
-    // <conv.chunks.Comment object at 0x10590ecf0>
+    // <conv.chunks.Comment object at 0x103a6ab70>
+    // <conv.chunks.Comment object at 0x103a6acf0>
     lda(SwimmingFlag);
     BNE(GBBAdr);
     dey();
@@ -17467,16 +17436,16 @@ int ChkCollSize() {
 }
 
 int GBBAdr() {
-    // <conv.chunks.Comment object at 0x10590ee70>
-    // <conv.chunks.Comment object at 0x10590eff0>
-    // <conv.chunks.Comment object at 0x10590f080>
+    // <conv.chunks.Comment object at 0x103a6ae70>
+    // <conv.chunks.Comment object at 0x103a6aff0>
+    // <conv.chunks.Comment object at 0x103a6b080>
     lda(offsetof(G, BlockBufferAdderData), y);
     sta(0xeb);
     tay();
     ldx(PlayerSize);
-    // <conv.chunks.Comment object at 0x10590f260>
-    // <conv.chunks.Comment object at 0x10590f230>
-    // <conv.chunks.Comment object at 0x10590f410>
+    // <conv.chunks.Comment object at 0x103a6b260>
+    // <conv.chunks.Comment object at 0x103a6b230>
+    // <conv.chunks.Comment object at 0x103a6b410>
     lda(CrouchingFlag);
     BEQ(HeadChk);
     inx();
@@ -17484,9 +17453,9 @@ int GBBAdr() {
 }
 
 int HeadChk() {
-    // <conv.chunks.Comment object at 0x10590f620>
-    // <conv.chunks.Comment object at 0x10590f7a0>
-    // <conv.chunks.Comment object at 0x10590f830>
+    // <conv.chunks.Comment object at 0x103a6b620>
+    // <conv.chunks.Comment object at 0x103a6b7a0>
+    // <conv.chunks.Comment object at 0x103a6b830>
     lda(Player_Y_Position);
     cmp(offsetof(G, PlayerBGUpperExtent), x);
     BCC(DoFootCheck);
@@ -17513,16 +17482,16 @@ int HeadChk() {
 int SolidOrClimb() {
     cmp(0x26);
     BEQ(NYSpd);
-    // <conv.chunks.Comment object at 0x105915010>
-    // <conv.chunks.Comment object at 0x1059150a0>
+    // <conv.chunks.Comment object at 0x103a71010>
+    // <conv.chunks.Comment object at 0x103a710a0>
     lda(Sfx_Bump);
     sta(Square1SoundQueue);
     JMP(NYSpd);
 }
 
 int NYSpd() {
-    // <conv.chunks.Comment object at 0x105915370>
-    // <conv.chunks.Comment object at 0x105915490>
+    // <conv.chunks.Comment object at 0x103a71370>
+    // <conv.chunks.Comment object at 0x103a71490>
     lda(0x1);
     sta(Player_Y_Speed);
     JMP(DoFootCheck);
@@ -17530,7 +17499,7 @@ int NYSpd() {
 
 int DoFootCheck() {
     ldy(0xeb);
-    // <conv.chunks.Comment object at 0x105915790>
+    // <conv.chunks.Comment object at 0x103a71790>
     lda(Player_Y_Position);
     cmp(0xcf);
     BCS(DoPlayerSideCheck);
@@ -17540,14 +17509,14 @@ int DoFootCheck() {
     pha();
     JSR(BlockBufferColli_Feet);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x105915970>
-    // <conv.chunks.Comment object at 0x105915a00>
-    // <conv.chunks.Comment object at 0x105915bb0>
-    // <conv.chunks.Comment object at 0x105915cd0>
-    // <conv.chunks.Comment object at 0x105915df0>
-    // <conv.chunks.Comment object at 0x105915f40>
-    // <conv.chunks.Comment object at 0x105915fd0>
-    // <conv.chunks.Comment object at 0x105916120>
+    // <conv.chunks.Comment object at 0x103a71970>
+    // <conv.chunks.Comment object at 0x103a71a00>
+    // <conv.chunks.Comment object at 0x103a71bb0>
+    // <conv.chunks.Comment object at 0x103a71cd0>
+    // <conv.chunks.Comment object at 0x103a71df0>
+    // <conv.chunks.Comment object at 0x103a71f40>
+    // <conv.chunks.Comment object at 0x103a71fd0>
+    // <conv.chunks.Comment object at 0x103a72120>
     pla();
     sta(0x1);
     BNE(ChkFootMTile);
@@ -17568,10 +17537,10 @@ int ChkFootMTile() {
     BCS(DoPlayerSideCheck);
     ldy(Player_Y_Speed);
     BMI(DoPlayerSideCheck);
-    // <conv.chunks.Comment object at 0x105916ae0>
-    // <conv.chunks.Comment object at 0x105916c00>
-    // <conv.chunks.Comment object at 0x105916d20>
-    // <conv.chunks.Comment object at 0x105916e40>
+    // <conv.chunks.Comment object at 0x103a72ae0>
+    // <conv.chunks.Comment object at 0x103a72c00>
+    // <conv.chunks.Comment object at 0x103a72d20>
+    // <conv.chunks.Comment object at 0x103a72e40>
     cmp(0xc5);
     BNE(ContChk);
     JMP(HandleAxeMetatile);
@@ -17579,9 +17548,9 @@ int ChkFootMTile() {
 }
 
 int ContChk() {
-    // <conv.chunks.Comment object at 0x105916fc0>
-    // <conv.chunks.Comment object at 0x1059171a0>
-    // <conv.chunks.Comment object at 0x1059172c0>
+    // <conv.chunks.Comment object at 0x103a72fc0>
+    // <conv.chunks.Comment object at 0x103a731a0>
+    // <conv.chunks.Comment object at 0x103a732c0>
     JSR(ChkInvisibleMTiles);
     BEQ(DoPlayerSideCheck);
     ldy(JumpspringAnimCtrl);
@@ -17589,12 +17558,12 @@ int ContChk() {
     ldy(0x4);
     cpy(0x5);
     BCC(LandPlyr);
-    // <conv.chunks.Comment object at 0x105917440>
-    // <conv.chunks.Comment object at 0x105917560>
-    // <conv.chunks.Comment object at 0x105917680>
-    // <conv.chunks.Comment object at 0x1059177d0>
-    // <conv.chunks.Comment object at 0x105917860>
-    // <conv.chunks.Comment object at 0x105917950>
+    // <conv.chunks.Comment object at 0x103a73440>
+    // <conv.chunks.Comment object at 0x103a73560>
+    // <conv.chunks.Comment object at 0x103a73680>
+    // <conv.chunks.Comment object at 0x103a737d0>
+    // <conv.chunks.Comment object at 0x103a73860>
+    // <conv.chunks.Comment object at 0x103a73950>
     lda(Player_MovingDir);
     sta(0x0);
     JMP(ImpedePlayerMove);
@@ -17602,17 +17571,17 @@ int ContChk() {
 }
 
 int LandPlyr() {
-    // <conv.chunks.Comment object at 0x105917c20>
-    // <conv.chunks.Comment object at 0x105917cb0>
-    // <conv.chunks.Comment object at 0x105917e30>
+    // <conv.chunks.Comment object at 0x103a73c20>
+    // <conv.chunks.Comment object at 0x103a73cb0>
+    // <conv.chunks.Comment object at 0x103a73e30>
     JSR(ChkForLandJumpSpring);
     lda(0xf0);
     anda(Player_Y_Position);
     sta(Player_Y_Position);
     JSR(HandlePipeEntry);
-    // <conv.chunks.Comment object at 0x105917fe0>
-    // <conv.chunks.Comment object at 0x1059201d0>
-    // <conv.chunks.Comment object at 0x1059202f0>
+    // <conv.chunks.Comment object at 0x103a73fe0>
+    // <conv.chunks.Comment object at 0x103a801d0>
+    // <conv.chunks.Comment object at 0x103a802f0>
     lda(0x0);
     sta(Player_Y_Speed);
     sta(Player_Y_MoveForce);
@@ -17628,12 +17597,12 @@ int InitSteP() {
 
 int DoPlayerSideCheck() {
     ldy(0xeb);
-    // <conv.chunks.Comment object at 0x105920b00>
+    // <conv.chunks.Comment object at 0x103a80b00>
     iny();
     iny();
     lda(0x2);
-    // <conv.chunks.Comment object at 0x105920cb0>
-    // <conv.chunks.Comment object at 0x105920d40>
+    // <conv.chunks.Comment object at 0x103a80cb0>
+    // <conv.chunks.Comment object at 0x103a80d40>
     sta(0x0);
     JMP(SideCheckLoop);
 }
@@ -17641,24 +17610,24 @@ int DoPlayerSideCheck() {
 int SideCheckLoop() {
     iny();
     sty(0xeb);
-    // <conv.chunks.Comment object at 0x105920fb0>
-    // <conv.chunks.Comment object at 0x105921070>
+    // <conv.chunks.Comment object at 0x103a80fb0>
+    // <conv.chunks.Comment object at 0x103a81070>
     lda(Player_Y_Position);
     cmp(0x20);
     BCC(BHalf);
-    // <conv.chunks.Comment object at 0x105921250>
-    // <conv.chunks.Comment object at 0x1059212e0>
+    // <conv.chunks.Comment object at 0x103a81250>
+    // <conv.chunks.Comment object at 0x103a812e0>
     cmp(0xe4);
     BCS(ExSCH);
     JSR(BlockBufferColli_Side);
     BEQ(BHalf);
     cmp(0x1c);
     BEQ(BHalf);
-    // <conv.chunks.Comment object at 0x105921520>
-    // <conv.chunks.Comment object at 0x105921700>
-    // <conv.chunks.Comment object at 0x105921820>
-    // <conv.chunks.Comment object at 0x105921970>
-    // <conv.chunks.Comment object at 0x105921a00>
+    // <conv.chunks.Comment object at 0x103a81520>
+    // <conv.chunks.Comment object at 0x103a81700>
+    // <conv.chunks.Comment object at 0x103a81820>
+    // <conv.chunks.Comment object at 0x103a81970>
+    // <conv.chunks.Comment object at 0x103a81a00>
     cmp(0x6b);
     BEQ(BHalf);
     JSR(CheckForClimbMTiles);
@@ -17667,18 +17636,18 @@ int SideCheckLoop() {
 }
 
 int BHalf() {
-    // <conv.chunks.Comment object at 0x105921c40>
-    // <conv.chunks.Comment object at 0x105921e20>
-    // <conv.chunks.Comment object at 0x105921f40>
-    // <conv.chunks.Comment object at 0x105922060>
+    // <conv.chunks.Comment object at 0x103a81c40>
+    // <conv.chunks.Comment object at 0x103a81e20>
+    // <conv.chunks.Comment object at 0x103a81f40>
+    // <conv.chunks.Comment object at 0x103a82060>
     ldy(0xeb);
     iny();
     lda(Player_Y_Position);
-    // <conv.chunks.Comment object at 0x1059220c0>
-    // <conv.chunks.Comment object at 0x1059222a0>
+    // <conv.chunks.Comment object at 0x103a820c0>
+    // <conv.chunks.Comment object at 0x103a822a0>
     cmp(0x8);
     BCC(ExSCH);
-    // <conv.chunks.Comment object at 0x105922420>
+    // <conv.chunks.Comment object at 0x103a82420>
     cmp(0xd0);
     BCS(ExSCH);
     JSR(BlockBufferColli_Side);
@@ -17689,13 +17658,13 @@ int BHalf() {
 }
 
 int ExSCH() {
-    // <conv.chunks.Comment object at 0x105922660>
-    // <conv.chunks.Comment object at 0x105922840>
-    // <conv.chunks.Comment object at 0x105922960>
-    // <conv.chunks.Comment object at 0x105922ab0>
-    // <conv.chunks.Comment object at 0x105922b40>
-    // <conv.chunks.Comment object at 0x105922cf0>
-    rts();
+    // <conv.chunks.Comment object at 0x103a82660>
+    // <conv.chunks.Comment object at 0x103a82840>
+    // <conv.chunks.Comment object at 0x103a82960>
+    // <conv.chunks.Comment object at 0x103a82ab0>
+    // <conv.chunks.Comment object at 0x103a82b40>
+    // <conv.chunks.Comment object at 0x103a82cf0>
+    return 0;
     JMP(CheckSideMTiles);
 }
 
@@ -17709,12 +17678,12 @@ int CheckSideMTiles() {
 }
 
 int ContSChk() {
-    // <conv.chunks.Comment object at 0x105922e40>
-    // <conv.chunks.Comment object at 0x105922f60>
-    // <conv.chunks.Comment object at 0x1059230b0>
-    // <conv.chunks.Comment object at 0x1059231d0>
-    // <conv.chunks.Comment object at 0x1059232f0>
-    // <conv.chunks.Comment object at 0x105923410>
+    // <conv.chunks.Comment object at 0x103a82e40>
+    // <conv.chunks.Comment object at 0x103a82f60>
+    // <conv.chunks.Comment object at 0x103a830b0>
+    // <conv.chunks.Comment object at 0x103a831d0>
+    // <conv.chunks.Comment object at 0x103a832f0>
+    // <conv.chunks.Comment object at 0x103a83410>
     JSR(CheckForCoinMTiles);
     BCS(HandleCoinMetatile);
     JSR(ChkJumpspringMetatiles);
@@ -17726,20 +17695,20 @@ int ContSChk() {
 }
 
 int ChkPBtm() {
-    // <conv.chunks.Comment object at 0x105923560>
-    // <conv.chunks.Comment object at 0x105923680>
-    // <conv.chunks.Comment object at 0x1059237a0>
-    // <conv.chunks.Comment object at 0x1059238f0>
-    // <conv.chunks.Comment object at 0x105923a10>
-    // <conv.chunks.Comment object at 0x105923b60>
-    // <conv.chunks.Comment object at 0x105923c80>
+    // <conv.chunks.Comment object at 0x103a83560>
+    // <conv.chunks.Comment object at 0x103a83680>
+    // <conv.chunks.Comment object at 0x103a837a0>
+    // <conv.chunks.Comment object at 0x103a838f0>
+    // <conv.chunks.Comment object at 0x103a83a10>
+    // <conv.chunks.Comment object at 0x103a83b60>
+    // <conv.chunks.Comment object at 0x103a83c80>
     ldy(Player_State);
     cpy(0x0);
     BNE(StopPlayerMove);
     ldy(PlayerFacingDir);
-    // <conv.chunks.Comment object at 0x105923e00>
-    // <conv.chunks.Comment object at 0x105923e90>
-    // <conv.chunks.Comment object at 0x10592c080>
+    // <conv.chunks.Comment object at 0x103a83e00>
+    // <conv.chunks.Comment object at 0x103a83e90>
+    // <conv.chunks.Comment object at 0x103a88080>
     dey();
     BNE(StopPlayerMove);
     cmp(0x6c);
@@ -17750,15 +17719,15 @@ int ChkPBtm() {
 }
 
 int PipeDwnS() {
-    // <conv.chunks.Comment object at 0x10592c230>
-    // <conv.chunks.Comment object at 0x10592c350>
-    // <conv.chunks.Comment object at 0x10592c3e0>
-    // <conv.chunks.Comment object at 0x10592c590>
-    // <conv.chunks.Comment object at 0x10592c620>
-    // <conv.chunks.Comment object at 0x10592c7d0>
+    // <conv.chunks.Comment object at 0x103a88230>
+    // <conv.chunks.Comment object at 0x103a88350>
+    // <conv.chunks.Comment object at 0x103a883e0>
+    // <conv.chunks.Comment object at 0x103a88590>
+    // <conv.chunks.Comment object at 0x103a88620>
+    // <conv.chunks.Comment object at 0x103a887d0>
     lda(Player_SprAttrib);
     BNE(PlyrPipe);
-    // <conv.chunks.Comment object at 0x10592c920>
+    // <conv.chunks.Comment object at 0x103a88920>
     ldy(Sfx_PipeDown_Injury);
     sty(Square1SoundQueue);
     JMP(PlyrPipe);
@@ -17767,7 +17736,7 @@ int PipeDwnS() {
 int PlyrPipe() {
     ora(0b100000);
     sta(Player_SprAttrib);
-    // <conv.chunks.Comment object at 0x10592cd70>
+    // <conv.chunks.Comment object at 0x103a88d70>
     lda(Player_X_Position);
     anda(0b1111);
     BEQ(ChkGERtn);
@@ -17779,30 +17748,30 @@ int PlyrPipe() {
 }
 
 int SetCATmr() {
-    // <conv.chunks.Comment object at 0x10592cf80>
-    // <conv.chunks.Comment object at 0x10592d0a0>
-    // <conv.chunks.Comment object at 0x10592d1c0>
-    // <conv.chunks.Comment object at 0x10592d250>
-    // <conv.chunks.Comment object at 0x10592d400>
-    // <conv.chunks.Comment object at 0x10592d550>
-    // <conv.chunks.Comment object at 0x10592d5e0>
+    // <conv.chunks.Comment object at 0x103a88f80>
+    // <conv.chunks.Comment object at 0x103a890a0>
+    // <conv.chunks.Comment object at 0x103a891c0>
+    // <conv.chunks.Comment object at 0x103a89250>
+    // <conv.chunks.Comment object at 0x103a89400>
+    // <conv.chunks.Comment object at 0x103a89550>
+    // <conv.chunks.Comment object at 0x103a895e0>
     lda(offsetof(G, AreaChangeTimerData), y);
     sta(ChangeAreaTimer);
     JMP(ChkGERtn);
 }
 
 int ChkGERtn() {
-    // <conv.chunks.Comment object at 0x10592d850>
+    // <conv.chunks.Comment object at 0x103a89850>
     lda(GameEngineSubroutine);
     cmp(0x7);
     BEQ(ExCSM);
     cmp(0x8);
-    // <conv.chunks.Comment object at 0x10592da00>
-    // <conv.chunks.Comment object at 0x10592dbe0>
+    // <conv.chunks.Comment object at 0x103a89a00>
+    // <conv.chunks.Comment object at 0x103a89be0>
     BNE(ExCSM);
     lda(0x2);
     sta(GameEngineSubroutine);
-    rts();
+    return 0;
     JMP(StopPlayerMove);
 }
 
@@ -17812,13 +17781,13 @@ int StopPlayerMove() {
 }
 
 int ExCSM() {
-    // <conv.chunks.Comment object at 0x10592de80>
-    // <conv.chunks.Comment object at 0x10592e060>
-    // <conv.chunks.Comment object at 0x10592e120>
-    // <conv.chunks.Comment object at 0x10592e180>
-    // <conv.chunks.Comment object at 0x10592e1e0>
-    // <conv.chunks.Comment object at 0x10592e330>
-    rts();
+    // <conv.chunks.Comment object at 0x103a89e80>
+    // <conv.chunks.Comment object at 0x103a8a060>
+    // <conv.chunks.Comment object at 0x103a8a120>
+    // <conv.chunks.Comment object at 0x103a8a180>
+    // <conv.chunks.Comment object at 0x103a8a1e0>
+    // <conv.chunks.Comment object at 0x103a8a330>
+    return 0;
     JMP(HandleCoinMetatile);
 }
 
@@ -17832,18 +17801,18 @@ int HandleCoinMetatile() {
 int HandleAxeMetatile() {
     lda(0x0);
     sta(OperMode_Task);
-    // <conv.chunks.Comment object at 0x10592e9f0>
+    // <conv.chunks.Comment object at 0x103a8a9f0>
     lda(0x2);
     sta(OperMode);
-    // <conv.chunks.Comment object at 0x10592ec00>
+    // <conv.chunks.Comment object at 0x103a8ac00>
     lda(0x18);
     sta(Player_X_Speed);
     JMP(ErACM);
 }
 
 int ErACM() {
-    // <conv.chunks.Comment object at 0x10592ee10>
-    // <conv.chunks.Comment object at 0x10592efc0>
+    // <conv.chunks.Comment object at 0x103a8ae10>
+    // <conv.chunks.Comment object at 0x103a8afc0>
     ldy(0x2);
     lda(0x0);
     sta((0x6), y);
@@ -17856,25 +17825,25 @@ int HandleClimbing() {
     cpy(0x6);
     BCC(ExHC);
     cpy(0xa);
-    // <conv.chunks.Comment object at 0x10592f920>
-    // <conv.chunks.Comment object at 0x10592f680>
-    // <conv.chunks.Comment object at 0x10592fd40>
-    // <conv.chunks.Comment object at 0x10592ff20>
+    // <conv.chunks.Comment object at 0x103a8b920>
+    // <conv.chunks.Comment object at 0x103a8b680>
+    // <conv.chunks.Comment object at 0x103a8bd40>
+    // <conv.chunks.Comment object at 0x103a8bf20>
     BCC(ChkForFlagpole);
     JMP(ExHC);
 }
 
 int ExHC() {
-    // <conv.chunks.Comment object at 0x105934170>
-    rts();
+    // <conv.chunks.Comment object at 0x103a90170>
+    return 0;
     JMP(ChkForFlagpole);
 }
 
 int ChkForFlagpole() {
     cmp(0x24);
     BEQ(FlagpoleCollision);
-    // <conv.chunks.Comment object at 0x1059342c0>
-    // <conv.chunks.Comment object at 0x105934350>
+    // <conv.chunks.Comment object at 0x103a902c0>
+    // <conv.chunks.Comment object at 0x103a90350>
     cmp(0x25);
     BNE(VineCollision);
     JMP(FlagpoleCollision);
@@ -17884,30 +17853,30 @@ int FlagpoleCollision() {
     lda(GameEngineSubroutine);
     cmp(0x5);
     BEQ(PutPlayerOnVine);
-    // <conv.chunks.Comment object at 0x105934830>
-    // <conv.chunks.Comment object at 0x1059348c0>
+    // <conv.chunks.Comment object at 0x103a90830>
+    // <conv.chunks.Comment object at 0x103a908c0>
     lda(0x1);
     sta(PlayerFacingDir);
     inc(ScrollLock);
-    // <conv.chunks.Comment object at 0x105934ad0>
-    // <conv.chunks.Comment object at 0x105934c80>
+    // <conv.chunks.Comment object at 0x103a90ad0>
+    // <conv.chunks.Comment object at 0x103a90c80>
     lda(GameEngineSubroutine);
     cmp(0x4);
     BEQ(RunFR);
     lda(BulletBill_CannonVar);
     JSR(KillEnemies);
-    // <conv.chunks.Comment object at 0x105934e90>
-    // <conv.chunks.Comment object at 0x105934f20>
-    // <conv.chunks.Comment object at 0x105935100>
-    // <conv.chunks.Comment object at 0x105935220>
+    // <conv.chunks.Comment object at 0x103a90e90>
+    // <conv.chunks.Comment object at 0x103a90f20>
+    // <conv.chunks.Comment object at 0x103a91100>
+    // <conv.chunks.Comment object at 0x103a91220>
     lda(Silence);
     sta(EventMusicQueue);
-    // <conv.chunks.Comment object at 0x105935460>
+    // <conv.chunks.Comment object at 0x103a91460>
     lsr();
     sta(FlagpoleSoundQueue);
     ldx(0x4);
-    // <conv.chunks.Comment object at 0x105935610>
-    // <conv.chunks.Comment object at 0x105935730>
+    // <conv.chunks.Comment object at 0x103a91610>
+    // <conv.chunks.Comment object at 0x103a91730>
     lda(Player_Y_Position);
     sta(FlagpoleCollisionYPos);
     JMP(ChkFlagpoleYPosLoop);
@@ -17922,11 +17891,11 @@ int ChkFlagpoleYPosLoop() {
 }
 
 int MtchF() {
-    // <conv.chunks.Comment object at 0x105935a90>
-    // <conv.chunks.Comment object at 0x105935be0>
-    // <conv.chunks.Comment object at 0x105935d60>
-    // <conv.chunks.Comment object at 0x105935df0>
-    // <conv.chunks.Comment object at 0x105935f10>
+    // <conv.chunks.Comment object at 0x103a91a90>
+    // <conv.chunks.Comment object at 0x103a91be0>
+    // <conv.chunks.Comment object at 0x103a91d60>
+    // <conv.chunks.Comment object at 0x103a91df0>
+    // <conv.chunks.Comment object at 0x103a91f10>
     stx(FlagpoleScore);
     JMP(RunFR);
 }
@@ -17940,14 +17909,14 @@ int RunFR() {
 
 int VineCollision() {
     cmp(0x26);
-    // <conv.chunks.Comment object at 0x105936450>
+    // <conv.chunks.Comment object at 0x103a92450>
     BNE(PutPlayerOnVine);
     lda(Player_Y_Position);
     cmp(0x20);
     BCS(PutPlayerOnVine);
-    // <conv.chunks.Comment object at 0x105936660>
-    // <conv.chunks.Comment object at 0x105936780>
-    // <conv.chunks.Comment object at 0x105936810>
+    // <conv.chunks.Comment object at 0x103a92660>
+    // <conv.chunks.Comment object at 0x103a92780>
+    // <conv.chunks.Comment object at 0x103a92810>
     lda(0x1);
     sta(GameEngineSubroutine);
     JMP(PutPlayerOnVine);
@@ -17955,35 +17924,35 @@ int VineCollision() {
 
 int PutPlayerOnVine() {
     lda(0x3);
-    // <conv.chunks.Comment object at 0x105936c00>
+    // <conv.chunks.Comment object at 0x103a92c00>
     sta(Player_State);
     lda(0x0);
     sta(Player_X_Speed);
-    // <conv.chunks.Comment object at 0x105936e10>
-    // <conv.chunks.Comment object at 0x105936ea0>
+    // <conv.chunks.Comment object at 0x103a92e10>
+    // <conv.chunks.Comment object at 0x103a92ea0>
     sta(Player_X_MoveForce);
     lda(Player_X_Position);
-    // <conv.chunks.Comment object at 0x105937140>
+    // <conv.chunks.Comment object at 0x103a93140>
     sec();
     sbc(ScreenLeft_X_Pos);
-    // <conv.chunks.Comment object at 0x1059372f0>
+    // <conv.chunks.Comment object at 0x103a932f0>
     cmp(0x10);
     BCS(SetVXPl);
-    // <conv.chunks.Comment object at 0x105937470>
+    // <conv.chunks.Comment object at 0x103a93470>
     lda(0x2);
     sta(PlayerFacingDir);
     JMP(SetVXPl);
 }
 
 int SetVXPl() {
-    // <conv.chunks.Comment object at 0x1059376b0>
-    // <conv.chunks.Comment object at 0x105937860>
+    // <conv.chunks.Comment object at 0x103a936b0>
+    // <conv.chunks.Comment object at 0x103a93860>
     ldy(PlayerFacingDir);
     lda(0x6);
-    // <conv.chunks.Comment object at 0x105937a10>
+    // <conv.chunks.Comment object at 0x103a93a10>
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x105937bc0>
+    // <conv.chunks.Comment object at 0x103a93bc0>
     asl();
     asl();
     clc();
@@ -17992,11 +17961,11 @@ int SetVXPl() {
     lda(0x6);
     BNE(ExPVne);
     lda(ScreenRight_PageLoc);
-    // <conv.chunks.Comment object at 0x105937e00>
-    // <conv.chunks.Comment object at 0x105944050>
-    // <conv.chunks.Comment object at 0x1059441a0>
-    // <conv.chunks.Comment object at 0x105944230>
-    // <conv.chunks.Comment object at 0x1059443e0>
+    // <conv.chunks.Comment object at 0x103a93e00>
+    // <conv.chunks.Comment object at 0x103aa0050>
+    // <conv.chunks.Comment object at 0x103aa01a0>
+    // <conv.chunks.Comment object at 0x103aa0230>
+    // <conv.chunks.Comment object at 0x103aa03e0>
     clc();
     adc(((offsetof(G, ClimbPLocAdder)) - (1)), y);
     sta(Player_PageLoc);
@@ -18004,10 +17973,10 @@ int SetVXPl() {
 }
 
 int ExPVne() {
-    // <conv.chunks.Comment object at 0x105944590>
-    // <conv.chunks.Comment object at 0x1059447a0>
-    // <conv.chunks.Comment object at 0x1059448c0>
-    rts();
+    // <conv.chunks.Comment object at 0x103aa0590>
+    // <conv.chunks.Comment object at 0x103aa07a0>
+    // <conv.chunks.Comment object at 0x103aa08c0>
+    return 0;
     JMP(ChkInvisibleMTiles);
 }
 
@@ -18019,37 +17988,37 @@ int ChkInvisibleMTiles() {
 }
 
 int ExCInvT() {
-    // <conv.chunks.Comment object at 0x105944a40>
-    // <conv.chunks.Comment object at 0x105944ad0>
-    // <conv.chunks.Comment object at 0x105944cb0>
-    // <conv.chunks.Comment object at 0x105944d40>
-    rts();
+    // <conv.chunks.Comment object at 0x103aa0a40>
+    // <conv.chunks.Comment object at 0x103aa0ad0>
+    // <conv.chunks.Comment object at 0x103aa0cb0>
+    // <conv.chunks.Comment object at 0x103aa0d40>
+    return 0;
     JMP(ChkForLandJumpSpring);
 }
 
 int ChkForLandJumpSpring() {
     JSR(ChkJumpspringMetatiles);
     BCC(ExCJSp);
-    // <conv.chunks.Comment object at 0x105944fb0>
-    // <conv.chunks.Comment object at 0x1059450d0>
+    // <conv.chunks.Comment object at 0x103aa0fb0>
+    // <conv.chunks.Comment object at 0x103aa10d0>
     lda(0x70);
     sta(VerticalForce);
-    // <conv.chunks.Comment object at 0x105945280>
+    // <conv.chunks.Comment object at 0x103aa1280>
     lda(0xf9);
     sta(JumpspringForce);
-    // <conv.chunks.Comment object at 0x105945490>
+    // <conv.chunks.Comment object at 0x103aa1490>
     lda(0x3);
     sta(JumpspringTimer);
-    // <conv.chunks.Comment object at 0x1059456a0>
+    // <conv.chunks.Comment object at 0x103aa16a0>
     lsr();
     sta(JumpspringAnimCtrl);
     JMP(ExCJSp);
 }
 
 int ExCJSp() {
-    // <conv.chunks.Comment object at 0x1059458e0>
-    // <conv.chunks.Comment object at 0x105945a00>
-    rts();
+    // <conv.chunks.Comment object at 0x103aa18e0>
+    // <conv.chunks.Comment object at 0x103aa1a00>
+    return 0;
     JMP(ChkJumpspringMetatiles);
 }
 
@@ -18063,19 +18032,19 @@ int ChkJumpspringMetatiles() {
 }
 
 int JSFnd() {
-    // <conv.chunks.Comment object at 0x105945b50>
-    // <conv.chunks.Comment object at 0x105945be0>
-    // <conv.chunks.Comment object at 0x105945dc0>
-    // <conv.chunks.Comment object at 0x105945f10>
-    // <conv.chunks.Comment object at 0x105945fa0>
-    // <conv.chunks.Comment object at 0x1059460f0>
+    // <conv.chunks.Comment object at 0x103aa1b50>
+    // <conv.chunks.Comment object at 0x103aa1be0>
+    // <conv.chunks.Comment object at 0x103aa1dc0>
+    // <conv.chunks.Comment object at 0x103aa1f10>
+    // <conv.chunks.Comment object at 0x103aa1fa0>
+    // <conv.chunks.Comment object at 0x103aa20f0>
     sec();
     JMP(NoJSFnd);
 }
 
 int NoJSFnd() {
-    // <conv.chunks.Comment object at 0x105946240>
-    rts();
+    // <conv.chunks.Comment object at 0x103aa2240>
+    return 0;
     JMP(HandlePipeEntry);
 }
 
@@ -18083,49 +18052,49 @@ int HandlePipeEntry() {
     lda(Up_Down_Buttons);
     anda(0b100);
     BEQ(ExPipeE);
-    // <conv.chunks.Comment object at 0x105946390>
-    // <conv.chunks.Comment object at 0x1059464b0>
-    // <conv.chunks.Comment object at 0x1059465d0>
+    // <conv.chunks.Comment object at 0x103aa2390>
+    // <conv.chunks.Comment object at 0x103aa24b0>
+    // <conv.chunks.Comment object at 0x103aa25d0>
     lda(0x0);
     cmp(0x11);
     BNE(ExPipeE);
-    // <conv.chunks.Comment object at 0x105946720>
-    // <conv.chunks.Comment object at 0x1059468a0>
+    // <conv.chunks.Comment object at 0x103aa2720>
+    // <conv.chunks.Comment object at 0x103aa28a0>
     lda(0x1);
     cmp(0x10);
     BNE(ExPipeE);
-    // <conv.chunks.Comment object at 0x105946a80>
-    // <conv.chunks.Comment object at 0x105946c00>
+    // <conv.chunks.Comment object at 0x103aa2a80>
+    // <conv.chunks.Comment object at 0x103aa2c00>
     lda(0x30);
     sta(ChangeAreaTimer);
-    // <conv.chunks.Comment object at 0x105946e40>
+    // <conv.chunks.Comment object at 0x103aa2e40>
     lda(0x3);
     sta(GameEngineSubroutine);
-    // <conv.chunks.Comment object at 0x105947050>
+    // <conv.chunks.Comment object at 0x103aa3050>
     lda(Sfx_PipeDown_Injury);
     sta(Square1SoundQueue);
-    // <conv.chunks.Comment object at 0x1059472f0>
+    // <conv.chunks.Comment object at 0x103aa32f0>
     lda(0b100000);
     sta(Player_SprAttrib);
     lda(WarpZoneControl);
     BEQ(ExPipeE);
     anda(0b11);
-    // <conv.chunks.Comment object at 0x105947500>
-    // <conv.chunks.Comment object at 0x105947620>
-    // <conv.chunks.Comment object at 0x105947740>
-    // <conv.chunks.Comment object at 0x105947890>
+    // <conv.chunks.Comment object at 0x103aa3500>
+    // <conv.chunks.Comment object at 0x103aa3620>
+    // <conv.chunks.Comment object at 0x103aa3740>
+    // <conv.chunks.Comment object at 0x103aa3890>
     asl();
     asl();
     tax();
     lda(Player_X_Position);
-    // <conv.chunks.Comment object at 0x105947a70>
-    // <conv.chunks.Comment object at 0x105947b30>
-    // <conv.chunks.Comment object at 0x105947bc0>
+    // <conv.chunks.Comment object at 0x103aa3a70>
+    // <conv.chunks.Comment object at 0x103aa3b30>
+    // <conv.chunks.Comment object at 0x103aa3bc0>
     cmp(0x60);
     BCC(GetWNum);
     inx();
-    // <conv.chunks.Comment object at 0x105947d40>
-    // <conv.chunks.Comment object at 0x105947f50>
+    // <conv.chunks.Comment object at 0x103aa3d40>
+    // <conv.chunks.Comment object at 0x103aa3f50>
     cmp(0xa0);
     BCC(GetWNum);
     inx();
@@ -18133,23 +18102,23 @@ int HandlePipeEntry() {
 }
 
 int GetWNum() {
-    // <conv.chunks.Comment object at 0x10594c080>
-    // <conv.chunks.Comment object at 0x10594c290>
-    // <conv.chunks.Comment object at 0x10594c320>
+    // <conv.chunks.Comment object at 0x103aa8080>
+    // <conv.chunks.Comment object at 0x103aa8290>
+    // <conv.chunks.Comment object at 0x103aa8320>
     ldy(offsetof(G, WarpZoneNumbers), x);
     dey();
     sty(WorldNumber);
     ldx(offsetof(G, WorldAddrOffsets), y);
     lda(offsetof(G, AreaAddrOffsets), x);
     sta(AreaPointer);
-    // <conv.chunks.Comment object at 0x10594c500>
-    // <conv.chunks.Comment object at 0x10594c590>
-    // <conv.chunks.Comment object at 0x10594c6b0>
-    // <conv.chunks.Comment object at 0x10594c800>
-    // <conv.chunks.Comment object at 0x10594c950>
+    // <conv.chunks.Comment object at 0x103aa8500>
+    // <conv.chunks.Comment object at 0x103aa8590>
+    // <conv.chunks.Comment object at 0x103aa86b0>
+    // <conv.chunks.Comment object at 0x103aa8800>
+    // <conv.chunks.Comment object at 0x103aa8950>
     lda(Silence);
     sta(EventMusicQueue);
-    // <conv.chunks.Comment object at 0x10594cb90>
+    // <conv.chunks.Comment object at 0x103aa8b90>
     lda(0x0);
     sta(EntrancePage);
     sta(AreaNumber);
@@ -18161,14 +18130,14 @@ int GetWNum() {
 }
 
 int ExPipeE() {
-    // <conv.chunks.Comment object at 0x10594cd10>
-    // <conv.chunks.Comment object at 0x10594cec0>
-    // <conv.chunks.Comment object at 0x10594cfe0>
-    // <conv.chunks.Comment object at 0x10594d100>
-    // <conv.chunks.Comment object at 0x10594d220>
-    // <conv.chunks.Comment object at 0x10594d340>
-    // <conv.chunks.Comment object at 0x10594d460>
-    rts();
+    // <conv.chunks.Comment object at 0x103aa8d10>
+    // <conv.chunks.Comment object at 0x103aa8ec0>
+    // <conv.chunks.Comment object at 0x103aa8fe0>
+    // <conv.chunks.Comment object at 0x103aa9100>
+    // <conv.chunks.Comment object at 0x103aa9220>
+    // <conv.chunks.Comment object at 0x103aa9340>
+    // <conv.chunks.Comment object at 0x103aa9460>
+    return 0;
     JMP(ImpedePlayerMove);
 }
 
@@ -18187,17 +18156,17 @@ int ImpedePlayerMove() {
 }
 
 int RImpd() {
-    // <conv.chunks.Comment object at 0x10594d5b0>
-    // <conv.chunks.Comment object at 0x10594d640>
-    // <conv.chunks.Comment object at 0x10594d820>
-    // <conv.chunks.Comment object at 0x10594d7f0>
-    // <conv.chunks.Comment object at 0x10594d9d0>
-    // <conv.chunks.Comment object at 0x10594db50>
-    // <conv.chunks.Comment object at 0x10594dbe0>
-    // <conv.chunks.Comment object at 0x10594dc70>
-    // <conv.chunks.Comment object at 0x10594de50>
-    // <conv.chunks.Comment object at 0x10594dee0>
-    // <conv.chunks.Comment object at 0x10594e0c0>
+    // <conv.chunks.Comment object at 0x103aa95b0>
+    // <conv.chunks.Comment object at 0x103aa9640>
+    // <conv.chunks.Comment object at 0x103aa9820>
+    // <conv.chunks.Comment object at 0x103aa97f0>
+    // <conv.chunks.Comment object at 0x103aa99d0>
+    // <conv.chunks.Comment object at 0x103aa9b50>
+    // <conv.chunks.Comment object at 0x103aa9be0>
+    // <conv.chunks.Comment object at 0x103aa9c70>
+    // <conv.chunks.Comment object at 0x103aa9e50>
+    // <conv.chunks.Comment object at 0x103aa9ee0>
+    // <conv.chunks.Comment object at 0x103aaa0c0>
     ldx(0x2);
     cpy(0x1);
     BPL(ExIPM);
@@ -18208,7 +18177,7 @@ int RImpd() {
 int NXSpd() {
     ldy(0x10);
     sty(SideCollisionTimer);
-    // <conv.chunks.Comment object at 0x10594e690>
+    // <conv.chunks.Comment object at 0x103aaa690>
     ldy(0x0);
     sty(Player_X_Speed);
     cmp(0x0);
@@ -18218,17 +18187,17 @@ int NXSpd() {
 }
 
 int PlatF() {
-    // <conv.chunks.Comment object at 0x10594e8a0>
-    // <conv.chunks.Comment object at 0x10594ea50>
-    // <conv.chunks.Comment object at 0x10594eae0>
-    // <conv.chunks.Comment object at 0x10594ecf0>
-    // <conv.chunks.Comment object at 0x10594ed80>
+    // <conv.chunks.Comment object at 0x103aaa8a0>
+    // <conv.chunks.Comment object at 0x103aaaa50>
+    // <conv.chunks.Comment object at 0x103aaaae0>
+    // <conv.chunks.Comment object at 0x103aaacf0>
+    // <conv.chunks.Comment object at 0x103aaad80>
     sty(0x0);
     clc();
     adc(Player_X_Position);
     sta(Player_X_Position);
-    // <conv.chunks.Comment object at 0x10594ef90>
-    // <conv.chunks.Comment object at 0x10594f0b0>
+    // <conv.chunks.Comment object at 0x103aaaf90>
+    // <conv.chunks.Comment object at 0x103aab0b0>
     lda(Player_PageLoc);
     adc(0x0);
     sta(Player_PageLoc);
@@ -18236,34 +18205,34 @@ int PlatF() {
 }
 
 int ExIPM() {
-    // <conv.chunks.Comment object at 0x10594f2f0>
-    // <conv.chunks.Comment object at 0x10594f380>
-    // <conv.chunks.Comment object at 0x10594f500>
+    // <conv.chunks.Comment object at 0x103aab2f0>
+    // <conv.chunks.Comment object at 0x103aab380>
+    // <conv.chunks.Comment object at 0x103aab500>
     txa();
     eor(0xff);
     anda(Player_CollisionBits);
     sta(Player_CollisionBits);
-    // <conv.chunks.Comment object at 0x10594f680>
-    // <conv.chunks.Comment object at 0x10594f830>
-    rts();
+    // <conv.chunks.Comment object at 0x103aab680>
+    // <conv.chunks.Comment object at 0x103aab830>
+    return 0;
     JMP(CheckForSolidMTiles);
 }
 
 int CheckForSolidMTiles() {
     JSR(GetMTileAttrib);
     cmp(offsetof(G, SolidMTileUpperExt), x);
-    // <conv.chunks.Comment object at 0x10594faa0>
-    // <conv.chunks.Comment object at 0x10594fdd0>
-    rts();
+    // <conv.chunks.Comment object at 0x103aabaa0>
+    // <conv.chunks.Comment object at 0x103aabdd0>
+    return 0;
     JMP(CheckForClimbMTiles);
 }
 
 int CheckForClimbMTiles() {
     JSR(GetMTileAttrib);
     cmp(offsetof(G, ClimbMTileUpperExt), x);
-    // <conv.chunks.Comment object at 0x105958050>
-    // <conv.chunks.Comment object at 0x1059583b0>
-    rts();
+    // <conv.chunks.Comment object at 0x103ab4050>
+    // <conv.chunks.Comment object at 0x103ab43b0>
+    return 0;
     JMP(CheckForCoinMTiles);
 }
 
@@ -18273,31 +18242,31 @@ int CheckForCoinMTiles() {
     cmp(0xc3);
     BEQ(CoinSd);
     clc();
-    // <conv.chunks.Comment object at 0x1059585c0>
-    // <conv.chunks.Comment object at 0x105958650>
-    // <conv.chunks.Comment object at 0x105958830>
-    // <conv.chunks.Comment object at 0x1059588c0>
-    // <conv.chunks.Comment object at 0x105958ad0>
-    rts();
+    // <conv.chunks.Comment object at 0x103ab45c0>
+    // <conv.chunks.Comment object at 0x103ab4650>
+    // <conv.chunks.Comment object at 0x103ab4830>
+    // <conv.chunks.Comment object at 0x103ab48c0>
+    // <conv.chunks.Comment object at 0x103ab4ad0>
+    return 0;
     JMP(CoinSd);
 }
 
 int CoinSd() {
     lda(Sfx_CoinGrab);
     sta(Square2SoundQueue);
-    // <conv.chunks.Comment object at 0x105958d40>
-    rts();
+    // <conv.chunks.Comment object at 0x103ab4d40>
+    return 0;
     JMP(GetMTileAttrib);
 }
 
 int GetMTileAttrib() {
     tay();
     anda(0b11000000);
-    // <conv.chunks.Comment object at 0x105958f50>
-    // <conv.chunks.Comment object at 0x105958fe0>
+    // <conv.chunks.Comment object at 0x103ab4f50>
+    // <conv.chunks.Comment object at 0x103ab4fe0>
     asl();
     rol();
-    // <conv.chunks.Comment object at 0x1059591c0>
+    // <conv.chunks.Comment object at 0x103ab51c0>
     rol();
     tax();
     tya();
@@ -18305,30 +18274,30 @@ int GetMTileAttrib() {
 }
 
 int ExEBG() {
-    // <conv.chunks.Comment object at 0x105959310>
-    // <conv.chunks.Comment object at 0x1059593d0>
-    // <conv.chunks.Comment object at 0x105959490>
-    rts();
+    // <conv.chunks.Comment object at 0x103ab5310>
+    // <conv.chunks.Comment object at 0x103ab53d0>
+    // <conv.chunks.Comment object at 0x103ab5490>
+    return 0;
     JMP(EnemyToBGCollisionDet);
 }
 
 int EnemyToBGCollisionDet() {
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x105959700>
+    // <conv.chunks.Comment object at 0x103ab5700>
     anda(0b100000);
     BNE(ExEBG);
     JSR(SubtEnemyYPos);
     BCC(ExEBG);
-    // <conv.chunks.Comment object at 0x105959d60>
-    // <conv.chunks.Comment object at 0x105959eb0>
-    // <conv.chunks.Comment object at 0x105959fd0>
+    // <conv.chunks.Comment object at 0x103ab5d60>
+    // <conv.chunks.Comment object at 0x103ab5eb0>
+    // <conv.chunks.Comment object at 0x103ab5fd0>
     ldy(Enemy_ID, x);
     cpy(Spiny);
-    // <conv.chunks.Comment object at 0x10595a240>
+    // <conv.chunks.Comment object at 0x103ab6240>
     BNE(DoIDCheckBGColl);
     lda(Enemy_Y_Position, x);
     cmp(0x25);
-    // <conv.chunks.Comment object at 0x10595a5a0>
+    // <conv.chunks.Comment object at 0x103ab65a0>
     BCC(ExEBG);
     JMP(DoIDCheckBGColl);
 }
@@ -18341,10 +18310,10 @@ int DoIDCheckBGColl() {
 }
 
 int HBChk() {
-    // <conv.chunks.Comment object at 0x10595a810>
-    // <conv.chunks.Comment object at 0x10595a930>
-    // <conv.chunks.Comment object at 0x10595aa80>
-    // <conv.chunks.Comment object at 0x10595aba0>
+    // <conv.chunks.Comment object at 0x103ab6810>
+    // <conv.chunks.Comment object at 0x103ab6930>
+    // <conv.chunks.Comment object at 0x103ab6a80>
+    // <conv.chunks.Comment object at 0x103ab6ba0>
     cpy(HammerBro);
     BNE(CInvu);
     JMP(HammerBroBGColl);
@@ -18352,22 +18321,22 @@ int HBChk() {
 }
 
 int CInvu() {
-    // <conv.chunks.Comment object at 0x10595ad20>
-    // <conv.chunks.Comment object at 0x10595ae70>
-    // <conv.chunks.Comment object at 0x10595af90>
+    // <conv.chunks.Comment object at 0x103ab6d20>
+    // <conv.chunks.Comment object at 0x103ab6e70>
+    // <conv.chunks.Comment object at 0x103ab6f90>
     cpy(Spiny);
     BEQ(YesIn);
     cpy(PowerUpObject);
-    // <conv.chunks.Comment object at 0x10595b260>
+    // <conv.chunks.Comment object at 0x103ab7260>
     BEQ(YesIn);
     cpy(0x7);
-    // <conv.chunks.Comment object at 0x10595b4a0>
+    // <conv.chunks.Comment object at 0x103ab74a0>
     BCS(ExEBGChk);
     JMP(YesIn);
 }
 
 int YesIn() {
-    // <conv.chunks.Comment object at 0x10595b6b0>
+    // <conv.chunks.Comment object at 0x103ab76b0>
     JSR(ChkUnderEnemy);
     BNE(HandleEToBGCollision);
     JMP(NoEToBGCollision);
@@ -18381,25 +18350,25 @@ int NoEToBGCollision() {
 int HandleEToBGCollision() {
     JSR(ChkForNonSolids);
     BEQ(NoEToBGCollision);
-    // <conv.chunks.Comment object at 0x10595b980>
-    // <conv.chunks.Comment object at 0x10595bad0>
-    // <conv.chunks.Comment object at 0x10595bb30>
-    // <conv.chunks.Comment object at 0x10595bc50>
+    // <conv.chunks.Comment object at 0x103ab7980>
+    // <conv.chunks.Comment object at 0x103ab7ad0>
+    // <conv.chunks.Comment object at 0x103ab7b30>
+    // <conv.chunks.Comment object at 0x103ab7c50>
     cmp(0x23);
     BNE(LandEnemyProperly);
     ldy(0x2);
     lda(0x0);
     sta((0x6), y);
-    // <conv.chunks.Comment object at 0x10595bdd0>
-    // <conv.chunks.Comment object at 0x10595bfb0>
-    // <conv.chunks.Comment object at 0x10595bf80>
-    // <conv.chunks.Comment object at 0x105968170>
+    // <conv.chunks.Comment object at 0x103ab7dd0>
+    // <conv.chunks.Comment object at 0x103ab7fb0>
+    // <conv.chunks.Comment object at 0x103ab7f80>
+    // <conv.chunks.Comment object at 0x103ac4170>
     lda(Enemy_ID, x);
     cmp(0x15);
-    // <conv.chunks.Comment object at 0x1059684a0>
+    // <conv.chunks.Comment object at 0x103ac44a0>
     BCS(ChkToStunEnemies);
     cmp(Goomba);
-    // <conv.chunks.Comment object at 0x1059686b0>
+    // <conv.chunks.Comment object at 0x103ac46b0>
     BNE(GiveOEPoints);
     JSR(KillEnemyAboveBlock);
     JMP(GiveOEPoints);
@@ -18407,14 +18376,14 @@ int HandleEToBGCollision() {
 
 int GiveOEPoints() {
     lda(0x1);
-    // <conv.chunks.Comment object at 0x105968a40>
+    // <conv.chunks.Comment object at 0x103ac4a40>
     JSR(SetupFloateyNumber);
     JMP(ChkToStunEnemies);
 }
 
 int ChkToStunEnemies() {
     cmp(0x9);
-    // <conv.chunks.Comment object at 0x105968c80>
+    // <conv.chunks.Comment object at 0x103ac4c80>
     BCC(SetStun);
     cmp(0x11);
     BCS(SetStun);
@@ -18426,50 +18395,50 @@ int ChkToStunEnemies() {
 }
 
 int Demote() {
-    // <conv.chunks.Comment object at 0x105968ec0>
-    // <conv.chunks.Comment object at 0x105968f50>
-    // <conv.chunks.Comment object at 0x105969130>
-    // <conv.chunks.Comment object at 0x1059691c0>
-    // <conv.chunks.Comment object at 0x1059693a0>
-    // <conv.chunks.Comment object at 0x1059694c0>
-    // <conv.chunks.Comment object at 0x105969610>
+    // <conv.chunks.Comment object at 0x103ac4ec0>
+    // <conv.chunks.Comment object at 0x103ac4f50>
+    // <conv.chunks.Comment object at 0x103ac5130>
+    // <conv.chunks.Comment object at 0x103ac51c0>
+    // <conv.chunks.Comment object at 0x103ac53a0>
+    // <conv.chunks.Comment object at 0x103ac54c0>
+    // <conv.chunks.Comment object at 0x103ac5610>
     anda(0b1);
     sta(Enemy_ID, x);
     JMP(SetStun);
 }
 
 int SetStun() {
-    // <conv.chunks.Comment object at 0x105969790>
-    // <conv.chunks.Comment object at 0x1059698e0>
+    // <conv.chunks.Comment object at 0x103ac5790>
+    // <conv.chunks.Comment object at 0x103ac58e0>
     lda(Enemy_State, x);
     anda(0b11110000);
-    // <conv.chunks.Comment object at 0x105969a90>
+    // <conv.chunks.Comment object at 0x103ac5a90>
     ora(0b10);
     sta(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x105969ca0>
+    // <conv.chunks.Comment object at 0x103ac5ca0>
     dec(Enemy_Y_Position, x);
     dec(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x105969f10>
+    // <conv.chunks.Comment object at 0x103ac5f10>
     lda(Enemy_ID, x);
     cmp(Bloober);
-    // <conv.chunks.Comment object at 0x10596a180>
+    // <conv.chunks.Comment object at 0x103ac6180>
     BEQ(SetWYSpd);
     lda(0xfd);
-    // <conv.chunks.Comment object at 0x10596a3c0>
+    // <conv.chunks.Comment object at 0x103ac63c0>
     ldy(AreaType);
     BNE(SetNotW);
     JMP(SetWYSpd);
 }
 
 int SetWYSpd() {
-    // <conv.chunks.Comment object at 0x10596a5d0>
-    // <conv.chunks.Comment object at 0x10596a720>
+    // <conv.chunks.Comment object at 0x103ac65d0>
+    // <conv.chunks.Comment object at 0x103ac6720>
     lda(0xff);
     JMP(SetNotW);
 }
 
 int SetNotW() {
-    // <conv.chunks.Comment object at 0x10596a7e0>
+    // <conv.chunks.Comment object at 0x103ac67e0>
     sta(Enemy_Y_Speed, x);
     ldy(0x1);
     JSR(PlayerEnemyDiff);
@@ -18481,7 +18450,7 @@ int SetNotW() {
 int ChkBBill() {
     lda(Enemy_ID, x);
     cmp(BulletBill_CannonVar);
-    // <conv.chunks.Comment object at 0x10596af60>
+    // <conv.chunks.Comment object at 0x103ac6f60>
     BEQ(NoCDirF);
     cmp(BulletBill_FrenzyVar);
     BEQ(NoCDirF);
@@ -18490,10 +18459,10 @@ int ChkBBill() {
 }
 
 int NoCDirF() {
-    // <conv.chunks.Comment object at 0x10596b1a0>
-    // <conv.chunks.Comment object at 0x10596b2c0>
-    // <conv.chunks.Comment object at 0x10596b410>
-    // <conv.chunks.Comment object at 0x10596b560>
+    // <conv.chunks.Comment object at 0x103ac71a0>
+    // <conv.chunks.Comment object at 0x103ac72c0>
+    // <conv.chunks.Comment object at 0x103ac7410>
+    // <conv.chunks.Comment object at 0x103ac7560>
     dey();
     lda(offsetof(G, EnemyBGCXSpdData), y);
     sta(Enemy_X_Speed, x);
@@ -18501,41 +18470,41 @@ int NoCDirF() {
 }
 
 int ExEBGChk() {
-    rts();
+    return 0;
     JMP(LandEnemyProperly);
 }
 
 int LandEnemyProperly() {
     lda(0x4);
-    // <conv.chunks.Comment object at 0x10596ba10>
-    // <conv.chunks.Comment object at 0x10596baa0>
+    // <conv.chunks.Comment object at 0x103ac7a10>
+    // <conv.chunks.Comment object at 0x103ac7aa0>
     sec();
     sbc(0x8);
     cmp(0x5);
     BCS(ChkForRedKoopa);
-    // <conv.chunks.Comment object at 0x10596bc20>
-    // <conv.chunks.Comment object at 0x10596bcb0>
-    // <conv.chunks.Comment object at 0x10596bdd0>
+    // <conv.chunks.Comment object at 0x103ac7c20>
+    // <conv.chunks.Comment object at 0x103ac7cb0>
+    // <conv.chunks.Comment object at 0x103ac7dd0>
     lda(Enemy_State, x);
     anda(0b1000000);
-    // <conv.chunks.Comment object at 0x1059700e0>
+    // <conv.chunks.Comment object at 0x103acc0e0>
     BNE(LandEnemyInitState);
     lda(Enemy_State, x);
     asl();
-    // <conv.chunks.Comment object at 0x105970440>
+    // <conv.chunks.Comment object at 0x103acc440>
     BCC(ChkLandedEnemyState);
     JMP(SChkA);
 }
 
 int SChkA() {
-    // <conv.chunks.Comment object at 0x1059705c0>
+    // <conv.chunks.Comment object at 0x103acc5c0>
     JMP(DoEnemySideCheck);
     JMP(ChkLandedEnemyState);
 }
 
 int ChkLandedEnemyState() {
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x105970770>
+    // <conv.chunks.Comment object at 0x103acc770>
     BEQ(SChkA);
     cmp(0x5);
     BEQ(ProcEnemyDirection);
@@ -18546,15 +18515,15 @@ int ChkLandedEnemyState() {
     BNE(ProcEnemyDirection);
     lda(0x10);
     ldy(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x1059709e0>
-    // <conv.chunks.Comment object at 0x105970a70>
-    // <conv.chunks.Comment object at 0x105970c20>
-    // <conv.chunks.Comment object at 0x105970cb0>
-    // <conv.chunks.Comment object at 0x105970e60>
-    // <conv.chunks.Comment object at 0x105970fb0>
-    // <conv.chunks.Comment object at 0x105971040>
-    // <conv.chunks.Comment object at 0x1059711f0>
-    // <conv.chunks.Comment object at 0x105971280>
+    // <conv.chunks.Comment object at 0x103acc9e0>
+    // <conv.chunks.Comment object at 0x103acca70>
+    // <conv.chunks.Comment object at 0x103accc20>
+    // <conv.chunks.Comment object at 0x103acccb0>
+    // <conv.chunks.Comment object at 0x103acce60>
+    // <conv.chunks.Comment object at 0x103accfb0>
+    // <conv.chunks.Comment object at 0x103acd040>
+    // <conv.chunks.Comment object at 0x103acd1f0>
+    // <conv.chunks.Comment object at 0x103acd280>
     cpy(Spiny);
     BNE(SetForStn);
     lda(0x0);
@@ -18562,9 +18531,9 @@ int ChkLandedEnemyState() {
 }
 
 int SetForStn() {
-    // <conv.chunks.Comment object at 0x1059714c0>
-    // <conv.chunks.Comment object at 0x1059716a0>
-    // <conv.chunks.Comment object at 0x105971730>
+    // <conv.chunks.Comment object at 0x103acd4c0>
+    // <conv.chunks.Comment object at 0x103acd6a0>
+    // <conv.chunks.Comment object at 0x103acd730>
     sta(EnemyIntervalTimer, x);
     lda(0x3);
     sta(Enemy_State, x);
@@ -18573,30 +18542,30 @@ int SetForStn() {
 }
 
 int ExSteChk() {
-    // <conv.chunks.Comment object at 0x105971940>
-    // <conv.chunks.Comment object at 0x1059719d0>
-    // <conv.chunks.Comment object at 0x105971bb0>
-    // <conv.chunks.Comment object at 0x105971cd0>
-    rts();
+    // <conv.chunks.Comment object at 0x103acd940>
+    // <conv.chunks.Comment object at 0x103acd9d0>
+    // <conv.chunks.Comment object at 0x103acdbb0>
+    // <conv.chunks.Comment object at 0x103acdcd0>
+    return 0;
     JMP(ProcEnemyDirection);
 }
 
 int ProcEnemyDirection() {
     lda(Enemy_ID, x);
     cmp(Goomba);
-    // <conv.chunks.Comment object at 0x105971df0>
-    // <conv.chunks.Comment object at 0x105971f40>
+    // <conv.chunks.Comment object at 0x103acddf0>
+    // <conv.chunks.Comment object at 0x103acdf40>
     BEQ(LandEnemyInitState);
     cmp(Spiny);
     BNE(InvtD);
-    // <conv.chunks.Comment object at 0x105972180>
-    // <conv.chunks.Comment object at 0x105972210>
+    // <conv.chunks.Comment object at 0x103ace180>
+    // <conv.chunks.Comment object at 0x103ace210>
     lda(0x1);
     sta(Enemy_MovingDir, x);
-    // <conv.chunks.Comment object at 0x105972480>
+    // <conv.chunks.Comment object at 0x103ace480>
     lda(0x8);
     sta(Enemy_X_Speed, x);
-    // <conv.chunks.Comment object at 0x1059726c0>
+    // <conv.chunks.Comment object at 0x103ace6c0>
     lda(FrameCounter);
     anda(0b111);
     BEQ(LandEnemyInitState);
@@ -18604,9 +18573,9 @@ int ProcEnemyDirection() {
 }
 
 int InvtD() {
-    // <conv.chunks.Comment object at 0x105972990>
-    // <conv.chunks.Comment object at 0x105972ab0>
-    // <conv.chunks.Comment object at 0x105972bd0>
+    // <conv.chunks.Comment object at 0x103ace990>
+    // <conv.chunks.Comment object at 0x103aceab0>
+    // <conv.chunks.Comment object at 0x103acebd0>
     ldy(0x1);
     JSR(PlayerEnemyDiff);
     BPL(CNwCDir);
@@ -18617,7 +18586,7 @@ int InvtD() {
 int CNwCDir() {
     tya();
     cmp(Enemy_MovingDir, x);
-    // <conv.chunks.Comment object at 0x105973170>
+    // <conv.chunks.Comment object at 0x103acf170>
     BNE(LandEnemyInitState);
     JSR(ChkForBump_HammerBroJ);
     JMP(LandEnemyInitState);
@@ -18625,49 +18594,49 @@ int CNwCDir() {
 
 int LandEnemyInitState() {
     JSR(EnemyLanding);
-    // <conv.chunks.Comment object at 0x105973500>
+    // <conv.chunks.Comment object at 0x103acf500>
     lda(Enemy_State, x);
     anda(0b10000000);
-    // <conv.chunks.Comment object at 0x105973740>
+    // <conv.chunks.Comment object at 0x103acf740>
     BNE(NMovShellFallBit);
     lda(0x0);
     sta(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x105973950>
-    // <conv.chunks.Comment object at 0x1059739e0>
-    rts();
+    // <conv.chunks.Comment object at 0x103acf950>
+    // <conv.chunks.Comment object at 0x103acf9e0>
+    return 0;
     JMP(NMovShellFallBit);
 }
 
 int NMovShellFallBit() {
     lda(Enemy_State, x);
     anda(0b10111111);
-    // <conv.chunks.Comment object at 0x105973c80>
-    // <conv.chunks.Comment object at 0x105973dd0>
+    // <conv.chunks.Comment object at 0x103acfc80>
+    // <conv.chunks.Comment object at 0x103acfdd0>
     sta(Enemy_State, x);
-    rts();
+    return 0;
     JMP(ChkForRedKoopa);
 }
 
 int ChkForRedKoopa() {
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x105978140>
+    // <conv.chunks.Comment object at 0x103ad4140>
     cmp(RedKoopa);
     BNE(Chk2MSBSt);
-    // <conv.chunks.Comment object at 0x105978380>
+    // <conv.chunks.Comment object at 0x103ad4380>
     lda(Enemy_State, x);
     BEQ(ChkForBump_HammerBroJ);
     JMP(Chk2MSBSt);
 }
 
 int Chk2MSBSt() {
-    // <conv.chunks.Comment object at 0x1059785c0>
-    // <conv.chunks.Comment object at 0x1059786e0>
+    // <conv.chunks.Comment object at 0x103ad45c0>
+    // <conv.chunks.Comment object at 0x103ad46e0>
     lda(Enemy_State, x);
     tay();
     asl();
     BCC(GetSteFromD);
-    // <conv.chunks.Comment object at 0x105978920>
-    // <conv.chunks.Comment object at 0x1059789b0>
+    // <conv.chunks.Comment object at 0x103ad4920>
+    // <conv.chunks.Comment object at 0x103ad49b0>
     lda(Enemy_State, x);
     ora(0b1000000);
     JMP(SetD6Ste);
@@ -18675,15 +18644,15 @@ int Chk2MSBSt() {
 }
 
 int GetSteFromD() {
-    // <conv.chunks.Comment object at 0x105978c20>
-    // <conv.chunks.Comment object at 0x105978d40>
-    // <conv.chunks.Comment object at 0x105978e60>
+    // <conv.chunks.Comment object at 0x103ad4c20>
+    // <conv.chunks.Comment object at 0x103ad4d40>
+    // <conv.chunks.Comment object at 0x103ad4e60>
     lda(offsetof(G, EnemyBGCStateData), y);
     JMP(SetD6Ste);
 }
 
 int SetD6Ste() {
-    // <conv.chunks.Comment object at 0x105978fe0>
+    // <conv.chunks.Comment object at 0x103ad4fe0>
     sta(Enemy_State, x);
     JMP(DoEnemySideCheck);
 }
@@ -18691,8 +18660,8 @@ int SetD6Ste() {
 int DoEnemySideCheck() {
     lda(Enemy_Y_Position, x);
     cmp(0x20);
-    // <conv.chunks.Comment object at 0x105979220>
-    // <conv.chunks.Comment object at 0x105979370>
+    // <conv.chunks.Comment object at 0x103ad5220>
+    // <conv.chunks.Comment object at 0x103ad5370>
     BCC(ExESdeC);
     ldy(0x16);
     lda(0x2);
@@ -18701,10 +18670,10 @@ int DoEnemySideCheck() {
 }
 
 int SdeCLoop() {
-    // <conv.chunks.Comment object at 0x1059795b0>
-    // <conv.chunks.Comment object at 0x105979640>
-    // <conv.chunks.Comment object at 0x105979820>
-    // <conv.chunks.Comment object at 0x1059798b0>
+    // <conv.chunks.Comment object at 0x103ad55b0>
+    // <conv.chunks.Comment object at 0x103ad5640>
+    // <conv.chunks.Comment object at 0x103ad5820>
+    // <conv.chunks.Comment object at 0x103ad58b0>
     lda(0xeb);
     cmp(Enemy_MovingDir, x);
     BNE(NextSdeC);
@@ -18717,14 +18686,14 @@ int SdeCLoop() {
 }
 
 int NextSdeC() {
-    // <conv.chunks.Comment object at 0x105979a00>
-    // <conv.chunks.Comment object at 0x105979bb0>
-    // <conv.chunks.Comment object at 0x105979cd0>
-    // <conv.chunks.Comment object at 0x105979d60>
-    // <conv.chunks.Comment object at 0x105979f10>
-    // <conv.chunks.Comment object at 0x10597a030>
-    // <conv.chunks.Comment object at 0x10597a150>
-    // <conv.chunks.Comment object at 0x10597a270>
+    // <conv.chunks.Comment object at 0x103ad5a00>
+    // <conv.chunks.Comment object at 0x103ad5bb0>
+    // <conv.chunks.Comment object at 0x103ad5cd0>
+    // <conv.chunks.Comment object at 0x103ad5d60>
+    // <conv.chunks.Comment object at 0x103ad5f10>
+    // <conv.chunks.Comment object at 0x103ad6030>
+    // <conv.chunks.Comment object at 0x103ad6150>
+    // <conv.chunks.Comment object at 0x103ad6270>
     dec(0xeb);
     iny();
     cpy(0x18);
@@ -18733,7 +18702,7 @@ int NextSdeC() {
 }
 
 int ExESdeC() {
-    rts();
+    return 0;
     JMP(ChkForBump_HammerBroJ);
 }
 
@@ -18742,10 +18711,10 @@ int ChkForBump_HammerBroJ() {
     BEQ(NoBump);
     lda(Enemy_State, x);
     asl();
-    // <conv.chunks.Comment object at 0x10597a7b0>
-    // <conv.chunks.Comment object at 0x10597a840>
-    // <conv.chunks.Comment object at 0x10597aa20>
-    // <conv.chunks.Comment object at 0x10597aba0>
+    // <conv.chunks.Comment object at 0x103ad67b0>
+    // <conv.chunks.Comment object at 0x103ad6840>
+    // <conv.chunks.Comment object at 0x103ad6a20>
+    // <conv.chunks.Comment object at 0x103ad6ba0>
     BCC(NoBump);
     lda(Sfx_Bump);
     sta(Square1SoundQueue);
@@ -18753,13 +18722,13 @@ int ChkForBump_HammerBroJ() {
 }
 
 int NoBump() {
-    // <conv.chunks.Comment object at 0x10597ad50>
-    // <conv.chunks.Comment object at 0x10597ae70>
-    // <conv.chunks.Comment object at 0x10597af90>
+    // <conv.chunks.Comment object at 0x103ad6d50>
+    // <conv.chunks.Comment object at 0x103ad6e70>
+    // <conv.chunks.Comment object at 0x103ad6f90>
     lda(Enemy_ID, x);
     cmp(0x5);
     BNE(InvEnemyDir);
-    // <conv.chunks.Comment object at 0x10597b1a0>
+    // <conv.chunks.Comment object at 0x103ad71a0>
     lda(0x0);
     sta(0x0);
     ldy(0xfa);
@@ -18777,84 +18746,84 @@ int PlayerEnemyDiff() {
     sec();
     sbc(Player_X_Position);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x10597b800>
-    // <conv.chunks.Comment object at 0x10597b980>
-    // <conv.chunks.Comment object at 0x10597b9e0>
-    // <conv.chunks.Comment object at 0x10597bb60>
-    // <conv.chunks.Comment object at 0x10597bbf0>
-    // <conv.chunks.Comment object at 0x10597bd40>
+    // <conv.chunks.Comment object at 0x103ad7800>
+    // <conv.chunks.Comment object at 0x103ad7980>
+    // <conv.chunks.Comment object at 0x103ad79e0>
+    // <conv.chunks.Comment object at 0x103ad7b60>
+    // <conv.chunks.Comment object at 0x103ad7bf0>
+    // <conv.chunks.Comment object at 0x103ad7d40>
     lda(Enemy_PageLoc, x);
     sbc(Player_PageLoc);
-    // <conv.chunks.Comment object at 0x10597bf50>
-    rts();
+    // <conv.chunks.Comment object at 0x103ad7f50>
+    return 0;
     JMP(EnemyLanding);
 }
 
 int EnemyLanding() {
     JSR(InitVStf);
-    // <conv.chunks.Comment object at 0x1059841a0>
+    // <conv.chunks.Comment object at 0x103ae01a0>
     lda(Enemy_Y_Position, x);
     anda(0b11110000);
     ora(0b1000);
     sta(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1059843e0>
-    // <conv.chunks.Comment object at 0x105984500>
-    // <conv.chunks.Comment object at 0x105984620>
-    rts();
+    // <conv.chunks.Comment object at 0x103ae03e0>
+    // <conv.chunks.Comment object at 0x103ae0500>
+    // <conv.chunks.Comment object at 0x103ae0620>
+    return 0;
     JMP(SubtEnemyYPos);
 }
 
 int SubtEnemyYPos() {
     lda(Enemy_Y_Position, x);
     clc();
-    // <conv.chunks.Comment object at 0x105984830>
-    // <conv.chunks.Comment object at 0x1059849b0>
+    // <conv.chunks.Comment object at 0x103ae0830>
+    // <conv.chunks.Comment object at 0x103ae09b0>
     adc(0x3e);
     cmp(0x44);
-    rts();
+    return 0;
     JMP(EnemyJump);
 }
 
 int EnemyJump() {
     JSR(SubtEnemyYPos);
     BCC(DoSide);
-    // <conv.chunks.Comment object at 0x105984d40>
-    // <conv.chunks.Comment object at 0x105984e60>
+    // <conv.chunks.Comment object at 0x103ae0d40>
+    // <conv.chunks.Comment object at 0x103ae0e60>
     lda(Enemy_Y_Speed, x);
     clc();
-    // <conv.chunks.Comment object at 0x105985100>
+    // <conv.chunks.Comment object at 0x103ae1100>
     adc(0x2);
     cmp(0x3);
-    // <conv.chunks.Comment object at 0x1059851f0>
+    // <conv.chunks.Comment object at 0x103ae11f0>
     BCC(DoSide);
     JSR(ChkUnderEnemy);
     BEQ(DoSide);
     JSR(ChkForNonSolids);
     BEQ(DoSide);
     JSR(EnemyLanding);
-    // <conv.chunks.Comment object at 0x1059854c0>
-    // <conv.chunks.Comment object at 0x1059855e0>
-    // <conv.chunks.Comment object at 0x105985730>
-    // <conv.chunks.Comment object at 0x105985850>
-    // <conv.chunks.Comment object at 0x1059859a0>
+    // <conv.chunks.Comment object at 0x103ae14c0>
+    // <conv.chunks.Comment object at 0x103ae15e0>
+    // <conv.chunks.Comment object at 0x103ae1730>
+    // <conv.chunks.Comment object at 0x103ae1850>
+    // <conv.chunks.Comment object at 0x103ae19a0>
     lda(0xfd);
     sta(Enemy_Y_Speed, x);
     JMP(DoSide);
 }
 
 int DoSide() {
-    // <conv.chunks.Comment object at 0x105985b20>
-    // <conv.chunks.Comment object at 0x105985d00>
+    // <conv.chunks.Comment object at 0x103ae1b20>
+    // <conv.chunks.Comment object at 0x103ae1d00>
     JMP(DoEnemySideCheck);
     JMP(HammerBroBGColl);
 }
 
 int HammerBroBGColl() {
     JSR(ChkUnderEnemy);
-    // <conv.chunks.Comment object at 0x105985ee0>
+    // <conv.chunks.Comment object at 0x103ae1ee0>
     BEQ(NoUnderHammerBro);
     cmp(0x23);
-    // <conv.chunks.Comment object at 0x1059860f0>
+    // <conv.chunks.Comment object at 0x103ae20f0>
     BNE(UnderHammerBro);
     JMP(KillEnemyAboveBlock);
 }
@@ -18862,18 +18831,18 @@ int HammerBroBGColl() {
 int KillEnemyAboveBlock() {
     JSR(ShellOrBlockDefeat);
     lda(0xfc);
-    // <conv.chunks.Comment object at 0x105986330>
-    // <conv.chunks.Comment object at 0x105986450>
+    // <conv.chunks.Comment object at 0x103ae2330>
+    // <conv.chunks.Comment object at 0x103ae2450>
     sta(Enemy_Y_Speed, x);
-    rts();
+    return 0;
     JMP(UnderHammerBro);
 }
 
 int UnderHammerBro() {
     lda(EnemyFrameTimer, x);
     BNE(NoUnderHammerBro);
-    // <conv.chunks.Comment object at 0x105986750>
-    // <conv.chunks.Comment object at 0x1059868a0>
+    // <conv.chunks.Comment object at 0x103ae2750>
+    // <conv.chunks.Comment object at 0x103ae28a0>
     lda(Enemy_State, x);
     anda(0b10001000);
     sta(Enemy_State, x);
@@ -18885,10 +18854,10 @@ int UnderHammerBro() {
 int NoUnderHammerBro() {
     lda(Enemy_State, x);
     ora(0x1);
-    // <conv.chunks.Comment object at 0x105986fc0>
-    // <conv.chunks.Comment object at 0x105987110>
+    // <conv.chunks.Comment object at 0x103ae2fc0>
+    // <conv.chunks.Comment object at 0x103ae3110>
     sta(Enemy_State, x);
-    rts();
+    return 0;
     JMP(ChkUnderEnemy);
 }
 
@@ -18901,29 +18870,29 @@ int ChkUnderEnemy() {
 
 int ChkForNonSolids() {
     cmp(0x26);
-    // <conv.chunks.Comment object at 0x1059877a0>
+    // <conv.chunks.Comment object at 0x103ae37a0>
     BEQ(NSFnd);
     cmp(0xc2);
-    // <conv.chunks.Comment object at 0x1059879e0>
+    // <conv.chunks.Comment object at 0x103ae39e0>
     BEQ(NSFnd);
     cmp(0xc3);
-    // <conv.chunks.Comment object at 0x105987c20>
+    // <conv.chunks.Comment object at 0x103ae3c20>
     BEQ(NSFnd);
     cmp(0x5f);
-    // <conv.chunks.Comment object at 0x105987e60>
+    // <conv.chunks.Comment object at 0x103ae3e60>
     BEQ(NSFnd);
     cmp(0x60);
     JMP(NSFnd);
 }
 
 int NSFnd() {
-    rts();
+    return 0;
     JMP(FireballBGCollision);
 }
 
 int FireballBGCollision() {
     lda(Fireball_Y_Position, x);
-    // <conv.chunks.Comment object at 0x105990350>
+    // <conv.chunks.Comment object at 0x103aec350>
     cmp(0x18);
     BCC(ClearBounceFlag);
     JSR(BlockBufferChk_FBall);
@@ -18934,50 +18903,50 @@ int FireballBGCollision() {
     BMI(InitFireballExplode);
     lda(FireballBouncingFlag, x);
     BNE(InitFireballExplode);
-    // <conv.chunks.Comment object at 0x105990500>
-    // <conv.chunks.Comment object at 0x1059906b0>
-    // <conv.chunks.Comment object at 0x1059907d0>
-    // <conv.chunks.Comment object at 0x1059908f0>
-    // <conv.chunks.Comment object at 0x105990a10>
-    // <conv.chunks.Comment object at 0x105990b30>
-    // <conv.chunks.Comment object at 0x105990c80>
-    // <conv.chunks.Comment object at 0x105990da0>
-    // <conv.chunks.Comment object at 0x105990ef0>
+    // <conv.chunks.Comment object at 0x103aec500>
+    // <conv.chunks.Comment object at 0x103aec6b0>
+    // <conv.chunks.Comment object at 0x103aec7d0>
+    // <conv.chunks.Comment object at 0x103aec8f0>
+    // <conv.chunks.Comment object at 0x103aeca10>
+    // <conv.chunks.Comment object at 0x103aecb30>
+    // <conv.chunks.Comment object at 0x103aecc80>
+    // <conv.chunks.Comment object at 0x103aecda0>
+    // <conv.chunks.Comment object at 0x103aecef0>
     lda(0xfd);
     sta(Fireball_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x105991070>
+    // <conv.chunks.Comment object at 0x103aed070>
     lda(0x1);
     sta(FireballBouncingFlag, x);
-    // <conv.chunks.Comment object at 0x1059912b0>
+    // <conv.chunks.Comment object at 0x103aed2b0>
     lda(Fireball_Y_Position, x);
     anda(0xf8);
     sta(Fireball_Y_Position, x);
-    rts();
+    return 0;
     JMP(ClearBounceFlag);
 }
 
 int ClearBounceFlag() {
     lda(0x0);
     sta(FireballBouncingFlag, x);
-    rts();
+    return 0;
     JMP(InitFireballExplode);
 }
 
 int InitFireballExplode() {
     lda(0x80);
     sta(Fireball_State, x);
-    // <conv.chunks.Comment object at 0x105991d00>
+    // <conv.chunks.Comment object at 0x103aedd00>
     lda(Sfx_Bump);
     sta(Square1SoundQueue);
-    rts();
+    return 0;
     JMP(GetFireballBoundBox);
 }
 
 int GetFireballBoundBox() {
     txa();
     clc();
-    // <conv.chunks.Comment object at 0x1059923f0>
-    // <conv.chunks.Comment object at 0x105993f50>
+    // <conv.chunks.Comment object at 0x103aee3f0>
+    // <conv.chunks.Comment object at 0x103aeff50>
     adc(0x7);
     tax();
     ldy(0x2);
@@ -18988,8 +18957,8 @@ int GetFireballBoundBox() {
 int GetMiscBoundBox() {
     txa();
     clc();
-    // <conv.chunks.Comment object at 0x105998470>
-    // <conv.chunks.Comment object at 0x105998530>
+    // <conv.chunks.Comment object at 0x103af4470>
+    // <conv.chunks.Comment object at 0x103af4530>
     adc(0x9);
     tax();
     ldy(0x6);
@@ -18997,8 +18966,8 @@ int GetMiscBoundBox() {
 }
 
 int FBallB() {
-    // <conv.chunks.Comment object at 0x105998740>
-    // <conv.chunks.Comment object at 0x1059987d0>
+    // <conv.chunks.Comment object at 0x103af4740>
+    // <conv.chunks.Comment object at 0x103af47d0>
     JSR(BoundingBoxCore);
     JMP(CheckRightScreenBBox);
     JMP(GetEnemyBoundBox);
@@ -19006,17 +18975,17 @@ int FBallB() {
 
 int GetEnemyBoundBox() {
     ldy(0x48);
-    // <conv.chunks.Comment object at 0x105998b30>
+    // <conv.chunks.Comment object at 0x103af4b30>
     sty(0x0);
     ldy(0x44);
-    // <conv.chunks.Comment object at 0x105998bc0>
+    // <conv.chunks.Comment object at 0x103af4bc0>
     JMP(GetMaskedOffScrBits);
     JMP(SmallPlatformBoundBox);
 }
 
 int SmallPlatformBoundBox() {
     ldy(0x8);
-    // <conv.chunks.Comment object at 0x105998f80>
+    // <conv.chunks.Comment object at 0x103af4f80>
     sty(0x0);
     ldy(0x4);
     JMP(GetMaskedOffScrBits);
@@ -19025,17 +18994,17 @@ int SmallPlatformBoundBox() {
 int GetMaskedOffScrBits() {
     lda(Enemy_X_Position, x);
     sec();
-    // <conv.chunks.Comment object at 0x1059992e0>
-    // <conv.chunks.Comment object at 0x105999460>
+    // <conv.chunks.Comment object at 0x103af52e0>
+    // <conv.chunks.Comment object at 0x103af5460>
     sbc(ScreenLeft_X_Pos);
     sta(0x1);
     lda(Enemy_PageLoc, x);
     sbc(ScreenLeft_PageLoc);
     BMI(CMBits);
-    // <conv.chunks.Comment object at 0x105999610>
-    // <conv.chunks.Comment object at 0x1059996a0>
-    // <conv.chunks.Comment object at 0x105999850>
-    // <conv.chunks.Comment object at 0x105999970>
+    // <conv.chunks.Comment object at 0x103af5610>
+    // <conv.chunks.Comment object at 0x103af56a0>
+    // <conv.chunks.Comment object at 0x103af5850>
+    // <conv.chunks.Comment object at 0x103af5970>
     ora(0x1);
     BEQ(CMBits);
     ldy(0x0);
@@ -19043,9 +19012,9 @@ int GetMaskedOffScrBits() {
 }
 
 int CMBits() {
-    // <conv.chunks.Comment object at 0x105999ac0>
-    // <conv.chunks.Comment object at 0x105999d30>
-    // <conv.chunks.Comment object at 0x105999dc0>
+    // <conv.chunks.Comment object at 0x103af5ac0>
+    // <conv.chunks.Comment object at 0x103af5d30>
+    // <conv.chunks.Comment object at 0x103af5dc0>
     tya();
     anda(Enemy_OffscreenBits);
     sta(EnemyOffscrBitsMasked, x);
@@ -19066,8 +19035,8 @@ int LargePlatformBoundBox() {
 int SetupEOffsetFBBox() {
     txa();
     clc();
-    // <conv.chunks.Comment object at 0x10599a960>
-    // <conv.chunks.Comment object at 0x10599aa20>
+    // <conv.chunks.Comment object at 0x103af6960>
+    // <conv.chunks.Comment object at 0x103af6a20>
     adc(0x1);
     tax();
     ldy(0x1);
@@ -19078,18 +19047,18 @@ int SetupEOffsetFBBox() {
 
 int MoveBoundBoxOffscreen() {
     txa();
-    // <conv.chunks.Comment object at 0x10599aff0>
+    // <conv.chunks.Comment object at 0x103af6ff0>
     asl();
     asl();
     tay();
-    // <conv.chunks.Comment object at 0x10599b1d0>
+    // <conv.chunks.Comment object at 0x103af71d0>
     lda(0xff);
     sta(EnemyBoundingBoxCoord, y);
-    // <conv.chunks.Comment object at 0x10599b2c0>
+    // <conv.chunks.Comment object at 0x103af72c0>
     sta(((EnemyBoundingBoxCoord) + (1)), y);
     sta(((EnemyBoundingBoxCoord) + (2)), y);
     sta(((EnemyBoundingBoxCoord) + (3)), y);
-    rts();
+    return 0;
     JMP(BoundingBoxCore);
 }
 
@@ -19097,47 +19066,47 @@ int BoundingBoxCore() {
     stx(0x0);
     lda(SprObject_Rel_YPos, y);
     sta(0x2);
-    // <conv.chunks.Comment object at 0x10599bb30>
-    // <conv.chunks.Comment object at 0x10599bbc0>
-    // <conv.chunks.Comment object at 0x10599bda0>
+    // <conv.chunks.Comment object at 0x103af7b30>
+    // <conv.chunks.Comment object at 0x103af7bc0>
+    // <conv.chunks.Comment object at 0x103af7da0>
     lda(SprObject_Rel_XPos, y);
     sta(0x1);
     txa();
-    // <conv.chunks.Comment object at 0x1059a4080>
+    // <conv.chunks.Comment object at 0x103b00080>
     asl();
     asl();
     pha();
     tay();
     lda(SprObj_BoundBoxCtrl, x);
     asl();
-    // <conv.chunks.Comment object at 0x1059a4380>
-    // <conv.chunks.Comment object at 0x1059a4410>
-    // <conv.chunks.Comment object at 0x1059a4590>
+    // <conv.chunks.Comment object at 0x103b00380>
+    // <conv.chunks.Comment object at 0x103b00410>
+    // <conv.chunks.Comment object at 0x103b00590>
     asl();
     tax();
     lda(0x1);
     clc();
     adc(offsetof(G, BoundBoxCtrlData), x);
     sta(BoundingBox_UL_Corner, y);
-    // <conv.chunks.Comment object at 0x1059a4770>
-    // <conv.chunks.Comment object at 0x1059a4740>
-    // <conv.chunks.Comment object at 0x1059a4920>
-    // <conv.chunks.Comment object at 0x1059a4a70>
+    // <conv.chunks.Comment object at 0x103b00770>
+    // <conv.chunks.Comment object at 0x103b00740>
+    // <conv.chunks.Comment object at 0x103b00920>
+    // <conv.chunks.Comment object at 0x103b00a70>
     lda(0x1);
     clc();
     adc(((offsetof(G, BoundBoxCtrlData)) + (2)), x);
     sta(BoundingBox_LR_Corner, y);
     inx();
-    // <conv.chunks.Comment object at 0x1059a4d40>
-    // <conv.chunks.Comment object at 0x1059a4f50>
-    // <conv.chunks.Comment object at 0x1059a50d0>
+    // <conv.chunks.Comment object at 0x103b00d40>
+    // <conv.chunks.Comment object at 0x103b00f50>
+    // <conv.chunks.Comment object at 0x103b010d0>
     iny();
     lda(0x2);
     clc();
     adc(offsetof(G, BoundBoxCtrlData), x);
-    // <conv.chunks.Comment object at 0x1059a5220>
-    // <conv.chunks.Comment object at 0x1059a51f0>
-    // <conv.chunks.Comment object at 0x1059a53d0>
+    // <conv.chunks.Comment object at 0x103b01220>
+    // <conv.chunks.Comment object at 0x103b011f0>
+    // <conv.chunks.Comment object at 0x103b013d0>
     sta(BoundingBox_UL_Corner, y);
     lda(0x2);
     clc();
@@ -19146,26 +19115,26 @@ int BoundingBoxCore() {
     pla();
     tay();
     ldx(0x0);
-    // <conv.chunks.Comment object at 0x1059a57c0>
-    // <conv.chunks.Comment object at 0x1059a59d0>
-    // <conv.chunks.Comment object at 0x1059a5b50>
-    // <conv.chunks.Comment object at 0x1059a5c10>
-    // <conv.chunks.Comment object at 0x1059a5cd0>
-    rts();
+    // <conv.chunks.Comment object at 0x103b017c0>
+    // <conv.chunks.Comment object at 0x103b019d0>
+    // <conv.chunks.Comment object at 0x103b01b50>
+    // <conv.chunks.Comment object at 0x103b01c10>
+    // <conv.chunks.Comment object at 0x103b01cd0>
+    return 0;
     JMP(CheckRightScreenBBox);
 }
 
 int CheckRightScreenBBox() {
     lda(ScreenLeft_X_Pos);
     clc();
-    // <conv.chunks.Comment object at 0x1059a5e80>
-    // <conv.chunks.Comment object at 0x1059a5fd0>
+    // <conv.chunks.Comment object at 0x103b01e80>
+    // <conv.chunks.Comment object at 0x103b01fd0>
     adc(0x80);
     sta(0x2);
     lda(ScreenLeft_PageLoc);
     adc(0x0);
-    // <conv.chunks.Comment object at 0x1059a60c0>
-    // <conv.chunks.Comment object at 0x1059a6360>
+    // <conv.chunks.Comment object at 0x103b020c0>
+    // <conv.chunks.Comment object at 0x103b02360>
     sta(0x1);
     lda(SprObject_X_Position, x);
     cmp(0x2);
@@ -19182,26 +19151,26 @@ int CheckRightScreenBBox() {
 }
 
 int SORte() {
-    // <conv.chunks.Comment object at 0x1059a63f0>
-    // <conv.chunks.Comment object at 0x1059a66f0>
-    // <conv.chunks.Comment object at 0x1059a6780>
-    // <conv.chunks.Comment object at 0x1059a6960>
-    // <conv.chunks.Comment object at 0x1059a69f0>
-    // <conv.chunks.Comment object at 0x1059a6b70>
-    // <conv.chunks.Comment object at 0x1059a6cc0>
-    // <conv.chunks.Comment object at 0x1059a6e10>
-    // <conv.chunks.Comment object at 0x1059a6ea0>
-    // <conv.chunks.Comment object at 0x1059a7080>
-    // <conv.chunks.Comment object at 0x1059a71d0>
-    // <conv.chunks.Comment object at 0x1059a7320>
+    // <conv.chunks.Comment object at 0x103b023f0>
+    // <conv.chunks.Comment object at 0x103b026f0>
+    // <conv.chunks.Comment object at 0x103b02780>
+    // <conv.chunks.Comment object at 0x103b02960>
+    // <conv.chunks.Comment object at 0x103b029f0>
+    // <conv.chunks.Comment object at 0x103b02b70>
+    // <conv.chunks.Comment object at 0x103b02cc0>
+    // <conv.chunks.Comment object at 0x103b02e10>
+    // <conv.chunks.Comment object at 0x103b02ea0>
+    // <conv.chunks.Comment object at 0x103b03080>
+    // <conv.chunks.Comment object at 0x103b031d0>
+    // <conv.chunks.Comment object at 0x103b03320>
     sta(BoundingBox_DR_XPos, y);
     JMP(NoOfs);
 }
 
 int NoOfs() {
-    // <conv.chunks.Comment object at 0x1059a74d0>
+    // <conv.chunks.Comment object at 0x103b034d0>
     ldx(ObjectOffset);
-    rts();
+    return 0;
     JMP(CheckLeftScreenBBox);
 }
 
@@ -19210,10 +19179,10 @@ int CheckLeftScreenBBox() {
     BPL(NoOfs2);
     cmp(0xa0);
     BCC(NoOfs2);
-    // <conv.chunks.Comment object at 0x1059a7710>
-    // <conv.chunks.Comment object at 0x1059a7860>
-    // <conv.chunks.Comment object at 0x1059a79b0>
-    // <conv.chunks.Comment object at 0x1059a7a40>
+    // <conv.chunks.Comment object at 0x103b03710>
+    // <conv.chunks.Comment object at 0x103b03860>
+    // <conv.chunks.Comment object at 0x103b039b0>
+    // <conv.chunks.Comment object at 0x103b03a40>
     lda(0x0);
     ldx(BoundingBox_DR_XPos, y);
     BPL(SOLft);
@@ -19222,18 +19191,18 @@ int CheckLeftScreenBBox() {
 }
 
 int SOLft() {
-    // <conv.chunks.Comment object at 0x1059a7c80>
-    // <conv.chunks.Comment object at 0x1059a7e60>
-    // <conv.chunks.Comment object at 0x1059a7fb0>
-    // <conv.chunks.Comment object at 0x1059ac140>
+    // <conv.chunks.Comment object at 0x103b03c80>
+    // <conv.chunks.Comment object at 0x103b03e60>
+    // <conv.chunks.Comment object at 0x103b03fb0>
+    // <conv.chunks.Comment object at 0x103b08140>
     sta(BoundingBox_UL_XPos, y);
     JMP(NoOfs2);
 }
 
 int NoOfs2() {
-    // <conv.chunks.Comment object at 0x1059ac2f0>
+    // <conv.chunks.Comment object at 0x103b082f0>
     ldx(ObjectOffset);
-    rts();
+    return 0;
     JMP(PlayerCollisionCore);
 }
 
@@ -19244,7 +19213,7 @@ int PlayerCollisionCore() {
 
 int SprObjectCollisionCore() {
     sty(0x6);
-    // <conv.chunks.Comment object at 0x1059ac740>
+    // <conv.chunks.Comment object at 0x103b08740>
     lda(0x1);
     sta(0x7);
     JMP(CollisionCoreLoop);
@@ -19263,7 +19232,7 @@ int CollisionCoreLoop() {
     cmp(BoundingBox_UL_Corner, x);
     BCS(CollisionFound);
     ldy(0x6);
-    rts();
+    return 0;
     JMP(SecondBoxVerticalChk);
 }
 
@@ -19275,14 +19244,14 @@ int SecondBoxVerticalChk() {
     cmp(BoundingBox_UL_Corner, x);
     BCS(CollisionFound);
     ldy(0x6);
-    // <conv.chunks.Comment object at 0x1059ada00>
-    // <conv.chunks.Comment object at 0x1059adb50>
-    // <conv.chunks.Comment object at 0x1059adca0>
-    // <conv.chunks.Comment object at 0x1059addc0>
-    // <conv.chunks.Comment object at 0x1059adf10>
-    // <conv.chunks.Comment object at 0x1059ae060>
-    // <conv.chunks.Comment object at 0x1059ae1b0>
-    rts();
+    // <conv.chunks.Comment object at 0x103b09a00>
+    // <conv.chunks.Comment object at 0x103b09b50>
+    // <conv.chunks.Comment object at 0x103b09ca0>
+    // <conv.chunks.Comment object at 0x103b09dc0>
+    // <conv.chunks.Comment object at 0x103b09f10>
+    // <conv.chunks.Comment object at 0x103b0a060>
+    // <conv.chunks.Comment object at 0x103b0a1b0>
+    return 0;
     JMP(FirstBoxGreater);
 }
 
@@ -19294,13 +19263,13 @@ int FirstBoxGreater() {
     BEQ(CollisionFound);
     cmp(BoundingBox_LR_Corner, y);
     BCC(NoCollisionFound);
-    // <conv.chunks.Comment object at 0x1059ae360>
-    // <conv.chunks.Comment object at 0x1059ae4b0>
-    // <conv.chunks.Comment object at 0x1059ae5d0>
-    // <conv.chunks.Comment object at 0x1059ae720>
-    // <conv.chunks.Comment object at 0x1059ae840>
-    // <conv.chunks.Comment object at 0x1059ae960>
-    // <conv.chunks.Comment object at 0x1059aeab0>
+    // <conv.chunks.Comment object at 0x103b0a360>
+    // <conv.chunks.Comment object at 0x103b0a4b0>
+    // <conv.chunks.Comment object at 0x103b0a5d0>
+    // <conv.chunks.Comment object at 0x103b0a720>
+    // <conv.chunks.Comment object at 0x103b0a840>
+    // <conv.chunks.Comment object at 0x103b0a960>
+    // <conv.chunks.Comment object at 0x103b0aab0>
     BEQ(NoCollisionFound);
     lda(BoundingBox_LR_Corner, y);
     cmp(BoundingBox_UL_Corner, x);
@@ -19311,7 +19280,7 @@ int FirstBoxGreater() {
 int NoCollisionFound() {
     clc();
     ldy(0x6);
-    rts();
+    return 0;
     JMP(CollisionFound);
 }
 
@@ -19322,29 +19291,29 @@ int CollisionFound() {
     BPL(CollisionCoreLoop);
     sec();
     ldy(0x6);
-    // <conv.chunks.Comment object at 0x1059af3b0>
-    // <conv.chunks.Comment object at 0x1059af470>
-    // <conv.chunks.Comment object at 0x1059af530>
-    // <conv.chunks.Comment object at 0x1059af5c0>
-    // <conv.chunks.Comment object at 0x1059af770>
-    // <conv.chunks.Comment object at 0x1059af830>
-    rts();
+    // <conv.chunks.Comment object at 0x103b0b3b0>
+    // <conv.chunks.Comment object at 0x103b0b470>
+    // <conv.chunks.Comment object at 0x103b0b530>
+    // <conv.chunks.Comment object at 0x103b0b5c0>
+    // <conv.chunks.Comment object at 0x103b0b770>
+    // <conv.chunks.Comment object at 0x103b0b830>
+    return 0;
     JMP(BlockBufferChk_Enemy);
 }
 
 int BlockBufferChk_Enemy() {
     pha();
-    // <conv.chunks.Comment object at 0x1059af9e0>
-    // <conv.chunks.Comment object at 0x1059afa40>
-    // <conv.chunks.Comment object at 0x1059afaa0>
-    // <conv.chunks.Comment object at 0x1059afb30>
+    // <conv.chunks.Comment object at 0x103b0b9e0>
+    // <conv.chunks.Comment object at 0x103b0ba40>
+    // <conv.chunks.Comment object at 0x103b0baa0>
+    // <conv.chunks.Comment object at 0x103b0bb30>
     txa();
     clc();
-    // <conv.chunks.Comment object at 0x1059afc80>
+    // <conv.chunks.Comment object at 0x103b0bc80>
     adc(0x1);
     tax();
     pla();
-    // <conv.chunks.Comment object at 0x1059afec0>
+    // <conv.chunks.Comment object at 0x103b0bec0>
     JMP(BBChk_E);
     JMP(ResidualMiscObjectCode);
 }
@@ -19353,8 +19322,8 @@ int ResidualMiscObjectCode() {
     txa();
     clc();
     adc(0xd);
-    // <conv.chunks.Comment object at 0x1059b41a0>
-    // <conv.chunks.Comment object at 0x1059b4230>
+    // <conv.chunks.Comment object at 0x103b101a0>
+    // <conv.chunks.Comment object at 0x103b10230>
     tax();
     ldy(0x1b);
     JMP(ResJmpM);
@@ -19363,29 +19332,29 @@ int ResidualMiscObjectCode() {
 
 int BlockBufferChk_FBall() {
     ldy(0x1a);
-    // <conv.chunks.Comment object at 0x1059b4680>
+    // <conv.chunks.Comment object at 0x103b10680>
     txa();
     clc();
     adc(0x7);
-    // <conv.chunks.Comment object at 0x1059b48c0>
+    // <conv.chunks.Comment object at 0x103b108c0>
     tax();
     JMP(ResJmpM);
 }
 
 int ResJmpM() {
-    // <conv.chunks.Comment object at 0x1059b4a70>
+    // <conv.chunks.Comment object at 0x103b10a70>
     lda(0x0);
     JMP(BBChk_E);
 }
 
 int BBChk_E() {
-    // <conv.chunks.Comment object at 0x1059b4b60>
+    // <conv.chunks.Comment object at 0x103b10b60>
     JSR(BlockBufferCollision);
     ldx(ObjectOffset);
     cmp(0x0);
-    // <conv.chunks.Comment object at 0x1059b4d70>
-    // <conv.chunks.Comment object at 0x1059b4e90>
-    rts();
+    // <conv.chunks.Comment object at 0x103b10d70>
+    // <conv.chunks.Comment object at 0x103b10e90>
+    return 0;
     JMP(BlockBufferColli_Feet);
 }
 
@@ -19410,13 +19379,13 @@ int BlockBufferCollision() {
     sty(0x4);
     lda(offsetof(G, BlockBuffer_X_Adder), y);
     clc();
-    // <conv.chunks.Comment object at 0x1059b77d0>
-    // <conv.chunks.Comment object at 0x1059b7890>
-    // <conv.chunks.Comment object at 0x1059b7920>
-    // <conv.chunks.Comment object at 0x1059b7b00>
+    // <conv.chunks.Comment object at 0x103b137d0>
+    // <conv.chunks.Comment object at 0x103b13890>
+    // <conv.chunks.Comment object at 0x103b13920>
+    // <conv.chunks.Comment object at 0x103b13b00>
     adc(SprObject_X_Position, x);
     sta(0x5);
-    // <conv.chunks.Comment object at 0x1059b7ce0>
+    // <conv.chunks.Comment object at 0x103b13ce0>
     lda(SprObject_PageLoc, x);
     adc(0x0);
     anda(0x1);
@@ -19429,22 +19398,22 @@ int BlockBufferCollision() {
     JSR(GetBlockBufferAddr);
     ldy(0x4);
     lda(SprObject_Y_Position, x);
-    // <conv.chunks.Comment object at 0x1059b7ef0>
-    // <conv.chunks.Comment object at 0x1059b7f80>
-    // <conv.chunks.Comment object at 0x1059bc1a0>
-    // <conv.chunks.Comment object at 0x1059bc260>
-    // <conv.chunks.Comment object at 0x1059bc230>
-    // <conv.chunks.Comment object at 0x1059bc440>
-    // <conv.chunks.Comment object at 0x1059bc500>
-    // <conv.chunks.Comment object at 0x1059bc5c0>
-    // <conv.chunks.Comment object at 0x1059bc650>
-    // <conv.chunks.Comment object at 0x1059bc7a0>
-    // <conv.chunks.Comment object at 0x1059bc830>
+    // <conv.chunks.Comment object at 0x103b13ef0>
+    // <conv.chunks.Comment object at 0x103b13f80>
+    // <conv.chunks.Comment object at 0x103b181a0>
+    // <conv.chunks.Comment object at 0x103b18260>
+    // <conv.chunks.Comment object at 0x103b18230>
+    // <conv.chunks.Comment object at 0x103b18440>
+    // <conv.chunks.Comment object at 0x103b18500>
+    // <conv.chunks.Comment object at 0x103b185c0>
+    // <conv.chunks.Comment object at 0x103b18650>
+    // <conv.chunks.Comment object at 0x103b187a0>
+    // <conv.chunks.Comment object at 0x103b18830>
     clc();
     adc(offsetof(G, BlockBuffer_Y_Adder), y);
     anda(0b11110000);
-    // <conv.chunks.Comment object at 0x1059bca70>
-    // <conv.chunks.Comment object at 0x1059bcbc0>
+    // <conv.chunks.Comment object at 0x103b18a70>
+    // <conv.chunks.Comment object at 0x103b18bc0>
     sec();
     sbc(0x20);
     sta(0x2);
@@ -19460,35 +19429,35 @@ int BlockBufferCollision() {
 }
 
 int RetXC() {
-    // <conv.chunks.Comment object at 0x1059bcd70>
-    // <conv.chunks.Comment object at 0x1059bcec0>
-    // <conv.chunks.Comment object at 0x1059bce00>
-    // <conv.chunks.Comment object at 0x1059bd070>
-    // <conv.chunks.Comment object at 0x1059bd220>
-    // <conv.chunks.Comment object at 0x1059bd0d0>
-    // <conv.chunks.Comment object at 0x1059bd2b0>
-    // <conv.chunks.Comment object at 0x1059bd4f0>
-    // <conv.chunks.Comment object at 0x1059bd640>
-    // <conv.chunks.Comment object at 0x1059bd790>
-    // <conv.chunks.Comment object at 0x1059bd8e0>
+    // <conv.chunks.Comment object at 0x103b18d70>
+    // <conv.chunks.Comment object at 0x103b18ec0>
+    // <conv.chunks.Comment object at 0x103b18e00>
+    // <conv.chunks.Comment object at 0x103b19070>
+    // <conv.chunks.Comment object at 0x103b19220>
+    // <conv.chunks.Comment object at 0x103b190d0>
+    // <conv.chunks.Comment object at 0x103b192b0>
+    // <conv.chunks.Comment object at 0x103b194f0>
+    // <conv.chunks.Comment object at 0x103b19640>
+    // <conv.chunks.Comment object at 0x103b19790>
+    // <conv.chunks.Comment object at 0x103b198e0>
     lda(SprObject_X_Position, x);
     JMP(RetYC);
 }
 
 int RetYC() {
-    // <conv.chunks.Comment object at 0x1059bda90>
+    // <conv.chunks.Comment object at 0x103b19a90>
     anda(0b1111);
     sta(0x4);
     lda(0x3);
-    rts();
+    return 0;
     JMP(DrawVine);
 }
 
 int DrawVine() {
     sty(0x0);
     lda(Enemy_Rel_YPos);
-    // <conv.chunks.Comment object at 0x1059be0c0>
-    // <conv.chunks.Comment object at 0x1059be2d0>
+    // <conv.chunks.Comment object at 0x103b1a0c0>
+    // <conv.chunks.Comment object at 0x103b1a2d0>
     clc();
     adc(offsetof(G, VineYPosAdder), y);
     ldx(VineObjOffset, y);
@@ -19497,33 +19466,33 @@ int DrawVine() {
     JSR(SixSpriteStacker);
     lda(Enemy_Rel_XPos);
     sta(Sprite_X_Position, y);
-    // <conv.chunks.Comment object at 0x1059be4e0>
-    // <conv.chunks.Comment object at 0x1059be630>
-    // <conv.chunks.Comment object at 0x1059be780>
-    // <conv.chunks.Comment object at 0x1059be900>
-    // <conv.chunks.Comment object at 0x1059be990>
-    // <conv.chunks.Comment object at 0x1059beb10>
-    // <conv.chunks.Comment object at 0x1059bec30>
+    // <conv.chunks.Comment object at 0x103b1a4e0>
+    // <conv.chunks.Comment object at 0x103b1a630>
+    // <conv.chunks.Comment object at 0x103b1a780>
+    // <conv.chunks.Comment object at 0x103b1a900>
+    // <conv.chunks.Comment object at 0x103b1a990>
+    // <conv.chunks.Comment object at 0x103b1ab10>
+    // <conv.chunks.Comment object at 0x103b1ac30>
     sta(((Sprite_X_Position) + (8)), y);
     sta(((Sprite_X_Position) + (16)), y);
     clc();
     adc(0x6);
     sta(((Sprite_X_Position) + (4)), y);
     sta(((Sprite_X_Position) + (12)), y);
-    // <conv.chunks.Comment object at 0x1059bf1d0>
-    // <conv.chunks.Comment object at 0x1059bf260>
-    // <conv.chunks.Comment object at 0x1059bf500>
+    // <conv.chunks.Comment object at 0x103b1b1d0>
+    // <conv.chunks.Comment object at 0x103b1b260>
+    // <conv.chunks.Comment object at 0x103b1b500>
     sta(((Sprite_X_Position) + (20)), y);
     lda(0b100001);
     sta(Sprite_Attributes, y);
-    // <conv.chunks.Comment object at 0x1059bf8f0>
-    // <conv.chunks.Comment object at 0x1059bfa10>
+    // <conv.chunks.Comment object at 0x103b1b8f0>
+    // <conv.chunks.Comment object at 0x103b1ba10>
     sta(((Sprite_Attributes) + (8)), y);
     sta(((Sprite_Attributes) + (16)), y);
     ora(0b1000000);
     sta(((Sprite_Attributes) + (4)), y);
-    // <conv.chunks.Comment object at 0x1059bff20>
-    // <conv.chunks.Comment object at 0x1059cc080>
+    // <conv.chunks.Comment object at 0x103b1bf20>
+    // <conv.chunks.Comment object at 0x103b28080>
     sta(((Sprite_Attributes) + (12)), y);
     sta(((Sprite_Attributes) + (20)), y);
     ldx(0x5);
@@ -19531,12 +19500,12 @@ int DrawVine() {
 }
 
 int VineTL() {
-    // <conv.chunks.Comment object at 0x1059cc650>
-    // <conv.chunks.Comment object at 0x1059cc6e0>
+    // <conv.chunks.Comment object at 0x103b28650>
+    // <conv.chunks.Comment object at 0x103b286e0>
     lda(0xe1);
     sta(Sprite_Tilenumber, y);
     iny();
-    // <conv.chunks.Comment object at 0x1059cca40>
+    // <conv.chunks.Comment object at 0x103b28a40>
     iny();
     iny();
     iny();
@@ -19545,53 +19514,53 @@ int VineTL() {
     ldy(0x2);
     lda(0x0);
     BNE(SkpVTop);
-    // <conv.chunks.Comment object at 0x1059cccb0>
-    // <conv.chunks.Comment object at 0x1059ccd40>
-    // <conv.chunks.Comment object at 0x1059ccec0>
-    // <conv.chunks.Comment object at 0x1059cce90>
-    // <conv.chunks.Comment object at 0x1059cd070>
+    // <conv.chunks.Comment object at 0x103b28cb0>
+    // <conv.chunks.Comment object at 0x103b28d40>
+    // <conv.chunks.Comment object at 0x103b28ec0>
+    // <conv.chunks.Comment object at 0x103b28e90>
+    // <conv.chunks.Comment object at 0x103b29070>
     lda(0xe0);
     sta(Sprite_Tilenumber, y);
     JMP(SkpVTop);
 }
 
 int SkpVTop() {
-    // <conv.chunks.Comment object at 0x1059cd280>
-    // <conv.chunks.Comment object at 0x1059cd460>
+    // <conv.chunks.Comment object at 0x103b29280>
+    // <conv.chunks.Comment object at 0x103b29460>
     ldx(0x0);
     JMP(ChkFTop);
 }
 
 int ChkFTop() {
-    // <conv.chunks.Comment object at 0x1059cd550>
+    // <conv.chunks.Comment object at 0x103b29550>
     lda(VineStart_Y_Position);
     sec();
     sbc(Sprite_Y_Position, y);
     cmp(0x64);
     BCC(NextVSp);
-    // <conv.chunks.Comment object at 0x1059cd7f0>
-    // <conv.chunks.Comment object at 0x1059cd940>
-    // <conv.chunks.Comment object at 0x1059cd9d0>
+    // <conv.chunks.Comment object at 0x103b297f0>
+    // <conv.chunks.Comment object at 0x103b29940>
+    // <conv.chunks.Comment object at 0x103b299d0>
     lda(0xf8);
     sta(Sprite_Y_Position, y);
     JMP(NextVSp);
 }
 
 int NextVSp() {
-    // <conv.chunks.Comment object at 0x1059cdc10>
-    // <conv.chunks.Comment object at 0x1059cddf0>
+    // <conv.chunks.Comment object at 0x103b29c10>
+    // <conv.chunks.Comment object at 0x103b29df0>
     iny();
     iny();
     iny();
     iny();
     inx();
     cpx(0x6);
-    // <conv.chunks.Comment object at 0x1059ce0f0>
-    // <conv.chunks.Comment object at 0x1059ce180>
+    // <conv.chunks.Comment object at 0x103b2a0f0>
+    // <conv.chunks.Comment object at 0x103b2a180>
     BNE(ChkFTop);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x1059ce3f0>
-    rts();
+    // <conv.chunks.Comment object at 0x103b2a3f0>
+    return 0;
     JMP(SixSpriteStacker);
 }
 
@@ -19601,30 +19570,30 @@ int SixSpriteStacker() {
 }
 
 int StkLp() {
-    // <conv.chunks.Comment object at 0x1059ce5a0>
-    // <conv.chunks.Comment object at 0x1059ce630>
+    // <conv.chunks.Comment object at 0x103b2a5a0>
+    // <conv.chunks.Comment object at 0x103b2a630>
     sta(Sprite_Data, y);
     clc();
     adc(0x8);
-    // <conv.chunks.Comment object at 0x1059ce900>
+    // <conv.chunks.Comment object at 0x103b2a900>
     iny();
     iny();
-    // <conv.chunks.Comment object at 0x1059ceae0>
+    // <conv.chunks.Comment object at 0x103b2aae0>
     iny();
     iny();
     dex();
     BNE(StkLp);
     ldy(0x2);
-    // <conv.chunks.Comment object at 0x1059cecc0>
-    // <conv.chunks.Comment object at 0x1059ced50>
-    // <conv.chunks.Comment object at 0x1059ceed0>
-    rts();
+    // <conv.chunks.Comment object at 0x103b2acc0>
+    // <conv.chunks.Comment object at 0x103b2ad50>
+    // <conv.chunks.Comment object at 0x103b2aed0>
+    return 0;
     JMP(DrawHammer);
 }
 
 int DrawHammer() {
     ldy(Misc_SprDataOffset, x);
-    // <conv.chunks.Comment object at 0x1059cfb60>
+    // <conv.chunks.Comment object at 0x103b2bb60>
     lda(TimerControl);
     BNE(ForceHPose);
     lda(Misc_State, x);
@@ -19635,23 +19604,23 @@ int DrawHammer() {
 }
 
 int ForceHPose() {
-    // <conv.chunks.Comment object at 0x1059d4440>
-    // <conv.chunks.Comment object at 0x1059d4560>
-    // <conv.chunks.Comment object at 0x1059d46b0>
-    // <conv.chunks.Comment object at 0x1059d47d0>
-    // <conv.chunks.Comment object at 0x1059d4860>
-    // <conv.chunks.Comment object at 0x1059d4a10>
+    // <conv.chunks.Comment object at 0x103b30440>
+    // <conv.chunks.Comment object at 0x103b30560>
+    // <conv.chunks.Comment object at 0x103b306b0>
+    // <conv.chunks.Comment object at 0x103b307d0>
+    // <conv.chunks.Comment object at 0x103b30860>
+    // <conv.chunks.Comment object at 0x103b30a10>
     ldx(0x0);
     BEQ(RenderH);
     JMP(GetHPose);
 }
 
 int GetHPose() {
-    // <conv.chunks.Comment object at 0x1059d4ad0>
-    // <conv.chunks.Comment object at 0x1059d4cb0>
+    // <conv.chunks.Comment object at 0x103b30ad0>
+    // <conv.chunks.Comment object at 0x103b30cb0>
     lda(FrameCounter);
     lsr();
-    // <conv.chunks.Comment object at 0x1059d4e30>
+    // <conv.chunks.Comment object at 0x103b30e30>
     lsr();
     anda(0b11);
     tax();
@@ -19659,62 +19628,62 @@ int GetHPose() {
 }
 
 int RenderH() {
-    // <conv.chunks.Comment object at 0x1059d4f50>
-    // <conv.chunks.Comment object at 0x1059d50a0>
-    // <conv.chunks.Comment object at 0x1059d5130>
+    // <conv.chunks.Comment object at 0x103b30f50>
+    // <conv.chunks.Comment object at 0x103b310a0>
+    // <conv.chunks.Comment object at 0x103b31130>
     lda(Misc_Rel_YPos);
     clc();
     adc(offsetof(G, FirstSprYPos), x);
     sta(Sprite_Y_Position, y);
-    // <conv.chunks.Comment object at 0x1059d5340>
-    // <conv.chunks.Comment object at 0x1059d5490>
+    // <conv.chunks.Comment object at 0x103b31340>
+    // <conv.chunks.Comment object at 0x103b31490>
     clc();
     adc(offsetof(G, SecondSprYPos), x);
     sta(((Sprite_Y_Position) + (4)), y);
     lda(Misc_Rel_XPos);
-    // <conv.chunks.Comment object at 0x1059d5670>
-    // <conv.chunks.Comment object at 0x1059d57c0>
-    // <conv.chunks.Comment object at 0x1059d59d0>
+    // <conv.chunks.Comment object at 0x103b31670>
+    // <conv.chunks.Comment object at 0x103b317c0>
+    // <conv.chunks.Comment object at 0x103b319d0>
     clc();
     adc(offsetof(G, FirstSprXPos), x);
     sta(Sprite_X_Position, y);
-    // <conv.chunks.Comment object at 0x1059d5b80>
-    // <conv.chunks.Comment object at 0x1059d5cd0>
+    // <conv.chunks.Comment object at 0x103b31b80>
+    // <conv.chunks.Comment object at 0x103b31cd0>
     clc();
     adc(offsetof(G, SecondSprXPos), x);
     sta(((Sprite_X_Position) + (4)), y);
-    // <conv.chunks.Comment object at 0x1059d5eb0>
-    // <conv.chunks.Comment object at 0x1059d6000>
+    // <conv.chunks.Comment object at 0x103b31eb0>
+    // <conv.chunks.Comment object at 0x103b32000>
     lda(offsetof(G, FirstSprTilenum), x);
     sta(Sprite_Tilenumber, y);
-    // <conv.chunks.Comment object at 0x1059d6330>
+    // <conv.chunks.Comment object at 0x103b32330>
     lda(offsetof(G, SecondSprTilenum), x);
     sta(((Sprite_Tilenumber) + (4)), y);
-    // <conv.chunks.Comment object at 0x1059d65a0>
+    // <conv.chunks.Comment object at 0x103b325a0>
     lda(offsetof(G, HammerSprAttrib), x);
     sta(Sprite_Attributes, y);
     sta(((Sprite_Attributes) + (4)), y);
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x1059d68d0>
-    // <conv.chunks.Comment object at 0x1059d6a20>
-    // <conv.chunks.Comment object at 0x1059d6c30>
+    // <conv.chunks.Comment object at 0x103b328d0>
+    // <conv.chunks.Comment object at 0x103b32a20>
+    // <conv.chunks.Comment object at 0x103b32c30>
     lda(Misc_OffscreenBits);
     anda(0b11111100);
     BEQ(NoHOffscr);
-    // <conv.chunks.Comment object at 0x1059d6e40>
-    // <conv.chunks.Comment object at 0x1059d6f60>
+    // <conv.chunks.Comment object at 0x103b32e40>
+    // <conv.chunks.Comment object at 0x103b32f60>
     lda(0x0);
     sta(Misc_State, x);
-    // <conv.chunks.Comment object at 0x1059d70e0>
+    // <conv.chunks.Comment object at 0x103b330e0>
     lda(0xf8);
     JSR(DumpTwoSpr);
     JMP(NoHOffscr);
 }
 
 int NoHOffscr() {
-    // <conv.chunks.Comment object at 0x1059d7320>
-    // <conv.chunks.Comment object at 0x1059d7500>
-    rts();
+    // <conv.chunks.Comment object at 0x103b33320>
+    // <conv.chunks.Comment object at 0x103b33500>
+    return 0;
     JMP(FlagpoleGfxHandler);
 }
 
@@ -19722,14 +19691,14 @@ int FlagpoleGfxHandler() {
     ldy(Enemy_SprDataOffset, x);
     lda(Enemy_Rel_XPos);
     sta(Sprite_X_Position, y);
-    // <conv.chunks.Comment object at 0x1059d7740>
-    // <conv.chunks.Comment object at 0x1059d7e60>
-    // <conv.chunks.Comment object at 0x1059d7f80>
+    // <conv.chunks.Comment object at 0x103b33740>
+    // <conv.chunks.Comment object at 0x103b33e60>
+    // <conv.chunks.Comment object at 0x103b33f80>
     clc();
     adc(0x8);
     sta(((Sprite_X_Position) + (4)), y);
-    // <conv.chunks.Comment object at 0x1059e41a0>
-    // <conv.chunks.Comment object at 0x1059e4230>
+    // <conv.chunks.Comment object at 0x103b401a0>
+    // <conv.chunks.Comment object at 0x103b40230>
     sta(((Sprite_X_Position) + (8)), y);
     clc();
     adc(0xc);
@@ -19740,48 +19709,48 @@ int FlagpoleGfxHandler() {
     sta(((Sprite_Y_Position) + (8)), y);
     lda(FlagpoleFNum_Y_Pos);
     sta(0x2);
-    // <conv.chunks.Comment object at 0x1059e4740>
-    // <conv.chunks.Comment object at 0x1059e4890>
-    // <conv.chunks.Comment object at 0x1059e4920>
-    // <conv.chunks.Comment object at 0x1059e4ad0>
-    // <conv.chunks.Comment object at 0x1059e4bf0>
-    // <conv.chunks.Comment object at 0x1059e4c80>
-    // <conv.chunks.Comment object at 0x1059e4f20>
-    // <conv.chunks.Comment object at 0x1059e5070>
+    // <conv.chunks.Comment object at 0x103b40740>
+    // <conv.chunks.Comment object at 0x103b40890>
+    // <conv.chunks.Comment object at 0x103b40920>
+    // <conv.chunks.Comment object at 0x103b40ad0>
+    // <conv.chunks.Comment object at 0x103b40bf0>
+    // <conv.chunks.Comment object at 0x103b40c80>
+    // <conv.chunks.Comment object at 0x103b40f20>
+    // <conv.chunks.Comment object at 0x103b41070>
     lda(0x1);
     sta(0x3);
     sta(0x4);
     sta(Sprite_Attributes, y);
-    // <conv.chunks.Comment object at 0x1059e5280>
-    // <conv.chunks.Comment object at 0x1059e51c0>
-    // <conv.chunks.Comment object at 0x1059e5430>
+    // <conv.chunks.Comment object at 0x103b41280>
+    // <conv.chunks.Comment object at 0x103b411c0>
+    // <conv.chunks.Comment object at 0x103b41430>
     sta(((Sprite_Attributes) + (4)), y);
     sta(((Sprite_Attributes) + (8)), y);
     lda(0x7e);
     sta(Sprite_Tilenumber, y);
     sta(((Sprite_Tilenumber) + (8)), y);
-    // <conv.chunks.Comment object at 0x1059e5a00>
-    // <conv.chunks.Comment object at 0x1059e5be0>
+    // <conv.chunks.Comment object at 0x103b41a00>
+    // <conv.chunks.Comment object at 0x103b41be0>
     lda(0x7f);
     sta(((Sprite_Tilenumber) + (4)), y);
     lda(FlagpoleCollisionYPos);
     BEQ(ChkFlagOffscreen);
-    // <conv.chunks.Comment object at 0x1059e5e50>
-    // <conv.chunks.Comment object at 0x1059e60f0>
-    // <conv.chunks.Comment object at 0x1059e6210>
+    // <conv.chunks.Comment object at 0x103b41e50>
+    // <conv.chunks.Comment object at 0x103b420f0>
+    // <conv.chunks.Comment object at 0x103b42210>
     tya();
     clc();
-    // <conv.chunks.Comment object at 0x1059e63f0>
+    // <conv.chunks.Comment object at 0x103b423f0>
     adc(0xc);
     tay();
     lda(FlagpoleScore);
     asl();
-    // <conv.chunks.Comment object at 0x1059e65a0>
-    // <conv.chunks.Comment object at 0x1059e6630>
-    // <conv.chunks.Comment object at 0x1059e6780>
+    // <conv.chunks.Comment object at 0x103b425a0>
+    // <conv.chunks.Comment object at 0x103b42630>
+    // <conv.chunks.Comment object at 0x103b42780>
     tax();
     lda(offsetof(G, FlagpoleScoreNumTiles), x);
-    // <conv.chunks.Comment object at 0x1059e68a0>
+    // <conv.chunks.Comment object at 0x103b428a0>
     sta(0x0);
     lda(((offsetof(G, FlagpoleScoreNumTiles)) + (1)), x);
     JSR(DrawOneSpriteRow);
@@ -19820,13 +19789,13 @@ int DumpThreeSpr() {
 
 int DumpTwoSpr() {
     sta(((Sprite_Data) + (4)), y);
-    // <conv.chunks.Comment object at 0x1059e7e30>
+    // <conv.chunks.Comment object at 0x103b43e30>
     sta(Sprite_Data, y);
     JMP(ExitDumpSpr);
 }
 
 int ExitDumpSpr() {
-    rts();
+    return 0;
     JMP(DrawLargePlatform);
 }
 
@@ -19835,23 +19804,23 @@ int DrawLargePlatform() {
     sty(0x2);
     iny();
     iny();
-    // <conv.chunks.Comment object at 0x1059f02c0>
-    // <conv.chunks.Comment object at 0x1059f0440>
-    // <conv.chunks.Comment object at 0x1059f0410>
-    // <conv.chunks.Comment object at 0x1059f0620>
+    // <conv.chunks.Comment object at 0x103b4c2c0>
+    // <conv.chunks.Comment object at 0x103b4c440>
+    // <conv.chunks.Comment object at 0x103b4c410>
+    // <conv.chunks.Comment object at 0x103b4c620>
     iny();
     lda(Enemy_Rel_XPos);
     JSR(SixSpriteStacker);
-    // <conv.chunks.Comment object at 0x1059f0740>
-    // <conv.chunks.Comment object at 0x1059f0860>
+    // <conv.chunks.Comment object at 0x103b4c740>
+    // <conv.chunks.Comment object at 0x103b4c860>
     ldx(ObjectOffset);
     lda(Enemy_Y_Position, x);
     JSR(DumpFourSpr);
-    // <conv.chunks.Comment object at 0x1059f0a70>
-    // <conv.chunks.Comment object at 0x1059f0bc0>
+    // <conv.chunks.Comment object at 0x103b4ca70>
+    // <conv.chunks.Comment object at 0x103b4cbc0>
     ldy(AreaType);
     cpy(0x3);
-    // <conv.chunks.Comment object at 0x1059f0dd0>
+    // <conv.chunks.Comment object at 0x103b4cdd0>
     BEQ(ShrinkPlatform);
     ldy(SecondaryHardMode);
     BEQ(SetLast2Platform);
@@ -19868,10 +19837,10 @@ int SetLast2Platform() {
     sta(((Sprite_Y_Position) + (16)), y);
     sta(((Sprite_Y_Position) + (20)), y);
     lda(0x5b);
-    // <conv.chunks.Comment object at 0x1059f13a0>
-    // <conv.chunks.Comment object at 0x1059f14f0>
-    // <conv.chunks.Comment object at 0x1059f1700>
-    // <conv.chunks.Comment object at 0x1059f1910>
+    // <conv.chunks.Comment object at 0x103b4d3a0>
+    // <conv.chunks.Comment object at 0x103b4d4f0>
+    // <conv.chunks.Comment object at 0x103b4d700>
+    // <conv.chunks.Comment object at 0x103b4d910>
     ldx(CloudTypeOverride);
     BEQ(SetPlatformTilenum);
     lda(0x75);
@@ -19887,109 +19856,109 @@ int SetPlatformTilenum() {
     JSR(DumpSixSpr);
     inx();
     JSR(GetXOffscreenBits);
-    // <conv.chunks.Comment object at 0x1059f1d90>
-    // <conv.chunks.Comment object at 0x1059f1ee0>
-    // <conv.chunks.Comment object at 0x1059f1f70>
-    // <conv.chunks.Comment object at 0x1059f2090>
-    // <conv.chunks.Comment object at 0x1059f21e0>
-    // <conv.chunks.Comment object at 0x1059f2270>
-    // <conv.chunks.Comment object at 0x1059f23c0>
-    // <conv.chunks.Comment object at 0x1059f2450>
+    // <conv.chunks.Comment object at 0x103b4dd90>
+    // <conv.chunks.Comment object at 0x103b4dee0>
+    // <conv.chunks.Comment object at 0x103b4df70>
+    // <conv.chunks.Comment object at 0x103b4e090>
+    // <conv.chunks.Comment object at 0x103b4e1e0>
+    // <conv.chunks.Comment object at 0x103b4e270>
+    // <conv.chunks.Comment object at 0x103b4e3c0>
+    // <conv.chunks.Comment object at 0x103b4e450>
     dex();
     ldy(Enemy_SprDataOffset, x);
     asl();
     pha();
-    // <conv.chunks.Comment object at 0x1059f2600>
-    // <conv.chunks.Comment object at 0x1059f2780>
-    // <conv.chunks.Comment object at 0x1059f2840>
+    // <conv.chunks.Comment object at 0x103b4e600>
+    // <conv.chunks.Comment object at 0x103b4e780>
+    // <conv.chunks.Comment object at 0x103b4e840>
     BCC(SChk2);
     lda(0xf8);
-    // <conv.chunks.Comment object at 0x1059f29f0>
+    // <conv.chunks.Comment object at 0x103b4e9f0>
     sta(Sprite_Y_Position, y);
     JMP(SChk2);
 }
 
 int SChk2() {
-    // <conv.chunks.Comment object at 0x1059f2c30>
+    // <conv.chunks.Comment object at 0x103b4ec30>
     pla();
     asl();
     pha();
-    // <conv.chunks.Comment object at 0x1059f2d80>
-    // <conv.chunks.Comment object at 0x1059f2e40>
+    // <conv.chunks.Comment object at 0x103b4ed80>
+    // <conv.chunks.Comment object at 0x103b4ee40>
     BCC(SChk3);
     lda(0xf8);
-    // <conv.chunks.Comment object at 0x1059f2ff0>
+    // <conv.chunks.Comment object at 0x103b4eff0>
     sta(((Sprite_Y_Position) + (4)), y);
     JMP(SChk3);
 }
 
 int SChk3() {
-    // <conv.chunks.Comment object at 0x1059f32f0>
+    // <conv.chunks.Comment object at 0x103b4f2f0>
     pla();
     asl();
     pha();
-    // <conv.chunks.Comment object at 0x1059f3440>
-    // <conv.chunks.Comment object at 0x1059f3500>
+    // <conv.chunks.Comment object at 0x103b4f440>
+    // <conv.chunks.Comment object at 0x103b4f500>
     BCC(SChk4);
     lda(0xf8);
-    // <conv.chunks.Comment object at 0x1059f36b0>
+    // <conv.chunks.Comment object at 0x103b4f6b0>
     sta(((Sprite_Y_Position) + (8)), y);
     JMP(SChk4);
 }
 
 int SChk4() {
-    // <conv.chunks.Comment object at 0x1059f39b0>
+    // <conv.chunks.Comment object at 0x103b4f9b0>
     pla();
     asl();
     pha();
-    // <conv.chunks.Comment object at 0x1059f3b00>
-    // <conv.chunks.Comment object at 0x1059f3bc0>
+    // <conv.chunks.Comment object at 0x103b4fb00>
+    // <conv.chunks.Comment object at 0x103b4fbc0>
     BCC(SChk5);
     lda(0xf8);
-    // <conv.chunks.Comment object at 0x1059f3d70>
+    // <conv.chunks.Comment object at 0x103b4fd70>
     sta(((Sprite_Y_Position) + (12)), y);
     JMP(SChk5);
 }
 
 int SChk5() {
-    // <conv.chunks.Comment object at 0x1059f80b0>
+    // <conv.chunks.Comment object at 0x103b540b0>
     pla();
     asl();
     pha();
-    // <conv.chunks.Comment object at 0x1059f8200>
-    // <conv.chunks.Comment object at 0x1059f82c0>
+    // <conv.chunks.Comment object at 0x103b54200>
+    // <conv.chunks.Comment object at 0x103b542c0>
     BCC(SChk6);
     lda(0xf8);
-    // <conv.chunks.Comment object at 0x1059f8470>
+    // <conv.chunks.Comment object at 0x103b54470>
     sta(((Sprite_Y_Position) + (16)), y);
     JMP(SChk6);
 }
 
 int SChk6() {
-    // <conv.chunks.Comment object at 0x1059f8770>
+    // <conv.chunks.Comment object at 0x103b54770>
     pla();
     asl();
     BCC(SLChk);
-    // <conv.chunks.Comment object at 0x1059f88c0>
-    // <conv.chunks.Comment object at 0x1059f8950>
+    // <conv.chunks.Comment object at 0x103b548c0>
+    // <conv.chunks.Comment object at 0x103b54950>
     lda(0xf8);
     sta(((Sprite_Y_Position) + (20)), y);
     JMP(SLChk);
 }
 
 int SLChk() {
-    // <conv.chunks.Comment object at 0x1059f8b00>
-    // <conv.chunks.Comment object at 0x1059f8da0>
+    // <conv.chunks.Comment object at 0x103b54b00>
+    // <conv.chunks.Comment object at 0x103b54da0>
     lda(Enemy_OffscreenBits);
     asl();
-    // <conv.chunks.Comment object at 0x1059f8f50>
+    // <conv.chunks.Comment object at 0x103b54f50>
     BCC(ExDLPl);
     JSR(MoveSixSpritesOffscreen);
     JMP(ExDLPl);
 }
 
 int ExDLPl() {
-    rts();
+    return 0;
     JMP(DrawFloateyNumber_Coin);
 }
 
@@ -20002,32 +19971,32 @@ int DrawFloateyNumber_Coin() {
 }
 
 int NotRsNum() {
-    // <conv.chunks.Comment object at 0x1059f9370>
-    // <conv.chunks.Comment object at 0x1059f94c0>
-    // <conv.chunks.Comment object at 0x1059f9550>
-    // <conv.chunks.Comment object at 0x1059f9670>
-    // <conv.chunks.Comment object at 0x1059f97c0>
+    // <conv.chunks.Comment object at 0x103b55370>
+    // <conv.chunks.Comment object at 0x103b554c0>
+    // <conv.chunks.Comment object at 0x103b55550>
+    // <conv.chunks.Comment object at 0x103b55670>
+    // <conv.chunks.Comment object at 0x103b557c0>
     lda(Misc_Y_Position, x);
     JSR(DumpTwoSpr);
     lda(Misc_Rel_XPos);
     sta(Sprite_X_Position, y);
-    // <conv.chunks.Comment object at 0x1059f9940>
-    // <conv.chunks.Comment object at 0x1059f9a60>
-    // <conv.chunks.Comment object at 0x1059f9b80>
+    // <conv.chunks.Comment object at 0x103b55940>
+    // <conv.chunks.Comment object at 0x103b55a60>
+    // <conv.chunks.Comment object at 0x103b55b80>
     clc();
     adc(0x8);
     sta(((Sprite_X_Position) + (4)), y);
-    // <conv.chunks.Comment object at 0x1059f9d60>
-    // <conv.chunks.Comment object at 0x1059f9df0>
+    // <conv.chunks.Comment object at 0x103b55d60>
+    // <conv.chunks.Comment object at 0x103b55df0>
     lda(0x2);
     sta(Sprite_Attributes, y);
-    // <conv.chunks.Comment object at 0x1059fa0f0>
+    // <conv.chunks.Comment object at 0x103b560f0>
     sta(((Sprite_Attributes) + (4)), y);
     lda(0xf7);
     sta(Sprite_Tilenumber, y);
     lda(0xfb);
-    // <conv.chunks.Comment object at 0x1059fa510>
-    // <conv.chunks.Comment object at 0x1059fa6f0>
+    // <conv.chunks.Comment object at 0x103b56510>
+    // <conv.chunks.Comment object at 0x103b566f0>
     sta(((Sprite_Tilenumber) + (4)), y);
     JMP(ExJCGfx);
     JMP(JCoinGfxHandler);
@@ -20040,19 +20009,19 @@ int JCoinGfxHandler() {
     BCS(DrawFloateyNumber_Coin);
     lda(Misc_Y_Position, x);
     sta(Sprite_Y_Position, y);
-    // <conv.chunks.Comment object at 0x1059fabd0>
-    // <conv.chunks.Comment object at 0x1059faf30>
-    // <conv.chunks.Comment object at 0x1059fb080>
-    // <conv.chunks.Comment object at 0x1059fb110>
-    // <conv.chunks.Comment object at 0x1059fb2c0>
-    // <conv.chunks.Comment object at 0x1059fb410>
+    // <conv.chunks.Comment object at 0x103b56bd0>
+    // <conv.chunks.Comment object at 0x103b56f30>
+    // <conv.chunks.Comment object at 0x103b57080>
+    // <conv.chunks.Comment object at 0x103b57110>
+    // <conv.chunks.Comment object at 0x103b572c0>
+    // <conv.chunks.Comment object at 0x103b57410>
     clc();
     adc(0x8);
     sta(((Sprite_Y_Position) + (4)), y);
     lda(Misc_Rel_XPos);
-    // <conv.chunks.Comment object at 0x1059fb5f0>
-    // <conv.chunks.Comment object at 0x1059fb680>
-    // <conv.chunks.Comment object at 0x1059fb920>
+    // <conv.chunks.Comment object at 0x103b575f0>
+    // <conv.chunks.Comment object at 0x103b57680>
+    // <conv.chunks.Comment object at 0x103b57920>
     sta(Sprite_X_Position, y);
     sta(((Sprite_X_Position) + (4)), y);
     lda(FrameCounter);
@@ -20063,18 +20032,18 @@ int JCoinGfxHandler() {
     iny();
     JSR(DumpTwoSpr);
     dey();
-    // <conv.chunks.Comment object at 0x1059fbb60>
-    // <conv.chunks.Comment object at 0x1059fbd70>
-    // <conv.chunks.Comment object at 0x1059fbec0>
-    // <conv.chunks.Comment object at 0x1059fbf50>
-    // <conv.chunks.Comment object at 0x105a000e0>
-    // <conv.chunks.Comment object at 0x105a00170>
-    // <conv.chunks.Comment object at 0x105a002f0>
-    // <conv.chunks.Comment object at 0x105a00380>
-    // <conv.chunks.Comment object at 0x105a004d0>
+    // <conv.chunks.Comment object at 0x103b57b60>
+    // <conv.chunks.Comment object at 0x103b57d70>
+    // <conv.chunks.Comment object at 0x103b57ec0>
+    // <conv.chunks.Comment object at 0x103b57f50>
+    // <conv.chunks.Comment object at 0x103b5c0e0>
+    // <conv.chunks.Comment object at 0x103b5c170>
+    // <conv.chunks.Comment object at 0x103b5c2f0>
+    // <conv.chunks.Comment object at 0x103b5c380>
+    // <conv.chunks.Comment object at 0x103b5c4d0>
     lda(0x2);
     sta(Sprite_Attributes, y);
-    // <conv.chunks.Comment object at 0x105a005c0>
+    // <conv.chunks.Comment object at 0x103b5c5c0>
     lda(0x82);
     sta(((Sprite_Attributes) + (4)), y);
     ldx(ObjectOffset);
@@ -20082,18 +20051,18 @@ int JCoinGfxHandler() {
 }
 
 int ExJCGfx() {
-    // <conv.chunks.Comment object at 0x105a00800>
-    // <conv.chunks.Comment object at 0x105a00aa0>
-    // <conv.chunks.Comment object at 0x105a00bf0>
-    rts();
+    // <conv.chunks.Comment object at 0x103b5c800>
+    // <conv.chunks.Comment object at 0x103b5caa0>
+    // <conv.chunks.Comment object at 0x103b5cbf0>
+    return 0;
     JMP(DrawPowerUp);
 }
 
 int DrawPowerUp() {
     ldy(((Enemy_SprDataOffset) + (5)));
     lda(Enemy_Rel_YPos);
-    // <conv.chunks.Comment object at 0x105a014f0>
-    // <conv.chunks.Comment object at 0x105a01d30>
+    // <conv.chunks.Comment object at 0x103b5d4f0>
+    // <conv.chunks.Comment object at 0x103b5dd30>
     clc();
     adc(0x8);
     sta(0x2);
@@ -20103,22 +20072,22 @@ int DrawPowerUp() {
     lda(offsetof(G, PowerUpAttributes), x);
     ora(((Enemy_SprAttrib) + (5)));
     sta(0x4);
-    // <conv.chunks.Comment object at 0x105a01ee0>
-    // <conv.chunks.Comment object at 0x105a02030>
-    // <conv.chunks.Comment object at 0x105a020c0>
-    // <conv.chunks.Comment object at 0x105a02270>
-    // <conv.chunks.Comment object at 0x105a02300>
-    // <conv.chunks.Comment object at 0x105a02480>
-    // <conv.chunks.Comment object at 0x105a025d0>
-    // <conv.chunks.Comment object at 0x105a027e0>
+    // <conv.chunks.Comment object at 0x103b5dee0>
+    // <conv.chunks.Comment object at 0x103b5e030>
+    // <conv.chunks.Comment object at 0x103b5e0c0>
+    // <conv.chunks.Comment object at 0x103b5e270>
+    // <conv.chunks.Comment object at 0x103b5e300>
+    // <conv.chunks.Comment object at 0x103b5e480>
+    // <conv.chunks.Comment object at 0x103b5e5d0>
+    // <conv.chunks.Comment object at 0x103b5e7e0>
     txa();
     pha();
-    // <conv.chunks.Comment object at 0x105a02990>
+    // <conv.chunks.Comment object at 0x103b5e990>
     asl();
     asl();
     tax();
-    // <conv.chunks.Comment object at 0x105a02ae0>
-    // <conv.chunks.Comment object at 0x105a02ba0>
+    // <conv.chunks.Comment object at 0x103b5eae0>
+    // <conv.chunks.Comment object at 0x103b5eba0>
     lda(0x1);
     sta(0x7);
     sta(0x3);
@@ -20127,7 +20096,7 @@ int DrawPowerUp() {
 
 int PUpDrawLoop() {
     lda(offsetof(G, PowerUpGfxTable), x);
-    // <conv.chunks.Comment object at 0x105a02de0>
+    // <conv.chunks.Comment object at 0x103b5ede0>
     sta(0x0);
     lda(((offsetof(G, PowerUpGfxTable)) + (1)), x);
     JSR(DrawOneSpriteRow);
@@ -20136,13 +20105,13 @@ int PUpDrawLoop() {
     ldy(((Enemy_SprDataOffset) + (5)));
     pla();
     BEQ(PUpOfs);
-    // <conv.chunks.Comment object at 0x105a030e0>
-    // <conv.chunks.Comment object at 0x105a033e0>
-    // <conv.chunks.Comment object at 0x105a03530>
-    // <conv.chunks.Comment object at 0x105a035c0>
-    // <conv.chunks.Comment object at 0x105a03740>
-    // <conv.chunks.Comment object at 0x105a03950>
-    // <conv.chunks.Comment object at 0x105a039e0>
+    // <conv.chunks.Comment object at 0x103b5f0e0>
+    // <conv.chunks.Comment object at 0x103b5f3e0>
+    // <conv.chunks.Comment object at 0x103b5f530>
+    // <conv.chunks.Comment object at 0x103b5f5c0>
+    // <conv.chunks.Comment object at 0x103b5f740>
+    // <conv.chunks.Comment object at 0x103b5f950>
+    // <conv.chunks.Comment object at 0x103b5f9e0>
     cmp(0x3);
     BEQ(PUpOfs);
     sta(0x0);
@@ -20152,14 +20121,14 @@ int PUpDrawLoop() {
     ora(((Enemy_SprAttrib) + (5)));
     sta(Sprite_Attributes, y);
     sta(((Sprite_Attributes) + (4)), y);
-    // <conv.chunks.Comment object at 0x105a03b90>
-    // <conv.chunks.Comment object at 0x105a03da0>
-    // <conv.chunks.Comment object at 0x105a03e30>
-    // <conv.chunks.Comment object at 0x105a03fe0>
-    // <conv.chunks.Comment object at 0x105a0c0b0>
-    // <conv.chunks.Comment object at 0x105a0c1d0>
-    // <conv.chunks.Comment object at 0x105a0c3b0>
-    // <conv.chunks.Comment object at 0x105a0c500>
+    // <conv.chunks.Comment object at 0x103b5fb90>
+    // <conv.chunks.Comment object at 0x103b5fda0>
+    // <conv.chunks.Comment object at 0x103b5fe30>
+    // <conv.chunks.Comment object at 0x103b5ffe0>
+    // <conv.chunks.Comment object at 0x103b680b0>
+    // <conv.chunks.Comment object at 0x103b681d0>
+    // <conv.chunks.Comment object at 0x103b683b0>
+    // <conv.chunks.Comment object at 0x103b68500>
     ldx(0x0);
     dex();
     BEQ(FlipPUpRightSide);
@@ -20171,7 +20140,7 @@ int PUpDrawLoop() {
 int FlipPUpRightSide() {
     lda(((Sprite_Attributes) + (4)), y);
     ora(0b1000000);
-    // <conv.chunks.Comment object at 0x105a0d010>
+    // <conv.chunks.Comment object at 0x103b69010>
     sta(((Sprite_Attributes) + (4)), y);
     lda(((Sprite_Attributes) + (12)), y);
     ora(0b1000000);
@@ -20180,63 +20149,63 @@ int FlipPUpRightSide() {
 }
 
 int PUpOfs() {
-    // <conv.chunks.Comment object at 0x105a0d4f0>
-    // <conv.chunks.Comment object at 0x105a0d610>
-    // <conv.chunks.Comment object at 0x105a0d820>
+    // <conv.chunks.Comment object at 0x103b694f0>
+    // <conv.chunks.Comment object at 0x103b69610>
+    // <conv.chunks.Comment object at 0x103b69820>
     JMP(SprObjectOffscrChk);
     JMP(EnemyGfxHandler);
 }
 
 int EnemyGfxHandler() {
     lda(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x105a1fad0>
+    // <conv.chunks.Comment object at 0x103b7bad0>
     sta(0x2);
     lda(Enemy_Rel_XPos);
     sta(0x5);
-    // <conv.chunks.Comment object at 0x105a25e20>
-    // <conv.chunks.Comment object at 0x105a26060>
+    // <conv.chunks.Comment object at 0x103b81e20>
+    // <conv.chunks.Comment object at 0x103b82060>
     ldy(Enemy_SprDataOffset, x);
     sty(0xeb);
-    // <conv.chunks.Comment object at 0x105a262a0>
+    // <conv.chunks.Comment object at 0x103b822a0>
     lda(0x0);
     sta(VerticalFlipFlag);
-    // <conv.chunks.Comment object at 0x105a263f0>
+    // <conv.chunks.Comment object at 0x103b823f0>
     lda(Enemy_MovingDir, x);
     sta(0x3);
-    // <conv.chunks.Comment object at 0x105a266f0>
+    // <conv.chunks.Comment object at 0x103b826f0>
     lda(Enemy_SprAttrib, x);
     sta(0x4);
-    // <conv.chunks.Comment object at 0x105a26930>
+    // <conv.chunks.Comment object at 0x103b82930>
     lda(Enemy_ID, x);
     cmp(PiranhaPlant);
     BNE(CheckForRetainerObj);
-    // <conv.chunks.Comment object at 0x105a26b40>
-    // <conv.chunks.Comment object at 0x105a26c60>
+    // <conv.chunks.Comment object at 0x103b82b40>
+    // <conv.chunks.Comment object at 0x103b82c60>
     ldy(PiranhaPlant_Y_Speed, x);
     BMI(CheckForRetainerObj);
-    // <conv.chunks.Comment object at 0x105a26ea0>
+    // <conv.chunks.Comment object at 0x103b82ea0>
     ldy(EnemyFrameTimer, x);
     BEQ(CheckForRetainerObj);
-    rts();
+    return 0;
     JMP(CheckForRetainerObj);
 }
 
 int CheckForRetainerObj() {
     lda(Enemy_State, x);
-    // <conv.chunks.Comment object at 0x105a272f0>
+    // <conv.chunks.Comment object at 0x103b832f0>
     sta(0xed);
     anda(0b11111);
-    // <conv.chunks.Comment object at 0x105a27440>
+    // <conv.chunks.Comment object at 0x103b83440>
     tay();
     lda(Enemy_ID, x);
-    // <conv.chunks.Comment object at 0x105a276e0>
+    // <conv.chunks.Comment object at 0x103b836e0>
     cmp(RetainerObject);
     BNE(CheckForBulletBillCV);
     ldy(0x0);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x105a27920>
-    // <conv.chunks.Comment object at 0x105a27a40>
-    // <conv.chunks.Comment object at 0x105a27ad0>
+    // <conv.chunks.Comment object at 0x103b83920>
+    // <conv.chunks.Comment object at 0x103b83a40>
+    // <conv.chunks.Comment object at 0x103b83ad0>
     sta(0x3);
     lda(0x15);
     JMP(CheckForBulletBillCV);
@@ -20246,9 +20215,9 @@ int CheckForBulletBillCV() {
     cmp(BulletBill_CannonVar);
     BNE(CheckForJumpspring);
     dec(0x2);
-    // <conv.chunks.Comment object at 0x105a27ec0>
-    // <conv.chunks.Comment object at 0x105a27fe0>
-    // <conv.chunks.Comment object at 0x105a30170>
+    // <conv.chunks.Comment object at 0x103b83ec0>
+    // <conv.chunks.Comment object at 0x103b83fe0>
+    // <conv.chunks.Comment object at 0x103b8c170>
     lda(0x3);
     ldy(EnemyFrameTimer, x);
     BEQ(SBBAt);
@@ -20257,10 +20226,10 @@ int CheckForBulletBillCV() {
 }
 
 int SBBAt() {
-    // <conv.chunks.Comment object at 0x105a302c0>
-    // <conv.chunks.Comment object at 0x105a304a0>
-    // <conv.chunks.Comment object at 0x105a305f0>
-    // <conv.chunks.Comment object at 0x105a30710>
+    // <conv.chunks.Comment object at 0x103b8c2c0>
+    // <conv.chunks.Comment object at 0x103b8c4a0>
+    // <conv.chunks.Comment object at 0x103b8c5f0>
+    // <conv.chunks.Comment object at 0x103b8c710>
     sta(0x4);
     ldy(0x0);
     sty(0xed);
@@ -20270,7 +20239,7 @@ int SBBAt() {
 
 int CheckForJumpspring() {
     cmp(JumpspringObject);
-    // <conv.chunks.Comment object at 0x105a30c20>
+    // <conv.chunks.Comment object at 0x103b8cc20>
     BNE(CheckForPodoboo);
     ldy(0x3);
     ldx(JumpspringAnimCtrl);
@@ -20285,12 +20254,12 @@ int CheckForPodoboo() {
     cmp(0xc);
     BNE(CheckBowserGfxFlag);
     lda(Enemy_Y_Speed, x);
-    // <conv.chunks.Comment object at 0x105a31220>
-    // <conv.chunks.Comment object at 0x105a311f0>
-    // <conv.chunks.Comment object at 0x105a313d0>
-    // <conv.chunks.Comment object at 0x105a31550>
-    // <conv.chunks.Comment object at 0x105a315e0>
-    // <conv.chunks.Comment object at 0x105a31790>
+    // <conv.chunks.Comment object at 0x103b8d220>
+    // <conv.chunks.Comment object at 0x103b8d1f0>
+    // <conv.chunks.Comment object at 0x103b8d3d0>
+    // <conv.chunks.Comment object at 0x103b8d550>
+    // <conv.chunks.Comment object at 0x103b8d5e0>
+    // <conv.chunks.Comment object at 0x103b8d790>
     BMI(CheckBowserGfxFlag);
     inc(VerticalFlipFlag);
     JMP(CheckBowserGfxFlag);
@@ -20298,10 +20267,10 @@ int CheckForPodoboo() {
 
 int CheckBowserGfxFlag() {
     lda(BowserGfxFlag);
-    // <conv.chunks.Comment object at 0x105a31b20>
+    // <conv.chunks.Comment object at 0x103b8db20>
     BEQ(CheckForGoomba);
     ldy(0x16);
-    // <conv.chunks.Comment object at 0x105a31d30>
+    // <conv.chunks.Comment object at 0x103b8dd30>
     cmp(0x1);
     BEQ(SBwsrGfxOfs);
     iny();
@@ -20315,31 +20284,31 @@ int SBwsrGfxOfs() {
 
 int CheckForGoomba() {
     ldy(0xef);
-    // <conv.chunks.Comment object at 0x105a32270>
+    // <conv.chunks.Comment object at 0x103b8e270>
     cpy(Goomba);
     BNE(CheckBowserFront);
-    // <conv.chunks.Comment object at 0x105a320f0>
+    // <conv.chunks.Comment object at 0x103b8e0f0>
     lda(Enemy_State, x);
     cmp(0x2);
     BCC(GmbaAnim);
     ldx(0x4);
-    // <conv.chunks.Comment object at 0x105a326c0>
-    // <conv.chunks.Comment object at 0x105a32750>
-    // <conv.chunks.Comment object at 0x105a32900>
+    // <conv.chunks.Comment object at 0x103b8e6c0>
+    // <conv.chunks.Comment object at 0x103b8e750>
+    // <conv.chunks.Comment object at 0x103b8e900>
     stx(0xec);
     JMP(GmbaAnim);
 }
 
 int GmbaAnim() {
-    // <conv.chunks.Comment object at 0x105a32990>
+    // <conv.chunks.Comment object at 0x103b8e990>
     anda(0b100000);
     ora(TimerControl);
     BNE(CheckBowserFront);
-    // <conv.chunks.Comment object at 0x105a32c60>
-    // <conv.chunks.Comment object at 0x105a32d80>
+    // <conv.chunks.Comment object at 0x103b8ec60>
+    // <conv.chunks.Comment object at 0x103b8ed80>
     lda(FrameCounter);
     anda(0b1000);
-    // <conv.chunks.Comment object at 0x105a32f90>
+    // <conv.chunks.Comment object at 0x103b8ef90>
     BNE(CheckBowserFront);
     lda(0x3);
     eor(0b11);
@@ -20350,18 +20319,18 @@ int GmbaAnim() {
 int CheckBowserFront() {
     lda(offsetof(G, EnemyAttributeData), y);
     ora(0x4);
-    // <conv.chunks.Comment object at 0x105a333b0>
-    // <conv.chunks.Comment object at 0x105a33680>
+    // <conv.chunks.Comment object at 0x103b8f3b0>
+    // <conv.chunks.Comment object at 0x103b8f680>
     sta(0x4);
     lda(offsetof(G, EnemyGfxTableOffsets), y);
     tax();
     ldy(0xec);
-    // <conv.chunks.Comment object at 0x105a33710>
-    // <conv.chunks.Comment object at 0x105a339e0>
-    // <conv.chunks.Comment object at 0x105a33aa0>
+    // <conv.chunks.Comment object at 0x103b8f710>
+    // <conv.chunks.Comment object at 0x103b8f9e0>
+    // <conv.chunks.Comment object at 0x103b8faa0>
     lda(BowserGfxFlag);
     BEQ(CheckForSpiny);
-    // <conv.chunks.Comment object at 0x105a33c80>
+    // <conv.chunks.Comment object at 0x103b8fc80>
     cmp(0x1);
     BNE(CheckBowserRear);
     lda(BowserBodyControls);
@@ -20371,14 +20340,14 @@ int CheckBowserFront() {
 }
 
 int ChkFrontSte() {
-    // <conv.chunks.Comment object at 0x105a33e00>
-    // <conv.chunks.Comment object at 0x105a33fb0>
-    // <conv.chunks.Comment object at 0x105a3c110>
-    // <conv.chunks.Comment object at 0x105a3c230>
-    // <conv.chunks.Comment object at 0x105a3c2c0>
+    // <conv.chunks.Comment object at 0x103b8fe00>
+    // <conv.chunks.Comment object at 0x103b8ffb0>
+    // <conv.chunks.Comment object at 0x103b98110>
+    // <conv.chunks.Comment object at 0x103b98230>
+    // <conv.chunks.Comment object at 0x103b982c0>
     lda(0xed);
     anda(0b100000);
-    // <conv.chunks.Comment object at 0x105a3c440>
+    // <conv.chunks.Comment object at 0x103b98440>
     BEQ(DrawBowser);
     JMP(FlipBowserOver);
 }
@@ -20395,7 +20364,7 @@ int DrawBowser() {
 
 int CheckBowserRear() {
     lda(BowserBodyControls);
-    // <conv.chunks.Comment object at 0x105a3c980>
+    // <conv.chunks.Comment object at 0x103b98980>
     anda(0x1);
     BEQ(ChkRearSte);
     ldx(0xe4);
@@ -20403,17 +20372,17 @@ int CheckBowserRear() {
 }
 
 int ChkRearSte() {
-    // <conv.chunks.Comment object at 0x105a3cb00>
-    // <conv.chunks.Comment object at 0x105a3ccb0>
-    // <conv.chunks.Comment object at 0x105a3cd40>
+    // <conv.chunks.Comment object at 0x103b98b00>
+    // <conv.chunks.Comment object at 0x103b98cb0>
+    // <conv.chunks.Comment object at 0x103b98d40>
     lda(0xed);
     anda(0b100000);
-    // <conv.chunks.Comment object at 0x105a3cec0>
+    // <conv.chunks.Comment object at 0x103b98ec0>
     BEQ(DrawBowser);
     lda(0x2);
     sec();
-    // <conv.chunks.Comment object at 0x105a3d160>
-    // <conv.chunks.Comment object at 0x105a3d130>
+    // <conv.chunks.Comment object at 0x103b99160>
+    // <conv.chunks.Comment object at 0x103b99130>
     sbc(0x10);
     sta(0x2);
     JMP(FlipBowserOver);
@@ -20426,22 +20395,22 @@ int CheckForSpiny() {
     cpy(0x5);
     BNE(NotEgg);
     ldx(0x30);
-    // <conv.chunks.Comment object at 0x105a3d640>
-    // <conv.chunks.Comment object at 0x105a3d6d0>
-    // <conv.chunks.Comment object at 0x105a3d880>
-    // <conv.chunks.Comment object at 0x105a3d910>
-    // <conv.chunks.Comment object at 0x105a3daf0>
+    // <conv.chunks.Comment object at 0x103b99640>
+    // <conv.chunks.Comment object at 0x103b996d0>
+    // <conv.chunks.Comment object at 0x103b99880>
+    // <conv.chunks.Comment object at 0x103b99910>
+    // <conv.chunks.Comment object at 0x103b99af0>
     lda(0x2);
     sta(0x3);
-    // <conv.chunks.Comment object at 0x105a3dd30>
+    // <conv.chunks.Comment object at 0x103b99d30>
     lda(0x5);
     sta(0xec);
     JMP(NotEgg);
 }
 
 int NotEgg() {
-    // <conv.chunks.Comment object at 0x105a3df40>
-    // <conv.chunks.Comment object at 0x105a3dfd0>
+    // <conv.chunks.Comment object at 0x103b99f40>
+    // <conv.chunks.Comment object at 0x103b99fd0>
     JMP(CheckForHammerBro);
     JMP(CheckForLakitu);
 }
@@ -20449,13 +20418,13 @@ int NotEgg() {
 int CheckForLakitu() {
     cpx(0x90);
     BNE(CheckUpsideDownShell);
-    // <conv.chunks.Comment object at 0x105a3e1e0>
-    // <conv.chunks.Comment object at 0x105a3e270>
+    // <conv.chunks.Comment object at 0x103b9a1e0>
+    // <conv.chunks.Comment object at 0x103b9a270>
     lda(0xed);
     anda(0b100000);
     BNE(NoLAFr);
-    // <conv.chunks.Comment object at 0x105a3e420>
-    // <conv.chunks.Comment object at 0x105a3e630>
+    // <conv.chunks.Comment object at 0x103b9a420>
+    // <conv.chunks.Comment object at 0x103b9a630>
     lda(FrenzyEnemyTimer);
     cmp(0x10);
     BCS(NoLAFr);
@@ -20464,28 +20433,28 @@ int CheckForLakitu() {
 }
 
 int NoLAFr() {
-    // <conv.chunks.Comment object at 0x105a3e870>
-    // <conv.chunks.Comment object at 0x105a3e900>
-    // <conv.chunks.Comment object at 0x105a3eae0>
-    // <conv.chunks.Comment object at 0x105a3eb70>
+    // <conv.chunks.Comment object at 0x103b9a870>
+    // <conv.chunks.Comment object at 0x103b9a900>
+    // <conv.chunks.Comment object at 0x103b9aae0>
+    // <conv.chunks.Comment object at 0x103b9ab70>
     JMP(CheckDefeatedState);
     JMP(CheckUpsideDownShell);
 }
 
 int CheckUpsideDownShell() {
     lda(0xef);
-    // <conv.chunks.Comment object at 0x105a3ede0>
+    // <conv.chunks.Comment object at 0x103b9ade0>
     cmp(0x4);
     BCS(CheckRightSideUpShell);
-    // <conv.chunks.Comment object at 0x105a3ef30>
+    // <conv.chunks.Comment object at 0x103b9af30>
     cpy(0x2);
     BCC(CheckRightSideUpShell);
     ldx(0x5a);
-    // <conv.chunks.Comment object at 0x105a3f140>
-    // <conv.chunks.Comment object at 0x105a3f2f0>
+    // <conv.chunks.Comment object at 0x103b9b140>
+    // <conv.chunks.Comment object at 0x103b9b2f0>
     ldy(0xef);
     cpy(BuzzyBeetle);
-    // <conv.chunks.Comment object at 0x105a3f380>
+    // <conv.chunks.Comment object at 0x103b9b380>
     BNE(CheckRightSideUpShell);
     ldx(0x7e);
     inc(0x2);
@@ -20498,11 +20467,11 @@ int CheckRightSideUpShell() {
     BNE(CheckForHammerBro);
     ldx(0x72);
     inc(0x2);
-    // <conv.chunks.Comment object at 0x105a3f9b0>
-    // <conv.chunks.Comment object at 0x105a3fa40>
-    // <conv.chunks.Comment object at 0x105a3fb30>
-    // <conv.chunks.Comment object at 0x105a3fce0>
-    // <conv.chunks.Comment object at 0x105a3fe30>
+    // <conv.chunks.Comment object at 0x103b9b9b0>
+    // <conv.chunks.Comment object at 0x103b9ba40>
+    // <conv.chunks.Comment object at 0x103b9bb30>
+    // <conv.chunks.Comment object at 0x103b9bce0>
+    // <conv.chunks.Comment object at 0x103b9be30>
     ldy(0xef);
     cpy(BuzzyBeetle);
     BEQ(CheckForDefdGoomba);
@@ -20526,13 +20495,13 @@ int CheckForDefdGoomba() {
 int CheckForHammerBro() {
     ldy(ObjectOffset);
     lda(0xef);
-    // <conv.chunks.Comment object at 0x105a44f80>
+    // <conv.chunks.Comment object at 0x103ba0f80>
     cmp(HammerBro);
     BNE(CheckForBloober);
-    // <conv.chunks.Comment object at 0x105a45160>
+    // <conv.chunks.Comment object at 0x103ba1160>
     lda(0xed);
     BEQ(CheckToAnimateEnemy);
-    // <conv.chunks.Comment object at 0x105a45280>
+    // <conv.chunks.Comment object at 0x103ba1280>
     anda(0b1000);
     BEQ(CheckDefeatedState);
     ldx(0xb4);
@@ -20543,21 +20512,21 @@ int CheckForHammerBro() {
 int CheckForBloober() {
     cpx(0x48);
     BEQ(CheckToAnimateEnemy);
-    // <conv.chunks.Comment object at 0x105a45910>
-    // <conv.chunks.Comment object at 0x105a459a0>
+    // <conv.chunks.Comment object at 0x103ba1910>
+    // <conv.chunks.Comment object at 0x103ba19a0>
     lda(EnemyIntervalTimer, y);
     cmp(0x5);
     BCS(CheckDefeatedState);
     cpx(0x3c);
     BNE(CheckToAnimateEnemy);
-    // <conv.chunks.Comment object at 0x105a45cd0>
-    // <conv.chunks.Comment object at 0x105a45e80>
-    // <conv.chunks.Comment object at 0x105a45f10>
+    // <conv.chunks.Comment object at 0x103ba1cd0>
+    // <conv.chunks.Comment object at 0x103ba1e80>
+    // <conv.chunks.Comment object at 0x103ba1f10>
     cmp(0x1);
     BEQ(CheckDefeatedState);
     inc(0x2);
-    // <conv.chunks.Comment object at 0x105a46120>
-    // <conv.chunks.Comment object at 0x105a46300>
+    // <conv.chunks.Comment object at 0x103ba2120>
+    // <conv.chunks.Comment object at 0x103ba2300>
     inc(0x2);
     inc(0x2);
     JMP(CheckAnimationStop);
@@ -20566,35 +20535,35 @@ int CheckForBloober() {
 
 int CheckToAnimateEnemy() {
     lda(0xef);
-    // <conv.chunks.Comment object at 0x105a46750>
+    // <conv.chunks.Comment object at 0x103ba2750>
     cmp(Goomba);
     BEQ(CheckDefeatedState);
-    // <conv.chunks.Comment object at 0x105a46720>
+    // <conv.chunks.Comment object at 0x103ba2720>
     cmp(0x8);
     BEQ(CheckDefeatedState);
-    // <conv.chunks.Comment object at 0x105a46ae0>
+    // <conv.chunks.Comment object at 0x103ba2ae0>
     cmp(Podoboo);
     BEQ(CheckDefeatedState);
     cmp(0x18);
-    // <conv.chunks.Comment object at 0x105a46db0>
-    // <conv.chunks.Comment object at 0x105a46ed0>
+    // <conv.chunks.Comment object at 0x103ba2db0>
+    // <conv.chunks.Comment object at 0x103ba2ed0>
     BCS(CheckDefeatedState);
     ldy(0x0);
     cmp(0x15);
     BNE(CheckForSecondFrame);
     iny();
     lda(WorldNumber);
-    // <conv.chunks.Comment object at 0x105a47140>
-    // <conv.chunks.Comment object at 0x105a47260>
-    // <conv.chunks.Comment object at 0x105a47440>
-    // <conv.chunks.Comment object at 0x105a474d0>
+    // <conv.chunks.Comment object at 0x103ba3140>
+    // <conv.chunks.Comment object at 0x103ba3260>
+    // <conv.chunks.Comment object at 0x103ba3440>
+    // <conv.chunks.Comment object at 0x103ba34d0>
     cmp(World8);
     BCS(CheckDefeatedState);
     ldx(0xa2);
     lda(0x3);
-    // <conv.chunks.Comment object at 0x105a47620>
-    // <conv.chunks.Comment object at 0x105a47830>
-    // <conv.chunks.Comment object at 0x105a478c0>
+    // <conv.chunks.Comment object at 0x103ba3620>
+    // <conv.chunks.Comment object at 0x103ba3830>
+    // <conv.chunks.Comment object at 0x103ba38c0>
     sta(0xec);
     BNE(CheckDefeatedState);
     JMP(CheckForSecondFrame);
@@ -20610,11 +20579,11 @@ int CheckForSecondFrame() {
 int CheckAnimationStop() {
     lda(0xed);
     anda(0b10100000);
-    // <conv.chunks.Comment object at 0x105a4c0e0>
-    // <conv.chunks.Comment object at 0x105a4c170>
+    // <conv.chunks.Comment object at 0x103ba80e0>
+    // <conv.chunks.Comment object at 0x103ba8170>
     ora(TimerControl);
     BNE(CheckDefeatedState);
-    // <conv.chunks.Comment object at 0x105a4c3e0>
+    // <conv.chunks.Comment object at 0x103ba83e0>
     txa();
     clc();
     adc(0x6);
@@ -20626,17 +20595,17 @@ int CheckDefeatedState() {
     lda(0xed);
     anda(0b100000);
     BEQ(DrawEnemyObject);
-    // <conv.chunks.Comment object at 0x105a4c860>
-    // <conv.chunks.Comment object at 0x105a4c8f0>
-    // <conv.chunks.Comment object at 0x105a4ca70>
+    // <conv.chunks.Comment object at 0x103ba8860>
+    // <conv.chunks.Comment object at 0x103ba88f0>
+    // <conv.chunks.Comment object at 0x103ba8a70>
     lda(0xef);
     cmp(0x4);
     BCC(DrawEnemyObject);
-    // <conv.chunks.Comment object at 0x105a4cb90>
-    // <conv.chunks.Comment object at 0x105a4cd10>
+    // <conv.chunks.Comment object at 0x103ba8b90>
+    // <conv.chunks.Comment object at 0x103ba8d10>
     ldy(0x1);
     sty(VerticalFlipFlag);
-    // <conv.chunks.Comment object at 0x105a4cf20>
+    // <conv.chunks.Comment object at 0x103ba8f20>
     dey();
     sty(0xec);
     JMP(DrawEnemyObject);
@@ -20646,14 +20615,14 @@ int DrawEnemyObject() {
     ldy(0xeb);
     JSR(DrawEnemyObjRow);
     JSR(DrawEnemyObjRow);
-    // <conv.chunks.Comment object at 0x105a4d2e0>
-    // <conv.chunks.Comment object at 0x105a4d370>
-    // <conv.chunks.Comment object at 0x105a4d4f0>
+    // <conv.chunks.Comment object at 0x103ba92e0>
+    // <conv.chunks.Comment object at 0x103ba9370>
+    // <conv.chunks.Comment object at 0x103ba94f0>
     JSR(DrawEnemyObjRow);
     ldx(ObjectOffset);
     ldy(Enemy_SprDataOffset, x);
-    // <conv.chunks.Comment object at 0x105a4d700>
-    // <conv.chunks.Comment object at 0x105a4d820>
+    // <conv.chunks.Comment object at 0x103ba9700>
+    // <conv.chunks.Comment object at 0x103ba9820>
     lda(0xef);
     cmp(0x8);
     BNE(CheckForVerticalFlip);
@@ -20670,32 +20639,32 @@ int CheckForVerticalFlip() {
     BEQ(CheckForESymmetry);
     lda(Sprite_Attributes, y);
     ora(0b10000000);
-    // <conv.chunks.Comment object at 0x105a4de20>
-    // <conv.chunks.Comment object at 0x105a4df40>
-    // <conv.chunks.Comment object at 0x105a4e060>
-    // <conv.chunks.Comment object at 0x105a4e1b0>
+    // <conv.chunks.Comment object at 0x103ba9e20>
+    // <conv.chunks.Comment object at 0x103ba9f40>
+    // <conv.chunks.Comment object at 0x103baa060>
+    // <conv.chunks.Comment object at 0x103baa1b0>
     iny();
     iny();
     JSR(DumpSixSpr);
-    // <conv.chunks.Comment object at 0x105a4e390>
-    // <conv.chunks.Comment object at 0x105a4e420>
+    // <conv.chunks.Comment object at 0x103baa390>
+    // <conv.chunks.Comment object at 0x103baa420>
     dey();
     dey();
-    // <conv.chunks.Comment object at 0x105a4e600>
+    // <conv.chunks.Comment object at 0x103baa600>
     tya();
     tax();
-    // <conv.chunks.Comment object at 0x105a4e750>
+    // <conv.chunks.Comment object at 0x103baa750>
     lda(0xef);
     cmp(HammerBro);
-    // <conv.chunks.Comment object at 0x105a4e7e0>
+    // <conv.chunks.Comment object at 0x103baa7e0>
     BEQ(FlipEnemyVertically);
     cmp(Lakitu);
     BEQ(FlipEnemyVertically);
-    // <conv.chunks.Comment object at 0x105a4eae0>
-    // <conv.chunks.Comment object at 0x105a4eb40>
+    // <conv.chunks.Comment object at 0x103baaae0>
+    // <conv.chunks.Comment object at 0x103baab40>
     cmp(0x15);
     BCS(FlipEnemyVertically);
-    // <conv.chunks.Comment object at 0x105a4edb0>
+    // <conv.chunks.Comment object at 0x103baadb0>
     txa();
     clc();
     adc(0x8);
@@ -20706,20 +20675,20 @@ int CheckForVerticalFlip() {
 int FlipEnemyVertically() {
     lda(Sprite_Tilenumber, x);
     pha();
-    // <conv.chunks.Comment object at 0x105a4f290>
-    // <conv.chunks.Comment object at 0x105a4f410>
+    // <conv.chunks.Comment object at 0x103bab290>
+    // <conv.chunks.Comment object at 0x103bab410>
     lda(((Sprite_Tilenumber) + (4)), x);
     pha();
     lda(((Sprite_Tilenumber) + (16)), y);
     sta(Sprite_Tilenumber, x);
-    // <conv.chunks.Comment object at 0x105a4f710>
-    // <conv.chunks.Comment object at 0x105a4f920>
+    // <conv.chunks.Comment object at 0x103bab710>
+    // <conv.chunks.Comment object at 0x103bab920>
     lda(((Sprite_Tilenumber) + (20)), y);
     sta(((Sprite_Tilenumber) + (4)), x);
     pla();
     sta(((Sprite_Tilenumber) + (20)), y);
-    // <conv.chunks.Comment object at 0x105a4fe60>
-    // <conv.chunks.Comment object at 0x105a4fef0>
+    // <conv.chunks.Comment object at 0x103babe60>
+    // <conv.chunks.Comment object at 0x103babef0>
     pla();
     sta(((Sprite_Tilenumber) + (16)), y);
     JMP(CheckForESymmetry);
@@ -20728,25 +20697,25 @@ int FlipEnemyVertically() {
 int CheckForESymmetry() {
     lda(BowserGfxFlag);
     BNE(SkipToOffScrChk);
-    // <conv.chunks.Comment object at 0x105a583e0>
-    // <conv.chunks.Comment object at 0x105a58500>
+    // <conv.chunks.Comment object at 0x103bb43e0>
+    // <conv.chunks.Comment object at 0x103bb4500>
     lda(0xef);
     ldx(0xec);
     cmp(0x5);
-    // <conv.chunks.Comment object at 0x105a586b0>
-    // <conv.chunks.Comment object at 0x105a587d0>
+    // <conv.chunks.Comment object at 0x103bb46b0>
+    // <conv.chunks.Comment object at 0x103bb47d0>
     BNE(ContES);
     JMP(SprObjectOffscrChk);
     JMP(ContES);
 }
 
 int ContES() {
-    // <conv.chunks.Comment object at 0x105a58a70>
-    // <conv.chunks.Comment object at 0x105a58b90>
+    // <conv.chunks.Comment object at 0x103bb4a70>
+    // <conv.chunks.Comment object at 0x103bb4b90>
     cmp(Bloober);
     BEQ(MirrorEnemyGfx);
     cmp(PiranhaPlant);
-    // <conv.chunks.Comment object at 0x105a58e30>
+    // <conv.chunks.Comment object at 0x103bb4e30>
     BEQ(MirrorEnemyGfx);
     cmp(Podoboo);
     BEQ(MirrorEnemyGfx);
@@ -20758,13 +20727,13 @@ int ContES() {
 }
 
 int ESRtnr() {
-    // <conv.chunks.Comment object at 0x105a59040>
-    // <conv.chunks.Comment object at 0x105a59190>
-    // <conv.chunks.Comment object at 0x105a592b0>
-    // <conv.chunks.Comment object at 0x105a59340>
-    // <conv.chunks.Comment object at 0x105a59550>
-    // <conv.chunks.Comment object at 0x105a595e0>
-    // <conv.chunks.Comment object at 0x105a59790>
+    // <conv.chunks.Comment object at 0x103bb5040>
+    // <conv.chunks.Comment object at 0x103bb5190>
+    // <conv.chunks.Comment object at 0x103bb52b0>
+    // <conv.chunks.Comment object at 0x103bb5340>
+    // <conv.chunks.Comment object at 0x103bb5550>
+    // <conv.chunks.Comment object at 0x103bb55e0>
+    // <conv.chunks.Comment object at 0x103bb5790>
     cmp(0x15);
     BNE(SpnySC);
     lda(0x42);
@@ -20773,9 +20742,9 @@ int ESRtnr() {
 }
 
 int SpnySC() {
-    // <conv.chunks.Comment object at 0x105a59a30>
-    // <conv.chunks.Comment object at 0x105a59ac0>
-    // <conv.chunks.Comment object at 0x105a59d60>
+    // <conv.chunks.Comment object at 0x103bb5a30>
+    // <conv.chunks.Comment object at 0x103bb5ac0>
+    // <conv.chunks.Comment object at 0x103bb5d60>
     cpx(0x2);
     BCC(CheckToMirrorLakitu);
     JMP(MirrorEnemyGfx);
@@ -20783,15 +20752,15 @@ int SpnySC() {
 
 int MirrorEnemyGfx() {
     lda(BowserGfxFlag);
-    // <conv.chunks.Comment object at 0x105a5a000>
+    // <conv.chunks.Comment object at 0x103bb6000>
     BNE(CheckToMirrorLakitu);
     lda(Sprite_Attributes, y);
-    // <conv.chunks.Comment object at 0x105a5a210>
+    // <conv.chunks.Comment object at 0x103bb6210>
     anda(0b10100011);
     sta(Sprite_Attributes, y);
     sta(((Sprite_Attributes) + (8)), y);
-    // <conv.chunks.Comment object at 0x105a5a450>
-    // <conv.chunks.Comment object at 0x105a5a5a0>
+    // <conv.chunks.Comment object at 0x103bb6450>
+    // <conv.chunks.Comment object at 0x103bb65a0>
     sta(((Sprite_Attributes) + (16)), y);
     ora(0b1000000);
     cpx(0x5);
@@ -20801,26 +20770,26 @@ int MirrorEnemyGfx() {
 }
 
 int EggExc() {
-    // <conv.chunks.Comment object at 0x105a5a990>
-    // <conv.chunks.Comment object at 0x105a5aab0>
-    // <conv.chunks.Comment object at 0x105a5ab40>
-    // <conv.chunks.Comment object at 0x105a5ad20>
-    // <conv.chunks.Comment object at 0x105a5ae40>
+    // <conv.chunks.Comment object at 0x103bb6990>
+    // <conv.chunks.Comment object at 0x103bb6ab0>
+    // <conv.chunks.Comment object at 0x103bb6b40>
+    // <conv.chunks.Comment object at 0x103bb6d20>
+    // <conv.chunks.Comment object at 0x103bb6e40>
     sta(((Sprite_Attributes) + (4)), y);
     sta(((Sprite_Attributes) + (12)), y);
-    // <conv.chunks.Comment object at 0x105a5b0b0>
+    // <conv.chunks.Comment object at 0x103bb70b0>
     sta(((Sprite_Attributes) + (20)), y);
     cpx(0x4);
     BNE(CheckToMirrorLakitu);
     lda(((Sprite_Attributes) + (8)), y);
-    // <conv.chunks.Comment object at 0x105a5b4a0>
-    // <conv.chunks.Comment object at 0x105a5b530>
-    // <conv.chunks.Comment object at 0x105a5b6e0>
+    // <conv.chunks.Comment object at 0x103bb74a0>
+    // <conv.chunks.Comment object at 0x103bb7530>
+    // <conv.chunks.Comment object at 0x103bb76e0>
     ora(0b10000000);
     sta(((Sprite_Attributes) + (8)), y);
     sta(((Sprite_Attributes) + (16)), y);
-    // <conv.chunks.Comment object at 0x105a5b9e0>
-    // <conv.chunks.Comment object at 0x105a5bbf0>
+    // <conv.chunks.Comment object at 0x103bb79e0>
+    // <conv.chunks.Comment object at 0x103bb7bf0>
     ora(0b1000000);
     sta(((Sprite_Attributes) + (12)), y);
     sta(((Sprite_Attributes) + (20)), y);
@@ -20829,30 +20798,30 @@ int EggExc() {
 
 int CheckToMirrorLakitu() {
     lda(0xef);
-    // <conv.chunks.Comment object at 0x105a603b0>
+    // <conv.chunks.Comment object at 0x103bbc3b0>
     cmp(Lakitu);
     BNE(CheckToMirrorJSpring);
-    // <conv.chunks.Comment object at 0x105a60380>
+    // <conv.chunks.Comment object at 0x103bbc380>
     lda(VerticalFlipFlag);
     BNE(NVFLak);
     lda(((Sprite_Attributes) + (16)), y);
     anda(0b10000001);
-    // <conv.chunks.Comment object at 0x105a607d0>
-    // <conv.chunks.Comment object at 0x105a60920>
-    // <conv.chunks.Comment object at 0x105a60b30>
+    // <conv.chunks.Comment object at 0x103bbc7d0>
+    // <conv.chunks.Comment object at 0x103bbc920>
+    // <conv.chunks.Comment object at 0x103bbcb30>
     sta(((Sprite_Attributes) + (16)), y);
     lda(((Sprite_Attributes) + (20)), y);
     ora(0b1000001);
-    // <conv.chunks.Comment object at 0x105a60e30>
-    // <conv.chunks.Comment object at 0x105a61040>
+    // <conv.chunks.Comment object at 0x103bbce30>
+    // <conv.chunks.Comment object at 0x103bbd040>
     sta(((Sprite_Attributes) + (20)), y);
     ldx(FrenzyEnemyTimer);
-    // <conv.chunks.Comment object at 0x105a61340>
+    // <conv.chunks.Comment object at 0x103bbd340>
     cpx(0x10);
     BCS(SprObjectOffscrChk);
     sta(((Sprite_Attributes) + (12)), y);
-    // <conv.chunks.Comment object at 0x105a614c0>
-    // <conv.chunks.Comment object at 0x105a61670>
+    // <conv.chunks.Comment object at 0x103bbd4c0>
+    // <conv.chunks.Comment object at 0x103bbd670>
     anda(0b10000001);
     sta(((Sprite_Attributes) + (8)), y);
     BCC(SprObjectOffscrChk);
@@ -20860,9 +20829,9 @@ int CheckToMirrorLakitu() {
 }
 
 int NVFLak() {
-    // <conv.chunks.Comment object at 0x105a61970>
-    // <conv.chunks.Comment object at 0x105a61b80>
-    // <conv.chunks.Comment object at 0x105a61ca0>
+    // <conv.chunks.Comment object at 0x103bbd970>
+    // <conv.chunks.Comment object at 0x103bbdb80>
+    // <conv.chunks.Comment object at 0x103bbdca0>
     lda(Sprite_Attributes, y);
     anda(0b10000001);
     sta(Sprite_Attributes, y);
@@ -20874,15 +20843,15 @@ int NVFLak() {
 
 int CheckToMirrorJSpring() {
     lda(0xef);
-    // <conv.chunks.Comment object at 0x105a62630>
+    // <conv.chunks.Comment object at 0x103bbe630>
     cmp(0x18);
     BCC(SprObjectOffscrChk);
-    // <conv.chunks.Comment object at 0x105a62780>
+    // <conv.chunks.Comment object at 0x103bbe780>
     lda(0x82);
     sta(((Sprite_Attributes) + (8)), y);
     sta(((Sprite_Attributes) + (16)), y);
-    // <conv.chunks.Comment object at 0x105a62990>
-    // <conv.chunks.Comment object at 0x105a62c30>
+    // <conv.chunks.Comment object at 0x103bbe990>
+    // <conv.chunks.Comment object at 0x103bbec30>
     ora(0b1000000);
     sta(((Sprite_Attributes) + (12)), y);
     sta(((Sprite_Attributes) + (20)), y);
@@ -20892,8 +20861,8 @@ int CheckToMirrorJSpring() {
 int SprObjectOffscrChk() {
     ldx(ObjectOffset);
     lda(Enemy_OffscreenBits);
-    // <conv.chunks.Comment object at 0x105a63380>
-    // <conv.chunks.Comment object at 0x105a634a0>
+    // <conv.chunks.Comment object at 0x103bbf380>
+    // <conv.chunks.Comment object at 0x103bbf4a0>
     lsr();
     lsr();
     lsr();
@@ -20905,13 +20874,13 @@ int SprObjectOffscrChk() {
 }
 
 int LcChk() {
-    // <conv.chunks.Comment object at 0x105a63680>
-    // <conv.chunks.Comment object at 0x105a63740>
-    // <conv.chunks.Comment object at 0x105a63800>
-    // <conv.chunks.Comment object at 0x105a63890>
-    // <conv.chunks.Comment object at 0x105a639e0>
-    // <conv.chunks.Comment object at 0x105a63a70>
-    // <conv.chunks.Comment object at 0x105a63c20>
+    // <conv.chunks.Comment object at 0x103bbf680>
+    // <conv.chunks.Comment object at 0x103bbf740>
+    // <conv.chunks.Comment object at 0x103bbf800>
+    // <conv.chunks.Comment object at 0x103bbf890>
+    // <conv.chunks.Comment object at 0x103bbf9e0>
+    // <conv.chunks.Comment object at 0x103bbfa70>
+    // <conv.chunks.Comment object at 0x103bbfc20>
     pla();
     lsr();
     pha();
@@ -20922,15 +20891,15 @@ int LcChk() {
 }
 
 int Row3C() {
-    // <conv.chunks.Comment object at 0x105a63d70>
-    // <conv.chunks.Comment object at 0x105a63e30>
-    // <conv.chunks.Comment object at 0x105a63ec0>
-    // <conv.chunks.Comment object at 0x105a68050>
-    // <conv.chunks.Comment object at 0x105a680e0>
-    // <conv.chunks.Comment object at 0x105a68290>
+    // <conv.chunks.Comment object at 0x103bbfd70>
+    // <conv.chunks.Comment object at 0x103bbfe30>
+    // <conv.chunks.Comment object at 0x103bbfec0>
+    // <conv.chunks.Comment object at 0x103bc4050>
+    // <conv.chunks.Comment object at 0x103bc40e0>
+    // <conv.chunks.Comment object at 0x103bc4290>
     pla();
     lsr();
-    // <conv.chunks.Comment object at 0x105a683e0>
+    // <conv.chunks.Comment object at 0x103bc43e0>
     lsr();
     pha();
     BCC(Row23C);
@@ -20940,16 +20909,16 @@ int Row3C() {
 }
 
 int Row23C() {
-    // <conv.chunks.Comment object at 0x105a68530>
-    // <conv.chunks.Comment object at 0x105a685c0>
-    // <conv.chunks.Comment object at 0x105a68710>
-    // <conv.chunks.Comment object at 0x105a687a0>
-    // <conv.chunks.Comment object at 0x105a68950>
+    // <conv.chunks.Comment object at 0x103bc4530>
+    // <conv.chunks.Comment object at 0x103bc45c0>
+    // <conv.chunks.Comment object at 0x103bc4710>
+    // <conv.chunks.Comment object at 0x103bc47a0>
+    // <conv.chunks.Comment object at 0x103bc4950>
     pla();
     lsr();
     pha();
-    // <conv.chunks.Comment object at 0x105a68aa0>
-    // <conv.chunks.Comment object at 0x105a68b60>
+    // <conv.chunks.Comment object at 0x103bc4aa0>
+    // <conv.chunks.Comment object at 0x103bc4b60>
     BCC(AllRowC);
     lda(0x8);
     JSR(MoveESprRowOffscreen);
@@ -20957,37 +20926,37 @@ int Row23C() {
 }
 
 int AllRowC() {
-    // <conv.chunks.Comment object at 0x105a68d10>
-    // <conv.chunks.Comment object at 0x105a68da0>
-    // <conv.chunks.Comment object at 0x105a68f50>
+    // <conv.chunks.Comment object at 0x103bc4d10>
+    // <conv.chunks.Comment object at 0x103bc4da0>
+    // <conv.chunks.Comment object at 0x103bc4f50>
     pla();
     lsr();
-    // <conv.chunks.Comment object at 0x105a690a0>
+    // <conv.chunks.Comment object at 0x103bc50a0>
     BCC(ExEGHandler);
     JSR(MoveESprRowOffscreen);
-    // <conv.chunks.Comment object at 0x105a69220>
+    // <conv.chunks.Comment object at 0x103bc5220>
     lda(Enemy_ID, x);
     cmp(Podoboo);
     BEQ(ExEGHandler);
     lda(Enemy_Y_HighPos, x);
     cmp(0x2);
-    // <conv.chunks.Comment object at 0x105a69460>
-    // <conv.chunks.Comment object at 0x105a695b0>
-    // <conv.chunks.Comment object at 0x105a696d0>
-    // <conv.chunks.Comment object at 0x105a69820>
+    // <conv.chunks.Comment object at 0x103bc5460>
+    // <conv.chunks.Comment object at 0x103bc55b0>
+    // <conv.chunks.Comment object at 0x103bc56d0>
+    // <conv.chunks.Comment object at 0x103bc5820>
     BNE(ExEGHandler);
     JSR(EraseEnemyObject);
     JMP(ExEGHandler);
 }
 
 int ExEGHandler() {
-    rts();
+    return 0;
     JMP(DrawEnemyObjRow);
 }
 
 int DrawEnemyObjRow() {
     lda(offsetof(G, EnemyGraphicsTable), x);
-    // <conv.chunks.Comment object at 0x105a69c40>
+    // <conv.chunks.Comment object at 0x103bc5c40>
     sta(0x0);
     lda(((offsetof(G, EnemyGraphicsTable)) + (1)), x);
     JMP(DrawOneSpriteRow);
@@ -21001,10 +20970,10 @@ int DrawOneSpriteRow() {
 
 int MoveESprRowOffscreen() {
     clc();
-    // <conv.chunks.Comment object at 0x105a6a300>
+    // <conv.chunks.Comment object at 0x103bc6300>
     adc(Enemy_SprDataOffset, x);
     tay();
-    // <conv.chunks.Comment object at 0x105a6a4e0>
+    // <conv.chunks.Comment object at 0x103bc64e0>
     lda(0xf8);
     JMP(DumpTwoSpr);
     JMP(MoveESprColOffscreen);
@@ -21012,15 +20981,15 @@ int MoveESprRowOffscreen() {
 
 int MoveESprColOffscreen() {
     clc();
-    // <conv.chunks.Comment object at 0x105a6a7e0>
+    // <conv.chunks.Comment object at 0x103bc67e0>
     adc(Enemy_SprDataOffset, x);
     tay();
     JSR(MoveColOffscreen);
     sta(((Sprite_Data) + (16)), y);
-    // <conv.chunks.Comment object at 0x105a6a9c0>
-    // <conv.chunks.Comment object at 0x105a6aa50>
-    // <conv.chunks.Comment object at 0x105a6ab70>
-    rts();
+    // <conv.chunks.Comment object at 0x103bc69c0>
+    // <conv.chunks.Comment object at 0x103bc6a50>
+    // <conv.chunks.Comment object at 0x103bc6b70>
+    return 0;
     JMP(DrawBlock);
 }
 
@@ -21029,13 +20998,13 @@ int DrawBlock() {
     sta(0x2);
     lda(Block_Rel_XPos);
     sta(0x5);
-    // <conv.chunks.Comment object at 0x105a6aff0>
-    // <conv.chunks.Comment object at 0x105a6b350>
-    // <conv.chunks.Comment object at 0x105a6b3e0>
-    // <conv.chunks.Comment object at 0x105a6b590>
+    // <conv.chunks.Comment object at 0x103bc6ff0>
+    // <conv.chunks.Comment object at 0x103bc7350>
+    // <conv.chunks.Comment object at 0x103bc73e0>
+    // <conv.chunks.Comment object at 0x103bc7590>
     lda(0x3);
     sta(0x4);
-    // <conv.chunks.Comment object at 0x105a6b7a0>
+    // <conv.chunks.Comment object at 0x103bc77a0>
     lsr();
     sta(0x3);
     ldy(Block_SprDataOffset, x);
@@ -21044,10 +21013,10 @@ int DrawBlock() {
 }
 
 int DBlkLoop() {
-    // <conv.chunks.Comment object at 0x105a6b950>
-    // <conv.chunks.Comment object at 0x105a6b9e0>
-    // <conv.chunks.Comment object at 0x105a6bb90>
-    // <conv.chunks.Comment object at 0x105a6bc20>
+    // <conv.chunks.Comment object at 0x103bc7950>
+    // <conv.chunks.Comment object at 0x103bc79e0>
+    // <conv.chunks.Comment object at 0x103bc7b90>
+    // <conv.chunks.Comment object at 0x103bc7c20>
     lda(offsetof(G, DefaultBlockObjTiles), x);
     sta(0x0);
     lda(((offsetof(G, DefaultBlockObjTiles)) + (1)), x);
@@ -21056,18 +21025,18 @@ int DBlkLoop() {
     BNE(DBlkLoop);
     ldx(ObjectOffset);
     ldy(Block_SprDataOffset, x);
-    // <conv.chunks.Comment object at 0x105a6be60>
-    // <conv.chunks.Comment object at 0x105a6bef0>
-    // <conv.chunks.Comment object at 0x105a7c1a0>
-    // <conv.chunks.Comment object at 0x105a7c2c0>
-    // <conv.chunks.Comment object at 0x105a7c350>
-    // <conv.chunks.Comment object at 0x105a7c500>
-    // <conv.chunks.Comment object at 0x105a7c620>
+    // <conv.chunks.Comment object at 0x103bc7e60>
+    // <conv.chunks.Comment object at 0x103bc7ef0>
+    // <conv.chunks.Comment object at 0x103bd81a0>
+    // <conv.chunks.Comment object at 0x103bd82c0>
+    // <conv.chunks.Comment object at 0x103bd8350>
+    // <conv.chunks.Comment object at 0x103bd8500>
+    // <conv.chunks.Comment object at 0x103bd8620>
     lda(AreaType);
     cmp(0x1);
     BEQ(ChkRep);
-    // <conv.chunks.Comment object at 0x105a7c860>
-    // <conv.chunks.Comment object at 0x105a7c8f0>
+    // <conv.chunks.Comment object at 0x103bd8860>
+    // <conv.chunks.Comment object at 0x103bd88f0>
     lda(0x86);
     sta(Sprite_Tilenumber, y);
     sta(((Sprite_Tilenumber) + (4)), y);
@@ -21075,9 +21044,9 @@ int DBlkLoop() {
 }
 
 int ChkRep() {
-    // <conv.chunks.Comment object at 0x105a7cb30>
-    // <conv.chunks.Comment object at 0x105a7cd10>
-    // <conv.chunks.Comment object at 0x105a7cf20>
+    // <conv.chunks.Comment object at 0x103bd8b30>
+    // <conv.chunks.Comment object at 0x103bd8d10>
+    // <conv.chunks.Comment object at 0x103bd8f20>
     lda(Block_Metatile, x);
     cmp(0xc4);
     BNE(BlkOffscr);
@@ -21086,13 +21055,13 @@ int ChkRep() {
     JSR(DumpFourSpr);
     dey();
     lda(0x3);
-    // <conv.chunks.Comment object at 0x105a7d0d0>
-    // <conv.chunks.Comment object at 0x105a7d160>
-    // <conv.chunks.Comment object at 0x105a7d310>
-    // <conv.chunks.Comment object at 0x105a7d460>
-    // <conv.chunks.Comment object at 0x105a7d4f0>
-    // <conv.chunks.Comment object at 0x105a7d640>
-    // <conv.chunks.Comment object at 0x105a7d6d0>
+    // <conv.chunks.Comment object at 0x103bd90d0>
+    // <conv.chunks.Comment object at 0x103bd9160>
+    // <conv.chunks.Comment object at 0x103bd9310>
+    // <conv.chunks.Comment object at 0x103bd9460>
+    // <conv.chunks.Comment object at 0x103bd94f0>
+    // <conv.chunks.Comment object at 0x103bd9640>
+    // <conv.chunks.Comment object at 0x103bd96d0>
     ldx(AreaType);
     dex();
     BEQ(SetBFlip);
@@ -21101,50 +21070,50 @@ int ChkRep() {
 }
 
 int SetBFlip() {
-    // <conv.chunks.Comment object at 0x105a7d910>
-    // <conv.chunks.Comment object at 0x105a7d9a0>
-    // <conv.chunks.Comment object at 0x105a7daf0>
-    // <conv.chunks.Comment object at 0x105a7db80>
+    // <conv.chunks.Comment object at 0x103bd9910>
+    // <conv.chunks.Comment object at 0x103bd99a0>
+    // <conv.chunks.Comment object at 0x103bd9af0>
+    // <conv.chunks.Comment object at 0x103bd9b80>
     ldx(ObjectOffset);
     sta(Sprite_Attributes, y);
-    // <conv.chunks.Comment object at 0x105a7dcd0>
+    // <conv.chunks.Comment object at 0x103bd9cd0>
     ora(0b1000000);
     sta(((Sprite_Attributes) + (4)), y);
-    // <conv.chunks.Comment object at 0x105a7df10>
+    // <conv.chunks.Comment object at 0x103bd9f10>
     ora(0b10000000);
     sta(((Sprite_Attributes) + (12)), y);
-    // <conv.chunks.Comment object at 0x105a7e210>
+    // <conv.chunks.Comment object at 0x103bda210>
     anda(0b10000011);
     sta(((Sprite_Attributes) + (8)), y);
     JMP(BlkOffscr);
 }
 
 int BlkOffscr() {
-    // <conv.chunks.Comment object at 0x105a7e510>
-    // <conv.chunks.Comment object at 0x105a7e720>
+    // <conv.chunks.Comment object at 0x103bda510>
+    // <conv.chunks.Comment object at 0x103bda720>
     lda(Block_OffscreenBits);
     pha();
     anda(0b100);
     BEQ(PullOfsB);
     lda(0xf8);
     sta(((Sprite_Y_Position) + (4)), y);
-    // <conv.chunks.Comment object at 0x105a7e8a0>
-    // <conv.chunks.Comment object at 0x105a7e930>
-    // <conv.chunks.Comment object at 0x105a7ea50>
-    // <conv.chunks.Comment object at 0x105a7eb70>
-    // <conv.chunks.Comment object at 0x105a7ec00>
+    // <conv.chunks.Comment object at 0x103bda8a0>
+    // <conv.chunks.Comment object at 0x103bda930>
+    // <conv.chunks.Comment object at 0x103bdaa50>
+    // <conv.chunks.Comment object at 0x103bdab70>
+    // <conv.chunks.Comment object at 0x103bdac00>
     sta(((Sprite_Y_Position) + (12)), y);
     JMP(PullOfsB);
 }
 
 int PullOfsB() {
-    // <conv.chunks.Comment object at 0x105a7f080>
+    // <conv.chunks.Comment object at 0x103bdb080>
     pla();
     JMP(ChkLeftCo);
 }
 
 int ChkLeftCo() {
-    // <conv.chunks.Comment object at 0x105a7f170>
+    // <conv.chunks.Comment object at 0x103bdb170>
     anda(0b1000);
     BEQ(ExDBlk);
     JMP(MoveColOffscreen);
@@ -21158,52 +21127,52 @@ int MoveColOffscreen() {
 }
 
 int ExDBlk() {
-    rts();
+    return 0;
     JMP(DrawBrickChunks);
 }
 
 int DrawBrickChunks() {
     lda(0x2);
-    // <conv.chunks.Comment object at 0x105a7f9e0>
-    // <conv.chunks.Comment object at 0x105a7fa40>
+    // <conv.chunks.Comment object at 0x103bdb9e0>
+    // <conv.chunks.Comment object at 0x103bdba40>
     sta(0x0);
     lda(0x75);
-    // <conv.chunks.Comment object at 0x105a7fad0>
+    // <conv.chunks.Comment object at 0x103bdbad0>
     ldy(GameEngineSubroutine);
     cpy(0x5);
     BEQ(DChunks);
     lda(0x3);
-    // <conv.chunks.Comment object at 0x105a7fe60>
-    // <conv.chunks.Comment object at 0x105a7fef0>
-    // <conv.chunks.Comment object at 0x105a88110>
+    // <conv.chunks.Comment object at 0x103bdbe60>
+    // <conv.chunks.Comment object at 0x103bdbef0>
+    // <conv.chunks.Comment object at 0x103be4110>
     sta(0x0);
     lda(0x84);
     JMP(DChunks);
 }
 
 int DChunks() {
-    // <conv.chunks.Comment object at 0x105a881a0>
-    // <conv.chunks.Comment object at 0x105a883b0>
+    // <conv.chunks.Comment object at 0x103be41a0>
+    // <conv.chunks.Comment object at 0x103be43b0>
     ldy(Block_SprDataOffset, x);
     iny();
     JSR(DumpFourSpr);
     lda(FrameCounter);
-    // <conv.chunks.Comment object at 0x105a88620>
-    // <conv.chunks.Comment object at 0x105a886b0>
-    // <conv.chunks.Comment object at 0x105a887d0>
+    // <conv.chunks.Comment object at 0x103be4620>
+    // <conv.chunks.Comment object at 0x103be46b0>
+    // <conv.chunks.Comment object at 0x103be47d0>
     asl();
     asl();
     asl();
-    // <conv.chunks.Comment object at 0x105a88a40>
+    // <conv.chunks.Comment object at 0x103be4a40>
     asl();
     anda(0xc0);
     ora(0x0);
     iny();
     JSR(DumpFourSpr);
-    // <conv.chunks.Comment object at 0x105a88b60>
-    // <conv.chunks.Comment object at 0x105a88cb0>
-    // <conv.chunks.Comment object at 0x105a88bf0>
-    // <conv.chunks.Comment object at 0x105a88e60>
+    // <conv.chunks.Comment object at 0x103be4b60>
+    // <conv.chunks.Comment object at 0x103be4cb0>
+    // <conv.chunks.Comment object at 0x103be4bf0>
+    // <conv.chunks.Comment object at 0x103be4e60>
     dey();
     dey();
     lda(Block_Rel_YPos);
@@ -21211,37 +21180,37 @@ int DChunks() {
     lda(Block_Rel_XPos);
     sta(Sprite_X_Position, y);
     lda(Block_Orig_XPos, x);
-    // <conv.chunks.Comment object at 0x105a89040>
-    // <conv.chunks.Comment object at 0x105a890d0>
-    // <conv.chunks.Comment object at 0x105a891f0>
-    // <conv.chunks.Comment object at 0x105a89310>
-    // <conv.chunks.Comment object at 0x105a89430>
-    // <conv.chunks.Comment object at 0x105a89580>
+    // <conv.chunks.Comment object at 0x103be5040>
+    // <conv.chunks.Comment object at 0x103be50d0>
+    // <conv.chunks.Comment object at 0x103be51f0>
+    // <conv.chunks.Comment object at 0x103be5310>
+    // <conv.chunks.Comment object at 0x103be5430>
+    // <conv.chunks.Comment object at 0x103be5580>
     sec();
     sbc(ScreenLeft_X_Pos);
     sta(0x0);
-    // <conv.chunks.Comment object at 0x105a89760>
-    // <conv.chunks.Comment object at 0x105a898b0>
+    // <conv.chunks.Comment object at 0x103be5760>
+    // <conv.chunks.Comment object at 0x103be58b0>
     sec();
     sbc(Block_Rel_XPos);
     adc(0x0);
     adc(0x6);
     sta(((Sprite_X_Position) + (4)), y);
     lda(((Block_Rel_YPos) + (1)));
-    // <conv.chunks.Comment object at 0x105a89a30>
-    // <conv.chunks.Comment object at 0x105a89b80>
-    // <conv.chunks.Comment object at 0x105a89c10>
-    // <conv.chunks.Comment object at 0x105a89d00>
-    // <conv.chunks.Comment object at 0x105a89fa0>
+    // <conv.chunks.Comment object at 0x103be5a30>
+    // <conv.chunks.Comment object at 0x103be5b80>
+    // <conv.chunks.Comment object at 0x103be5c10>
+    // <conv.chunks.Comment object at 0x103be5d00>
+    // <conv.chunks.Comment object at 0x103be5fa0>
     sta(((Sprite_Y_Position) + (8)), y);
     sta(((Sprite_Y_Position) + (12)), y);
     lda(((Block_Rel_XPos) + (1)));
     sta(((Sprite_X_Position) + (8)), y);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x105a8a360>
-    // <conv.chunks.Comment object at 0x105a8a570>
-    // <conv.chunks.Comment object at 0x105a8a750>
-    // <conv.chunks.Comment object at 0x105a8a990>
+    // <conv.chunks.Comment object at 0x103be6360>
+    // <conv.chunks.Comment object at 0x103be6570>
+    // <conv.chunks.Comment object at 0x103be6750>
+    // <conv.chunks.Comment object at 0x103be6990>
     sec();
     sbc(((Block_Rel_XPos) + (1)));
     adc(0x0);
@@ -21252,42 +21221,42 @@ int DChunks() {
     lda(Block_OffscreenBits);
     asl();
     BCC(ChnkOfs);
-    // <conv.chunks.Comment object at 0x105a8ab10>
-    // <conv.chunks.Comment object at 0x105a8ad20>
-    // <conv.chunks.Comment object at 0x105a8adb0>
-    // <conv.chunks.Comment object at 0x105a8aea0>
-    // <conv.chunks.Comment object at 0x105a8b140>
-    // <conv.chunks.Comment object at 0x105a8b260>
-    // <conv.chunks.Comment object at 0x105a8b380>
-    // <conv.chunks.Comment object at 0x105a8b4d0>
-    // <conv.chunks.Comment object at 0x105a8b560>
+    // <conv.chunks.Comment object at 0x103be6b10>
+    // <conv.chunks.Comment object at 0x103be6d20>
+    // <conv.chunks.Comment object at 0x103be6db0>
+    // <conv.chunks.Comment object at 0x103be6ea0>
+    // <conv.chunks.Comment object at 0x103be7140>
+    // <conv.chunks.Comment object at 0x103be7260>
+    // <conv.chunks.Comment object at 0x103be7380>
+    // <conv.chunks.Comment object at 0x103be74d0>
+    // <conv.chunks.Comment object at 0x103be7560>
     lda(0xf8);
     JSR(DumpTwoSpr);
     JMP(ChnkOfs);
 }
 
 int ChnkOfs() {
-    // <conv.chunks.Comment object at 0x105a8b710>
-    // <conv.chunks.Comment object at 0x105a8b8c0>
+    // <conv.chunks.Comment object at 0x103be7710>
+    // <conv.chunks.Comment object at 0x103be78c0>
     lda(0x0);
     BPL(ExBCDr);
     lda(Sprite_X_Position, y);
     cmp(((Sprite_X_Position) + (4)), y);
     BCC(ExBCDr);
     lda(0xf8);
-    // <conv.chunks.Comment object at 0x105a8b9e0>
-    // <conv.chunks.Comment object at 0x105a8bb90>
-    // <conv.chunks.Comment object at 0x105a8bce0>
-    // <conv.chunks.Comment object at 0x105a8bef0>
-    // <conv.chunks.Comment object at 0x105a90080>
+    // <conv.chunks.Comment object at 0x103be79e0>
+    // <conv.chunks.Comment object at 0x103be7b90>
+    // <conv.chunks.Comment object at 0x103be7ce0>
+    // <conv.chunks.Comment object at 0x103be7ef0>
+    // <conv.chunks.Comment object at 0x103bec080>
     sta(((Sprite_Y_Position) + (4)), y);
     sta(((Sprite_Y_Position) + (12)), y);
     JMP(ExBCDr);
 }
 
 int ExBCDr() {
-    // <conv.chunks.Comment object at 0x105a90590>
-    rts();
+    // <conv.chunks.Comment object at 0x103bec590>
+    return 0;
     JMP(DrawFireball);
 }
 
@@ -21303,8 +21272,8 @@ int DrawFireball() {
 int DrawFirebar() {
     lda(FrameCounter);
     lsr();
-    // <conv.chunks.Comment object at 0x105a90d70>
-    // <conv.chunks.Comment object at 0x105a90ec0>
+    // <conv.chunks.Comment object at 0x103becd70>
+    // <conv.chunks.Comment object at 0x103becec0>
     lsr();
     pha();
     anda(0x1);
@@ -21312,12 +21281,12 @@ int DrawFirebar() {
     sta(Sprite_Tilenumber, y);
     pla();
     lsr();
-    // <conv.chunks.Comment object at 0x105a91010>
-    // <conv.chunks.Comment object at 0x105a910a0>
-    // <conv.chunks.Comment object at 0x105a91130>
-    // <conv.chunks.Comment object at 0x105a91250>
-    // <conv.chunks.Comment object at 0x105a91460>
-    // <conv.chunks.Comment object at 0x105a91520>
+    // <conv.chunks.Comment object at 0x103bed010>
+    // <conv.chunks.Comment object at 0x103bed0a0>
+    // <conv.chunks.Comment object at 0x103bed130>
+    // <conv.chunks.Comment object at 0x103bed250>
+    // <conv.chunks.Comment object at 0x103bed460>
+    // <conv.chunks.Comment object at 0x103bed520>
     lsr();
     lda(0x2);
     BCC(FireA);
@@ -21326,12 +21295,12 @@ int DrawFirebar() {
 }
 
 int FireA() {
-    // <conv.chunks.Comment object at 0x105a91640>
-    // <conv.chunks.Comment object at 0x105a916d0>
-    // <conv.chunks.Comment object at 0x105a918b0>
-    // <conv.chunks.Comment object at 0x105a919d0>
+    // <conv.chunks.Comment object at 0x103bed640>
+    // <conv.chunks.Comment object at 0x103bed6d0>
+    // <conv.chunks.Comment object at 0x103bed8b0>
+    // <conv.chunks.Comment object at 0x103bed9d0>
     sta(Sprite_Attributes, y);
-    rts();
+    return 0;
     JMP(DrawExplosion_Fireball);
 }
 
@@ -21356,58 +21325,58 @@ int DrawExplosion_Fireworks() {
     lda(Fireball_Rel_YPos);
     sec();
     sbc(0x4);
-    // <conv.chunks.Comment object at 0x105a926c0>
-    // <conv.chunks.Comment object at 0x105a92750>
-    // <conv.chunks.Comment object at 0x105a928d0>
-    // <conv.chunks.Comment object at 0x105a92960>
-    // <conv.chunks.Comment object at 0x105a92ab0>
-    // <conv.chunks.Comment object at 0x105a92b40>
-    // <conv.chunks.Comment object at 0x105a92c60>
-    // <conv.chunks.Comment object at 0x105a92db0>
-    // <conv.chunks.Comment object at 0x105a92e40>
+    // <conv.chunks.Comment object at 0x103bee6c0>
+    // <conv.chunks.Comment object at 0x103bee750>
+    // <conv.chunks.Comment object at 0x103bee8d0>
+    // <conv.chunks.Comment object at 0x103bee960>
+    // <conv.chunks.Comment object at 0x103beeab0>
+    // <conv.chunks.Comment object at 0x103beeb40>
+    // <conv.chunks.Comment object at 0x103beec60>
+    // <conv.chunks.Comment object at 0x103beedb0>
+    // <conv.chunks.Comment object at 0x103beee40>
     sta(Sprite_Y_Position, y);
     sta(((Sprite_Y_Position) + (8)), y);
     clc();
     adc(0x8);
-    // <conv.chunks.Comment object at 0x105a93290>
-    // <conv.chunks.Comment object at 0x105a93320>
+    // <conv.chunks.Comment object at 0x103bef290>
+    // <conv.chunks.Comment object at 0x103bef320>
     sta(((Sprite_Y_Position) + (4)), y);
     sta(((Sprite_Y_Position) + (12)), y);
     lda(Fireball_Rel_XPos);
     sec();
     sbc(0x4);
-    // <conv.chunks.Comment object at 0x105a93800>
-    // <conv.chunks.Comment object at 0x105a93950>
-    // <conv.chunks.Comment object at 0x105a939e0>
+    // <conv.chunks.Comment object at 0x103bef800>
+    // <conv.chunks.Comment object at 0x103bef950>
+    // <conv.chunks.Comment object at 0x103bef9e0>
     sta(Sprite_X_Position, y);
     sta(((Sprite_X_Position) + (4)), y);
     clc();
     adc(0x8);
-    // <conv.chunks.Comment object at 0x105a93e30>
-    // <conv.chunks.Comment object at 0x105a93ec0>
+    // <conv.chunks.Comment object at 0x103befe30>
+    // <conv.chunks.Comment object at 0x103befec0>
     sta(((Sprite_X_Position) + (8)), y);
     sta(((Sprite_X_Position) + (12)), y);
     lda(0x2);
     sta(Sprite_Attributes, y);
-    // <conv.chunks.Comment object at 0x105a9c3e0>
-    // <conv.chunks.Comment object at 0x105a9c470>
+    // <conv.chunks.Comment object at 0x103bf83e0>
+    // <conv.chunks.Comment object at 0x103bf8470>
     lda(0x82);
     sta(((Sprite_Attributes) + (4)), y);
-    // <conv.chunks.Comment object at 0x105a9c6b0>
+    // <conv.chunks.Comment object at 0x103bf86b0>
     lda(0x42);
     sta(((Sprite_Attributes) + (8)), y);
-    // <conv.chunks.Comment object at 0x105a9c9b0>
+    // <conv.chunks.Comment object at 0x103bf89b0>
     lda(0xc2);
     sta(((Sprite_Attributes) + (12)), y);
-    rts();
+    return 0;
     JMP(KillFireBall);
 }
 
 int KillFireBall() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x105a9d040>
+    // <conv.chunks.Comment object at 0x103bf9040>
     sta(Fireball_State, x);
-    rts();
+    return 0;
     JMP(DrawSmallPlatform);
 }
 
@@ -21420,34 +21389,34 @@ int DrawSmallPlatform() {
     lda(0x2);
     JSR(DumpSixSpr);
     dey();
-    // <conv.chunks.Comment object at 0x105a9d370>
-    // <conv.chunks.Comment object at 0x105a9d4c0>
-    // <conv.chunks.Comment object at 0x105a9d610>
-    // <conv.chunks.Comment object at 0x105a9d6a0>
-    // <conv.chunks.Comment object at 0x105a9d7f0>
-    // <conv.chunks.Comment object at 0x105a9d880>
-    // <conv.chunks.Comment object at 0x105a9d910>
-    // <conv.chunks.Comment object at 0x105a9daf0>
+    // <conv.chunks.Comment object at 0x103bf9370>
+    // <conv.chunks.Comment object at 0x103bf94c0>
+    // <conv.chunks.Comment object at 0x103bf9610>
+    // <conv.chunks.Comment object at 0x103bf96a0>
+    // <conv.chunks.Comment object at 0x103bf97f0>
+    // <conv.chunks.Comment object at 0x103bf9880>
+    // <conv.chunks.Comment object at 0x103bf9910>
+    // <conv.chunks.Comment object at 0x103bf9af0>
     dey();
     lda(Enemy_Rel_XPos);
-    // <conv.chunks.Comment object at 0x105a9dc10>
+    // <conv.chunks.Comment object at 0x103bf9c10>
     sta(Sprite_X_Position, y);
     sta(((Sprite_X_Position) + (12)), y);
-    // <conv.chunks.Comment object at 0x105a9de50>
+    // <conv.chunks.Comment object at 0x103bf9e50>
     clc();
     adc(0x8);
     sta(((Sprite_X_Position) + (4)), y);
-    // <conv.chunks.Comment object at 0x105a9e0f0>
-    // <conv.chunks.Comment object at 0x105a9e180>
+    // <conv.chunks.Comment object at 0x103bfa0f0>
+    // <conv.chunks.Comment object at 0x103bfa180>
     sta(((Sprite_X_Position) + (16)), y);
     clc();
     adc(0x8);
     sta(((Sprite_X_Position) + (8)), y);
-    // <conv.chunks.Comment object at 0x105a9e690>
-    // <conv.chunks.Comment object at 0x105a9e720>
+    // <conv.chunks.Comment object at 0x103bfa690>
+    // <conv.chunks.Comment object at 0x103bfa720>
     sta(((Sprite_X_Position) + (20)), y);
     lda(Enemy_Y_Position, x);
-    // <conv.chunks.Comment object at 0x105a9eba0>
+    // <conv.chunks.Comment object at 0x103bfaba0>
     tax();
     pha();
     cpx(0x20);
@@ -21457,17 +21426,17 @@ int DrawSmallPlatform() {
 }
 
 int TopSP() {
-    // <conv.chunks.Comment object at 0x105a9edb0>
-    // <conv.chunks.Comment object at 0x105a9ee40>
-    // <conv.chunks.Comment object at 0x105a9eed0>
-    // <conv.chunks.Comment object at 0x105a9f0b0>
-    // <conv.chunks.Comment object at 0x105a9f140>
+    // <conv.chunks.Comment object at 0x103bfadb0>
+    // <conv.chunks.Comment object at 0x103bfae40>
+    // <conv.chunks.Comment object at 0x103bfaed0>
+    // <conv.chunks.Comment object at 0x103bfb0b0>
+    // <conv.chunks.Comment object at 0x103bfb140>
     JSR(DumpThreeSpr);
     pla();
-    // <conv.chunks.Comment object at 0x105a9f380>
+    // <conv.chunks.Comment object at 0x103bfb380>
     clc();
     adc(0x80);
-    // <conv.chunks.Comment object at 0x105a9f4a0>
+    // <conv.chunks.Comment object at 0x103bfb4a0>
     tax();
     cpx(0x20);
     BCS(BotSP);
@@ -21476,73 +21445,73 @@ int TopSP() {
 }
 
 int BotSP() {
-    // <conv.chunks.Comment object at 0x105a9f650>
-    // <conv.chunks.Comment object at 0x105a9f6e0>
-    // <conv.chunks.Comment object at 0x105a9f8c0>
-    // <conv.chunks.Comment object at 0x105a9f950>
+    // <conv.chunks.Comment object at 0x103bfb650>
+    // <conv.chunks.Comment object at 0x103bfb6e0>
+    // <conv.chunks.Comment object at 0x103bfb8c0>
+    // <conv.chunks.Comment object at 0x103bfb950>
     sta(((Sprite_Y_Position) + (12)), y);
     sta(((Sprite_Y_Position) + (16)), y);
-    // <conv.chunks.Comment object at 0x105a9fc50>
+    // <conv.chunks.Comment object at 0x103bfbc50>
     sta(((Sprite_Y_Position) + (20)), y);
     lda(Enemy_OffscreenBits);
     pha();
     anda(0b1000);
-    // <conv.chunks.Comment object at 0x105aa8080>
-    // <conv.chunks.Comment object at 0x105aa81d0>
-    // <conv.chunks.Comment object at 0x105aa8260>
+    // <conv.chunks.Comment object at 0x103c04080>
+    // <conv.chunks.Comment object at 0x103c041d0>
+    // <conv.chunks.Comment object at 0x103c04260>
     BEQ(SOfs);
     lda(0xf8);
     sta(Sprite_Y_Position, y);
-    // <conv.chunks.Comment object at 0x105aa84a0>
-    // <conv.chunks.Comment object at 0x105aa8530>
+    // <conv.chunks.Comment object at 0x103c044a0>
+    // <conv.chunks.Comment object at 0x103c04530>
     sta(((Sprite_Y_Position) + (12)), y);
     JMP(SOfs);
 }
 
 int SOfs() {
-    // <conv.chunks.Comment object at 0x105aa88f0>
+    // <conv.chunks.Comment object at 0x103c048f0>
     pla();
     pha();
     anda(0b100);
-    // <conv.chunks.Comment object at 0x105aa8aa0>
+    // <conv.chunks.Comment object at 0x103c04aa0>
     BEQ(SOfs2);
     lda(0xf8);
     sta(((Sprite_Y_Position) + (4)), y);
-    // <conv.chunks.Comment object at 0x105aa8ce0>
-    // <conv.chunks.Comment object at 0x105aa8d70>
+    // <conv.chunks.Comment object at 0x103c04ce0>
+    // <conv.chunks.Comment object at 0x103c04d70>
     sta(((Sprite_Y_Position) + (16)), y);
     JMP(SOfs2);
 }
 
 int SOfs2() {
-    // <conv.chunks.Comment object at 0x105aa91f0>
+    // <conv.chunks.Comment object at 0x103c051f0>
     pla();
     anda(0b10);
-    // <conv.chunks.Comment object at 0x105aa9310>
+    // <conv.chunks.Comment object at 0x103c05310>
     BEQ(ExSPl);
     lda(0xf8);
     sta(((Sprite_Y_Position) + (8)), y);
-    // <conv.chunks.Comment object at 0x105aa9550>
-    // <conv.chunks.Comment object at 0x105aa95e0>
+    // <conv.chunks.Comment object at 0x103c05550>
+    // <conv.chunks.Comment object at 0x103c055e0>
     sta(((Sprite_Y_Position) + (20)), y);
     JMP(ExSPl);
 }
 
 int ExSPl() {
-    // <conv.chunks.Comment object at 0x105aa9a60>
+    // <conv.chunks.Comment object at 0x103c05a60>
     ldx(ObjectOffset);
-    rts();
+    return 0;
     JMP(DrawBubble);
 }
 
 int DrawBubble() {
     ldy(Player_Y_HighPos);
     dey();
-    // <conv.chunks.Comment object at 0x105aa9cd0>
-    // <conv.chunks.Comment object at 0x105aa9e20>
+    // <conv.chunks.Comment object at 0x103c05cd0>
+    // <conv.chunks.Comment object at 0x103c05e20>
     BNE(ExDBub);
     lda(Bubble_OffscreenBits);
-    // <conv.chunks.Comment object at 0x105aa9fd0>
+    // <conv.chunks.Comment object at 0x103c05fd0>
     anda(0b1000);
     BNE(ExDBub);
     ldy(Bubble_SprDataOffset, x);
@@ -21550,32 +21519,32 @@ int DrawBubble() {
     sta(Sprite_X_Position, y);
     lda(Bubble_Rel_YPos);
     sta(Sprite_Y_Position, y);
-    // <conv.chunks.Comment object at 0x105aaa1e0>
-    // <conv.chunks.Comment object at 0x105aaa330>
-    // <conv.chunks.Comment object at 0x105aaa480>
-    // <conv.chunks.Comment object at 0x105aaa5a0>
-    // <conv.chunks.Comment object at 0x105aaa6f0>
-    // <conv.chunks.Comment object at 0x105aaa810>
+    // <conv.chunks.Comment object at 0x103c061e0>
+    // <conv.chunks.Comment object at 0x103c06330>
+    // <conv.chunks.Comment object at 0x103c06480>
+    // <conv.chunks.Comment object at 0x103c065a0>
+    // <conv.chunks.Comment object at 0x103c066f0>
+    // <conv.chunks.Comment object at 0x103c06810>
     lda(0x74);
     sta(Sprite_Tilenumber, y);
-    // <conv.chunks.Comment object at 0x105aaa9c0>
+    // <conv.chunks.Comment object at 0x103c069c0>
     lda(0x2);
     sta(Sprite_Attributes, y);
     JMP(ExDBub);
 }
 
 int ExDBub() {
-    // <conv.chunks.Comment object at 0x105aaac00>
-    // <conv.chunks.Comment object at 0x105aaae10>
-    rts();
+    // <conv.chunks.Comment object at 0x103c06c00>
+    // <conv.chunks.Comment object at 0x103c06e10>
+    return 0;
     JMP(PlayerGfxHandler);
 }
 
 int PlayerGfxHandler() {
     lda(InjuryTimer);
     BEQ(CntPl);
-    // <conv.chunks.Comment object at 0x105abaa20>
-    // <conv.chunks.Comment object at 0x105abb920>
+    // <conv.chunks.Comment object at 0x103c16a20>
+    // <conv.chunks.Comment object at 0x103c17920>
     lda(FrameCounter);
     lsr();
     BCS(ExPGH);
@@ -21583,52 +21552,52 @@ int PlayerGfxHandler() {
 }
 
 int CntPl() {
-    // <conv.chunks.Comment object at 0x105abbb90>
-    // <conv.chunks.Comment object at 0x105abbc20>
-    // <conv.chunks.Comment object at 0x105abbd70>
+    // <conv.chunks.Comment object at 0x103c17b90>
+    // <conv.chunks.Comment object at 0x103c17c20>
+    // <conv.chunks.Comment object at 0x103c17d70>
     lda(GameEngineSubroutine);
     cmp(0xb);
-    // <conv.chunks.Comment object at 0x105abbef0>
+    // <conv.chunks.Comment object at 0x103c17ef0>
     BEQ(PlayerKilled);
     lda(PlayerChangeSizeFlag);
     BNE(DoChangeSize);
     ldy(SwimmingFlag);
     BEQ(FindPlayerAction);
-    // <conv.chunks.Comment object at 0x105ac4140>
-    // <conv.chunks.Comment object at 0x105ac4260>
-    // <conv.chunks.Comment object at 0x105ac4380>
-    // <conv.chunks.Comment object at 0x105ac44a0>
+    // <conv.chunks.Comment object at 0x103c20140>
+    // <conv.chunks.Comment object at 0x103c20260>
+    // <conv.chunks.Comment object at 0x103c20380>
+    // <conv.chunks.Comment object at 0x103c204a0>
     lda(Player_State);
     cmp(0x0);
     BEQ(FindPlayerAction);
     JSR(FindPlayerAction);
-    // <conv.chunks.Comment object at 0x105ac46b0>
-    // <conv.chunks.Comment object at 0x105ac4740>
-    // <conv.chunks.Comment object at 0x105ac48f0>
+    // <conv.chunks.Comment object at 0x103c206b0>
+    // <conv.chunks.Comment object at 0x103c20740>
+    // <conv.chunks.Comment object at 0x103c208f0>
     lda(FrameCounter);
     anda(0b100);
     BNE(ExPGH);
     tax();
     ldy(Player_SprDataOffset);
     lda(PlayerFacingDir);
-    // <conv.chunks.Comment object at 0x105ac4b00>
-    // <conv.chunks.Comment object at 0x105ac4c20>
-    // <conv.chunks.Comment object at 0x105ac4da0>
-    // <conv.chunks.Comment object at 0x105ac4e30>
-    // <conv.chunks.Comment object at 0x105ac4f50>
+    // <conv.chunks.Comment object at 0x103c20b00>
+    // <conv.chunks.Comment object at 0x103c20c20>
+    // <conv.chunks.Comment object at 0x103c20da0>
+    // <conv.chunks.Comment object at 0x103c20e30>
+    // <conv.chunks.Comment object at 0x103c20f50>
     lsr();
     BCS(SwimKT);
-    // <conv.chunks.Comment object at 0x105ac5100>
+    // <conv.chunks.Comment object at 0x103c21100>
     iny();
     iny();
-    // <conv.chunks.Comment object at 0x105ac5310>
+    // <conv.chunks.Comment object at 0x103c21310>
     iny();
     iny();
     JMP(SwimKT);
 }
 
 int SwimKT() {
-    // <conv.chunks.Comment object at 0x105ac54c0>
+    // <conv.chunks.Comment object at 0x103c214c0>
     lda(PlayerSize);
     BEQ(BigKTS);
     lda(((Sprite_Tilenumber) + (24)), y);
@@ -21639,21 +21608,21 @@ int SwimKT() {
 }
 
 int BigKTS() {
-    // <conv.chunks.Comment object at 0x105ac5640>
-    // <conv.chunks.Comment object at 0x105ac5790>
-    // <conv.chunks.Comment object at 0x105ac59a0>
-    // <conv.chunks.Comment object at 0x105ac5ac0>
-    // <conv.chunks.Comment object at 0x105ac5c40>
-    // <conv.chunks.Comment object at 0x105ac5cd0>
+    // <conv.chunks.Comment object at 0x103c21640>
+    // <conv.chunks.Comment object at 0x103c21790>
+    // <conv.chunks.Comment object at 0x103c219a0>
+    // <conv.chunks.Comment object at 0x103c21ac0>
+    // <conv.chunks.Comment object at 0x103c21c40>
+    // <conv.chunks.Comment object at 0x103c21cd0>
     lda(offsetof(G, SwimKickTileNum), x);
     sta(((Sprite_Tilenumber) + (24)), y);
     JMP(ExPGH);
 }
 
 int ExPGH() {
-    // <conv.chunks.Comment object at 0x105ac5e80>
-    // <conv.chunks.Comment object at 0x105ac6090>
-    rts();
+    // <conv.chunks.Comment object at 0x103c21e80>
+    // <conv.chunks.Comment object at 0x103c22090>
+    return 0;
     JMP(FindPlayerAction);
 }
 
@@ -21677,12 +21646,12 @@ int PlayerKilled() {
 
 int PlayerGfxProcessing() {
     sta(PlayerGfxOffset);
-    // <conv.chunks.Comment object at 0x105ac6960>
+    // <conv.chunks.Comment object at 0x103c22960>
     lda(0x4);
     JSR(RenderPlayerSub);
     JSR(ChkForPlayerAttrib);
-    // <conv.chunks.Comment object at 0x105ac6ae0>
-    // <conv.chunks.Comment object at 0x105ac6c90>
+    // <conv.chunks.Comment object at 0x103c22ae0>
+    // <conv.chunks.Comment object at 0x103c22c90>
     lda(FireballThrowingTimer);
     BEQ(PlayerOffscreenChk);
     ldy(0x0);
@@ -21695,17 +21664,17 @@ int PlayerGfxProcessing() {
     lda(offsetof(G, PlayerGfxTblOffsets), y);
     sta(PlayerGfxOffset);
     ldy(0x4);
-    // <conv.chunks.Comment object at 0x105ac6ea0>
-    // <conv.chunks.Comment object at 0x105ac6fc0>
-    // <conv.chunks.Comment object at 0x105ac7050>
-    // <conv.chunks.Comment object at 0x105ac7200>
-    // <conv.chunks.Comment object at 0x105ac7320>
-    // <conv.chunks.Comment object at 0x105ac7440>
-    // <conv.chunks.Comment object at 0x105ac7560>
-    // <conv.chunks.Comment object at 0x105ac7680>
-    // <conv.chunks.Comment object at 0x105ac7710>
-    // <conv.chunks.Comment object at 0x105ac78f0>
-    // <conv.chunks.Comment object at 0x105ac7a10>
+    // <conv.chunks.Comment object at 0x103c22ea0>
+    // <conv.chunks.Comment object at 0x103c22fc0>
+    // <conv.chunks.Comment object at 0x103c23050>
+    // <conv.chunks.Comment object at 0x103c23200>
+    // <conv.chunks.Comment object at 0x103c23320>
+    // <conv.chunks.Comment object at 0x103c23440>
+    // <conv.chunks.Comment object at 0x103c23560>
+    // <conv.chunks.Comment object at 0x103c23680>
+    // <conv.chunks.Comment object at 0x103c23710>
+    // <conv.chunks.Comment object at 0x103c238f0>
+    // <conv.chunks.Comment object at 0x103c23a10>
     lda(Player_X_Speed);
     ora(Left_Right_Buttons);
     BEQ(SUpdR);
@@ -21714,10 +21683,10 @@ int PlayerGfxProcessing() {
 }
 
 int SUpdR() {
-    // <conv.chunks.Comment object at 0x105ac7c20>
-    // <conv.chunks.Comment object at 0x105ac7d40>
-    // <conv.chunks.Comment object at 0x105ac7ec0>
-    // <conv.chunks.Comment object at 0x105ac7f50>
+    // <conv.chunks.Comment object at 0x103c23c20>
+    // <conv.chunks.Comment object at 0x103c23d40>
+    // <conv.chunks.Comment object at 0x103c23ec0>
+    // <conv.chunks.Comment object at 0x103c23f50>
     tya();
     JSR(RenderPlayerSub);
     JMP(PlayerOffscreenChk);
@@ -21725,18 +21694,18 @@ int SUpdR() {
 
 int PlayerOffscreenChk() {
     lda(Player_OffscreenBits);
-    // <conv.chunks.Comment object at 0x105acc200>
+    // <conv.chunks.Comment object at 0x103c28200>
     lsr();
     lsr();
-    // <conv.chunks.Comment object at 0x105acc3e0>
+    // <conv.chunks.Comment object at 0x103c283e0>
     lsr();
     lsr();
     sta(0x0);
     ldx(0x3);
     lda(Player_SprDataOffset);
-    // <conv.chunks.Comment object at 0x105acc5c0>
-    // <conv.chunks.Comment object at 0x105acc650>
-    // <conv.chunks.Comment object at 0x105acc740>
+    // <conv.chunks.Comment object at 0x103c285c0>
+    // <conv.chunks.Comment object at 0x103c28650>
+    // <conv.chunks.Comment object at 0x103c28740>
     clc();
     adc(0x18);
     tay();
@@ -21744,9 +21713,9 @@ int PlayerOffscreenChk() {
 }
 
 int PROfsLoop() {
-    // <conv.chunks.Comment object at 0x105acc980>
-    // <conv.chunks.Comment object at 0x105accad0>
-    // <conv.chunks.Comment object at 0x105accb60>
+    // <conv.chunks.Comment object at 0x103c28980>
+    // <conv.chunks.Comment object at 0x103c28ad0>
+    // <conv.chunks.Comment object at 0x103c28b60>
     lda(0xf8);
     lsr(0x0);
     BCC(NPROffscr);
@@ -21758,12 +21727,12 @@ int NPROffscr() {
     tya();
     sec();
     sbc(0x8);
-    // <conv.chunks.Comment object at 0x105acd100>
-    // <conv.chunks.Comment object at 0x105acd190>
+    // <conv.chunks.Comment object at 0x103c29100>
+    // <conv.chunks.Comment object at 0x103c29190>
     tay();
     dex();
     BPL(PROfsLoop);
-    rts();
+    return 0;
     JMP(DrawPlayer_Intermediate);
 }
 
@@ -21773,11 +21742,11 @@ int DrawPlayer_Intermediate() {
 }
 
 int PIntLoop() {
-    // <conv.chunks.Comment object at 0x105acd6a0>
-    // <conv.chunks.Comment object at 0x105acd730>
+    // <conv.chunks.Comment object at 0x103c296a0>
+    // <conv.chunks.Comment object at 0x103c29730>
     lda(offsetof(G, IntermediatePlayerData), x);
     sta(0x2, x);
-    // <conv.chunks.Comment object at 0x105acdc70>
+    // <conv.chunks.Comment object at 0x103c29c70>
     dex();
     BPL(PIntLoop);
     ldx(0xb8);
@@ -21786,35 +21755,35 @@ int PIntLoop() {
     lda(((Sprite_Attributes) + (36)));
     ora(0b1000000);
     sta(((Sprite_Attributes) + (32)));
-    // <conv.chunks.Comment object at 0x105acde50>
-    // <conv.chunks.Comment object at 0x105acdf70>
-    // <conv.chunks.Comment object at 0x105ace000>
-    // <conv.chunks.Comment object at 0x105ace120>
-    // <conv.chunks.Comment object at 0x105ace2d0>
-    // <conv.chunks.Comment object at 0x105ace4b0>
-    // <conv.chunks.Comment object at 0x105ace5d0>
-    rts();
+    // <conv.chunks.Comment object at 0x103c29e50>
+    // <conv.chunks.Comment object at 0x103c29f70>
+    // <conv.chunks.Comment object at 0x103c2a000>
+    // <conv.chunks.Comment object at 0x103c2a120>
+    // <conv.chunks.Comment object at 0x103c2a2d0>
+    // <conv.chunks.Comment object at 0x103c2a4b0>
+    // <conv.chunks.Comment object at 0x103c2a5d0>
+    return 0;
     JMP(RenderPlayerSub);
 }
 
 int RenderPlayerSub() {
     sta(0x7);
-    // <conv.chunks.Comment object at 0x105ace870>
-    // <conv.chunks.Comment object at 0x105ace8d0>
-    // <conv.chunks.Comment object at 0x105ace930>
-    // <conv.chunks.Comment object at 0x105ace990>
-    // <conv.chunks.Comment object at 0x105acea20>
+    // <conv.chunks.Comment object at 0x103c2a870>
+    // <conv.chunks.Comment object at 0x103c2a8d0>
+    // <conv.chunks.Comment object at 0x103c2a930>
+    // <conv.chunks.Comment object at 0x103c2a990>
+    // <conv.chunks.Comment object at 0x103c2aa20>
     lda(Player_Rel_XPos);
     sta(Player_Pos_ForScroll);
     sta(0x5);
-    // <conv.chunks.Comment object at 0x105acec00>
-    // <conv.chunks.Comment object at 0x105aced50>
+    // <conv.chunks.Comment object at 0x103c2ac00>
+    // <conv.chunks.Comment object at 0x103c2ad50>
     lda(Player_Rel_YPos);
     sta(0x2);
-    // <conv.chunks.Comment object at 0x105acef60>
+    // <conv.chunks.Comment object at 0x103c2af60>
     lda(PlayerFacingDir);
     sta(0x3);
-    // <conv.chunks.Comment object at 0x105acf170>
+    // <conv.chunks.Comment object at 0x103c2b170>
     lda(Player_SprAttrib);
     sta(0x4);
     ldx(PlayerGfxOffset);
@@ -21824,31 +21793,31 @@ int RenderPlayerSub() {
 
 int DrawPlayerLoop() {
     lda(offsetof(G, PlayerGraphicsTable), x);
-    // <conv.chunks.Comment object at 0x105acf6e0>
+    // <conv.chunks.Comment object at 0x103c2b6e0>
     sta(0x0);
     lda(((offsetof(G, PlayerGraphicsTable)) + (1)), x);
-    // <conv.chunks.Comment object at 0x105acf830>
+    // <conv.chunks.Comment object at 0x103c2b830>
     JSR(DrawOneSpriteRow);
     dec(0x7);
     BNE(DrawPlayerLoop);
-    // <conv.chunks.Comment object at 0x105acfc50>
-    // <conv.chunks.Comment object at 0x105acfce0>
-    rts();
+    // <conv.chunks.Comment object at 0x103c2bc50>
+    // <conv.chunks.Comment object at 0x103c2bce0>
+    return 0;
     JMP(ProcessPlayerAction);
 }
 
 int ProcessPlayerAction() {
     lda(Player_State);
-    // <conv.chunks.Comment object at 0x105acff20>
+    // <conv.chunks.Comment object at 0x103c2bf20>
     cmp(0x3);
     BEQ(ActionClimbing);
-    // <conv.chunks.Comment object at 0x105ad80e0>
+    // <conv.chunks.Comment object at 0x103c340e0>
     cmp(0x2);
     BEQ(ActionFalling);
-    // <conv.chunks.Comment object at 0x105ad82f0>
+    // <conv.chunks.Comment object at 0x103c342f0>
     cmp(0x1);
     BNE(ProcOnGroundActs);
-    // <conv.chunks.Comment object at 0x105ad8500>
+    // <conv.chunks.Comment object at 0x103c34500>
     lda(SwimmingFlag);
     BNE(ActionSwimming);
     ldy(0x6);
@@ -21868,14 +21837,14 @@ int ProcOnGroundActs() {
     ora(Left_Right_Buttons);
     BEQ(NonAnimatedActs);
     lda(Player_XSpeedAbsolute);
-    // <conv.chunks.Comment object at 0x105ad8e90>
-    // <conv.chunks.Comment object at 0x105ad8f20>
-    // <conv.chunks.Comment object at 0x105ad90d0>
-    // <conv.chunks.Comment object at 0x105ad91f0>
-    // <conv.chunks.Comment object at 0x105ad9280>
-    // <conv.chunks.Comment object at 0x105ad9430>
-    // <conv.chunks.Comment object at 0x105ad9550>
-    // <conv.chunks.Comment object at 0x105ad9670>
+    // <conv.chunks.Comment object at 0x103c34e90>
+    // <conv.chunks.Comment object at 0x103c34f20>
+    // <conv.chunks.Comment object at 0x103c350d0>
+    // <conv.chunks.Comment object at 0x103c351f0>
+    // <conv.chunks.Comment object at 0x103c35280>
+    // <conv.chunks.Comment object at 0x103c35430>
+    // <conv.chunks.Comment object at 0x103c35550>
+    // <conv.chunks.Comment object at 0x103c35670>
     cmp(0x9);
     BCC(ActionWalkRun);
     lda(Player_MovingDir);
@@ -21887,13 +21856,13 @@ int ProcOnGroundActs() {
 
 int NonAnimatedActs() {
     JSR(GetGfxOffsetAdder);
-    // <conv.chunks.Comment object at 0x105ad9df0>
+    // <conv.chunks.Comment object at 0x103c35df0>
     lda(0x0);
     sta(PlayerAnimCtrl);
     lda(offsetof(G, PlayerGfxTblOffsets), y);
-    // <conv.chunks.Comment object at 0x105ad9f70>
-    // <conv.chunks.Comment object at 0x105ada120>
-    rts();
+    // <conv.chunks.Comment object at 0x103c35f70>
+    // <conv.chunks.Comment object at 0x103c36120>
+    return 0;
     JMP(ActionFalling);
 }
 
@@ -21922,14 +21891,14 @@ int ActionClimbing() {
 
 int ActionSwimming() {
     ldy(0x1);
-    // <conv.chunks.Comment object at 0x105adb020>
+    // <conv.chunks.Comment object at 0x103c37020>
     JSR(GetGfxOffsetAdder);
     lda(JumpSwimTimer);
     ora(PlayerAnimCtrl);
     BNE(FourFrameExtent);
-    // <conv.chunks.Comment object at 0x105adb230>
-    // <conv.chunks.Comment object at 0x105adb350>
-    // <conv.chunks.Comment object at 0x105adb470>
+    // <conv.chunks.Comment object at 0x103c37230>
+    // <conv.chunks.Comment object at 0x103c37350>
+    // <conv.chunks.Comment object at 0x103c37470>
     lda(A_B_Buttons);
     asl();
     BCS(FourFrameExtent);
@@ -21961,16 +21930,16 @@ int AnimationControl() {
     BNE(ExAnimC);
     lda(PlayerAnimTimerSet);
     sta(PlayerAnimTimer);
-    // <conv.chunks.Comment object at 0x105adbef0>
-    // <conv.chunks.Comment object at 0x105adbf80>
-    // <conv.chunks.Comment object at 0x105ae4170>
-    // <conv.chunks.Comment object at 0x105ae4200>
-    // <conv.chunks.Comment object at 0x105ae4320>
-    // <conv.chunks.Comment object at 0x105ae4470>
-    // <conv.chunks.Comment object at 0x105ae4590>
+    // <conv.chunks.Comment object at 0x103c37ef0>
+    // <conv.chunks.Comment object at 0x103c37f80>
+    // <conv.chunks.Comment object at 0x103c40170>
+    // <conv.chunks.Comment object at 0x103c40200>
+    // <conv.chunks.Comment object at 0x103c40320>
+    // <conv.chunks.Comment object at 0x103c40470>
+    // <conv.chunks.Comment object at 0x103c40590>
     lda(PlayerAnimCtrl);
     clc();
-    // <conv.chunks.Comment object at 0x105ae47d0>
+    // <conv.chunks.Comment object at 0x103c407d0>
     adc(0x1);
     cmp(0x0);
     BCC(SetAnimC);
@@ -21979,18 +21948,18 @@ int AnimationControl() {
 }
 
 int SetAnimC() {
-    // <conv.chunks.Comment object at 0x105ae4980>
-    // <conv.chunks.Comment object at 0x105ae4a10>
-    // <conv.chunks.Comment object at 0x105ae4b90>
-    // <conv.chunks.Comment object at 0x105ae4c20>
+    // <conv.chunks.Comment object at 0x103c40980>
+    // <conv.chunks.Comment object at 0x103c40a10>
+    // <conv.chunks.Comment object at 0x103c40b90>
+    // <conv.chunks.Comment object at 0x103c40c20>
     sta(PlayerAnimCtrl);
     JMP(ExAnimC);
 }
 
 int ExAnimC() {
-    // <conv.chunks.Comment object at 0x105ae4e00>
+    // <conv.chunks.Comment object at 0x103c40e00>
     pla();
-    rts();
+    return 0;
     JMP(GetGfxOffsetAdder);
 }
 
@@ -22000,24 +21969,24 @@ int GetGfxOffsetAdder() {
     tya();
     clc();
     adc(0x8);
-    // <conv.chunks.Comment object at 0x105ae4fe0>
-    // <conv.chunks.Comment object at 0x105ae5100>
-    // <conv.chunks.Comment object at 0x105ae5280>
-    // <conv.chunks.Comment object at 0x105ae5340>
-    // <conv.chunks.Comment object at 0x105ae53d0>
+    // <conv.chunks.Comment object at 0x103c40fe0>
+    // <conv.chunks.Comment object at 0x103c41100>
+    // <conv.chunks.Comment object at 0x103c41280>
+    // <conv.chunks.Comment object at 0x103c41340>
+    // <conv.chunks.Comment object at 0x103c413d0>
     tay();
     JMP(SzOfs);
 }
 
 int SzOfs() {
-    // <conv.chunks.Comment object at 0x105ae55b0>
-    rts();
+    // <conv.chunks.Comment object at 0x103c415b0>
+    return 0;
     JMP(HandleChangeSize);
 }
 
 int HandleChangeSize() {
     ldy(PlayerAnimCtrl);
-    // <conv.chunks.Comment object at 0x105ae5790>
+    // <conv.chunks.Comment object at 0x103c41790>
     lda(FrameCounter);
     anda(0b11);
     BNE(GorSLog);
@@ -22030,20 +21999,20 @@ int HandleChangeSize() {
 }
 
 int CSzNext() {
-    // <conv.chunks.Comment object at 0x105ae6480>
-    // <conv.chunks.Comment object at 0x105ae65a0>
-    // <conv.chunks.Comment object at 0x105ae6720>
-    // <conv.chunks.Comment object at 0x105ae67b0>
-    // <conv.chunks.Comment object at 0x105ae6840>
-    // <conv.chunks.Comment object at 0x105ae6a20>
-    // <conv.chunks.Comment object at 0x105ae6ab0>
-    // <conv.chunks.Comment object at 0x105ae6c60>
+    // <conv.chunks.Comment object at 0x103c42480>
+    // <conv.chunks.Comment object at 0x103c425a0>
+    // <conv.chunks.Comment object at 0x103c42720>
+    // <conv.chunks.Comment object at 0x103c427b0>
+    // <conv.chunks.Comment object at 0x103c42840>
+    // <conv.chunks.Comment object at 0x103c42a20>
+    // <conv.chunks.Comment object at 0x103c42ab0>
+    // <conv.chunks.Comment object at 0x103c42c60>
     sty(PlayerAnimCtrl);
     JMP(GorSLog);
 }
 
 int GorSLog() {
-    // <conv.chunks.Comment object at 0x105ae6de0>
+    // <conv.chunks.Comment object at 0x103c42de0>
     lda(PlayerSize);
     BNE(ShrinkPlayer);
     lda(offsetof(G, ChangeSizeOffsetAdder), y);
@@ -22056,13 +22025,13 @@ int GetOffsetFromAnimCtrl() {
     asl();
     asl();
     adc(offsetof(G, PlayerGfxTblOffsets), y);
-    rts();
+    return 0;
     JMP(ShrinkPlayer);
 }
 
 int ShrinkPlayer() {
     tya();
-    // <conv.chunks.Comment object at 0x105ae77d0>
+    // <conv.chunks.Comment object at 0x103c437d0>
     clc();
     adc(0xa);
     tax();
@@ -22074,37 +22043,37 @@ int ShrinkPlayer() {
 }
 
 int ShrPlF() {
-    // <conv.chunks.Comment object at 0x105ae78f0>
-    // <conv.chunks.Comment object at 0x105ae7a40>
-    // <conv.chunks.Comment object at 0x105ae7ad0>
-    // <conv.chunks.Comment object at 0x105ae7b60>
-    // <conv.chunks.Comment object at 0x105ae7d40>
-    // <conv.chunks.Comment object at 0x105ae7e90>
-    // <conv.chunks.Comment object at 0x105ae7f20>
+    // <conv.chunks.Comment object at 0x103c438f0>
+    // <conv.chunks.Comment object at 0x103c43a40>
+    // <conv.chunks.Comment object at 0x103c43ad0>
+    // <conv.chunks.Comment object at 0x103c43b60>
+    // <conv.chunks.Comment object at 0x103c43d40>
+    // <conv.chunks.Comment object at 0x103c43e90>
+    // <conv.chunks.Comment object at 0x103c43f20>
     lda(offsetof(G, PlayerGfxTblOffsets), y);
-    rts();
+    return 0;
     JMP(ChkForPlayerAttrib);
 }
 
 int ChkForPlayerAttrib() {
     ldy(Player_SprDataOffset);
-    // <conv.chunks.Comment object at 0x105aec290>
+    // <conv.chunks.Comment object at 0x103c48290>
     lda(GameEngineSubroutine);
     cmp(0xb);
     BEQ(KilledAtt);
     lda(PlayerGfxOffset);
-    // <conv.chunks.Comment object at 0x105aec4a0>
-    // <conv.chunks.Comment object at 0x105aec530>
-    // <conv.chunks.Comment object at 0x105aec6e0>
+    // <conv.chunks.Comment object at 0x103c484a0>
+    // <conv.chunks.Comment object at 0x103c48530>
+    // <conv.chunks.Comment object at 0x103c486e0>
     cmp(0x50);
     BEQ(C_S_IGAtt);
     cmp(0xb8);
     BEQ(C_S_IGAtt);
     cmp(0xc0);
-    // <conv.chunks.Comment object at 0x105aec860>
-    // <conv.chunks.Comment object at 0x105aeca10>
-    // <conv.chunks.Comment object at 0x105aecaa0>
-    // <conv.chunks.Comment object at 0x105aecc50>
+    // <conv.chunks.Comment object at 0x103c48860>
+    // <conv.chunks.Comment object at 0x103c48a10>
+    // <conv.chunks.Comment object at 0x103c48aa0>
+    // <conv.chunks.Comment object at 0x103c48c50>
     BEQ(C_S_IGAtt);
     cmp(0xc8);
     BNE(ExPlyrAt);
@@ -22115,8 +22084,8 @@ int KilledAtt() {
     lda(((Sprite_Attributes) + (16)), y);
     anda(0b111111);
     sta(((Sprite_Attributes) + (16)), y);
-    // <conv.chunks.Comment object at 0x105aed280>
-    // <conv.chunks.Comment object at 0x105aed3a0>
+    // <conv.chunks.Comment object at 0x103c49280>
+    // <conv.chunks.Comment object at 0x103c493a0>
     lda(((Sprite_Attributes) + (20)), y);
     anda(0b111111);
     ora(0b1000000);
@@ -22128,8 +22097,8 @@ int C_S_IGAtt() {
     lda(((Sprite_Attributes) + (24)), y);
     anda(0b111111);
     sta(((Sprite_Attributes) + (24)), y);
-    // <conv.chunks.Comment object at 0x105aeddc0>
-    // <conv.chunks.Comment object at 0x105aedee0>
+    // <conv.chunks.Comment object at 0x103c49dc0>
+    // <conv.chunks.Comment object at 0x103c49ee0>
     lda(((Sprite_Attributes) + (28)), y);
     anda(0b111111);
     ora(0b1000000);
@@ -22138,10 +22107,10 @@ int C_S_IGAtt() {
 }
 
 int ExPlyrAt() {
-    // <conv.chunks.Comment object at 0x105aee3c0>
-    // <conv.chunks.Comment object at 0x105aee4e0>
-    // <conv.chunks.Comment object at 0x105aee720>
-    rts();
+    // <conv.chunks.Comment object at 0x103c4a3c0>
+    // <conv.chunks.Comment object at 0x103c4a4e0>
+    // <conv.chunks.Comment object at 0x103c4a720>
+    return 0;
     JMP(RelativePlayerPosition);
 }
 
@@ -22155,8 +22124,8 @@ int RelativePlayerPosition() {
 int RelativeBubblePosition() {
     ldy(0x1);
     JSR(GetProperObjOffset);
-    // <conv.chunks.Comment object at 0x105aeec60>
-    // <conv.chunks.Comment object at 0x105aeecf0>
+    // <conv.chunks.Comment object at 0x103c4ac60>
+    // <conv.chunks.Comment object at 0x103c4acf0>
     ldy(0x3);
     JMP(RelWOfs);
     JMP(RelativeFireballPosition);
@@ -22165,25 +22134,25 @@ int RelativeBubblePosition() {
 int RelativeFireballPosition() {
     ldy(0x0);
     JSR(GetProperObjOffset);
-    // <conv.chunks.Comment object at 0x105aef110>
-    // <conv.chunks.Comment object at 0x105aef1a0>
+    // <conv.chunks.Comment object at 0x103c4b110>
+    // <conv.chunks.Comment object at 0x103c4b1a0>
     ldy(0x2);
     JMP(RelWOfs);
 }
 
 int RelWOfs() {
-    // <conv.chunks.Comment object at 0x105aef3b0>
+    // <conv.chunks.Comment object at 0x103c4b3b0>
     JSR(GetObjRelativePosition);
     ldx(ObjectOffset);
-    rts();
+    return 0;
     JMP(RelativeMiscPosition);
 }
 
 int RelativeMiscPosition() {
     ldy(0x2);
     JSR(GetProperObjOffset);
-    // <conv.chunks.Comment object at 0x105aef800>
-    // <conv.chunks.Comment object at 0x105aef890>
+    // <conv.chunks.Comment object at 0x103c4b800>
+    // <conv.chunks.Comment object at 0x103c4b890>
     ldy(0x6);
     JMP(RelWOfs);
     JMP(RelativeEnemyPosition);
@@ -22192,8 +22161,8 @@ int RelativeMiscPosition() {
 int RelativeEnemyPosition() {
     lda(0x1);
     ldy(0x1);
-    // <conv.chunks.Comment object at 0x105aefcb0>
-    // <conv.chunks.Comment object at 0x105aefd40>
+    // <conv.chunks.Comment object at 0x103c4bcb0>
+    // <conv.chunks.Comment object at 0x103c4bd40>
     JMP(VariableObjOfsRelPos);
     JMP(RelativeBlockPosition);
 }
@@ -22201,11 +22170,11 @@ int RelativeEnemyPosition() {
 int RelativeBlockPosition() {
     lda(0x9);
     ldy(0x4);
-    // <conv.chunks.Comment object at 0x105af8050>
-    // <conv.chunks.Comment object at 0x105af80e0>
+    // <conv.chunks.Comment object at 0x103c54050>
+    // <conv.chunks.Comment object at 0x103c540e0>
     JSR(VariableObjOfsRelPos);
     inx();
-    // <conv.chunks.Comment object at 0x105af83b0>
+    // <conv.chunks.Comment object at 0x103c543b0>
     inx();
     lda(0x9);
     iny();
@@ -22214,16 +22183,16 @@ int RelativeBlockPosition() {
 
 int VariableObjOfsRelPos() {
     stx(0x0);
-    // <conv.chunks.Comment object at 0x105af86e0>
+    // <conv.chunks.Comment object at 0x103c546e0>
     clc();
     adc(0x0);
     tax();
-    // <conv.chunks.Comment object at 0x105af8890>
-    // <conv.chunks.Comment object at 0x105af8860>
+    // <conv.chunks.Comment object at 0x103c54890>
+    // <conv.chunks.Comment object at 0x103c54860>
     JSR(GetObjRelativePosition);
     ldx(ObjectOffset);
-    // <conv.chunks.Comment object at 0x105af8b30>
-    rts();
+    // <conv.chunks.Comment object at 0x103c54b30>
+    return 0;
     JMP(GetObjRelativePosition);
 }
 
@@ -22232,23 +22201,23 @@ int GetObjRelativePosition() {
     sta(SprObject_Rel_YPos, y);
     lda(SprObject_X_Position, x);
     sec();
-    // <conv.chunks.Comment object at 0x105af8d10>
-    // <conv.chunks.Comment object at 0x105af8e60>
-    // <conv.chunks.Comment object at 0x105af8fb0>
-    // <conv.chunks.Comment object at 0x105af9130>
+    // <conv.chunks.Comment object at 0x103c54d10>
+    // <conv.chunks.Comment object at 0x103c54e60>
+    // <conv.chunks.Comment object at 0x103c54fb0>
+    // <conv.chunks.Comment object at 0x103c55130>
     sbc(ScreenLeft_X_Pos);
     sta(SprObject_Rel_XPos, y);
-    // <conv.chunks.Comment object at 0x105af92b0>
-    rts();
+    // <conv.chunks.Comment object at 0x103c552b0>
+    return 0;
     JMP(GetPlayerOffscreenBits);
 }
 
 int GetPlayerOffscreenBits() {
     ldx(0x0);
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x105af94c0>
-    // <conv.chunks.Comment object at 0x105af9520>
-    // <conv.chunks.Comment object at 0x105af95b0>
+    // <conv.chunks.Comment object at 0x103c554c0>
+    // <conv.chunks.Comment object at 0x103c55520>
+    // <conv.chunks.Comment object at 0x103c555b0>
     JMP(GetOffScreenBitsSet);
     JMP(GetFireballOffscreenBits);
 }
@@ -22279,21 +22248,21 @@ int GetMiscOffscreenBits() {
 
 int GetProperObjOffset() {
     txa();
-    // <conv.chunks.Comment object at 0x105afa720>
+    // <conv.chunks.Comment object at 0x103c56720>
     clc();
     adc(offsetof(G, ObjOffsetData), y);
     tax();
-    // <conv.chunks.Comment object at 0x105afa9c0>
-    // <conv.chunks.Comment object at 0x105afab40>
-    rts();
+    // <conv.chunks.Comment object at 0x103c569c0>
+    // <conv.chunks.Comment object at 0x103c56b40>
+    return 0;
     JMP(GetEnemyOffscreenBits);
 }
 
 int GetEnemyOffscreenBits() {
     lda(0x1);
     ldy(0x1);
-    // <conv.chunks.Comment object at 0x105afac90>
-    // <conv.chunks.Comment object at 0x105afad20>
+    // <conv.chunks.Comment object at 0x103c56c90>
+    // <conv.chunks.Comment object at 0x103c56d20>
     JMP(SetOffscrBitsOffset);
     JMP(GetBlockOffscreenBits);
 }
@@ -22308,47 +22277,47 @@ int SetOffscrBitsOffset() {
     stx(0x0);
     clc();
     adc(0x0);
-    // <conv.chunks.Comment object at 0x105afb2f0>
-    // <conv.chunks.Comment object at 0x105afb440>
+    // <conv.chunks.Comment object at 0x103c572f0>
+    // <conv.chunks.Comment object at 0x103c57440>
     tax();
     JMP(GetOffScreenBitsSet);
 }
 
 int GetOffScreenBitsSet() {
     tya();
-    // <conv.chunks.Comment object at 0x105afb620>
+    // <conv.chunks.Comment object at 0x103c57620>
     pha();
     JSR(RunOffscrBitsSubs);
     asl();
-    // <conv.chunks.Comment object at 0x105afb860>
+    // <conv.chunks.Comment object at 0x103c57860>
     asl();
     asl();
     asl();
     ora(0x0);
     sta(0x0);
     pla();
-    // <conv.chunks.Comment object at 0x105afbad0>
-    // <conv.chunks.Comment object at 0x105afbaa0>
-    // <conv.chunks.Comment object at 0x105afbb60>
+    // <conv.chunks.Comment object at 0x103c57ad0>
+    // <conv.chunks.Comment object at 0x103c57aa0>
+    // <conv.chunks.Comment object at 0x103c57b60>
     tay();
     lda(0x0);
-    // <conv.chunks.Comment object at 0x105afbe60>
+    // <conv.chunks.Comment object at 0x103c57e60>
     sta(SprObject_OffscrBits, y);
     ldx(ObjectOffset);
-    rts();
+    return 0;
     JMP(RunOffscrBitsSubs);
 }
 
 int RunOffscrBitsSubs() {
     JSR(GetXOffscreenBits);
     lsr();
-    // <conv.chunks.Comment object at 0x105b00260>
-    // <conv.chunks.Comment object at 0x105b003b0>
+    // <conv.chunks.Comment object at 0x103c5c260>
+    // <conv.chunks.Comment object at 0x103c5c3b0>
     lsr();
     lsr();
     lsr();
     sta(0x0);
-    // <conv.chunks.Comment object at 0x105b00620>
+    // <conv.chunks.Comment object at 0x103c5c620>
     JMP(GetYOffscreenBits);
     JMP(GetXOffscreenBits);
 }
@@ -22360,9 +22329,9 @@ int GetXOffscreenBits() {
 }
 
 int XOfsLoop() {
-    // <conv.chunks.Comment object at 0x105b00a70>
-    // <conv.chunks.Comment object at 0x105b01520>
-    // <conv.chunks.Comment object at 0x105b01610>
+    // <conv.chunks.Comment object at 0x103c5ca70>
+    // <conv.chunks.Comment object at 0x103c5d520>
+    // <conv.chunks.Comment object at 0x103c5d610>
     lda(ScreenEdge_X_Pos, y);
     sec();
     sbc(SprObject_X_Position, x);
@@ -22370,36 +22339,36 @@ int XOfsLoop() {
     lda(ScreenEdge_PageLoc, y);
     sbc(SprObject_PageLoc, x);
     ldx(offsetof(G, DefaultXOnscreenOfs), y);
-    // <conv.chunks.Comment object at 0x105b01850>
-    // <conv.chunks.Comment object at 0x105b018e0>
-    // <conv.chunks.Comment object at 0x105b01a60>
-    // <conv.chunks.Comment object at 0x105b01af0>
-    // <conv.chunks.Comment object at 0x105b01ca0>
-    // <conv.chunks.Comment object at 0x105b01df0>
+    // <conv.chunks.Comment object at 0x103c5d850>
+    // <conv.chunks.Comment object at 0x103c5d8e0>
+    // <conv.chunks.Comment object at 0x103c5da60>
+    // <conv.chunks.Comment object at 0x103c5daf0>
+    // <conv.chunks.Comment object at 0x103c5dca0>
+    // <conv.chunks.Comment object at 0x103c5ddf0>
     cmp(0x0);
     BMI(XLdBData);
     ldx(((offsetof(G, DefaultXOnscreenOfs)) + (1)), y);
-    // <conv.chunks.Comment object at 0x105b01fa0>
-    // <conv.chunks.Comment object at 0x105b02150>
+    // <conv.chunks.Comment object at 0x103c5dfa0>
+    // <conv.chunks.Comment object at 0x103c5e150>
     cmp(0x1);
     BPL(XLdBData);
     lda(0x38);
-    // <conv.chunks.Comment object at 0x105b023c0>
-    // <conv.chunks.Comment object at 0x105b02570>
+    // <conv.chunks.Comment object at 0x103c5e3c0>
+    // <conv.chunks.Comment object at 0x103c5e570>
     sta(0x6);
     lda(0x8);
-    // <conv.chunks.Comment object at 0x105b02600>
+    // <conv.chunks.Comment object at 0x103c5e600>
     JSR(DividePDiff);
     JMP(XLdBData);
 }
 
 int XLdBData() {
-    // <conv.chunks.Comment object at 0x105b02990>
+    // <conv.chunks.Comment object at 0x103c5e990>
     lda(offsetof(G, XOffscreenBitsData), x);
     ldx(0x4);
     cmp(0x0);
-    // <conv.chunks.Comment object at 0x105b02b40>
-    // <conv.chunks.Comment object at 0x105b02bd0>
+    // <conv.chunks.Comment object at 0x103c5eb40>
+    // <conv.chunks.Comment object at 0x103c5ebd0>
     BNE(ExXOfsBS);
     dey();
     BPL(XOfsLoop);
@@ -22407,7 +22376,7 @@ int XLdBData() {
 }
 
 int ExXOfsBS() {
-    rts();
+    return 0;
     JMP(GetYOffscreenBits);
 }
 
@@ -22418,53 +22387,53 @@ int GetYOffscreenBits() {
 }
 
 int YOfsLoop() {
-    // <conv.chunks.Comment object at 0x105b03170>
-    // <conv.chunks.Comment object at 0x105b03a70>
-    // <conv.chunks.Comment object at 0x105b03b60>
+    // <conv.chunks.Comment object at 0x103c5f170>
+    // <conv.chunks.Comment object at 0x103c5fa70>
+    // <conv.chunks.Comment object at 0x103c5fb60>
     lda(offsetof(G, HighPosUnitData), y);
     sec();
     sbc(SprObject_Y_Position, x);
     sta(0x7);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x105b03e00>
-    // <conv.chunks.Comment object at 0x105b03f80>
-    // <conv.chunks.Comment object at 0x105b03f50>
+    // <conv.chunks.Comment object at 0x103c5fe00>
+    // <conv.chunks.Comment object at 0x103c5ff80>
+    // <conv.chunks.Comment object at 0x103c5ff50>
     sbc(SprObject_Y_HighPos, x);
     ldx(offsetof(G, DefaultYOnscreenOfs), y);
-    // <conv.chunks.Comment object at 0x105b102f0>
+    // <conv.chunks.Comment object at 0x103c6c2f0>
     cmp(0x0);
     BMI(YLdBData);
     ldx(((offsetof(G, DefaultYOnscreenOfs)) + (1)), y);
-    // <conv.chunks.Comment object at 0x105b104a0>
-    // <conv.chunks.Comment object at 0x105b10650>
+    // <conv.chunks.Comment object at 0x103c6c4a0>
+    // <conv.chunks.Comment object at 0x103c6c650>
     cmp(0x1);
     BPL(YLdBData);
     lda(0x20);
-    // <conv.chunks.Comment object at 0x105b108c0>
-    // <conv.chunks.Comment object at 0x105b10a70>
+    // <conv.chunks.Comment object at 0x103c6c8c0>
+    // <conv.chunks.Comment object at 0x103c6ca70>
     sta(0x6);
     lda(0x4);
-    // <conv.chunks.Comment object at 0x105b10b00>
+    // <conv.chunks.Comment object at 0x103c6cb00>
     JSR(DividePDiff);
     JMP(YLdBData);
 }
 
 int YLdBData() {
-    // <conv.chunks.Comment object at 0x105b10e90>
+    // <conv.chunks.Comment object at 0x103c6ce90>
     lda(offsetof(G, YOffscreenBitsData), x);
     ldx(0x4);
-    // <conv.chunks.Comment object at 0x105b11040>
+    // <conv.chunks.Comment object at 0x103c6d040>
     cmp(0x0);
     BNE(ExYOfsBS);
     dey();
-    // <conv.chunks.Comment object at 0x105b11190>
-    // <conv.chunks.Comment object at 0x105b11370>
+    // <conv.chunks.Comment object at 0x103c6d190>
+    // <conv.chunks.Comment object at 0x103c6d370>
     BPL(YOfsLoop);
     JMP(ExYOfsBS);
 }
 
 int ExYOfsBS() {
-    rts();
+    return 0;
     JMP(DividePDiff);
 }
 
@@ -22474,11 +22443,11 @@ int DividePDiff() {
     cmp(0x6);
     BCS(ExDivPD);
     lsr();
-    // <conv.chunks.Comment object at 0x105b11640>
-    // <conv.chunks.Comment object at 0x105b11610>
-    // <conv.chunks.Comment object at 0x105b116d0>
-    // <conv.chunks.Comment object at 0x105b11910>
-    // <conv.chunks.Comment object at 0x105b11af0>
+    // <conv.chunks.Comment object at 0x103c6d640>
+    // <conv.chunks.Comment object at 0x103c6d610>
+    // <conv.chunks.Comment object at 0x103c6d6d0>
+    // <conv.chunks.Comment object at 0x103c6d910>
+    // <conv.chunks.Comment object at 0x103c6daf0>
     lsr();
     lsr();
     anda(0x7);
@@ -22489,37 +22458,37 @@ int DividePDiff() {
 }
 
 int SetOscrO() {
-    // <conv.chunks.Comment object at 0x105b11ca0>
-    // <conv.chunks.Comment object at 0x105b11d30>
-    // <conv.chunks.Comment object at 0x105b11e50>
-    // <conv.chunks.Comment object at 0x105b12030>
-    // <conv.chunks.Comment object at 0x105b120c0>
+    // <conv.chunks.Comment object at 0x103c6dca0>
+    // <conv.chunks.Comment object at 0x103c6dd30>
+    // <conv.chunks.Comment object at 0x103c6de50>
+    // <conv.chunks.Comment object at 0x103c6e030>
+    // <conv.chunks.Comment object at 0x103c6e0c0>
     tax();
     JMP(ExDivPD);
 }
 
 int ExDivPD() {
-    // <conv.chunks.Comment object at 0x105b12240>
-    rts();
+    // <conv.chunks.Comment object at 0x103c6e240>
+    return 0;
     JMP(DrawSpriteObject);
 }
 
 int DrawSpriteObject() {
     lda(0x3);
-    // <conv.chunks.Comment object at 0x105b12390>
-    // <conv.chunks.Comment object at 0x105b123f0>
-    // <conv.chunks.Comment object at 0x105b12450>
-    // <conv.chunks.Comment object at 0x105b124e0>
+    // <conv.chunks.Comment object at 0x103c6e390>
+    // <conv.chunks.Comment object at 0x103c6e3f0>
+    // <conv.chunks.Comment object at 0x103c6e450>
+    // <conv.chunks.Comment object at 0x103c6e4e0>
     lsr();
     lsr();
-    // <conv.chunks.Comment object at 0x105b12690>
+    // <conv.chunks.Comment object at 0x103c6e690>
     lda(0x0);
     BCC(NoHFlip);
     sta(((Sprite_Tilenumber) + (4)), y);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x105b12720>
-    // <conv.chunks.Comment object at 0x105b12960>
-    // <conv.chunks.Comment object at 0x105b12ba0>
+    // <conv.chunks.Comment object at 0x103c6e720>
+    // <conv.chunks.Comment object at 0x103c6e960>
+    // <conv.chunks.Comment object at 0x103c6eba0>
     sta(Sprite_Tilenumber, y);
     lda(0x40);
     BNE(SetHFAt);
@@ -22527,99 +22496,99 @@ int DrawSpriteObject() {
 }
 
 int NoHFlip() {
-    // <conv.chunks.Comment object at 0x105b12db0>
-    // <conv.chunks.Comment object at 0x105b12e40>
-    // <conv.chunks.Comment object at 0x105b13020>
+    // <conv.chunks.Comment object at 0x103c6edb0>
+    // <conv.chunks.Comment object at 0x103c6ee40>
+    // <conv.chunks.Comment object at 0x103c6f020>
     sta(Sprite_Tilenumber, y);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x105b13200>
+    // <conv.chunks.Comment object at 0x103c6f200>
     sta(((Sprite_Tilenumber) + (4)), y);
     lda(0x0);
     JMP(SetHFAt);
 }
 
 int SetHFAt() {
-    // <conv.chunks.Comment object at 0x105b134d0>
-    // <conv.chunks.Comment object at 0x105b13560>
+    // <conv.chunks.Comment object at 0x103c6f4d0>
+    // <conv.chunks.Comment object at 0x103c6f560>
     ora(0x4);
     sta(Sprite_Attributes, y);
-    // <conv.chunks.Comment object at 0x105b13710>
+    // <conv.chunks.Comment object at 0x103c6f710>
     sta(((Sprite_Attributes) + (4)), y);
     lda(0x2);
     sta(Sprite_Y_Position, y);
     sta(((Sprite_Y_Position) + (4)), y);
-    // <conv.chunks.Comment object at 0x105b13ad0>
-    // <conv.chunks.Comment object at 0x105b13b60>
-    // <conv.chunks.Comment object at 0x105b13d10>
+    // <conv.chunks.Comment object at 0x103c6fad0>
+    // <conv.chunks.Comment object at 0x103c6fb60>
+    // <conv.chunks.Comment object at 0x103c6fd10>
     lda(0x5);
     sta(Sprite_X_Position, y);
     clc();
     adc(0x8);
-    // <conv.chunks.Comment object at 0x105b13f20>
-    // <conv.chunks.Comment object at 0x105b181d0>
-    // <conv.chunks.Comment object at 0x105b18260>
+    // <conv.chunks.Comment object at 0x103c6ff20>
+    // <conv.chunks.Comment object at 0x103c741d0>
+    // <conv.chunks.Comment object at 0x103c74260>
     sta(((Sprite_X_Position) + (4)), y);
     lda(0x2);
     clc();
-    // <conv.chunks.Comment object at 0x105b18590>
-    // <conv.chunks.Comment object at 0x105b18560>
+    // <conv.chunks.Comment object at 0x103c74590>
+    // <conv.chunks.Comment object at 0x103c74560>
     adc(0x8);
     sta(0x2);
     tya();
     clc();
-    // <conv.chunks.Comment object at 0x105b188c0>
-    // <conv.chunks.Comment object at 0x105b18a10>
+    // <conv.chunks.Comment object at 0x103c748c0>
+    // <conv.chunks.Comment object at 0x103c74a10>
     adc(0x8);
     tay();
     inx();
     inx();
-    // <conv.chunks.Comment object at 0x105b18c50>
-    // <conv.chunks.Comment object at 0x105b18d10>
-    rts();
+    // <conv.chunks.Comment object at 0x103c74c50>
+    // <conv.chunks.Comment object at 0x103c74d10>
+    return 0;
     JMP(SoundEngine);
 }
 
 int SoundEngine() {
     lda(OperMode);
-    // <conv.chunks.Comment object at 0x105b18f20>
+    // <conv.chunks.Comment object at 0x103c74f20>
     BNE(SndOn);
     sta(SND_MASTERCTRL_REG);
-    // <conv.chunks.Comment object at 0x105b19490>
-    rts();
+    // <conv.chunks.Comment object at 0x103c75490>
+    return 0;
     JMP(SndOn);
 }
 
 int SndOn() {
     lda(0xff);
     sta(JOYPAD_PORT2);
-    // <conv.chunks.Comment object at 0x105b19700>
+    // <conv.chunks.Comment object at 0x103c75700>
     lda(0xf);
     sta(SND_MASTERCTRL_REG);
     lda(PauseModeFlag);
-    // <conv.chunks.Comment object at 0x105b19910>
-    // <conv.chunks.Comment object at 0x105b19ac0>
+    // <conv.chunks.Comment object at 0x103c75910>
+    // <conv.chunks.Comment object at 0x103c75ac0>
     BNE(InPause);
     lda(PauseSoundQueue);
-    // <conv.chunks.Comment object at 0x105b19d00>
+    // <conv.chunks.Comment object at 0x103c75d00>
     cmp(0x1);
     BNE(RunSoundSubroutines);
     JMP(InPause);
 }
 
 int InPause() {
-    // <conv.chunks.Comment object at 0x105b19e80>
-    // <conv.chunks.Comment object at 0x105b1a030>
+    // <conv.chunks.Comment object at 0x103c75e80>
+    // <conv.chunks.Comment object at 0x103c76030>
     lda(PauseSoundBuffer);
     BNE(ContPau);
     lda(PauseSoundQueue);
-    // <conv.chunks.Comment object at 0x105b1a2d0>
+    // <conv.chunks.Comment object at 0x103c762d0>
     BEQ(SkipSoundSubroutines);
     sta(PauseSoundBuffer);
     sta(PauseModeFlag);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x105b1a4e0>
-    // <conv.chunks.Comment object at 0x105b1a600>
-    // <conv.chunks.Comment object at 0x105b1a720>
+    // <conv.chunks.Comment object at 0x103c764e0>
+    // <conv.chunks.Comment object at 0x103c76600>
+    // <conv.chunks.Comment object at 0x103c76720>
     sta(SND_MASTERCTRL_REG);
     sta(Square1SoundBuffer);
     sta(Square2SoundBuffer);
@@ -22627,28 +22596,28 @@ int InPause() {
     lda(0xf);
     sta(SND_MASTERCTRL_REG);
     lda(0x2a);
-    // <conv.chunks.Comment object at 0x105b1ac60>
-    // <conv.chunks.Comment object at 0x105b1ae10>
+    // <conv.chunks.Comment object at 0x103c76c60>
+    // <conv.chunks.Comment object at 0x103c76e10>
     sta(Squ1_SfxLenCounter);
     JMP(PTone1F);
 }
 
 int PTone1F() {
-    // <conv.chunks.Comment object at 0x105b1b020>
+    // <conv.chunks.Comment object at 0x103c77020>
     lda(0x44);
     BNE(PTRegC);
     JMP(ContPau);
 }
 
 int ContPau() {
-    // <conv.chunks.Comment object at 0x105b1b110>
-    // <conv.chunks.Comment object at 0x105b1b2f0>
+    // <conv.chunks.Comment object at 0x103c77110>
+    // <conv.chunks.Comment object at 0x103c772f0>
     lda(Squ1_SfxLenCounter);
     cmp(0x24);
-    // <conv.chunks.Comment object at 0x105b1b470>
+    // <conv.chunks.Comment object at 0x103c77470>
     BEQ(PTone2F);
     cmp(0x1e);
-    // <conv.chunks.Comment object at 0x105b1b6b0>
+    // <conv.chunks.Comment object at 0x103c776b0>
     BEQ(PTone1F);
     cmp(0x18);
     BNE(DecPauC);
@@ -22656,9 +22625,9 @@ int ContPau() {
 }
 
 int PTone2F() {
-    // <conv.chunks.Comment object at 0x105b1b8f0>
-    // <conv.chunks.Comment object at 0x105b1b980>
-    // <conv.chunks.Comment object at 0x105b1bb60>
+    // <conv.chunks.Comment object at 0x103c778f0>
+    // <conv.chunks.Comment object at 0x103c77980>
+    // <conv.chunks.Comment object at 0x103c77b60>
     lda(0x64);
     JMP(PTRegC);
 }
@@ -22671,26 +22640,26 @@ int PTRegC() {
 }
 
 int DecPauC() {
-    // <conv.chunks.Comment object at 0x105b20050>
+    // <conv.chunks.Comment object at 0x103c7c050>
     dec(Squ1_SfxLenCounter);
     BNE(SkipSoundSubroutines);
     lda(0x0);
     sta(SND_MASTERCTRL_REG);
     lda(PauseSoundBuffer);
     cmp(0x2);
-    // <conv.chunks.Comment object at 0x105b202c0>
-    // <conv.chunks.Comment object at 0x105b20350>
-    // <conv.chunks.Comment object at 0x105b20500>
-    // <conv.chunks.Comment object at 0x105b20620>
+    // <conv.chunks.Comment object at 0x103c7c2c0>
+    // <conv.chunks.Comment object at 0x103c7c350>
+    // <conv.chunks.Comment object at 0x103c7c500>
+    // <conv.chunks.Comment object at 0x103c7c620>
     BNE(SkipPIn);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x105b20860>
+    // <conv.chunks.Comment object at 0x103c7c860>
     sta(PauseModeFlag);
     JMP(SkipPIn);
 }
 
 int SkipPIn() {
-    // <conv.chunks.Comment object at 0x105b20a70>
+    // <conv.chunks.Comment object at 0x103c7ca70>
     lda(0x0);
     sta(PauseSoundBuffer);
     BEQ(SkipSoundSubroutines);
@@ -22703,11 +22672,11 @@ int RunSoundSubroutines() {
     JSR(NoiseSfxHandler);
     JSR(MusicHandler);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x105b20e00>
-    // <conv.chunks.Comment object at 0x105b20f20>
-    // <conv.chunks.Comment object at 0x105b21040>
-    // <conv.chunks.Comment object at 0x105b21160>
-    // <conv.chunks.Comment object at 0x105b21280>
+    // <conv.chunks.Comment object at 0x103c7ce00>
+    // <conv.chunks.Comment object at 0x103c7cf20>
+    // <conv.chunks.Comment object at 0x103c7d040>
+    // <conv.chunks.Comment object at 0x103c7d160>
+    // <conv.chunks.Comment object at 0x103c7d280>
     sta(AreaMusicQueue);
     sta(EventMusicQueue);
     JMP(SkipSoundSubroutines);
@@ -22715,19 +22684,19 @@ int RunSoundSubroutines() {
 
 int SkipSoundSubroutines() {
     lda(0x0);
-    // <conv.chunks.Comment object at 0x105b215b0>
+    // <conv.chunks.Comment object at 0x103c7d5b0>
     sta(Square1SoundQueue);
     sta(Square2SoundQueue);
     sta(NoiseSoundQueue);
     sta(PauseSoundQueue);
     ldy(DAC_Counter);
-    // <conv.chunks.Comment object at 0x105b21a90>
+    // <conv.chunks.Comment object at 0x103c7da90>
     lda(AreaMusicBuffer);
     anda(0b11);
-    // <conv.chunks.Comment object at 0x105b21ca0>
+    // <conv.chunks.Comment object at 0x103c7dca0>
     BEQ(NoIncDAC);
     inc(DAC_Counter);
-    // <conv.chunks.Comment object at 0x105b21eb0>
+    // <conv.chunks.Comment object at 0x103c7deb0>
     cpy(0x30);
     BCC(StrWave);
     JMP(NoIncDAC);
@@ -22741,19 +22710,19 @@ int NoIncDAC() {
 }
 
 int StrWave() {
-    // <conv.chunks.Comment object at 0x105b222d0>
-    // <conv.chunks.Comment object at 0x105b22420>
-    // <conv.chunks.Comment object at 0x105b22540>
+    // <conv.chunks.Comment object at 0x103c7e2d0>
+    // <conv.chunks.Comment object at 0x103c7e420>
+    // <conv.chunks.Comment object at 0x103c7e540>
     sty(((SND_DELTA_REG) + (1)));
-    rts();
+    return 0;
     JMP(Dump_Squ1_Regs);
 }
 
 int Dump_Squ1_Regs() {
     sty(((SND_SQUARE1_REG) + (1)));
-    // <conv.chunks.Comment object at 0x105b228a0>
+    // <conv.chunks.Comment object at 0x103c7e8a0>
     stx(SND_SQUARE1_REG);
-    rts();
+    return 0;
     JMP(PlaySqu1Sfx);
 }
 
@@ -22774,25 +22743,25 @@ int Dump_Freq_Regs() {
     sta(((SND_REGISTER) + (2)), x);
     lda(offsetof(G, FreqRegLookupTbl), y);
     ora(0b1000);
-    // <conv.chunks.Comment object at 0x105b22f60>
-    // <conv.chunks.Comment object at 0x105b23170>
-    // <conv.chunks.Comment object at 0x105b232c0>
-    // <conv.chunks.Comment object at 0x105b234d0>
-    // <conv.chunks.Comment object at 0x105b23620>
+    // <conv.chunks.Comment object at 0x103c7ef60>
+    // <conv.chunks.Comment object at 0x103c7f170>
+    // <conv.chunks.Comment object at 0x103c7f2c0>
+    // <conv.chunks.Comment object at 0x103c7f4d0>
+    // <conv.chunks.Comment object at 0x103c7f620>
     sta(((SND_REGISTER) + (3)), x);
     JMP(NoTone);
 }
 
 int NoTone() {
-    rts();
+    return 0;
     JMP(Dump_Sq2_Regs);
 }
 
 int Dump_Sq2_Regs() {
     stx(SND_SQUARE2_REG);
-    // <conv.chunks.Comment object at 0x105b23a40>
+    // <conv.chunks.Comment object at 0x103c7fa40>
     sty(((SND_SQUARE2_REG) + (1)));
-    rts();
+    return 0;
     JMP(PlaySqu2Sfx);
 }
 
@@ -22815,20 +22784,20 @@ int SetFreq_Tri() {
 
 int PlayFlagpoleSlide() {
     lda(0x40);
-    // <conv.chunks.Comment object at 0x105b2c500>
+    // <conv.chunks.Comment object at 0x103c88500>
     sta(Squ1_SfxLenCounter);
     lda(0x62);
-    // <conv.chunks.Comment object at 0x105b2ce90>
+    // <conv.chunks.Comment object at 0x103c88e90>
     JSR(SetFreq_Squ1);
     ldx(0x99);
-    // <conv.chunks.Comment object at 0x105b2d0a0>
+    // <conv.chunks.Comment object at 0x103c890a0>
     BNE(FPS2nd);
     JMP(PlaySmallJump);
 }
 
 int PlaySmallJump() {
     lda(0x26);
-    // <conv.chunks.Comment object at 0x105b2d310>
+    // <conv.chunks.Comment object at 0x103c89310>
     BNE(JumpRegContents);
     JMP(PlayBigJump);
 }
@@ -22841,8 +22810,8 @@ int PlayBigJump() {
 int JumpRegContents() {
     ldx(0x82);
     ldy(0xa7);
-    // <conv.chunks.Comment object at 0x105b2d6a0>
-    // <conv.chunks.Comment object at 0x105b2d730>
+    // <conv.chunks.Comment object at 0x103c896a0>
+    // <conv.chunks.Comment object at 0x103c89730>
     JSR(PlaySqu1Sfx);
     lda(0x28);
     sta(Squ1_SfxLenCounter);
@@ -22852,19 +22821,19 @@ int JumpRegContents() {
 int ContinueSndJump() {
     lda(Squ1_SfxLenCounter);
     cmp(0x25);
-    // <conv.chunks.Comment object at 0x105b2dc40>
-    // <conv.chunks.Comment object at 0x105b2dd60>
+    // <conv.chunks.Comment object at 0x103c89c40>
+    // <conv.chunks.Comment object at 0x103c89d60>
     BNE(N2Prt);
     ldx(0x5f);
-    // <conv.chunks.Comment object at 0x105b2dfa0>
+    // <conv.chunks.Comment object at 0x103c89fa0>
     ldy(0xf6);
     BNE(DmpJpFPS);
     JMP(N2Prt);
 }
 
 int N2Prt() {
-    // <conv.chunks.Comment object at 0x105b2e120>
-    // <conv.chunks.Comment object at 0x105b2e2d0>
+    // <conv.chunks.Comment object at 0x103c8a120>
+    // <conv.chunks.Comment object at 0x103c8a2d0>
     cmp(0x20);
     BNE(DecJpFPS);
     ldx(0x48);
@@ -22872,8 +22841,8 @@ int N2Prt() {
 }
 
 int FPS2nd() {
-    // <conv.chunks.Comment object at 0x105b2e540>
-    // <conv.chunks.Comment object at 0x105b2e5d0>
+    // <conv.chunks.Comment object at 0x103c8a540>
+    // <conv.chunks.Comment object at 0x103c8a5d0>
     ldy(0xbc);
     JMP(DmpJpFPS);
 }
@@ -22893,64 +22862,64 @@ int PlayFireballThrow() {
 
 int PlayBump() {
     lda(0xa);
-    // <conv.chunks.Comment object at 0x105b2ede0>
+    // <conv.chunks.Comment object at 0x103c8ade0>
     ldy(0x93);
     JMP(Fthrow);
 }
 
 int Fthrow() {
-    // <conv.chunks.Comment object at 0x105b2ef60>
+    // <conv.chunks.Comment object at 0x103c8af60>
     ldx(0x9e);
     sta(Squ1_SfxLenCounter);
     lda(0xc);
-    // <conv.chunks.Comment object at 0x105b2f260>
+    // <conv.chunks.Comment object at 0x103c8b260>
     JSR(PlaySqu1Sfx);
     JMP(ContinueBumpThrow);
 }
 
 int ContinueBumpThrow() {
     lda(Squ1_SfxLenCounter);
-    // <conv.chunks.Comment object at 0x105b2f4a0>
+    // <conv.chunks.Comment object at 0x103c8b4a0>
     cmp(0x6);
     BNE(DecJpFPS);
     lda(0xbb);
-    // <conv.chunks.Comment object at 0x105b2f7a0>
+    // <conv.chunks.Comment object at 0x103c8b7a0>
     sta(((SND_SQUARE1_REG) + (1)));
     JMP(DecJpFPS);
 }
 
 int DecJpFPS() {
-    // <conv.chunks.Comment object at 0x105b2fa70>
+    // <conv.chunks.Comment object at 0x103c8ba70>
     BNE(BranchToDecLength1);
     JMP(Square1SfxHandler);
 }
 
 int Square1SfxHandler() {
     ldy(Square1SoundQueue);
-    // <conv.chunks.Comment object at 0x105b2fbf0>
+    // <conv.chunks.Comment object at 0x103c8bbf0>
     BEQ(CheckSfx1Buffer);
     sty(Square1SoundBuffer);
     BMI(PlaySmallJump);
-    // <conv.chunks.Comment object at 0x105b2fe00>
-    // <conv.chunks.Comment object at 0x105b2ff20>
+    // <conv.chunks.Comment object at 0x103c8be00>
+    // <conv.chunks.Comment object at 0x103c8bf20>
     lsr(Square1SoundQueue);
     BCS(PlayBigJump);
-    // <conv.chunks.Comment object at 0x105b34170>
+    // <conv.chunks.Comment object at 0x103c90170>
     lsr(Square1SoundQueue);
     BCS(PlayBump);
-    // <conv.chunks.Comment object at 0x105b343b0>
+    // <conv.chunks.Comment object at 0x103c903b0>
     lsr(Square1SoundQueue);
     BCS(PlaySwimStomp);
-    // <conv.chunks.Comment object at 0x105b345c0>
+    // <conv.chunks.Comment object at 0x103c905c0>
     lsr(Square1SoundQueue);
     BCS(PlaySmackEnemy);
-    // <conv.chunks.Comment object at 0x105b347d0>
+    // <conv.chunks.Comment object at 0x103c907d0>
     lsr(Square1SoundQueue);
     BCS(PlayPipeDownInj);
-    // <conv.chunks.Comment object at 0x105b349e0>
+    // <conv.chunks.Comment object at 0x103c909e0>
     lsr(Square1SoundQueue);
     BCS(PlayFireballThrow);
-    // <conv.chunks.Comment object at 0x105b34bf0>
+    // <conv.chunks.Comment object at 0x103c90bf0>
     lsr(Square1SoundQueue);
     BCS(PlayFlagpoleSlide);
     JMP(CheckSfx1Buffer);
@@ -22960,43 +22929,43 @@ int CheckSfx1Buffer() {
     lda(Square1SoundBuffer);
     BEQ(ExS1H);
     BMI(ContinueSndJump);
-    // <conv.chunks.Comment object at 0x105b34f50>
-    // <conv.chunks.Comment object at 0x105b35070>
-    // <conv.chunks.Comment object at 0x105b351c0>
+    // <conv.chunks.Comment object at 0x103c90f50>
+    // <conv.chunks.Comment object at 0x103c91070>
+    // <conv.chunks.Comment object at 0x103c911c0>
     lsr();
     BCS(ContinueSndJump);
-    // <conv.chunks.Comment object at 0x105b35370>
+    // <conv.chunks.Comment object at 0x103c91370>
     lsr();
     BCS(ContinueBumpThrow);
-    // <conv.chunks.Comment object at 0x105b35550>
+    // <conv.chunks.Comment object at 0x103c91550>
     lsr();
     BCS(ContinueSwimStomp);
-    // <conv.chunks.Comment object at 0x105b35700>
+    // <conv.chunks.Comment object at 0x103c91700>
     lsr();
     BCS(ContinueSmackEnemy);
-    // <conv.chunks.Comment object at 0x105b358b0>
+    // <conv.chunks.Comment object at 0x103c918b0>
     lsr();
     BCS(ContinuePipeDownInj);
-    // <conv.chunks.Comment object at 0x105b35a60>
+    // <conv.chunks.Comment object at 0x103c91a60>
     lsr();
     BCS(ContinueBumpThrow);
-    // <conv.chunks.Comment object at 0x105b35c10>
+    // <conv.chunks.Comment object at 0x103c91c10>
     lsr();
     BCS(DecrementSfx1Length);
     JMP(ExS1H);
 }
 
 int ExS1H() {
-    rts();
+    return 0;
     JMP(PlaySwimStomp);
 }
 
 int PlaySwimStomp() {
     lda(0xe);
-    // <conv.chunks.Comment object at 0x105b36000>
+    // <conv.chunks.Comment object at 0x103c92000>
     sta(Squ1_SfxLenCounter);
     ldy(0x9c);
-    // <conv.chunks.Comment object at 0x105b36210>
+    // <conv.chunks.Comment object at 0x103c92210>
     ldx(0x9e);
     lda(0x26);
     JSR(PlaySqu1Sfx);
@@ -23007,9 +22976,9 @@ int ContinueSwimStomp() {
     ldy(Squ1_SfxLenCounter);
     lda(((offsetof(G, SwimStompEnvelopeData)) - (1)), y);
     sta(SND_SQUARE1_REG);
-    // <conv.chunks.Comment object at 0x105b36630>
-    // <conv.chunks.Comment object at 0x105b36750>
-    // <conv.chunks.Comment object at 0x105b36960>
+    // <conv.chunks.Comment object at 0x103c92630>
+    // <conv.chunks.Comment object at 0x103c92750>
+    // <conv.chunks.Comment object at 0x103c92960>
     cpy(0x6);
     BNE(BranchToDecLength1);
     lda(0x9e);
@@ -23024,12 +22993,12 @@ int BranchToDecLength1() {
 
 int PlaySmackEnemy() {
     lda(0xe);
-    // <conv.chunks.Comment object at 0x105b370e0>
+    // <conv.chunks.Comment object at 0x103c930e0>
     ldy(0xcb);
     ldx(0x9f);
     sta(Squ1_SfxLenCounter);
     lda(0x28);
-    // <conv.chunks.Comment object at 0x105b374d0>
+    // <conv.chunks.Comment object at 0x103c934d0>
     JSR(PlaySqu1Sfx);
     BNE(DecrementSfx1Length);
     JMP(ContinueSmackEnemy);
@@ -23037,20 +23006,20 @@ int PlaySmackEnemy() {
 
 int ContinueSmackEnemy() {
     ldy(Squ1_SfxLenCounter);
-    // <conv.chunks.Comment object at 0x105b37830>
+    // <conv.chunks.Comment object at 0x103c93830>
     cpy(0x8);
     BNE(SmSpc);
     lda(0xa0);
     sta(((SND_SQUARE1_REG) + (2)));
-    // <conv.chunks.Comment object at 0x105b37b60>
-    // <conv.chunks.Comment object at 0x105b37bf0>
+    // <conv.chunks.Comment object at 0x103c93b60>
+    // <conv.chunks.Comment object at 0x103c93bf0>
     lda(0x9f);
     BNE(SmTick);
     JMP(SmSpc);
 }
 
 int SmSpc() {
-    // <conv.chunks.Comment object at 0x105b400b0>
+    // <conv.chunks.Comment object at 0x103c9c0b0>
     lda(0x90);
     JMP(SmTick);
 }
@@ -23062,7 +23031,7 @@ int SmTick() {
 
 int DecrementSfx1Length() {
     dec(Squ1_SfxLenCounter);
-    // <conv.chunks.Comment object at 0x105b403b0>
+    // <conv.chunks.Comment object at 0x103c9c3b0>
     BNE(ExSfx1);
     JMP(StopSquare1Sfx);
 }
@@ -23070,8 +23039,8 @@ int DecrementSfx1Length() {
 int StopSquare1Sfx() {
     ldx(0x0);
     stx(0xf1);
-    // <conv.chunks.Comment object at 0x105b40620>
-    // <conv.chunks.Comment object at 0x105b40770>
+    // <conv.chunks.Comment object at 0x103c9c620>
+    // <conv.chunks.Comment object at 0x103c9c770>
     ldx(0xe);
     stx(SND_MASTERCTRL_REG);
     ldx(0xf);
@@ -23080,13 +23049,13 @@ int StopSquare1Sfx() {
 }
 
 int ExSfx1() {
-    rts();
+    return 0;
     JMP(PlayPipeDownInj);
 }
 
 int PlayPipeDownInj() {
     lda(0x2f);
-    // <conv.chunks.Comment object at 0x105b40d40>
+    // <conv.chunks.Comment object at 0x103c9cd40>
     sta(Squ1_SfxLenCounter);
     JMP(ContinuePipeDownInj);
 }
@@ -23095,15 +23064,15 @@ int ContinuePipeDownInj() {
     lda(Squ1_SfxLenCounter);
     lsr();
     BCS(NoPDwnL);
-    // <conv.chunks.Comment object at 0x105b40f80>
-    // <conv.chunks.Comment object at 0x105b410d0>
-    // <conv.chunks.Comment object at 0x105b41160>
+    // <conv.chunks.Comment object at 0x103c9cf80>
+    // <conv.chunks.Comment object at 0x103c9d0d0>
+    // <conv.chunks.Comment object at 0x103c9d160>
     lsr();
     BCS(NoPDwnL);
     anda(0b10);
     BEQ(NoPDwnL);
     ldy(0x91);
-    // <conv.chunks.Comment object at 0x105b41670>
+    // <conv.chunks.Comment object at 0x103c9d670>
     ldx(0x9a);
     lda(0x44);
     JSR(PlaySqu1Sfx);
@@ -23118,8 +23087,8 @@ int NoPDwnL() {
 int PlayCoinGrab() {
     lda(0x35);
     ldx(0x8d);
-    // <conv.chunks.Comment object at 0x105b43230>
-    // <conv.chunks.Comment object at 0x105b420f0>
+    // <conv.chunks.Comment object at 0x103c9f230>
+    // <conv.chunks.Comment object at 0x103c9e0f0>
     BNE(CGrab_TTickRegL);
     JMP(PlayTimerTick);
 }
@@ -23134,8 +23103,8 @@ int CGrab_TTickRegL() {
     sta(Squ2_SfxLenCounter);
     ldy(0x7f);
     lda(0x42);
-    // <conv.chunks.Comment object at 0x105b48a70>
-    // <conv.chunks.Comment object at 0x105b48b00>
+    // <conv.chunks.Comment object at 0x103ca4a70>
+    // <conv.chunks.Comment object at 0x103ca4b00>
     JSR(PlaySqu2Sfx);
     JMP(ContinueCGrabTTick);
 }
@@ -23143,11 +23112,11 @@ int CGrab_TTickRegL() {
 int ContinueCGrabTTick() {
     lda(Squ2_SfxLenCounter);
     cmp(0x30);
-    // <conv.chunks.Comment object at 0x105b48dd0>
-    // <conv.chunks.Comment object at 0x105b48ef0>
+    // <conv.chunks.Comment object at 0x103ca4dd0>
+    // <conv.chunks.Comment object at 0x103ca4ef0>
     BNE(N2Tone);
     lda(0x54);
-    // <conv.chunks.Comment object at 0x105b49130>
+    // <conv.chunks.Comment object at 0x103ca5130>
     sta(((SND_SQUARE2_REG) + (2)));
     JMP(N2Tone);
 }
@@ -23159,10 +23128,10 @@ int N2Tone() {
 
 int PlayBlast() {
     lda(0x20);
-    // <conv.chunks.Comment object at 0x105b49580>
+    // <conv.chunks.Comment object at 0x103ca5580>
     sta(Squ2_SfxLenCounter);
     ldy(0x94);
-    // <conv.chunks.Comment object at 0x105b49790>
+    // <conv.chunks.Comment object at 0x103ca5790>
     lda(0x5e);
     BNE(SBlasJ);
     JMP(ContinueBlast);
@@ -23170,24 +23139,24 @@ int PlayBlast() {
 
 int ContinueBlast() {
     lda(Squ2_SfxLenCounter);
-    // <conv.chunks.Comment object at 0x105b49af0>
+    // <conv.chunks.Comment object at 0x103ca5af0>
     cmp(0x18);
     BNE(DecrementSfx2Length);
     ldy(0x93);
-    // <conv.chunks.Comment object at 0x105b49df0>
+    // <conv.chunks.Comment object at 0x103ca5df0>
     lda(0x18);
     JMP(SBlasJ);
 }
 
 int SBlasJ() {
-    // <conv.chunks.Comment object at 0x105b49f70>
+    // <conv.chunks.Comment object at 0x103ca5f70>
     BNE(BlstSJp);
     JMP(PlayPowerUpGrab);
 }
 
 int PlayPowerUpGrab() {
     lda(0x36);
-    // <conv.chunks.Comment object at 0x105b4a1e0>
+    // <conv.chunks.Comment object at 0x103ca61e0>
     sta(Squ2_SfxLenCounter);
     JMP(ContinuePowerUpGrab);
 }
@@ -23196,14 +23165,14 @@ int ContinuePowerUpGrab() {
     lda(Squ2_SfxLenCounter);
     lsr();
     BCS(DecrementSfx2Length);
-    // <conv.chunks.Comment object at 0x105b4a420>
-    // <conv.chunks.Comment object at 0x105b4a570>
-    // <conv.chunks.Comment object at 0x105b4a600>
+    // <conv.chunks.Comment object at 0x103ca6420>
+    // <conv.chunks.Comment object at 0x103ca6570>
+    // <conv.chunks.Comment object at 0x103ca6600>
     tay();
     lda(((offsetof(G, PowerUpGrabFreqData)) - (1)), y);
     ldx(0x5d);
-    // <conv.chunks.Comment object at 0x105b4a7b0>
-    // <conv.chunks.Comment object at 0x105b4a9c0>
+    // <conv.chunks.Comment object at 0x103ca67b0>
+    // <conv.chunks.Comment object at 0x103ca69c0>
     ldy(0x7f);
     JMP(LoadSqu2Regs);
 }
@@ -23215,21 +23184,21 @@ int LoadSqu2Regs() {
 
 int DecrementSfx2Length() {
     dec(Squ2_SfxLenCounter);
-    // <conv.chunks.Comment object at 0x105b4ad20>
+    // <conv.chunks.Comment object at 0x103ca6d20>
     BNE(ExSfx2);
     JMP(EmptySfx2Buffer);
 }
 
 int EmptySfx2Buffer() {
     ldx(0x0);
-    // <conv.chunks.Comment object at 0x105b4af90>
+    // <conv.chunks.Comment object at 0x103ca6f90>
     stx(Square2SoundBuffer);
     JMP(StopSquare2Sfx);
 }
 
 int StopSquare2Sfx() {
     ldx(0xd);
-    // <conv.chunks.Comment object at 0x105b4b1d0>
+    // <conv.chunks.Comment object at 0x103ca71d0>
     stx(SND_MASTERCTRL_REG);
     ldx(0xf);
     stx(SND_MASTERCTRL_REG);
@@ -23237,41 +23206,41 @@ int StopSquare2Sfx() {
 }
 
 int ExSfx2() {
-    rts();
+    return 0;
     JMP(Square2SfxHandler);
 }
 
 int Square2SfxHandler() {
     lda(Square2SoundBuffer);
     anda(Sfx_ExtraLife);
-    // <conv.chunks.Comment object at 0x105b4b6e0>
-    // <conv.chunks.Comment object at 0x105b4b800>
+    // <conv.chunks.Comment object at 0x103ca76e0>
+    // <conv.chunks.Comment object at 0x103ca7800>
     BNE(ContinueExtraLife);
     ldy(Square2SoundQueue);
-    // <conv.chunks.Comment object at 0x105b4ba10>
+    // <conv.chunks.Comment object at 0x103ca7a10>
     BEQ(CheckSfx2Buffer);
     sty(Square2SoundBuffer);
     BMI(PlayBowserFall);
-    // <conv.chunks.Comment object at 0x105b4bc20>
-    // <conv.chunks.Comment object at 0x105b4bd40>
+    // <conv.chunks.Comment object at 0x103ca7c20>
+    // <conv.chunks.Comment object at 0x103ca7d40>
     lsr(Square2SoundQueue);
     BCS(PlayCoinGrab);
-    // <conv.chunks.Comment object at 0x105b4bf50>
+    // <conv.chunks.Comment object at 0x103ca7f50>
     lsr(Square2SoundQueue);
     BCS(PlayGrowPowerUp);
-    // <conv.chunks.Comment object at 0x105b541a0>
+    // <conv.chunks.Comment object at 0x103cb01a0>
     lsr(Square2SoundQueue);
     BCS(PlayGrowVine);
-    // <conv.chunks.Comment object at 0x105b543b0>
+    // <conv.chunks.Comment object at 0x103cb03b0>
     lsr(Square2SoundQueue);
     BCS(PlayBlast);
-    // <conv.chunks.Comment object at 0x105b545c0>
+    // <conv.chunks.Comment object at 0x103cb05c0>
     lsr(Square2SoundQueue);
     BCS(PlayTimerTick);
-    // <conv.chunks.Comment object at 0x105b547d0>
+    // <conv.chunks.Comment object at 0x103cb07d0>
     lsr(Square2SoundQueue);
     BCS(PlayPowerUpGrab);
-    // <conv.chunks.Comment object at 0x105b549e0>
+    // <conv.chunks.Comment object at 0x103cb09e0>
     lsr(Square2SoundQueue);
     BCS(PlayExtraLife);
     JMP(CheckSfx2Buffer);
@@ -23281,34 +23250,34 @@ int CheckSfx2Buffer() {
     lda(Square2SoundBuffer);
     BEQ(ExS2H);
     BMI(ContinueBowserFall);
-    // <conv.chunks.Comment object at 0x105b54d70>
-    // <conv.chunks.Comment object at 0x105b54e90>
-    // <conv.chunks.Comment object at 0x105b54fe0>
+    // <conv.chunks.Comment object at 0x103cb0d70>
+    // <conv.chunks.Comment object at 0x103cb0e90>
+    // <conv.chunks.Comment object at 0x103cb0fe0>
     lsr();
     BCS(Cont_CGrab_TTick);
-    // <conv.chunks.Comment object at 0x105b55190>
+    // <conv.chunks.Comment object at 0x103cb1190>
     lsr();
     BCS(ContinueGrowItems);
-    // <conv.chunks.Comment object at 0x105b55340>
+    // <conv.chunks.Comment object at 0x103cb1340>
     lsr();
     BCS(ContinueGrowItems);
-    // <conv.chunks.Comment object at 0x105b554f0>
+    // <conv.chunks.Comment object at 0x103cb14f0>
     lsr();
     BCS(ContinueBlast);
-    // <conv.chunks.Comment object at 0x105b556a0>
+    // <conv.chunks.Comment object at 0x103cb16a0>
     lsr();
     BCS(Cont_CGrab_TTick);
-    // <conv.chunks.Comment object at 0x105b55850>
+    // <conv.chunks.Comment object at 0x103cb1850>
     lsr();
     BCS(ContinuePowerUpGrab);
-    // <conv.chunks.Comment object at 0x105b55a00>
+    // <conv.chunks.Comment object at 0x103cb1a00>
     lsr();
     BCS(ContinueExtraLife);
     JMP(ExS2H);
 }
 
 int ExS2H() {
-    rts();
+    return 0;
     JMP(Cont_CGrab_TTick);
 }
 
@@ -23324,10 +23293,10 @@ int JumpToDecLength2() {
 
 int PlayBowserFall() {
     lda(0x38);
-    // <conv.chunks.Comment object at 0x105b56060>
+    // <conv.chunks.Comment object at 0x103cb2060>
     sta(Squ2_SfxLenCounter);
     ldy(0xc4);
-    // <conv.chunks.Comment object at 0x105b56270>
+    // <conv.chunks.Comment object at 0x103cb2270>
     lda(0x18);
     JMP(BlstSJp);
 }
@@ -23339,30 +23308,30 @@ int BlstSJp() {
 
 int ContinueBowserFall() {
     lda(Squ2_SfxLenCounter);
-    // <conv.chunks.Comment object at 0x105b56630>
+    // <conv.chunks.Comment object at 0x103cb2630>
     cmp(0x8);
     BNE(DecrementSfx2Length);
     ldy(0xa4);
-    // <conv.chunks.Comment object at 0x105b56930>
+    // <conv.chunks.Comment object at 0x103cb2930>
     lda(0x5a);
     JMP(PBFRegs);
 }
 
 int PBFRegs() {
-    // <conv.chunks.Comment object at 0x105b56ab0>
+    // <conv.chunks.Comment object at 0x103cb2ab0>
     ldx(0x9f);
     JMP(EL_LRegs);
 }
 
 int EL_LRegs() {
-    // <conv.chunks.Comment object at 0x105b56c30>
+    // <conv.chunks.Comment object at 0x103cb2c30>
     BNE(LoadSqu2Regs);
     JMP(PlayExtraLife);
 }
 
 int PlayExtraLife() {
     lda(0x30);
-    // <conv.chunks.Comment object at 0x105b56e40>
+    // <conv.chunks.Comment object at 0x103cb2e40>
     sta(Squ2_SfxLenCounter);
     JMP(ContinueExtraLife);
 }
@@ -23376,13 +23345,13 @@ int ContinueExtraLife() {
 int DivLLoop() {
     lsr();
     BCS(JumpToDecLength2);
-    // <conv.chunks.Comment object at 0x105b57350>
+    // <conv.chunks.Comment object at 0x103cb3350>
     dex();
     BNE(DivLLoop);
-    // <conv.chunks.Comment object at 0x105b57500>
+    // <conv.chunks.Comment object at 0x103cb3500>
     tay();
     lda(((offsetof(G, ExtraLifeFreqData)) - (1)), y);
-    // <conv.chunks.Comment object at 0x105b576b0>
+    // <conv.chunks.Comment object at 0x103cb36b0>
     ldx(0x82);
     ldy(0x7f);
     BNE(EL_LRegs);
@@ -23391,7 +23360,7 @@ int DivLLoop() {
 
 int PlayGrowPowerUp() {
     lda(0x10);
-    // <conv.chunks.Comment object at 0x105b57bf0>
+    // <conv.chunks.Comment object at 0x103cb3bf0>
     BNE(GrowItemRegs);
     JMP(PlayGrowVine);
 }
@@ -23404,10 +23373,10 @@ int PlayGrowVine() {
 int GrowItemRegs() {
     sta(Squ2_SfxLenCounter);
     lda(0x7f);
-    // <conv.chunks.Comment object at 0x105b5c0b0>
+    // <conv.chunks.Comment object at 0x103cb80b0>
     sta(((SND_SQUARE2_REG) + (1)));
     lda(0x0);
-    // <conv.chunks.Comment object at 0x105b5c380>
+    // <conv.chunks.Comment object at 0x103cb8380>
     sta(Sfx_SecondaryCounter);
     JMP(ContinueGrowItems);
 }
@@ -23416,21 +23385,21 @@ int ContinueGrowItems() {
     inc(Sfx_SecondaryCounter);
     lda(Sfx_SecondaryCounter);
     lsr();
-    // <conv.chunks.Comment object at 0x105b5c5c0>
-    // <conv.chunks.Comment object at 0x105b5c6e0>
-    // <conv.chunks.Comment object at 0x105b5c830>
+    // <conv.chunks.Comment object at 0x103cb85c0>
+    // <conv.chunks.Comment object at 0x103cb86e0>
+    // <conv.chunks.Comment object at 0x103cb8830>
     tay();
     cpy(Squ2_SfxLenCounter);
     BEQ(StopGrowItems);
     lda(0x9d);
-    // <conv.chunks.Comment object at 0x105b5c950>
-    // <conv.chunks.Comment object at 0x105b5ca70>
-    // <conv.chunks.Comment object at 0x105b5cb90>
+    // <conv.chunks.Comment object at 0x103cb8950>
+    // <conv.chunks.Comment object at 0x103cb8a70>
+    // <conv.chunks.Comment object at 0x103cb8b90>
     sta(SND_SQUARE2_REG);
     lda(offsetof(G, PUp_VGrow_FreqData), y);
-    // <conv.chunks.Comment object at 0x105b5cda0>
+    // <conv.chunks.Comment object at 0x103cb8da0>
     JSR(SetFreq_Squ2);
-    rts();
+    return 0;
     JMP(StopGrowItems);
 }
 
@@ -23441,7 +23410,7 @@ int StopGrowItems() {
 
 int PlayBrickShatter() {
     lda(0x20);
-    // <conv.chunks.Comment object at 0x105b5d2b0>
+    // <conv.chunks.Comment object at 0x103cb92b0>
     sta(Noise_SfxLenCounter);
     JMP(ContinueBrickShatter);
 }
@@ -23449,18 +23418,18 @@ int PlayBrickShatter() {
 int ContinueBrickShatter() {
     lda(Noise_SfxLenCounter);
     lsr();
-    // <conv.chunks.Comment object at 0x105b5deb0>
+    // <conv.chunks.Comment object at 0x103cb9eb0>
     BCC(DecrementSfx3Length);
     tay();
     ldx(offsetof(G, BrickShatterFreqData), y);
-    // <conv.chunks.Comment object at 0x105b5e0c0>
+    // <conv.chunks.Comment object at 0x103cba0c0>
     lda(offsetof(G, BrickShatterEnvData), y);
     JMP(PlayNoiseSfx);
 }
 
 int PlayNoiseSfx() {
     sta(SND_NOISE_REG);
-    // <conv.chunks.Comment object at 0x105b5e360>
+    // <conv.chunks.Comment object at 0x103cba360>
     stx(((SND_NOISE_REG) + (2)));
     lda(0x18);
     sta(((SND_NOISE_REG) + (3)));
@@ -23469,10 +23438,10 @@ int PlayNoiseSfx() {
 
 int DecrementSfx3Length() {
     dec(Noise_SfxLenCounter);
-    // <conv.chunks.Comment object at 0x105b5e900>
+    // <conv.chunks.Comment object at 0x103cba900>
     BNE(ExSfx3);
     lda(0xf0);
-    // <conv.chunks.Comment object at 0x105b5eb40>
+    // <conv.chunks.Comment object at 0x103cbab40>
     sta(SND_NOISE_REG);
     lda(0x0);
     sta(NoiseSoundBuffer);
@@ -23480,19 +23449,19 @@ int DecrementSfx3Length() {
 }
 
 int ExSfx3() {
-    rts();
+    return 0;
     JMP(NoiseSfxHandler);
 }
 
 int NoiseSfxHandler() {
     ldy(NoiseSoundQueue);
-    // <conv.chunks.Comment object at 0x105b5f050>
+    // <conv.chunks.Comment object at 0x103cbb050>
     BEQ(CheckNoiseBuffer);
     sty(NoiseSoundBuffer);
-    // <conv.chunks.Comment object at 0x105b5f260>
+    // <conv.chunks.Comment object at 0x103cbb260>
     lsr(NoiseSoundQueue);
     BCS(PlayBrickShatter);
-    // <conv.chunks.Comment object at 0x105b5f470>
+    // <conv.chunks.Comment object at 0x103cbb470>
     lsr(NoiseSoundQueue);
     BCS(PlayBowserFlame);
     JMP(CheckNoiseBuffer);
@@ -23501,24 +23470,24 @@ int NoiseSfxHandler() {
 int CheckNoiseBuffer() {
     lda(NoiseSoundBuffer);
     BEQ(ExNH);
-    // <conv.chunks.Comment object at 0x105b5f7d0>
-    // <conv.chunks.Comment object at 0x105b5f8f0>
+    // <conv.chunks.Comment object at 0x103cbb7d0>
+    // <conv.chunks.Comment object at 0x103cbb8f0>
     lsr();
     BCS(ContinueBrickShatter);
-    // <conv.chunks.Comment object at 0x105b5fad0>
+    // <conv.chunks.Comment object at 0x103cbbad0>
     lsr();
     BCS(ContinueBowserFlame);
     JMP(ExNH);
 }
 
 int ExNH() {
-    rts();
+    return 0;
     JMP(PlayBowserFlame);
 }
 
 int PlayBowserFlame() {
     lda(0x40);
-    // <conv.chunks.Comment object at 0x105b5fec0>
+    // <conv.chunks.Comment object at 0x103cbbec0>
     sta(Noise_SfxLenCounter);
     JMP(ContinueBowserFlame);
 }
@@ -23528,7 +23497,7 @@ int ContinueBowserFlame() {
     lsr();
     tay();
     ldx(0xf);
-    // <conv.chunks.Comment object at 0x105b64350>
+    // <conv.chunks.Comment object at 0x103cc0350>
     lda(((offsetof(G, BowserFlameEnvData)) - (1)), y);
     BNE(PlayNoiseSfx);
     JMP(ContinueMusic);
@@ -23541,16 +23510,16 @@ int ContinueMusic() {
 
 int MusicHandler() {
     lda(EventMusicQueue);
-    // <conv.chunks.Comment object at 0x105b64920>
+    // <conv.chunks.Comment object at 0x103cc0920>
     BNE(LoadEventMusic);
     lda(AreaMusicQueue);
-    // <conv.chunks.Comment object at 0x105b64b30>
+    // <conv.chunks.Comment object at 0x103cc0b30>
     BNE(LoadAreaMusic);
     lda(EventMusicBuffer);
-    // <conv.chunks.Comment object at 0x105b64d40>
+    // <conv.chunks.Comment object at 0x103cc0d40>
     ora(AreaMusicBuffer);
     BNE(ContinueMusic);
-    rts();
+    return 0;
     JMP(LoadEventMusic);
 }
 
@@ -23566,17 +23535,17 @@ int LoadEventMusic() {
 int NoStopSfx() {
     ldx(AreaMusicBuffer);
     stx(AreaMusicBuffer_Alt);
-    // <conv.chunks.Comment object at 0x105b657f0>
+    // <conv.chunks.Comment object at 0x103cc17f0>
     ldy(0x0);
     sty(NoteLengthTblAdder);
     sty(AreaMusicBuffer);
     cmp(TimeRunningOutMusic);
-    // <conv.chunks.Comment object at 0x105b65970>
-    // <conv.chunks.Comment object at 0x105b65b20>
-    // <conv.chunks.Comment object at 0x105b65c40>
+    // <conv.chunks.Comment object at 0x103cc1970>
+    // <conv.chunks.Comment object at 0x103cc1b20>
+    // <conv.chunks.Comment object at 0x103cc1c40>
     BNE(FindEventMusicHeader);
     ldx(0x8);
-    // <conv.chunks.Comment object at 0x105b65e50>
+    // <conv.chunks.Comment object at 0x103cc1e50>
     stx(NoteLengthTblAdder);
     BNE(FindEventMusicHeader);
     JMP(LoadAreaMusic);
@@ -23585,14 +23554,14 @@ int NoStopSfx() {
 int LoadAreaMusic() {
     cmp(0x4);
     BNE(NoStop1);
-    // <conv.chunks.Comment object at 0x105b661b0>
-    // <conv.chunks.Comment object at 0x105b66240>
+    // <conv.chunks.Comment object at 0x103cc21b0>
+    // <conv.chunks.Comment object at 0x103cc2240>
     JSR(StopSquare1Sfx);
     JMP(NoStop1);
 }
 
 int NoStop1() {
-    // <conv.chunks.Comment object at 0x105b66510>
+    // <conv.chunks.Comment object at 0x103cc2510>
     ldy(0x10);
     JMP(GMLoopB);
 }
@@ -23604,20 +23573,20 @@ int GMLoopB() {
 
 int HandleAreaMusicLoopB() {
     ldy(0x0);
-    // <conv.chunks.Comment object at 0x105b66810>
+    // <conv.chunks.Comment object at 0x103cc2810>
     sty(EventMusicBuffer);
     sta(AreaMusicBuffer);
     cmp(0x1);
-    // <conv.chunks.Comment object at 0x105b66a20>
-    // <conv.chunks.Comment object at 0x105b66b40>
+    // <conv.chunks.Comment object at 0x103cc2a20>
+    // <conv.chunks.Comment object at 0x103cc2b40>
     BNE(FindAreaMusicHeader);
     inc(GroundMusicHeaderOfs);
     ldy(GroundMusicHeaderOfs);
-    // <conv.chunks.Comment object at 0x105b66d50>
-    // <conv.chunks.Comment object at 0x105b66e70>
+    // <conv.chunks.Comment object at 0x103cc2d50>
+    // <conv.chunks.Comment object at 0x103cc2e70>
     cpy(0x32);
     BNE(LoadHeader);
-    // <conv.chunks.Comment object at 0x105b66ff0>
+    // <conv.chunks.Comment object at 0x103cc2ff0>
     ldy(0x11);
     BNE(GMLoopB);
     JMP(FindAreaMusicHeader);
@@ -23632,18 +23601,18 @@ int FindAreaMusicHeader() {
 int FindEventMusicHeader() {
     iny();
     lsr();
-    // <conv.chunks.Comment object at 0x105b676b0>
-    // <conv.chunks.Comment object at 0x105b67770>
+    // <conv.chunks.Comment object at 0x103cc36b0>
+    // <conv.chunks.Comment object at 0x103cc3770>
     BCC(FindEventMusicHeader);
     JMP(LoadHeader);
 }
 
 int LoadHeader() {
     lda(MusicHeaderOffsetData, y);
-    // <conv.chunks.Comment object at 0x105b67920>
+    // <conv.chunks.Comment object at 0x103cc3920>
     tay();
     lda(offsetof(G, MusicHeaderData), y);
-    // <conv.chunks.Comment object at 0x105b67b00>
+    // <conv.chunks.Comment object at 0x103cc3b00>
     sta(NoteLenLookupTblOfs);
     lda(((offsetof(G, MusicHeaderData)) + (1)), y);
     sta(MusicDataLow);
@@ -23657,18 +23626,18 @@ int LoadHeader() {
     sta(MusicOffset_Noise);
     sta(NoiseDataLoopbackOfs);
     lda(0x1);
-    // <conv.chunks.Comment object at 0x105b74c80>
+    // <conv.chunks.Comment object at 0x103cd0c80>
     sta(Squ2_NoteLenCounter);
     sta(Squ1_NoteLenCounter);
     sta(Tri_NoteLenCounter);
     sta(Noise_BeatLenCounter);
     lda(0x0);
-    // <conv.chunks.Comment object at 0x105b75160>
+    // <conv.chunks.Comment object at 0x103cd1160>
     sta(MusicOffset_Square2);
     sta(AltRegContentFlag);
     lda(0xb);
-    // <conv.chunks.Comment object at 0x105b75370>
-    // <conv.chunks.Comment object at 0x105b75490>
+    // <conv.chunks.Comment object at 0x103cd1370>
+    // <conv.chunks.Comment object at 0x103cd1490>
     sta(SND_MASTERCTRL_REG);
     lda(0xf);
     sta(SND_MASTERCTRL_REG);
@@ -23679,9 +23648,9 @@ int HandleSquare2Music() {
     dec(Squ2_NoteLenCounter);
     BNE(MiscSqu2MusicTasks);
     ldy(MusicOffset_Square2);
-    // <conv.chunks.Comment object at 0x105b758b0>
-    // <conv.chunks.Comment object at 0x105b759d0>
-    // <conv.chunks.Comment object at 0x105b75af0>
+    // <conv.chunks.Comment object at 0x103cd18b0>
+    // <conv.chunks.Comment object at 0x103cd19d0>
+    // <conv.chunks.Comment object at 0x103cd1af0>
     inc(MusicOffset_Square2);
     lda((MusicData), y);
     BEQ(EndOfMusicData);
@@ -23692,7 +23661,7 @@ int HandleSquare2Music() {
 
 int EndOfMusicData() {
     lda(EventMusicBuffer);
-    // <conv.chunks.Comment object at 0x105b761e0>
+    // <conv.chunks.Comment object at 0x103cd21e0>
     cmp(TimeRunningOutMusic);
     BNE(NotTRO);
     lda(AreaMusicBuffer_Alt);
@@ -23701,26 +23670,26 @@ int EndOfMusicData() {
 }
 
 int NotTRO() {
-    // <conv.chunks.Comment object at 0x105b76510>
-    // <conv.chunks.Comment object at 0x105b76630>
-    // <conv.chunks.Comment object at 0x105b76750>
+    // <conv.chunks.Comment object at 0x103cd2510>
+    // <conv.chunks.Comment object at 0x103cd2630>
+    // <conv.chunks.Comment object at 0x103cd2750>
     anda(VictoryMusic);
     BNE(VictoryMLoopBack);
     lda(AreaMusicBuffer);
-    // <conv.chunks.Comment object at 0x105b769c0>
+    // <conv.chunks.Comment object at 0x103cd29c0>
     anda(0b1011111);
     BNE(MusicLoopBack);
     lda(0x0);
     sta(AreaMusicBuffer);
-    // <conv.chunks.Comment object at 0x105b76bd0>
-    // <conv.chunks.Comment object at 0x105b76cf0>
-    // <conv.chunks.Comment object at 0x105b76d80>
+    // <conv.chunks.Comment object at 0x103cd2bd0>
+    // <conv.chunks.Comment object at 0x103cd2cf0>
+    // <conv.chunks.Comment object at 0x103cd2d80>
     sta(EventMusicBuffer);
     sta(SND_TRIANGLE_REG);
     lda(0x90);
     sta(SND_SQUARE1_REG);
     sta(SND_SQUARE2_REG);
-    rts();
+    return 0;
     JMP(MusicLoopBack);
 }
 
@@ -23736,10 +23705,10 @@ int VictoryMLoopBack() {
 
 int Squ2LengthHandler() {
     JSR(ProcessLengthData);
-    // <conv.chunks.Comment object at 0x105b776e0>
+    // <conv.chunks.Comment object at 0x103cd36e0>
     sta(Squ2_NoteLenBuffer);
     ldy(MusicOffset_Square2);
-    // <conv.chunks.Comment object at 0x105b778f0>
+    // <conv.chunks.Comment object at 0x103cd38f0>
     inc(MusicOffset_Square2);
     lda((MusicData), y);
     JMP(Squ2NoteHandler);
@@ -23747,7 +23716,7 @@ int Squ2LengthHandler() {
 
 int Squ2NoteHandler() {
     ldx(Square2SoundBuffer);
-    // <conv.chunks.Comment object at 0x105b77c80>
+    // <conv.chunks.Comment object at 0x103cd3c80>
     BNE(SkipFqL1);
     JSR(SetFreq_Squ2);
     BEQ(Rest);
@@ -23756,18 +23725,18 @@ int Squ2NoteHandler() {
 }
 
 int Rest() {
-    // <conv.chunks.Comment object at 0x105b77e90>
-    // <conv.chunks.Comment object at 0x105b77fb0>
-    // <conv.chunks.Comment object at 0x105b80140>
-    // <conv.chunks.Comment object at 0x105b80260>
+    // <conv.chunks.Comment object at 0x103cd3e90>
+    // <conv.chunks.Comment object at 0x103cd3fb0>
+    // <conv.chunks.Comment object at 0x103cdc140>
+    // <conv.chunks.Comment object at 0x103cdc260>
     sta(Squ2_EnvelopeDataCtrl);
     JSR(Dump_Sq2_Regs);
     JMP(SkipFqL1);
 }
 
 int SkipFqL1() {
-    // <conv.chunks.Comment object at 0x105b803e0>
-    // <conv.chunks.Comment object at 0x105b80500>
+    // <conv.chunks.Comment object at 0x103cdc3e0>
+    // <conv.chunks.Comment object at 0x103cdc500>
     lda(Squ2_NoteLenBuffer);
     sta(Squ2_NoteLenCounter);
     JMP(MiscSqu2MusicTasks);
@@ -23775,28 +23744,28 @@ int SkipFqL1() {
 
 int MiscSqu2MusicTasks() {
     lda(Square2SoundBuffer);
-    // <conv.chunks.Comment object at 0x105b80770>
+    // <conv.chunks.Comment object at 0x103cdc770>
     BNE(HandleSquare1Music);
     lda(EventMusicBuffer);
     anda(0b10010001);
-    // <conv.chunks.Comment object at 0x105b80980>
-    // <conv.chunks.Comment object at 0x105b80aa0>
+    // <conv.chunks.Comment object at 0x103cdc980>
+    // <conv.chunks.Comment object at 0x103cdcaa0>
     BNE(HandleSquare1Music);
     ldy(Squ2_EnvelopeDataCtrl);
-    // <conv.chunks.Comment object at 0x105b80cb0>
+    // <conv.chunks.Comment object at 0x103cdccb0>
     BEQ(NoDecEnv1);
     dec(Squ2_EnvelopeDataCtrl);
     JMP(NoDecEnv1);
 }
 
 int NoDecEnv1() {
-    // <conv.chunks.Comment object at 0x105b80ec0>
-    // <conv.chunks.Comment object at 0x105b80fe0>
+    // <conv.chunks.Comment object at 0x103cdcec0>
+    // <conv.chunks.Comment object at 0x103cdcfe0>
     JSR(LoadEnvelopeData);
     sta(SND_SQUARE2_REG);
     ldx(0x7f);
-    // <conv.chunks.Comment object at 0x105b81130>
-    // <conv.chunks.Comment object at 0x105b81250>
+    // <conv.chunks.Comment object at 0x103cdd130>
+    // <conv.chunks.Comment object at 0x103cdd250>
     stx(((SND_SQUARE2_REG) + (1)));
     JMP(HandleSquare1Music);
 }
@@ -23811,18 +23780,18 @@ int HandleSquare1Music() {
 
 int FetchSqu1MusicData() {
     ldy(MusicOffset_Square1);
-    // <conv.chunks.Comment object at 0x105b81a00>
+    // <conv.chunks.Comment object at 0x103cdda00>
     inc(MusicOffset_Square1);
     lda((MusicData), y);
     BNE(Squ1NoteHandler);
-    // <conv.chunks.Comment object at 0x105b81d60>
+    // <conv.chunks.Comment object at 0x103cddd60>
     lda(0x83);
     sta(SND_SQUARE1_REG);
     lda(0x94);
     sta(((SND_SQUARE1_REG) + (1)));
-    // <conv.chunks.Comment object at 0x105b81ee0>
-    // <conv.chunks.Comment object at 0x105b82090>
-    // <conv.chunks.Comment object at 0x105b82120>
+    // <conv.chunks.Comment object at 0x103cddee0>
+    // <conv.chunks.Comment object at 0x103cde090>
+    // <conv.chunks.Comment object at 0x103cde120>
     sta(AltRegContentFlag);
     BNE(FetchSqu1MusicData);
     JMP(Squ1NoteHandler);
@@ -23832,21 +23801,21 @@ int Squ1NoteHandler() {
     JSR(AlternateLengthHandler);
     sta(Squ1_NoteLenCounter);
     ldy(Square1SoundBuffer);
-    // <conv.chunks.Comment object at 0x105b826c0>
-    // <conv.chunks.Comment object at 0x105b827e0>
+    // <conv.chunks.Comment object at 0x103cde6c0>
+    // <conv.chunks.Comment object at 0x103cde7e0>
     BNE(HandleTriangleMusic);
     txa();
     anda(0b111110);
     JSR(SetFreq_Squ1);
-    // <conv.chunks.Comment object at 0x105b82a80>
-    // <conv.chunks.Comment object at 0x105b82ba0>
+    // <conv.chunks.Comment object at 0x103cdea80>
+    // <conv.chunks.Comment object at 0x103cdeba0>
     BEQ(SkipCtrlL);
     JSR(LoadControlRegs);
     JMP(SkipCtrlL);
 }
 
 int SkipCtrlL() {
-    // <conv.chunks.Comment object at 0x105b82ea0>
+    // <conv.chunks.Comment object at 0x103cdeea0>
     sta(Squ1_EnvelopeDataCtrl);
     JSR(Dump_Squ1_Regs);
     JMP(MiscSqu1MusicTasks);
@@ -23854,30 +23823,30 @@ int SkipCtrlL() {
 
 int MiscSqu1MusicTasks() {
     lda(Square1SoundBuffer);
-    // <conv.chunks.Comment object at 0x105b83110>
+    // <conv.chunks.Comment object at 0x103cdf110>
     BNE(HandleTriangleMusic);
     lda(EventMusicBuffer);
-    // <conv.chunks.Comment object at 0x105b83320>
+    // <conv.chunks.Comment object at 0x103cdf320>
     anda(0b10010001);
     BNE(DeathMAltReg);
     ldy(Squ1_EnvelopeDataCtrl);
-    // <conv.chunks.Comment object at 0x105b83620>
+    // <conv.chunks.Comment object at 0x103cdf620>
     BEQ(NoDecEnv2);
     dec(Squ1_EnvelopeDataCtrl);
     JMP(NoDecEnv2);
 }
 
 int NoDecEnv2() {
-    // <conv.chunks.Comment object at 0x105b83830>
-    // <conv.chunks.Comment object at 0x105b83950>
+    // <conv.chunks.Comment object at 0x103cdf830>
+    // <conv.chunks.Comment object at 0x103cdf950>
     JSR(LoadEnvelopeData);
     sta(SND_SQUARE1_REG);
     JMP(DeathMAltReg);
 }
 
 int DeathMAltReg() {
-    // <conv.chunks.Comment object at 0x105b83aa0>
-    // <conv.chunks.Comment object at 0x105b83bc0>
+    // <conv.chunks.Comment object at 0x103cdfaa0>
+    // <conv.chunks.Comment object at 0x103cdfbc0>
     lda(AltRegContentFlag);
     BNE(DoAltLoad);
     lda(0x7f);
@@ -23885,8 +23854,8 @@ int DeathMAltReg() {
 }
 
 int DoAltLoad() {
-    // <conv.chunks.Comment object at 0x105b83e00>
-    // <conv.chunks.Comment object at 0x105b83e90>
+    // <conv.chunks.Comment object at 0x103cdfe00>
+    // <conv.chunks.Comment object at 0x103cdfe90>
     sta(((SND_SQUARE1_REG) + (1)));
     JMP(HandleTriangleMusic);
 }
@@ -23896,24 +23865,24 @@ int HandleTriangleMusic() {
     dec(Tri_NoteLenCounter);
     BNE(HandleNoiseMusic);
     ldy(MusicOffset_Triangle);
-    // <conv.chunks.Comment object at 0x105b88290>
-    // <conv.chunks.Comment object at 0x105b883b0>
-    // <conv.chunks.Comment object at 0x105b884d0>
+    // <conv.chunks.Comment object at 0x103ce4290>
+    // <conv.chunks.Comment object at 0x103ce43b0>
+    // <conv.chunks.Comment object at 0x103ce44d0>
     inc(MusicOffset_Triangle);
     lda((MusicData), y);
     BEQ(LoadTriCtrlReg);
     BPL(TriNoteHandler);
     JSR(ProcessLengthData);
     sta(Tri_NoteLenBuffer);
-    // <conv.chunks.Comment object at 0x105b88830>
-    // <conv.chunks.Comment object at 0x105b88950>
-    // <conv.chunks.Comment object at 0x105b88a70>
-    // <conv.chunks.Comment object at 0x105b88b90>
+    // <conv.chunks.Comment object at 0x103ce4830>
+    // <conv.chunks.Comment object at 0x103ce4950>
+    // <conv.chunks.Comment object at 0x103ce4a70>
+    // <conv.chunks.Comment object at 0x103ce4b90>
     lda(0x1f);
     sta(SND_TRIANGLE_REG);
     ldy(MusicOffset_Triangle);
-    // <conv.chunks.Comment object at 0x105b88d10>
-    // <conv.chunks.Comment object at 0x105b88ec0>
+    // <conv.chunks.Comment object at 0x103ce4d10>
+    // <conv.chunks.Comment object at 0x103ce4ec0>
     inc(MusicOffset_Triangle);
     lda((MusicData), y);
     BEQ(LoadTriCtrlReg);
@@ -23923,29 +23892,29 @@ int HandleTriangleMusic() {
 int TriNoteHandler() {
     JSR(SetFreq_Tri);
     ldx(Tri_NoteLenBuffer);
-    // <conv.chunks.Comment object at 0x105b89460>
+    // <conv.chunks.Comment object at 0x103ce5460>
     stx(Tri_NoteLenCounter);
     lda(EventMusicBuffer);
     anda(0b1101110);
     BNE(NotDOrD4);
     lda(AreaMusicBuffer);
-    // <conv.chunks.Comment object at 0x105b89760>
-    // <conv.chunks.Comment object at 0x105b89880>
-    // <conv.chunks.Comment object at 0x105b899a0>
+    // <conv.chunks.Comment object at 0x103ce5760>
+    // <conv.chunks.Comment object at 0x103ce5880>
+    // <conv.chunks.Comment object at 0x103ce59a0>
     anda(0b1010);
     BEQ(HandleNoiseMusic);
     JMP(NotDOrD4);
 }
 
 int NotDOrD4() {
-    // <conv.chunks.Comment object at 0x105b89bb0>
-    // <conv.chunks.Comment object at 0x105b89cd0>
+    // <conv.chunks.Comment object at 0x103ce5bb0>
+    // <conv.chunks.Comment object at 0x103ce5cd0>
     txa();
     cmp(0x12);
-    // <conv.chunks.Comment object at 0x105b89dc0>
+    // <conv.chunks.Comment object at 0x103ce5dc0>
     BCS(LongN);
     lda(EventMusicBuffer);
-    // <conv.chunks.Comment object at 0x105b8a000>
+    // <conv.chunks.Comment object at 0x103ce6000>
     anda(EndOfCastleMusic);
     BEQ(MediN);
     lda(0xf);
@@ -23954,17 +23923,17 @@ int NotDOrD4() {
 }
 
 int MediN() {
-    // <conv.chunks.Comment object at 0x105b8a330>
-    // <conv.chunks.Comment object at 0x105b8a3c0>
-    // <conv.chunks.Comment object at 0x105b8a570>
+    // <conv.chunks.Comment object at 0x103ce6330>
+    // <conv.chunks.Comment object at 0x103ce63c0>
+    // <conv.chunks.Comment object at 0x103ce6570>
     lda(0x1f);
     BNE(LoadTriCtrlReg);
     JMP(LongN);
 }
 
 int LongN() {
-    // <conv.chunks.Comment object at 0x105b8a660>
-    // <conv.chunks.Comment object at 0x105b8a810>
+    // <conv.chunks.Comment object at 0x103ce6660>
+    // <conv.chunks.Comment object at 0x103ce6810>
     lda(0xff);
     JMP(LoadTriCtrlReg);
 }
@@ -23976,7 +23945,7 @@ int LoadTriCtrlReg() {
 
 int HandleNoiseMusic() {
     lda(AreaMusicBuffer);
-    // <conv.chunks.Comment object at 0x105b8ab10>
+    // <conv.chunks.Comment object at 0x103ce6b10>
     anda(0b11110011);
     BEQ(ExitMusicHandler);
     dec(Noise_BeatLenCounter);
@@ -23986,10 +23955,10 @@ int HandleNoiseMusic() {
 
 int FetchNoiseBeatData() {
     ldy(MusicOffset_Noise);
-    // <conv.chunks.Comment object at 0x105b8b0b0>
+    // <conv.chunks.Comment object at 0x103ce70b0>
     inc(MusicOffset_Noise);
     lda((MusicData), y);
-    // <conv.chunks.Comment object at 0x105b8b2c0>
+    // <conv.chunks.Comment object at 0x103ce72c0>
     BNE(NoiseBeatHandler);
     lda(NoiseDataLoopbackOfs);
     sta(MusicOffset_Noise);
@@ -24000,22 +23969,22 @@ int FetchNoiseBeatData() {
 int NoiseBeatHandler() {
     JSR(AlternateLengthHandler);
     sta(Noise_BeatLenCounter);
-    // <conv.chunks.Comment object at 0x105b8b9b0>
+    // <conv.chunks.Comment object at 0x103ce79b0>
     txa();
     anda(0b111110);
     BEQ(SilentBeat);
     cmp(0x30);
     BEQ(LongBeat);
-    // <conv.chunks.Comment object at 0x105b8bb60>
-    // <conv.chunks.Comment object at 0x105b8bc80>
-    // <conv.chunks.Comment object at 0x105b8bda0>
-    // <conv.chunks.Comment object at 0x105b8be30>
+    // <conv.chunks.Comment object at 0x103ce7b60>
+    // <conv.chunks.Comment object at 0x103ce7c80>
+    // <conv.chunks.Comment object at 0x103ce7da0>
+    // <conv.chunks.Comment object at 0x103ce7e30>
     cmp(0x20);
     BEQ(StrongBeat);
     anda(0b10000);
     BEQ(SilentBeat);
     lda(0x1c);
-    // <conv.chunks.Comment object at 0x105b983e0>
+    // <conv.chunks.Comment object at 0x103cf43e0>
     ldx(0x3);
     ldy(0x18);
     BNE(PlayBeat);
@@ -24024,7 +23993,7 @@ int NoiseBeatHandler() {
 
 int StrongBeat() {
     lda(0x1c);
-    // <conv.chunks.Comment object at 0x105b98800>
+    // <conv.chunks.Comment object at 0x103cf4800>
     ldx(0xc);
     ldy(0x18);
     BNE(PlayBeat);
@@ -24033,7 +24002,7 @@ int StrongBeat() {
 
 int LongBeat() {
     lda(0x1c);
-    // <conv.chunks.Comment object at 0x105b98c20>
+    // <conv.chunks.Comment object at 0x103cf4c20>
     ldx(0x3);
     ldy(0x58);
     BNE(PlayBeat);
@@ -24047,14 +24016,14 @@ int SilentBeat() {
 
 int PlayBeat() {
     sta(SND_NOISE_REG);
-    // <conv.chunks.Comment object at 0x105b991c0>
+    // <conv.chunks.Comment object at 0x103cf51c0>
     stx(((SND_NOISE_REG) + (2)));
     sty(((SND_NOISE_REG) + (3)));
     JMP(ExitMusicHandler);
 }
 
 int ExitMusicHandler() {
-    rts();
+    return 0;
     JMP(AlternateLengthHandler);
 }
 
@@ -24064,33 +24033,33 @@ int AlternateLengthHandler() {
     txa();
     rol();
     rol();
-    // <conv.chunks.Comment object at 0x105b99760>
-    // <conv.chunks.Comment object at 0x105b99820>
-    // <conv.chunks.Comment object at 0x105b998e0>
-    // <conv.chunks.Comment object at 0x105b999a0>
-    // <conv.chunks.Comment object at 0x105b99a60>
+    // <conv.chunks.Comment object at 0x103cf5760>
+    // <conv.chunks.Comment object at 0x103cf5820>
+    // <conv.chunks.Comment object at 0x103cf58e0>
+    // <conv.chunks.Comment object at 0x103cf59a0>
+    // <conv.chunks.Comment object at 0x103cf5a60>
     rol();
     JMP(ProcessLengthData);
 }
 
 int ProcessLengthData() {
     anda(0b111);
-    // <conv.chunks.Comment object at 0x105b99bb0>
+    // <conv.chunks.Comment object at 0x103cf5bb0>
     clc();
     adc(0xf0);
     adc(NoteLengthTblAdder);
-    // <conv.chunks.Comment object at 0x105b99d90>
-    // <conv.chunks.Comment object at 0x105b99e20>
+    // <conv.chunks.Comment object at 0x103cf5d90>
+    // <conv.chunks.Comment object at 0x103cf5e20>
     tay();
     lda(offsetof(G, MusicLengthLookupTbl), y);
-    // <conv.chunks.Comment object at 0x105b9a030>
-    rts();
+    // <conv.chunks.Comment object at 0x103cf6030>
+    return 0;
     JMP(LoadControlRegs);
 }
 
 int LoadControlRegs() {
     lda(EventMusicBuffer);
-    // <conv.chunks.Comment object at 0x105b9a240>
+    // <conv.chunks.Comment object at 0x103cf6240>
     anda(EndOfCastleMusic);
     BEQ(NotECstlM);
     lda(0x4);
@@ -24101,53 +24070,53 @@ int LoadControlRegs() {
 int NotECstlM() {
     lda(AreaMusicBuffer);
     anda(0b1111101);
-    // <conv.chunks.Comment object at 0x105b9a8d0>
+    // <conv.chunks.Comment object at 0x103cf68d0>
     BEQ(WaterMus);
     lda(0x8);
-    // <conv.chunks.Comment object at 0x105b9aae0>
+    // <conv.chunks.Comment object at 0x103cf6ae0>
     BNE(AllMus);
     JMP(WaterMus);
 }
 
 int WaterMus() {
-    // <conv.chunks.Comment object at 0x105b9ad20>
+    // <conv.chunks.Comment object at 0x103cf6d20>
     lda(0x28);
     JMP(AllMus);
 }
 
 int AllMus() {
-    // <conv.chunks.Comment object at 0x105b9ade0>
+    // <conv.chunks.Comment object at 0x103cf6de0>
     ldx(0x82);
     ldy(0x7f);
-    rts();
+    return 0;
     JMP(LoadEnvelopeData);
 }
 
 int LoadEnvelopeData() {
     lda(EventMusicBuffer);
-    // <conv.chunks.Comment object at 0x105b9b1a0>
+    // <conv.chunks.Comment object at 0x103cf71a0>
     anda(EndOfCastleMusic);
     BEQ(LoadUsualEnvData);
     lda(offsetof(G, EndOfCastleMusicEnvData), y);
-    // <conv.chunks.Comment object at 0x105b9b4a0>
-    rts();
+    // <conv.chunks.Comment object at 0x103cf74a0>
+    return 0;
     JMP(LoadUsualEnvData);
 }
 
 int LoadUsualEnvData() {
     lda(AreaMusicBuffer);
-    // <conv.chunks.Comment object at 0x105b9b6b0>
+    // <conv.chunks.Comment object at 0x103cf76b0>
     anda(0b1111101);
     BEQ(LoadWaterEventMusEnvData);
     lda(offsetof(G, AreaMusicEnvData), y);
-    // <conv.chunks.Comment object at 0x105b9b9b0>
-    rts();
+    // <conv.chunks.Comment object at 0x103cf79b0>
+    return 0;
     JMP(LoadWaterEventMusEnvData);
 }
 
 int LoadWaterEventMusEnvData() {
     lda(offsetof(G, WaterEventMusEnvData), y);
-    // <conv.chunks.Comment object at 0x105b9bbc0>
-    rts();
+    // <conv.chunks.Comment object at 0x103cf7bc0>
+    return 0;
 }
 
