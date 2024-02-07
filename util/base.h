@@ -51,11 +51,9 @@ byte name[]
 #define DATA16(name) \
 word name[]
 
-byte LO8(word const v) { return (v) & 0xff; }
-byte HI8(word const v) { return (v >> 8) & 0xff; }
 
-byte LO8(byte const* name) { return LO8((word) (((size_t) name) - (size_t)(&data))); }
-byte HI8(word const* name) { return HI8((word) (((size_t) name) - (size_t)(&data))); }
+constexpr byte LO8(word const v) { return (v) & 0xff; }
+constexpr byte HI8(word const v) { return (v >> 8) & 0xff; }
 
 
 #define JMP(name)    return name();
@@ -90,6 +88,22 @@ void sta(Imm d) { m[d] = a; }
 
 void txa() { assignReg(a, x); }
 void txs() { assignReg(a, s); }
+
+void sub(Reg& dest, Src const& k) {
+    auto r = dest - k;
+    dest.val = (byte) k;
+    n = !!(r & 0x80);
+    z = !!r;
+}
+
+void sub(Src const& k) {
+    sub(a, k);
+}
+
+void cmp(Src const& k) {
+    Reg foo;
+    sub(foo, k);
+}
 
 int Start();
 int NonMaskableInterrupt();

@@ -48,7 +48,7 @@ class Imm(Expr):
             return hex(self.val)
     
     def render(self):
-        return "Imm(%s)" % (str(self))
+        return str(self)
 
 @dataclass
 class Define(Chunk):
@@ -73,11 +73,15 @@ class Ref(Chunk):
     name: str = None
     def __init__(self, name):
         self.name = name
+        self.comments = []
         if not valid_ref_name.match(name):
             raise Exception("bad ref: " + name)
 
     def render(self):
-        return "(%s)" % (self.name)
+        if self.name in labels:
+            return "offsetof(G, %s)" % (self.name)
+        else:
+            return "K::%s" % (self.name)
 
 @dataclass
 class Plus(Chunk):
@@ -192,19 +196,18 @@ class DispatchBlock(Block):
 class DataBlock(Block):
     label: Label = None
     def render(self, proto=False):
-        x = ", ".join(b.expr.render() for b in self.inner)
-        if self.label:
-            assert len(self.inner) > 0
-            if isinstance(self.inner[0], Byte):
-                return ("byte const %s[%d] = {%s};" % (self.label.name, len(self.inner), x))
-            if isinstance(self.inner[0], Byte):
-                return ("word const %s[%d] = {%s};" % (self.label.name, len(self.inner), x))
+        assert len(self.inner) > 0
+        dt = "byte" if isinstance(self.inner[0], Byte) else "word"
+        x = [b.expr.render() for b in self.inner]
+        x = [("%s" % (b)) for b in x]
+        x = ", ".join(x)
+        if proto:
+            return ("    %s const %s[%d];" % (dt, self.label.name, len(self.inner)))
+        return ("    {%s}," % (x))
 
 @dataclass
 class DefsBlock(Block):
-    def render(self):
-        for d in self.inner:
-            print("#define %s (%s)" % (d.name, d.expr.render()))
+    pass
 
 chunks: deque[Chunk] = deque()
 
@@ -486,6 +489,19 @@ while i < len(chunks):
         continue
     i += 1
 
+# i = 0
+# while i < len(chunks):
+#     print((i, str(chunks[i])))
+#     i += 1
+# raise
+
+i = 0
+while i < len(chunks):
+    if pattern(i, [Label, DataBlock]):
+        label = chunks[i]
+        chunks[i] = DataBlock(label=label, inner=[Byte(expr=Imm("0"))])
+    i += 1
+
 # Find code blocks' start positions
 i = 0
 while i < len(chunks):
@@ -545,25 +561,56 @@ for c in code_blocks:
         prev.inner.append(Insn(name="jmp", opds=[Ref(c.label.name)]))
     prev = c
 
+f = sys.stderr
 
-print("#include \"main.h\"")
-print()
+def p(*args):
+    print(*args, file=f)
 
-defs_block.render()
+with open("main.h", "w") as h:
+    f = h
+    p("#pragma once")
+    p("#include \"util/base.h\"")
+    p()
 
-print("struct Data {")
-for d in data_blocks:
-    print(d.render())
-print("};")
-print("Data data;")
+    p()
+    p("struct G {")
+    p("    byte space[32768];")
+    for d in data_blocks:
+        p(d.render(proto=True))
+    p("} __attribute__((__packed__));")
+    p("extern G g;")
 
-for d in data_blocks:
-    print(d.render(proto=True))
+    p()
+    p("struct K {")
+    for d in defs_block.inner:
+        if ((isinstance(d.expr, Imm) and d.expr.val >= 0x100) or
+            ("offsetof" in d.expr.render())):
+            p("    static constexpr word const %s = word(%s);" % (d.name, d.expr.render()))
+        else:
+            p("    static constexpr byte const %s = byte(%s);" % (d.name, d.expr.render()))
+    p("};")
 
-for c in code_blocks:
-    print(c.render(proto=True))
 
-for c in code_blocks:
-    for comment in c.comments:
-        print(c.render())
-    print(c.render())
+with open("main.cc", "w") as cc:
+    f = cc
+    p("#include <cstddef>")
+    p("#include \"main.h\"")
+
+    p()
+    p("G g {")
+    p("    {},  // space is zeroed")
+    for d in data_blocks:
+        p(d.render())
+    p("};")
+
+
+# for d in data_blocks:
+#     print(d.render())
+
+# for c in code_blocks:
+#     print(c.render(proto=True))
+
+# for c in code_blocks:
+#     for comment in c.comments:
+#         print(c.render())
+#     print(c.render())
