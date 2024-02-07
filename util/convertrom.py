@@ -108,6 +108,14 @@ while pattern(0, [PreambleBlock, Comment]):
     pre.inner.append(chunks[1])
     del chunks[1]
 
+# Separators are making this complicated, drop them
+i = 0
+while i < len(chunks):
+    if pattern(i, [Separator]):
+        del chunks[i]
+    else:
+        i += 1
+
 # Absorb comments into their respective things
 i = 0
 cmts: list[Comment] = []
@@ -117,9 +125,11 @@ while i < len(chunks):
         assert isinstance(ch, Comment)
         cmts.append(ch)
         del chunks[i]
+        continue
     elif (not pattern(i, [Separator])) and cmts:
         chunks[i].comments += cmts
         cmts = []
+        continue
     i += 1
 
 # Remove "EndlessLoop" part, within Start:
@@ -151,7 +161,11 @@ while i < len(chunks):
 i = 0
 while i < len(chunks):
     if pattern(i, [Insn]) and chunks[i].name == 'jsr' and "JumpEngine" in str(chunks[i].opds[0]):  # type: ignore[attr-defined]
-        chunks[i] = DispatchBlock()                 # replace "jsr JumpEngine"
+        # replace "jsr JumpEngine"
+        jsr = chunks[i]
+        dbk = DispatchBlock()
+        chunks[i] = dbk
+        dbk.comments += jsr.comments
         while pattern(i, [DispatchBlock, Word]):    # absorb ".dw" 's into that
             w = chunks[i + 1]
             assert isinstance(w, Word)
@@ -159,9 +173,7 @@ while i < len(chunks):
             assert isinstance(target, Ref)
             assert isinstance(target.of.name, str)
             del chunks[i + 1]
-            db = chunks[i]
-            assert isinstance(db, DispatchBlock)
-            db.inner.append(target)
+            dbk.inner.append(target)
             labels[target.of.name].is_call_target = True
     i += 1
 
@@ -288,13 +300,17 @@ while i < len(chunks):
 
 i = 0
 while i < len(chunks):
-    if not (pattern(i, [CodeBlock, Label]) or pattern(i, [CodeBlock, Insn])):
+    if not (pattern(i, [CodeBlock, Label])
+            or pattern(i, [CodeBlock, Insn])
+            or pattern(i, [CodeBlock, DispatchBlock])):
         i += 1
         continue
     c = chunks[i]
     assert isinstance(c, CodeBlock)
     c.inner.append(chunks[i + 1])
     del chunks[i + 1]
+
+# dump(chunks)
 
 all_blocks: list[Block] = [c for c in chunks if isinstance(c, Block)]
 pre_block = all_blocks[0]
@@ -306,11 +322,11 @@ data_blocks: list[DataBlock] = [b for b in all_blocks if isinstance(b, DataBlock
 
 prev: Optional[CodeBlock] = None
 for c in code_blocks:
-    if prev:
+    if prev and not (isinstance(prev.inner[-1], DispatchBlock)
+                     or (isinstance(prev.inner[-1], Insn)
+                         and prev.inner[-1].is_terminal())):
         prev.inner.append(Insn(name="jmp", opds=[Ref(c.label)]))
     prev = c
-
-# dump(chunks)
 
 f = sys.stderr
 
@@ -369,4 +385,6 @@ with open("main.cc", "w") as cc:
 
     p("")
     for c in code_blocks:
+        for cm in c.comments:
+            p(cm)
         p(c)

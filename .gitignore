@@ -1,4 +1,6 @@
 *.o
+*.pyc
+/pycache/
 mario++
 misc/chrrom.h
 misc/chrrom.cc

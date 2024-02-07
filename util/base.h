@@ -3,6 +3,8 @@
 using byte = unsigned char;
 using word = unsigned short;
 
+using JUMP_ENTRY = int(*)();
+
 int Start();
 int NonMaskableInterrupt();
 

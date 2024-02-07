@@ -357,6 +357,7 @@ struct G {
 extern G g;
 
 // DEFINES
+// NES specific hardware defines
 #define                            PPU_CTRL_REG1               0x2000
 #define                            PPU_CTRL_REG2               0x2001
 #define                               PPU_STATUS               0x2002
@@ -376,8 +377,8 @@ extern G g;
 #define                              JOYPAD_PORT               0x4016
 #define                             JOYPAD_PORT1               0x4016
 #define                             JOYPAD_PORT2               0x4017
-#define                             ObjectOffset                  0x8
 // GAME SPECIFIC DEFINES
+#define                             ObjectOffset                  0x8
 #define                             FrameCounter                  0x9
 #define                          SavedJoypadBits                0x6fc
 #define                         SavedJoypad1Bits                0x6fc
@@ -531,20 +532,20 @@ extern G g;
 #define                               PlayerSize                0x754
 #define                             PlayerStatus                0x756
 #define                       OnscreenPlayerInfo                0x75a
-#define                            NumberofLives                0x75a
 // used by current player
+#define                            NumberofLives                0x75a
 #define                              HalfwayPage                0x75b
-#define                              LevelNumber                0x75c
 // the actual dash number
+#define                              LevelNumber                0x75c
 #define                            Hidden1UpFlag                0x75d
 #define                                CoinTally                0x75e
 #define                              WorldNumber                0x75f
-#define                               AreaNumber                0x760
 // internal number used to find areas
+#define                               AreaNumber                0x760
 #define                         CoinTallyFor1Ups                0x748
 #define                      OffscreenPlayerInfo                0x761
-#define                     OffScr_NumberofLives                0x761
 // used by offscreen player
+#define                     OffScr_NumberofLives                0x761
 #define                       OffScr_HalfwayPage                0x762
 #define                       OffScr_LevelNumber                0x763
 #define                     OffScr_Hidden1UpFlag                0x764
@@ -763,8 +764,8 @@ extern G g;
 #define                         FireworksCounter                0x6d7
 #define                      ExplosionGfxCounter                 0x58
 #define                    ExplosionTimerCounter                 0xa0
-#define                       Squ2_NoteLenBuffer                0x7b3
 // sound related defines
+#define                       Squ2_NoteLenBuffer                0x7b3
 #define                      Squ2_NoteLenCounter                0x7b4
 #define                    Squ2_EnvelopeDataCtrl                0x7b5
 #define                      Squ1_NoteLenCounter                0x7b6
@@ -804,6 +805,7 @@ extern G g;
 #define                     GroundMusicHeaderOfs                0x7c7
 #define                        AltRegContentFlag                0x7ca
 // CONSTANTS
+// sound effects constants
 #define                            Sfx_SmallJump           0b10000000
 #define                             Sfx_Flagpole            0b1000000
 #define                             Sfx_Fireball             0b100000
@@ -822,8 +824,8 @@ extern G g;
 #define                             Sfx_CoinGrab                  0b1
 #define                          Sfx_BowserFlame                 0b10
 #define                         Sfx_BrickShatter                  0b1
-#define                                  Silence           0b10000000
 // music constants
+#define                                  Silence           0b10000000
 #define                           StarPowerMusic            0b1000000
 #define                           PipeIntroMusic             0b100000
 #define                               CloudMusic              0b10000
@@ -838,8 +840,8 @@ extern G g;
 #define                             VictoryMusic                0b100
 #define                            GameOverMusic                 0b10
 #define                               DeathMusic                  0b1
-#define                               GreenKoopa                  0x0
 // enemy object constants
+#define                               GreenKoopa                  0x0
 #define                              BuzzyBeetle                  0x2
 #define                                 RedKoopa                  0x3
 #define                                HammerBro                  0x5
@@ -870,8 +872,8 @@ extern G g;
 #define                     BulletBill_CannonVar                 0x33
 #define                           RetainerObject                 0x35
 #define                                TallEnemy                  0x9
-#define                                   World1                    0
 // other constants
+#define                                   World1                    0
 #define                                   World2                    1
 #define                                   World3                    2
 #define                                   World4                    3
