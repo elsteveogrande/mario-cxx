@@ -12,13 +12,6 @@ struct Src {
     virtual constexpr operator byte const () const = 0;
 };
 
-struct Imm : Src {
-    word val;
-    constexpr Imm(word val) : val(val) {}
-
-    virtual constexpr operator byte const () const override { return val; }
-};
-
 struct Addr : Dest, Src {
 };
 
@@ -75,7 +68,7 @@ void assignReg(Reg& r, Src const& k) {
 void sei() {}
 void cld() {}
 
-void lda(Src const& k) { assignReg(a, k); }
+void lda(Ref const& k) { assignReg(a, k); }
 void lda(Src const& k, Reg r) { assignReg(a, Ref(k + r)); }
 
 void ldx(Src const& k) { assignReg(x, k); }
