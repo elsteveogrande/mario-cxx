@@ -27,36 +27,57 @@ constexpr byte HI8(word const v) { return (v >> 8) & 0xff; }
 #define RTS(name)    return;
 #define RTI(name)    return;
 
-struct R8 {
-    virtual ~R8() = default;
-    virtual operator byte const& () const = 0;
+struct Mode {
+    virtual void write(byte v) = 0;
+    virtual byte read() const = 0;
 };
 
-struct Imm : R8 {
-    byte const val;
-    Imm(byte val) : val(val) {}
-    virtual ~Imm() override = default;
-    virtual operator byte const& () const override {
-        return val;
-    }
-};
-
-struct W8 {
-    virtual W8& operator=(R8 const& r) = 0;
-    virtual ~W8() = default;
-};
-
-struct Reg : R8, W8 {
+struct Imm : Mode {
     byte val;
-    Reg() : val(0) {}
-    Reg(byte val) : val(val) {}
-    virtual ~Reg() override = default;
-    virtual operator byte const& () const override;
-    virtual Reg& operator=(R8 const& r) override;
+    explicit Imm(byte val) : val(val) {}
+    virtual byte read() const { return val; };
+    virtual void write(byte) { abort(); }
 };
 
-extern Reg a, x, y, s;
+struct Reg : Mode {
+    byte val {0};
+    virtual void write(byte v) { val = v; };
+    virtual byte read() const { return val; };
+    void operator++() { write(read() + 1); }
+    void operator++(int) { write(read() + 1); }
+    void operator--() { write(read() - 1); }
+    void operator--(int) { write(read() - 1); }
+};
+
+struct A : virtual Reg {};
+struct X : virtual Reg {};
+struct Y : virtual Reg {};
+struct S : virtual Reg {};
+
+// dummy operations
+struct D : virtual Reg {
+    virtual void write(byte) {};
+    virtual byte read() const { return 0; };
+};
+extern D dummy;
+
+extern A a;
+extern X x;
+extern Y y;
+extern S s;
 extern bool n, z, c;
+
+inline byte nz(word result) {
+    result &= 0xff;
+    n = !!(result >> 7);
+    z = !!result;
+    return byte(result & 0xff);
+}
+
+inline byte nzc(word result) {
+    c = !!(result >> 8);
+    return nz(result);
+}
 
 struct Memory {
     struct Bytes {
@@ -106,111 +127,118 @@ struct Memory {
     };
 };
 
-// TODO: flags
-// TODO: BIT insns
-// TODO: hooks for hw regs
-
 extern Memory::Bus m;
 
-inline void nop() {}
-inline void sei() {}
-inline void cld() {}
+// TODO: all needed insns
+// TODO: embed modes in Insn.render
+// TODO: hooks for hw regs
 
+// Implementation of 6502 instructions.
+// Not 100% correct.  Some are defined, but are no-ops.
+// Others (like zero-page, indirect address modes) are incorrect.
+// However these is good enough for mario++.
+
+struct Mem : Mode {
+    virtual int addr() const = 0;
+    virtual void write(byte v) override { m.set(addr(), v);     }
+    virtual byte read()  const override { return m.get(addr()); }
+};
+
+struct Abs : Mem {
+    word const abs_;
+    Reg const& reg_;
+    Abs(word abs, Reg const& reg) : abs_(abs), reg_(reg) {}
+    explicit Abs(word abs) : Abs(abs, dummy) {}
+    virtual int addr() const { return abs_; }
+};
+
+struct IndY : Abs {
+    explicit IndY(word abs) : Abs(abs) {}
+    virtual int addr() const override {
+        byte ret;
+        ret = int(m.get(abs_));
+        ret |= int(m.get(abs_ + 1)) << 8;
+        ret = m.get(ret);
+        return ret + y.read();
+    }
+};
+
+// https://www.masswerk.at/6502/6502_instruction_set.html
+
+inline void nop() {}
+inline void sei() { /* IGNORED */ }
+inline void cld() { /* IGNORED */}
 inline void clc() { c = 0; }
 inline void sec() { c = 1; }
 
-inline void lda(Imm imm) { a = byte(imm); }
-inline void lda(short addr) { a = m.get(addr); }
-inline void lda(short addr, Reg r) { a = m.get(addr + r); }
-inline void sta(short addr) { m.set(addr, a); }
-inline void sta(short addr, Reg r) { m.set(addr + r, a); }
+void ld(Mode& d, Mode const& s);
+void ld(Mode& d, byte v);
+void st(Mode& d, Mode const& s);
+void inc(Mode& d, Mode const& s);
+void dec(Mode& d, Mode const& s);
+void add(Mode& d, Mode const& s1, Mode const& s2, bool c);
+void sub(Mode& d, Mode const& s1, Mode const& s2, bool c);
+void sub(Mode& d, Mode const& s, bool c);
+void cmp(Reg& s1, Mode const& s2);
+void and_(Mode& d, Mode const& s1, Mode const& s2);
+void ora(Mode& d, Mode const& s1, Mode const& s2);
+void eor(Mode& d, Mode const& s1, Mode const& s2);
+void push(Reg const& r);
+void pull(Reg& r);
+void bit(Mode const& s);
+void lsr(Mode& d, Mode const& s);
+void asl(Mode& d, Mode const& s);
+void rol(Mode& d, Mode const& s);
+void ror(Mode& d, Mode const& s);
 
-inline void ldx(Imm imm) { x = byte(imm); }
-inline void ldx(short addr) { x = m.get(addr); }
-inline void ldx(short addr, Reg r) { x = m.get(addr + r); }
-inline void stx(short addr) { m.set(addr, x); }
-inline void stx(short addr, Reg r) { m.set(addr + r, x); }
-inline void inx() { x = x + 1; }
-inline void dex() { x = x - 1; }
+inline void inc()      { inc(a, a); }
+inline void inc(Abs s) { inc(s, s); }
+inline void inx()      { inc(x, x); }
+inline void iny()      { inc(y, y); }
 
-inline void ldy(Imm imm) { y = byte(imm); }
-inline void ldy(short addr) { y = m.get(addr); }
-inline void ldy(short addr, Reg r) { y = m.get(addr + r); }
-inline void sty(short addr) { m.set(addr, y); }
-inline void sty(short addr, Reg r) { m.set(addr + r, y); }
-inline void iny() { y = y + 1; }
-inline void dey() { y = y - 1; }
+inline void dec()      { dec(a, a); }
+inline void dec(Abs s) { dec(s, s); }
+inline void dex()      { dec(x, x); }
+inline void dey()      { dec(y, y); }
 
-inline void txs() { s = x; }
-inline void tys() { s = y; }
-inline void txa() { a = x; }
-inline void tya() { a = y; }
-inline void tax() { x = a; }
-inline void tay() { y = a; }
+inline void tax() { ld(x, a); }
+inline void tay() { ld(y, a); }
+inline void tsx() { ld(x, s); }
+inline void txa() { ld(a, x); }
+inline void txs() { ld(s, x); }
+inline void tya() { ld(a, y); }
 
-inline void inc(short addr) { m.set(addr, m.get(addr) + 1); }
-inline void inc(short addr, Reg r) { m.set(addr + r, m.get(addr + r) + 1); }
-inline void dec(short addr) { m.set(addr, m.get(addr) - 1); }
-inline void dec(short addr, Reg r) { m.set(addr + r, m.get(addr + r) - 1); }
+inline void pha() { push(a); }
+inline void phx() { push(x); }
+inline void phy() { push(y); }
+inline void pla() { pull(a); }
+inline void plx() { pull(x); }
+inline void ply() { pull(y); }
 
-inline void ora(Imm imm) { a = imm | a; }
-inline void ora(short addr) { a = m.get(addr) | a; }
-inline void ora(short addr, Reg r) { a = m.get(addr + r) | a; }
+inline void lda(Mode const& s) { ld(a, s); }
+inline void ldx(Mode const& s) { ld(x, s); }
+inline void ldy(Mode const& s) { ld(y, s); }
 
-inline void anda(Imm imm) { a = imm & a; }
-inline void anda(short addr) { a = m.get(addr) & a; }
-inline void anda(short addr, Reg r) { a = m.get(addr + r) & a; }
+inline void sta(Mode const& s) { ld(a, s); }
+inline void stx(Mode const& s) { ld(x, s); }
+inline void sty(Mode const& s) { ld(y, s); }
 
-inline void eor(Imm imm) { a = imm ^ a; }
+inline void cmp(Mode const& s) { cmp(a, s); }
+inline void cpx(Mode const& s) { cmp(x, s); }
+inline void cpy(Mode const& s) { cmp(y, s); }
 
-inline void lsr() { a = byte(a) >> 1; }
-inline void lsr(short addr) { m.set(addr, m.get(addr) >> 1); }
-inline void lsr(short addr, Reg r) { m.set(addr + r, m.get(addr + r) >> 1); }
-inline void asl() { a = byte(a) << 1; }
-inline void asl(short addr) { m.set(addr, m.get(addr) << 1); }
-inline void asl(short addr, Reg r) { m.set(addr + r, m.get(addr + r) << 1); }
+inline void anda(Mode const& s) { and_(a, a, s); }
+inline void ora(Mode const& s)  { ora(a, a, s); }
+inline void eor(Mode const& s)  { eor(a, a, s); }
 
-inline byte ror8(byte z) { return (z << 7) | (z >> 1); }
-inline void ror() { a = ror8(byte(a)); }
-inline void ror(short addr) { m.set(addr, ror8(m.get(addr))); }
-inline void ror(short addr, Reg r) { m.set(addr + r, ror8(m.get(addr + r))); }
+inline void lsr()       { lsr(a, a); }
+inline void asl()       { asl(a, a); }
+inline void rol()       { rol(a, a); }
+inline void ror()       { ror(a, a); }
+inline void lsr(Mode const& s) { lsr(const_cast<Mode&>(s), s); }
+inline void asl(Mode const& s) { asl(const_cast<Mode&>(s), s); }
+inline void rol(Mode const& s) { rol(const_cast<Mode&>(s), s); }
+inline void ror(Mode const& s) { ror(const_cast<Mode&>(s), s); }
 
-inline byte rol8(byte z) { return (z >> 1) | (z >> 7); }
-inline void rol() { a = rol8(byte(a)); }
-inline void rol(short addr) { m.set(addr, rol8(m.get(addr))); }
-
-inline void sub(Reg& dest, Reg& src, R8 const& arg) {
-    dest = byte(src) - byte(arg);
-}
-
-inline void add(Imm imm) { a = a + imm; }
-inline void adc(Imm imm) { a = a + imm + byte(c); }
-inline void adc(short addr) { a = a + m.get(addr) + byte(c); }
-inline void adc(short addr, Reg r) { a = a + m.get(addr + r) + byte(c); }
-
-inline void sub(Imm imm) { sub(a, a, imm); }
-
-inline void sbc(Imm imm) { sub(a, a, Imm(imm + byte(c))); }
-inline void sbc(short addr) { a = a - m.get(addr) - byte(c); }
-inline void sbc(short addr, Reg r) { a = a - m.get(addr + r) - byte(c); }
-
-inline void cmp(Imm imm) { Reg foo; sub(foo, a, imm); }
-inline void cmp(short addr) { Reg foo; sub(foo, a, Imm(m.get(addr))); }
-inline void cmp(short addr, Reg r) { Reg foo; sub(foo, a, Imm(m.get(addr + r))); }
-
-inline void cpx(Imm imm) { Reg foo; sub(foo, x, imm); }
-
-inline void cpy(Imm imm) { Reg foo; sub(foo, y, imm); }
-inline void cpy(short addr) { Reg foo; sub(foo, y, Imm(m.get(addr))); }
-inline void cpy(short addr, Reg r) { Reg foo; sub(foo, y, Imm(m.get(addr + r))); }
-
-inline void pha() { s = s - 1; m.set(s, a); }
-inline void phx() { s = s - 1; m.set(s, x); }
-inline void phy() { s = s - 1; m.set(s, y); }
-inline void pla() { a = m.get(s); s = s + 1; }
-inline void plx() { x = m.get(s); s = s + 1; }
-inline void ply() { y = m.get(s); s = s + 1; }
-
-inline void bit(Imm) { }
-inline void bit(long) { }
-inline void bit(long, Reg) { }
+inline void adc(Mode const& s) { add(a, a, s, c); }
+inline void sbc(Mode const& s) { add(a, a, s, c); }

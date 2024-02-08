@@ -189,9 +189,6 @@ class Insn(Chunk):
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         if self.is_terminal():
             return "return 0"
-        if self.name == "and":
-            opds = ", ".join(x.render(labels, defines) for x in self.opds)
-            return "%sa(%s)" % (self.name, opds)
         if self.name in {"jmp", "jsr", "bra", "bcc", "bcs", "bmi", "bpl", "beq", "bne"}:
             assert len(self.opds) == 1
             ref = self.opds[0]
@@ -200,9 +197,42 @@ class Insn(Chunk):
             assert isinstance(named, Named)
             target = named.name
             return "%s(%s)" % (self.name.upper(), target)
-        opds = ", ".join(x.render(labels, defines) for x in self.opds)
-        # if (self.name == "lda"):  raise Exception(str([type(x) for x in self.opds]))
-        return "%s(%s)" % (self.name, opds)
+        n = self.name
+        if n == "and":
+            n = "anda"
+        return "%s(%s)" % (n, self.render_opds(labels, defines))
+
+    def render_opds(self, labels: dict[str, Any], defines: dict[str, Any]) -> str:
+        os: list[Expr] = self.opds
+        if len(os) == 0:
+            return ""   # resulting in empty parens, no function args in C++-lang
+        ts = [type(o) for o in os]
+        rs = [o.render(labels, defines) for o in os]
+        if ts == [Imm]:
+            return os[0].render(labels, defines)
+        if ts == [Ref]:
+            return "Abs(%s)" % tuple(rs)
+        if ts == [Ref, Reg]:
+            return "Abs(%s, %s)" % tuple(rs)
+        if ts == [Lit]:
+            return "Abs(%s)" % tuple(rs)
+        if ts == [Lit, Reg]:
+            return "Abs(%s, %s)" % tuple(rs)
+        if ts == [Plus]:
+            return "Abs(%s)" % tuple(rs)
+        if ts == [Plus, Reg]:
+            return "Abs(%s, %s)" % tuple(rs)
+        if ts == [Minus]:
+            return "Abs(%s)" % tuple(rs)
+        if ts == [Minus, Reg]:
+            return "Abs(%s, %s)" % tuple(rs)
+        if ts == [Paren, Reg] and rs[1] == "y":
+            return "IndY(%s)" % (rs[0],)
+        print("##########")
+        print(ts)
+        print(rs)
+        print("##########")
+        raise Exception()
 
 class Block(Chunk):
     attrs = Chunk.attrs + ["inner"]
@@ -275,7 +305,7 @@ class DispatchBlock(Block):
             ret += x.of.name
             ret += ",\n"
         ret += "    };\n"
-        ret += "    JMP(%s[a])" % (table_name,)
+        ret += "    JMP(%s[a.read()])" % (table_name,)
         return ret
 
 class DataBlock(Block):
