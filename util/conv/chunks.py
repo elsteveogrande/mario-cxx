@@ -66,10 +66,12 @@ class Lit(Expr):
             return hex(self.val)
         assert False
 
-# class Imm(Expr):
-#     val: Optional[Expr]
-#     def render(self):
-#         return "Imm(" + self.val.render() + ")"
+class Imm(Expr):
+    def __init__(self, val: Expr) -> None:
+        super().__init__()
+        self.val = val
+    def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False):
+        return "Imm(" + self.val.render(labels, defines) + ")"
 
 class Named(Chunk):
     attrs = Chunk.attrs + ["name"]

@@ -382,7 +382,9 @@ with open("main.cc", "w") as cc:
             p(cm)
         p(d)
     p("};")
-    p("void* gReg = m.addRegion(Memory::Region { std::make_shared<Memory::ROM>(&g._start), 0x8000, 0x7fff });")
+    p("void* gReg = m.addRegion("
+      "    Memory::Region {"
+      "        std::make_shared<Memory::ROM>(&g._start), 0x8000, 0x7fff });")
 
     p("")
     for c in code_blocks:

@@ -32,10 +32,10 @@ struct R8 {
     virtual operator byte const& () const = 0;
 };
 
-struct I8 : R8 {
+struct Imm : R8 {
     byte const val;
-    I8(byte val) : val(val) {}
-    virtual ~I8() override = default;
+    Imm(byte val) : val(val) {}
+    virtual ~Imm() override = default;
     virtual operator byte const& () const override {
         return val;
     }
@@ -115,13 +115,13 @@ inline void cld() {}
 inline void clc() { c = 0; }
 inline void sec() { c = 1; }
 
-inline void lda(I8 imm) { a = byte(imm); }
+inline void lda(Imm imm) { a = byte(imm); }
 inline void lda(short addr) { a = m.get(addr); }
 inline void lda(short addr, Reg r) { a = m.get(addr + r); }
 inline void sta(short addr) { m.set(addr, a); }
 inline void sta(short addr, Reg r) { m.set(addr + r, a); }
 
-inline void ldx(I8 imm) { x = byte(imm); }
+inline void ldx(Imm imm) { x = byte(imm); }
 inline void ldx(short addr) { x = m.get(addr); }
 inline void ldx(short addr, Reg r) { x = m.get(addr + r); }
 inline void stx(short addr) { m.set(addr, x); }
@@ -129,7 +129,7 @@ inline void stx(short addr, Reg r) { m.set(addr + r, x); }
 inline void inx() { x = x + 1; }
 inline void dex() { x = x - 1; }
 
-inline void ldy(I8 imm) { y = byte(imm); }
+inline void ldy(Imm imm) { y = byte(imm); }
 inline void ldy(short addr) { y = m.get(addr); }
 inline void ldy(short addr, Reg r) { y = m.get(addr + r); }
 inline void sty(short addr) { m.set(addr, y); }
@@ -149,15 +149,15 @@ inline void inc(short addr, Reg r) { m.set(addr + r, m.get(addr + r) + 1); }
 inline void dec(short addr) { m.set(addr, m.get(addr) - 1); }
 inline void dec(short addr, Reg r) { m.set(addr + r, m.get(addr + r) - 1); }
 
-inline void ora(I8 imm) { a = imm | a; }
+inline void ora(Imm imm) { a = imm | a; }
 inline void ora(short addr) { a = m.get(addr) | a; }
 inline void ora(short addr, Reg r) { a = m.get(addr + r) | a; }
 
-inline void anda(I8 imm) { a = imm & a; }
+inline void anda(Imm imm) { a = imm & a; }
 inline void anda(short addr) { a = m.get(addr) & a; }
 inline void anda(short addr, Reg r) { a = m.get(addr + r) & a; }
 
-inline void eor(I8 imm) { a = imm ^ a; }
+inline void eor(Imm imm) { a = imm ^ a; }
 
 inline void lsr() { a = byte(a) >> 1; }
 inline void lsr(short addr) { m.set(addr, m.get(addr) >> 1); }
@@ -179,26 +179,26 @@ inline void sub(Reg& dest, Reg& src, R8 const& arg) {
     dest = byte(src) - byte(arg);
 }
 
-inline void add(I8 imm) { a = a + imm; }
-inline void adc(I8 imm) { a = a + imm + byte(c); }
+inline void add(Imm imm) { a = a + imm; }
+inline void adc(Imm imm) { a = a + imm + byte(c); }
 inline void adc(short addr) { a = a + m.get(addr) + byte(c); }
 inline void adc(short addr, Reg r) { a = a + m.get(addr + r) + byte(c); }
 
-inline void sub(I8 imm) { sub(a, a, imm); }
+inline void sub(Imm imm) { sub(a, a, imm); }
 
-inline void sbc(I8 imm) { sub(a, a, I8(imm + byte(c))); }
+inline void sbc(Imm imm) { sub(a, a, Imm(imm + byte(c))); }
 inline void sbc(short addr) { a = a - m.get(addr) - byte(c); }
 inline void sbc(short addr, Reg r) { a = a - m.get(addr + r) - byte(c); }
 
-inline void cmp(I8 imm) { Reg foo; sub(foo, a, imm); }
-inline void cmp(short addr) { Reg foo; sub(foo, a, I8(m.get(addr))); }
-inline void cmp(short addr, Reg r) { Reg foo; sub(foo, a, I8(m.get(addr + r))); }
+inline void cmp(Imm imm) { Reg foo; sub(foo, a, imm); }
+inline void cmp(short addr) { Reg foo; sub(foo, a, Imm(m.get(addr))); }
+inline void cmp(short addr, Reg r) { Reg foo; sub(foo, a, Imm(m.get(addr + r))); }
 
-inline void cpx(I8 imm) { Reg foo; sub(foo, x, imm); }
+inline void cpx(Imm imm) { Reg foo; sub(foo, x, imm); }
 
-inline void cpy(I8 imm) { Reg foo; sub(foo, y, imm); }
-inline void cpy(short addr) { Reg foo; sub(foo, y, I8(m.get(addr))); }
-inline void cpy(short addr, Reg r) { Reg foo; sub(foo, y, I8(m.get(addr + r))); }
+inline void cpy(Imm imm) { Reg foo; sub(foo, y, imm); }
+inline void cpy(short addr) { Reg foo; sub(foo, y, Imm(m.get(addr))); }
+inline void cpy(short addr, Reg r) { Reg foo; sub(foo, y, Imm(m.get(addr + r))); }
 
 inline void pha() { s = s - 1; m.set(s, a); }
 inline void pla() { a = m.get(s); s = s + 1; }
@@ -207,7 +207,6 @@ inline void plx() { x = m.get(s); s = s + 1; }
 inline void phy() { s = s - 1; m.set(s, y); }
 inline void ply() { y = m.get(s); s = s + 1; }
 
-inline void bit(I8) { }
+inline void bit(Imm) { }
 inline void bit(long) { }
 inline void bit(long, Reg) { }
-

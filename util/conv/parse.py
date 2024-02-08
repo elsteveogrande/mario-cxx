@@ -1,6 +1,5 @@
 from collections import deque
 from typing import *
-import sys
 
 from conv.chunks import *
 
@@ -16,8 +15,7 @@ def parse(s: str) -> Expr:
         return Lit(val=int(s[1:], 2), base=2)
 
     if s.startswith("#"):
-        # return Imm(val=parse(s[1:]))
-        return parse(s[1:])
+        return Imm(val=parse(s[1:]))
     if s.startswith(">"):
         return HiByte(of=parse(s[1:]))
     if s.startswith("<"):
