@@ -73,7 +73,7 @@ class CXXSingle(Target):
             "/usr/bin/env",
             "clang++",
             "-Og",
-            "-std=c++20",
+            "-std=c++2b",
             "-Wall",
             "-Wextra",
         ]

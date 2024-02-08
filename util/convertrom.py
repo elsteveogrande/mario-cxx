@@ -347,7 +347,7 @@ with open("main.h", "w") as h:
 
     p("")
     p("struct G {")
-    p("    byte space[32768];")
+    p("    byte _start;")
     for d in data_blocks:
         for cm in d.comments:
             p(cm)
@@ -376,12 +376,13 @@ with open("main.cc", "w") as cc:
 
     p("")
     p("G g {")
-    p("    .space={},")
+    p("    ._start = 0xdd,")
     for d in data_blocks:
         for cm in d.comments:
             p(cm)
         p(d)
     p("};")
+    p("void* gReg = m.addRegion(Memory::Region { std::make_shared<Memory::ROM>(&g._start), 0x8000, 0x7fff });")
 
     p("")
     for c in code_blocks:

@@ -3,7 +3,7 @@
 
 
 struct G {
-    byte space[32768];
+    byte _start;
     byte const VRAM_AddrTable_Low[19];
     byte const VRAM_AddrTable_High[19];
     byte const VRAM_Buffer_Offset[2];
