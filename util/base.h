@@ -106,6 +106,10 @@ struct Memory {
     };
 };
 
+// TODO: flags
+// TODO: BIT insns
+// TODO: hooks for hw regs
+
 extern Memory::Bus m;
 
 inline void nop() {}
@@ -201,10 +205,10 @@ inline void cpy(short addr) { Reg foo; sub(foo, y, Imm(m.get(addr))); }
 inline void cpy(short addr, Reg r) { Reg foo; sub(foo, y, Imm(m.get(addr + r))); }
 
 inline void pha() { s = s - 1; m.set(s, a); }
-inline void pla() { a = m.get(s); s = s + 1; }
 inline void phx() { s = s - 1; m.set(s, x); }
-inline void plx() { x = m.get(s); s = s + 1; }
 inline void phy() { s = s - 1; m.set(s, y); }
+inline void pla() { a = m.get(s); s = s + 1; }
+inline void plx() { x = m.get(s); s = s + 1; }
 inline void ply() { y = m.get(s); s = s + 1; }
 
 inline void bit(Imm) { }
