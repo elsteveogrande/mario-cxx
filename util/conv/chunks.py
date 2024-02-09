@@ -240,24 +240,6 @@ class Block(Chunk):
         super().__init__()
         self.inner: list[Chunk] = []
 
-class BlockEnd(Chunk):
-    attrs = []
-
-class PreambleBlock(Block):
-    attrs = Block.attrs + []
-
-# class Ref(Expr):
-#     valid_name = re.compile("^[A-Za-z0-9_]+$")
-#     def __init__(self, name: str) -> None:
-#         if not Ref.valid_name.match(name):
-#             raise Exception("bad ref: " + name)
-#         self.name = name
-#     def render(self, is_label: bool):
-#         if is_label:
-#             return "offsetof(G, %s)" % (self.name)
-#         else:
-#             return "K::%s" % (self.name)
-
 class Ref(Expr):
     attrs = Expr.attrs + ["of"]
     def __init__(self, of: Union[Label, Define, Unresolved]) -> None:
@@ -319,10 +301,18 @@ class DataBlock(Block):
         if proto:
             return ("    %s const %s[%d];" % (dt, self.label.name, len(self.inner) or 1))
         elif len(self.inner) > 0:
-                x: list[str] = [b.expr.render(labels, defines) for b in self.inner]   # type: ignore
-                x = [("%s" % (b)) for b in x]
-                xs = ", ".join(x)
-                return ("    .%s = {%s}," % (self.label.name, xs))
+            ret = ""
+            for c in self.comments:
+                ret += "    %s\n" % (c.render(labels, defines))
+            # for b in self.inner:
+            #     for c in b.comments:
+            #         ret += "    %s\n" % (c.render(labels, defines))
+            x: list[str] = [b.expr.render(labels, defines) for b in self.inner]   # type: ignore
+            x = [("%s" % (b)) for b in x]
+            xs = ", ".join(x)
+            ret += "    "
+            ret += ".%s = {%s}," % (self.label.name, xs)
+            return ret
         else:
             return ("    .%s = {0xee}," % (self.label.name))
 

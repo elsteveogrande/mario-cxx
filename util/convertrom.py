@@ -51,13 +51,6 @@ def pattern(i, types: list[Type]) -> bool:
             return False
     return True
 
-# Extract first comments into a PreambleBlock (only 1 will be produced)
-pre = PreambleBlock()
-chunks.insert(0, pre)
-while pattern(0, [PreambleBlock, Comment]):
-    pre.inner.append(chunks[1])
-    del chunks[1]
-
 # Absorb comments into their respective things
 i = 0
 cmts: list[Comment] = []
@@ -179,12 +172,6 @@ while i < len(chunks):
         continue
     i += 1
 
-# i = 0
-# while i < len(chunks):
-#     print((i, str(chunks[i])))
-#     i += 1
-# raise
-
 i = 0
 while i < len(chunks):
     if pattern(i, [Label, DataBlock]):
@@ -253,10 +240,8 @@ while i < len(chunks):
 # dump(chunks)
 
 all_blocks: list[Block] = [c for c in chunks if isinstance(c, Block)]
-pre_block = all_blocks[0]
-assert isinstance(pre_block, PreambleBlock)
-defs_block = all_blocks[1]
-assert isinstance(defs_block, DefsBlock)
+defs_blocks: list[DefsBlock] = [b for b in all_blocks if isinstance(b, DefsBlock)]
+assert defs_blocks
 code_blocks: list[CodeBlock] = [b for b in all_blocks if isinstance(b, CodeBlock)]
 data_blocks: list[DataBlock] = [b for b in all_blocks if isinstance(b, DataBlock)]
 
