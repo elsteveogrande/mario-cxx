@@ -213,7 +213,7 @@ class Insn(Chunk):
 
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         if self.is_terminal():
-            return "return 0"
+            return "return"
         if self.name in {"jmp", "jsr", "bra", "bcc", "bcs", "bmi", "bpl", "beq", "bne"}:
             assert len(self.opds) == 1
             ref = self.opds[0]
@@ -290,8 +290,8 @@ class CodeBlock(Block):
     def __eq__(self, x):  return self.label == x.label
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False):
         if (proto):
-            return "int %s();" % (self.label.name)
-        ret = "int %s() {" % (self.label.name)
+            return "void %s();" % (self.label.name)
+        ret = "void %s() {" % (self.label.name)
         ret += "\n"
         for x in self.inner:
             for c in x.comments:

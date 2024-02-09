@@ -10,10 +10,10 @@ using word = unsigned short;
 // (stub code to hook the "rom" data to the memory bus)
 void preStart();
 
-using JUMP_ENTRY = int(*)();
+using JUMP_ENTRY = void(*)();
 
-int Start();
-int NonMaskableInterrupt();
+void Start();
+void NonMaskableInterrupt();
 
 constexpr byte LO8(word const v) { return (v) & 0xff; }
 constexpr byte HI8(word const v) { return (v >> 8) & 0xff; }
