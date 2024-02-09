@@ -908,7 +908,6 @@ int VBlank1();
 int VBlank2();
 int WBootCheck();
 int ColdBoot();
-int EndlessLoop();
 int NonMaskableInterrupt();
 int ScreenOff();
 int InitBuffer();

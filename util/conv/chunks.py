@@ -123,6 +123,8 @@ class Label(Named):
         self.is_jump_target: bool = False
         self.is_call_target: bool = False
         self.code_block: Optional["CodeBlock"] = None
+    def __hash__(self):   return hash(self.name)
+    def __eq__(self, x):  return self.name == x.name
     def resolve(self, labels: dict[str, Any], defines: dict[str, Any]) -> Union["Define", "Label"]:
         return self
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
@@ -284,6 +286,8 @@ class CodeBlock(Block):
         super().__init__()
         self.label = label
         self.next = None
+    def __hash__(self):   return hash(self.label)
+    def __eq__(self, x):  return self.label == x.label
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False):
         if (proto):
             return "int %s();" % (self.label.name)

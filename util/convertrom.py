@@ -74,15 +74,15 @@ while i < len(chunks):
 # On the real 6502 this will hang the CPU here forever, with activity
 # taking place only in NMIs.  On our virtual CPU we'll simply be
 # "done" with the Start code (NMIs will of course invoked periodically).
-# i = 0
-# while i < len(chunks):
-#     if pattern(i, [Label, Insn]) and chunks[i].name == "EndlessLoop":  # type: ignore[attr-defined]
-#         # Replace these two chunks with just one
-#         del chunks[i]
-#         chunks[i] = Insn(name="end", opds=[])
-#         break  # there's only one such instance of this
-#     else:
-#         i += 1
+i = 0
+while i < len(chunks):
+    if pattern(i, [Label, Insn]) and chunks[i].name == "EndlessLoop":  # type: ignore[attr-defined]
+        # Replace these two chunks with just one
+        del chunks[i]
+        chunks[i] = Insn(name="end", opds=[])
+        break  # there's only one such instance of this
+    else:
+        i += 1
 
 # Remove other stray comments; simplify the rest of the code below
 i = 0
@@ -159,23 +159,6 @@ while i < len(chunks):
         chunks[i] = DataBlock(label=label)
     i += 1
 
-
-# Find jump/branch, and JSR targets, so we can start marking off "blocks"
-
-labels["Start"].is_call_target = True
-labels["NonMaskableInterrupt"].is_call_target = True
-for c in chunks:
-    if isinstance(c, Insn):
-        if c.name in ("jmp", "bra", "bpl", "bmi", "bcs", "bcc", "beq", "bne"):
-            (target,) = c.opds
-            if isinstance(target, Ref):
-                labels[target.of.name].is_jump_target = True
-        elif c.name == "jsr":
-            (target,) = c.opds
-            assert isinstance(target, Ref)
-            labels[target.of.name].is_call_target = True
-
-
 # Find code blocks' start positions
 
 i = 0
@@ -220,6 +203,7 @@ code_blocks: list[CodeBlock] = [b for b in all_blocks if isinstance(b, CodeBlock
 data_blocks: list[DataBlock] = [b for b in all_blocks if isinstance(b, DataBlock)]
 
 i = 0
+del labels["JumpEngine"]
 while i < len(code_blocks):
     cb = code_blocks[i]
     if cb.label.name == "JumpEngine":
@@ -227,13 +211,40 @@ while i < len(code_blocks):
         break
     i += 1
 
-# prev: Optional[CodeBlock] = None
-# for c in code_blocks:
-#     if prev and not (isinstance(prev.inner[-1], DispatchBlock)
-#                      or (isinstance(prev.inner[-1], Insn)
-#                          and prev.inner[-1].is_terminal())):
-#         prev.inner.append(Insn(name="jmp", opds=[Ref(c.label)]))
-#     prev = c
+# # Identify code blocks: call targets, and jump/branch targets
+# code_map: dict[str, CodeBlock] = dict((cb.label.name, cb) for cb in code_blocks)
+# func_map: dict[str, CodeBlock] = {}
+# jump_map: dict[str, CodeBlock] = {}
+# cb = code_map["Start"]
+# func_map[cb.label.name] = cb
+# cb = code_map["NonMaskableInterrupt"]
+# func_map[cb.label.name] = cb
+# func_graph: dict[str, set[str]] = {}
+
+# print(func_map.keys())
+# print(jump_map.keys())
+# raise
+
+labels["Start"].is_call_target = True
+labels["NonMaskableInterrupt"].is_call_target = True
+for c in chunks:
+    if isinstance(c, Insn):
+        if c.name in ("jmp", "bra", "bpl", "bmi", "bcs", "bcc", "beq", "bne"):
+            (target,) = c.opds
+            if isinstance(target, Ref):
+                labels[target.of.name].is_jump_target = True
+        elif c.name == "jsr":
+            (target,) = c.opds
+            assert isinstance(target, Ref)
+            labels[target.of.name].is_call_target = True
+
+prev: Optional[CodeBlock] = None
+for c in code_blocks:
+    if prev and not (isinstance(prev.inner[-1], DispatchBlock)
+                     or (isinstance(prev.inner[-1], Insn)
+                         and prev.inner[-1].is_terminal())):
+        prev.inner.append(Insn(name="jmp", opds=[Ref(c.label)]))
+    prev = c
 
 f = sys.stderr
 
