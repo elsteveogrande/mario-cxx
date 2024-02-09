@@ -181,31 +181,13 @@ while i < len(chunks):
     i += 1
 
 # Find code blocks' start positions
+
 i = 0
 while i < len(chunks):
     if pattern(i, [Label]):
         label = chunks[i]
         assert isinstance(label, Label)
         chunks[i] = CodeBlock(label)
-    i += 1
-
-# Some subroutines just flow into the next subroutine just after it.
-# In C++ these will become functions, but functions can't just flow
-# from one into the next.  Find these and issue calls to the latter
-# function (and return after the call).
-
-i = 0
-while i < len(chunks):
-    if pattern(i - 1, [Insn, CodeBlock, Label]):
-        b = chunks[i - 1]
-        assert isinstance(b, Insn)
-        c = chunks[i]
-        assert isinstance(c, CodeBlock)
-        d = chunks[i + 1]
-        assert isinstance(d, Label)
-        if d.is_call_target:
-            if b.name not in {"rti", "rts", "bra", "jmp"}:
-                chunks.insert(i, Insn(name="jmp", opds=[Ref(Label(d.name))]))
     i += 1
 
 # At this point, CodeBlocks are defined and added to their locations in the stream,
@@ -240,8 +222,6 @@ while i < len(chunks):
 # dump(chunks)
 
 all_blocks: list[Block] = [c for c in chunks if isinstance(c, Block)]
-defs_blocks: list[DefsBlock] = [b for b in all_blocks if isinstance(b, DefsBlock)]
-assert defs_blocks
 code_blocks: list[CodeBlock] = [b for b in all_blocks if isinstance(b, CodeBlock)]
 data_blocks: list[DataBlock] = [b for b in all_blocks if isinstance(b, DataBlock)]
 
@@ -281,7 +261,7 @@ with open("main.h", "w") as h:
     p("extern G g;")
 
     p("")
-    for d in defs_block.inner:
+    for d in defs.inner:
         assert isinstance(d, Define)
         for cm in d.comments:
             p(cm)
