@@ -13,6 +13,9 @@ with open(sys.argv[1]) as txt:
     for line in txt:
         parse_line(chunks, line)
 
+while isinstance(chunks[0], Comment):
+    del chunks[0]
+
 for i in range(len(chunks)):
     # Identify such bit hacks: it's a "Byte" (0x2c) preceded by a comment
     # like "BIT instruction opcode".  Not 100% foolproof but works for this project.
@@ -55,9 +58,8 @@ def pattern(i, types: list[Type]) -> bool:
 i = 0
 cmts: list[Comment] = []
 while i < len(chunks):
-    if pattern(i, [Comment]):
-        ch = chunks[i]
-        assert isinstance(ch, Comment)
+    ch = chunks[i]
+    if isinstance(ch, Comment):
         cmts.append(ch)
         del chunks[i]
         continue
@@ -71,16 +73,16 @@ while i < len(chunks):
 #     EndlessLoop: jmp EndlessLoop ;endless loop, need I say more?
 # On the real 6502 this will hang the CPU here forever, with activity
 # taking place only in NMIs.  On our virtual CPU we'll simply be
-# "done" with the Start code (NMIs are will of course invoked periodically).
-i = 0
-while i < len(chunks):
-    if pattern(i, [Label, Insn]) and chunks[i].name == "EndlessLoop":  # type: ignore[attr-defined]
-        # Replace these two chunks with just one
-        del chunks[i]
-        chunks[i] = Insn(name="end", opds=[])
-        break  # there's only one such instance of this
-    else:
-        i += 1
+# "done" with the Start code (NMIs will of course invoked periodically).
+# i = 0
+# while i < len(chunks):
+#     if pattern(i, [Label, Insn]) and chunks[i].name == "EndlessLoop":  # type: ignore[attr-defined]
+#         # Replace these two chunks with just one
+#         del chunks[i]
+#         chunks[i] = Insn(name="end", opds=[])
+#         break  # there's only one such instance of this
+#     else:
+#         i += 1
 
 # Remove other stray comments; simplify the rest of the code below
 i = 0
@@ -110,30 +112,6 @@ while i < len(chunks):
             labels[target.of.name].is_call_target = True
     i += 1
 
-# Drop "JumpEngine" routine
-i = 0
-while i < len(chunks):
-    if pattern(i, [Label, Insn]) and chunks[i].name == 'JumpEngine':          # type: ignore[attr-defined]
-        while pattern(i, [Label, Insn]) and chunks[i].name == 'JumpEngine':   # type: ignore[attr-defined]
-            del chunks[i + 1]
-        del chunks[i]
-        break
-    i += 1
-
-# Find jump/branch, and JSR targets, so we can start marking off "blocks"
-labels["Start"].is_jump_target = True
-labels["NonMaskableInterrupt"].is_call_target = True
-for c in chunks:
-    if isinstance(c, Insn):
-        if c.name in ("jmp", "bra", "bpl", "bmi", "bcs", "bcc", "beq", "bne"):
-            (target,) = c.opds
-            if isinstance(target, Ref):
-                labels[target.of.name].is_jump_target = True
-        elif c.name == "jsr":
-            (target,) = c.opds
-            assert isinstance(target, Ref)
-            labels[target.of.name].is_call_target = True
-
 # Extract defines into a DefineBlock (only 1 will be produced)
 defs = DefsBlock()
 i = 0
@@ -144,9 +122,10 @@ while i < len(chunks):
     else:
         i += 1
 
-chunks.insert(1, defs)
+chunks.insert(0, defs)
 
-# Convert ".dw"'s and ".db"'s into DataBlocks
+# Convert ".dw"'s and ".db"'s into DataBlocks:
+
 i = 0
 while i < len(chunks):
     if pattern(i, [Label, Byte]):
@@ -180,14 +159,30 @@ while i < len(chunks):
         chunks[i] = DataBlock(label=label)
     i += 1
 
+
+# Find jump/branch, and JSR targets, so we can start marking off "blocks"
+
+labels["Start"].is_call_target = True
+labels["NonMaskableInterrupt"].is_call_target = True
+for c in chunks:
+    if isinstance(c, Insn):
+        if c.name in ("jmp", "bra", "bpl", "bmi", "bcs", "bcc", "beq", "bne"):
+            (target,) = c.opds
+            if isinstance(target, Ref):
+                labels[target.of.name].is_jump_target = True
+        elif c.name == "jsr":
+            (target,) = c.opds
+            assert isinstance(target, Ref)
+            labels[target.of.name].is_call_target = True
+
+
 # Find code blocks' start positions
 
 i = 0
 while i < len(chunks):
-    if pattern(i, [Label]):
-        label = chunks[i]
-        assert isinstance(label, Label)
-        chunks[i] = CodeBlock(label)
+    ch = chunks[i]
+    if isinstance(ch, Label):
+        chunks[i] = CodeBlock(label=ch)
     i += 1
 
 # At this point, CodeBlocks are defined and added to their locations in the stream,
@@ -209,29 +204,36 @@ while i < len(chunks):
 
 i = 0
 while i < len(chunks):
-    if not (pattern(i, [CodeBlock, Label])
-            or pattern(i, [CodeBlock, Insn])
-            or pattern(i, [CodeBlock, DispatchBlock])):
+    cb = chunks[i]
+    if not isinstance(cb, CodeBlock):
         i += 1
         continue
-    c = chunks[i]
-    assert isinstance(c, CodeBlock)
-    c.inner.append(chunks[i + 1])
+    cbnext = chunks[i + 1]
+    if type(cbnext) not in (Insn, DispatchBlock):
+        i += 1
+        continue
+    cb.inner.append(cbnext)
     del chunks[i + 1]
-
-# dump(chunks)
 
 all_blocks: list[Block] = [c for c in chunks if isinstance(c, Block)]
 code_blocks: list[CodeBlock] = [b for b in all_blocks if isinstance(b, CodeBlock)]
 data_blocks: list[DataBlock] = [b for b in all_blocks if isinstance(b, DataBlock)]
 
-prev: Optional[CodeBlock] = None
-for c in code_blocks:
-    if prev and not (isinstance(prev.inner[-1], DispatchBlock)
-                     or (isinstance(prev.inner[-1], Insn)
-                         and prev.inner[-1].is_terminal())):
-        prev.inner.append(Insn(name="jmp", opds=[Ref(c.label)]))
-    prev = c
+i = 0
+while i < len(code_blocks):
+    cb = code_blocks[i]
+    if cb.label.name == "JumpEngine":
+        del code_blocks[i]
+        break
+    i += 1
+
+# prev: Optional[CodeBlock] = None
+# for c in code_blocks:
+#     if prev and not (isinstance(prev.inner[-1], DispatchBlock)
+#                      or (isinstance(prev.inner[-1], Insn)
+#                          and prev.inner[-1].is_terminal())):
+#         prev.inner.append(Insn(name="jmp", opds=[Ref(c.label)]))
+#     prev = c
 
 f = sys.stderr
 

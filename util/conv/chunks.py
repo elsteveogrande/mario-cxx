@@ -9,11 +9,6 @@ class Chunk:
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         raise NotImplementedError(str(type(self)))
 
-class Separator(Chunk):
-    attrs = []
-    def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
-        return "\n"
-
 class Comment(Chunk):
     attrs = ["text"]
     def __init__(self, text: str) -> None:
@@ -23,6 +18,8 @@ class Comment(Chunk):
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         assert isinstance(self.text, str)
         return "// " + self.text
+    def __str__(self):  return "(comment:%s)" % (self.text[:50])
+    def __repr__(self): return str(self)
 
 class Expr(Chunk):
     attrs = ["comments"]
@@ -39,6 +36,8 @@ class Reg(Expr):
         self.name = name
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         return self.name
+    def __str__(self):  return "(reg:%s)" % (self.name)
+    def __repr__(self): return str(self)
 
 class Paren(Op):
     attrs = Op.attrs + ["expr"]
@@ -47,6 +46,8 @@ class Paren(Op):
         self.expr = expr
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         return "(%s)" % (self.expr.render(labels, defines))
+    def __str__(self):  return "(paren:(%s))" % (self.expr)
+    def __repr__(self): return str(self)
 
 class Lit(Expr):
     """
@@ -65,6 +66,8 @@ class Lit(Expr):
         if self.base == 16:
             return hex(self.val)
         assert False
+    def __str__(self):  return "(lit:%s)" % (self.render({}, {}))
+    def __repr__(self): return str(self)
 
 class Imm(Expr):
     def __init__(self, val: Expr) -> None:
@@ -72,6 +75,8 @@ class Imm(Expr):
         self.val = val
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False):
         return "Imm(" + self.val.render(labels, defines) + ")"
+    def __str__(self):  return "(imm:%s)" % (self.val)
+    def __repr__(self): return str(self)
 
 class Named(Chunk):
     attrs = Chunk.attrs + ["name"]
@@ -91,6 +96,8 @@ class Unresolved(Named):
         raise NameError(self.name)
     def __init__(self, name: str) -> None:
         super().__init__(name)
+    def __str__(self):  return "(unresolved:%s)" % (self.name)
+    def __repr__(self): return str(self)
 
 class Define(Named):
     """
@@ -106,6 +113,8 @@ class Define(Named):
         return self
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         return "#define %40s %20s" % (self.name, self.expr.render(labels, defines))
+    def __str__(self):  return "(define:%s=%s)" % (self.name, self.expr)
+    def __repr__(self): return str(self)
 
 class Label(Named):
     attrs = Named.attrs
@@ -120,6 +129,8 @@ class Label(Named):
         if self.is_jump_target or self.is_call_target:
             return self.name
         return self.name
+    def __str__(self):  return "(label:%s)" % (self.name)
+    def __repr__(self): return str(self)
 
 class Plus(Op):
     attrs = Op.attrs + ["a", "b"]
@@ -129,6 +140,8 @@ class Plus(Op):
         self.b = b
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         return "((%s) + (%s))" % (self.a.render(labels, defines), self.b.render(labels, defines))
+    def __str__(self):  return "(plus:(%s),(%s))" % (self.a, self.b)
+    def __repr__(self): return str(self)
 
 class Minus(Op):
     attrs = Op.attrs + ["a", "b"]
@@ -138,6 +151,8 @@ class Minus(Op):
         self.b = b
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         return "((%s) - (%s))" % (self.a.render(labels, defines), self.b.render(labels, defines))
+    def __str__(self):  return "(minus:(%s),(%s))" % (self.a, self.b)
+    def __repr__(self): return str(self)
 
 class HiByte(Op):
     attrs = Op.attrs + ["of"]
@@ -146,6 +161,8 @@ class HiByte(Op):
         self.of = of
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         return "HI8(%s)" % (self.of.render(labels, defines))
+    def __str__(self):  return "(hi:%s)" % (self.of)
+    def __repr__(self): return str(self)
 
 class LoByte(Op):
     attrs = Op.attrs + ["of"]
@@ -154,6 +171,8 @@ class LoByte(Op):
         self.of = of
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         return "LO8(%s)" % (self.of.render(labels, defines))
+    def __str__(self):  return "(lo:%s)" % (self.of)
+    def __repr__(self): return str(self)
 
 class Directive(Chunk):
     attrs = Chunk.attrs + []
@@ -167,12 +186,16 @@ class Byte(Chunk):
     def __init__(self, expr: Expr) -> None:
         super().__init__()
         self.expr = expr
+    def __str__(self):  return "(byte:%s)" % (self.expr)
+    def __repr__(self): return str(self)
 
 class Word(Chunk):
     attrs = Chunk.attrs + ["expr"]
     def __init__(self, expr: Expr) -> None:
         super().__init__()
         self.expr = expr
+    def __str__(self):  return "(word:%s)" % (self.expr)
+    def __repr__(self): return str(self)
 
 class Insn(Chunk):
     attrs = Chunk.attrs + ["name", "opds"]
@@ -182,24 +205,24 @@ class Insn(Chunk):
         self.opds = opds
     def is_terminal(self) -> bool:
         return self.name in {"end", "rti", "rts"}
-    # def target(self):
-    #     assert len(self.opds) == 1
-    #     assert isinstance(self.opds[0], Ref)
-    #     return self.opds[0].name    
+
+    def __str__(self):  return str([self.name] + self.opds)
+    def __repr__(self): return str(self)
+
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         if self.is_terminal():
             return "return 0"
         if self.name in {"jmp", "jsr", "bra", "bcc", "bcs", "bmi", "bpl", "beq", "bne"}:
             assert len(self.opds) == 1
             ref = self.opds[0]
-            assert isinstance(ref, Ref)
+            if not isinstance(ref, Ref):
+                raise Exception(str((type(ref), ref, self.name)))
             named = ref.of
             assert isinstance(named, Named)
             target = named.name
             return "%s(%s)" % (self.name.upper(), target)
         n = self.name
-        if n == "and":
-            n = "anda"
+        if n == "and":  n = "anda"
         return "%s(%s)" % (n, self.render_opds(labels, defines))
 
     def render_opds(self, labels: dict[str, Any], defines: dict[str, Any]) -> str:
@@ -252,8 +275,8 @@ class Ref(Expr):
         if isinstance(self.of, Define):
             return self.of.name
         raise
-    def __str__(self) -> str:
-        return "(Ref:%s)" % (self.of.name)
+    def __str__(self):  return "(ref:%s)" % (self.of)
+    def __repr__(self): return str(self)
 
 class CodeBlock(Block):
     attrs = Block.attrs + ["label"]
@@ -274,6 +297,8 @@ class CodeBlock(Block):
             ret += ";\n"
         ret += "}\n"
         return ret
+    def __str__(self):  return "(codeblock:%s)" % (self.label)
+    def __repr__(self): return str(self)
 
 class DispatchBlock(Block):
     attrs = Block.attrs + ["inner"]
@@ -289,6 +314,8 @@ class DispatchBlock(Block):
         ret += "    };\n"
         ret += "    JMP(%s[a.read()])" % (table_name,)
         return ret
+    def __str__(self):  return "(dispatch:%s)" % (self.label)
+    def __repr__(self): return str(self)
 
 class DataBlock(Block):
     attrs = Block.attrs + ["label", "inner"]
@@ -315,6 +342,8 @@ class DataBlock(Block):
             return ret
         else:
             return ("    .%s = {0xee}," % (self.label.name))
+    def __str__(self):  return "(datablock:%s)" % (self.label)
+    def __repr__(self): return str(self)
 
 class DefsBlock(Block):
     attrs = Block.attrs + ["inner"]

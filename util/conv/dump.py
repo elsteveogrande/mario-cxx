@@ -7,17 +7,10 @@ from conv.chunks import *
 def _dump(c: Chunk, indent=0):
     assert isinstance(c, Chunk)
     line = ("    " * indent)
-    line += str(type(c))
-    for a in type(c).attrs:
-        s = c.__getattribute__(a)
-        if not isinstance(s, Chunk):
-            line += " "
-            line += a
-            line += ":"
-            line += str(s)
+    line += str(c)
     print(line, file=sys.stderr)
-    for a in type(c).attrs:
-        s = c.__getattribute__(a)
+    if "inner" in type(c).attrs:
+        s = c.__getattribute__("inner")
         if isinstance(s, Chunk):
             _dump(s, indent + 1)
         elif isinstance(s, list):
