@@ -38,31 +38,36 @@ def parse(s: str) -> Expr:
 
 
 def parse_line(chunks: deque[Chunk], line: str):
+    line = line.strip()
+    label = ""
+    comment = ""
+
     if ";" in line:
-        (line, comment) = line.split(";", 1)
+        (line, comm) = line.split(";", 1)
         line = line.strip()
-        comment = comment.strip()
-        if "-------" in comment:
-            chunks.append(Separator())
-        else:
-            chunks.append(Comment(text=comment))
+        comm = comm.strip()
+        if not ("-------" in comm):
+            comment = comm
+
+    if ":" in line:
+        (label, line) = line.split(":")
+        label = label.strip()
+        line = line.strip()
+
+    if label:
+        chunks.append(Label(name=label))
+
+    if comment:
+        chunks.append(Comment(text=comment))
+
+    if not line:
+        return
 
     if "=" in line:
         (name, text) = line.split("=")
         name = name.strip()
         text = text.strip()
-        # defines[name] = len(chunks)
         chunks.append(Define(name=name, expr=parse(text)))
-        return
-
-    if ":" in line:
-        (name, line) = line.split(":")
-        name = name.strip()
-        line = line.strip()
-        # labels[name] = len(chunks)
-        chunks.append(Label(name=name))
-
-    if not line:
         return
 
     if line.startswith("."):

@@ -73,10 +73,11 @@ class CXXSingle(Target):
             "/usr/bin/env",
             "clang++",
             "-std=c++2b",
+            "-g",
             "-Wall",
             "-Wextra",
             "-Og",
-            "-g1",
+            "-foptimize-sibling-calls",
             "-fno-inline",
         ]
         args += ["-o", self.path]
@@ -101,6 +102,7 @@ class CXXBinary(Target):
         args = [
             "/usr/bin/env",
             "clang++",
+            "-g",
             "-o",
             self.path,
         ]

@@ -356,8 +356,6 @@ struct G {
 } __attribute__((__packed__));
 extern G g;
 
-// DEFINES
-// NES specific hardware defines
 #define                            PPU_CTRL_REG1               0x2000
 #define                            PPU_CTRL_REG2               0x2001
 #define                               PPU_STATUS               0x2002

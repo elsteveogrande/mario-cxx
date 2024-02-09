@@ -1,6 +1,8 @@
 #include "base.h"
 #include <memory>
 
+#include "backward.hpp"
+
 Memory::Bus m;
 
 void* Memory::Bus::addRegion(Memory::Region reg) {
@@ -124,9 +126,18 @@ S s;
 D dummy;
 bool n, z, c;
 
+namespace backward {
+backward::SignalHandling sh;
+}
+
 int main() {
     byte ramBytes[0x0800];
-    m.addRegion(Memory::Region { std::make_shared<Memory::RAM>(ramBytes), 0x0000, 0x07ff });
+    m.addRegion(
+        Memory::Region {
+            std::make_shared<Memory::RAM>(ramBytes), 0x0000, 0x07ff });
+
+    preStart();
     Start();
+
     return c;
 }

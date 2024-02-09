@@ -43,4 +43,4 @@ misc/prgrom.h misc/prgrom.cc: misc/smb1-us.nes
 		misc/smb1-us.nes
 		
 clean:
-	rm -f mario++ *.o ui/*.o emu/*.o
+	rm -f mario++ *.o ui/*.o emu/*.o out/*.o

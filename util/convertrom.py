@@ -9,61 +9,11 @@ from conv.parse import *
 from conv.dump import *
 
 chunks: deque[Chunk] = deque()
-lineno = 1
 with open(sys.argv[1]) as txt:
     for line in txt:
-        line = line.strip()
-        try:
-            parse_line(chunks, line)
-            lineno += 1
-        except Exception as e:
-            print("@@@ [%d] >>>   %s" % (lineno, line), file=sys.stderr)
-            raise e
+        parse_line(chunks, line)
 
 for i in range(len(chunks)):
-    """
-    Here we're looking for occurrences of: (copied from smbdis.asm)
-
-        QuestionBlockRow_High:                              ;; [A]
-            lda #$03    ;start on the fourth row            ;; [B]
-            .db $2c     ;BIT instruction opcode             ;; [C]
-
-        QuestionBlockRow_Low:                               ;; [D]
-            lda #$07             ;start on the eighth row   ;; [E]
-            pha                  ;(more logic follows)      ;; [F]
-
-    The intent for the BIT instruction (C) is to do nothing but "eat" the next
-    instruction (D) (the other LDA following it).
-
-    The above results in this token stream:
-
-    [ 1] Label(name='QuestionBlockRow_High', ...)
-    [ 2] Comment(text='start on the fourth row')
-    [ 3] Insn(name='lda', opds=[0x3])
-    [ 4] Comment(text='BIT instruction opcode')
-    [ 5] Byte(expr=0x2c)
-    [ 6] Label(name='QuestionBlockRow_Low', ...)
-    [ 7] Comment(text='start on the eighth row')
-    [ 8] Insn(name='lda', opds=[0x7])
-    [ 9] Comment(text='save whatever row to the stack for now')
-    [10] Insn(name='pha', opds=[])
-
-    We want to replace the `BIT` hack (#4-#5) with a short-jump to a new
-    label, which will be added just after the `Insn` that follows it (#8):
-
-    [ 1] Label(name='QuestionBlockRow_High', ...)
-    [ 2] Comment(text='start on the fourth row')
-    [ 3] Insn(name='lda', opds=[0x3])
-    [**] Insn(name='bra', opds=[Ref(name='TMP_LABEL'))]
-    [ 6] Label(name='QuestionBlockRow_Low', ...)
-    [ 7] Comment(text='start on the eighth row')
-    [ 8] Insn(name='lda', opds=[0x7])
-    [**] Label(name='TMP_LABEL')
-    [ 9] Comment(text='save whatever row to the stack for now')
-    [10] Insn(name='pha', opds=[])
-    
-    """
-
     # Identify such bit hacks: it's a "Byte" (0x2c) preceded by a comment
     # like "BIT instruction opcode".  Not 100% foolproof but works for this project.
     c = chunks[i]
@@ -108,14 +58,6 @@ while pattern(0, [PreambleBlock, Comment]):
     pre.inner.append(chunks[1])
     del chunks[1]
 
-# Separators are making this complicated, drop them
-i = 0
-while i < len(chunks):
-    if pattern(i, [Separator]):
-        del chunks[i]
-    else:
-        i += 1
-
 # Absorb comments into their respective things
 i = 0
 cmts: list[Comment] = []
@@ -126,7 +68,7 @@ while i < len(chunks):
         cmts.append(ch)
         del chunks[i]
         continue
-    elif (not pattern(i, [Separator])) and cmts:
+    elif cmts:
         chunks[i].comments += cmts
         cmts = []
         continue
@@ -151,8 +93,6 @@ while i < len(chunks):
 i = 0
 while i < len(chunks):
     if pattern(i, [Comment]):
-        del chunks[i]
-    elif pattern(i, [Separator]):
         del chunks[i]
     else:
         i += 1
@@ -382,9 +322,13 @@ with open("main.cc", "w") as cc:
             p(cm)
         p(d)
     p("};")
-    p("void* gReg = m.addRegion("
-      "    Memory::Region {"
-      "        std::make_shared<Memory::ROM>(&g._start), 0x8000, 0x7fff });")
+
+    p("")
+    p("void preStart() {                   \n"
+      "    m.addRegion(                    \n"
+      "        Memory::Region {            \n"
+      "            std::make_shared<Memory::ROM>(&g._start), 0x8000, 0x7fff });\n"
+      "}")
 
     p("")
     for c in code_blocks:
