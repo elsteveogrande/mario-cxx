@@ -76,7 +76,7 @@ class CXXSingle(Target):
             "-g",
             "-Wall",
             "-Wextra",
-            "-Og",
+            "-O3",
             "-foptimize-sibling-calls",
             "-fno-omit-frame-pointer",
         ]

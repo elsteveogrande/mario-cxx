@@ -38,7 +38,7 @@ struct Mode {
 
 struct Imm : Mode {
     byte val;
-    explicit Imm(byte val) : val(val) {}
+    /*implicit*/ Imm(byte val) : val(val) {}
     virtual byte read() const { return val; };
     virtual void write(byte) { abort(); }
 };
@@ -74,8 +74,8 @@ extern bool n, z, c;
 inline byte nz(word result) {
     result &= 0xff;
     n = !!(result >> 7);
-    z = !!result;
-    return byte(result & 0xff);
+    z = !(result);
+    return byte(result);
 }
 
 inline byte nzc(word result) {
@@ -121,7 +121,7 @@ struct Memory {
         void* addRegion(Region reg);
         Region& getRegion(word index) { return baseMap.lower_bound(index)->second; }
         byte get(word index) {
-            fprintf(stderr, "get [%04x]\n", index);
+            // fprintf(stderr, "get [%04x]\n", index);
             return getRegion(index).get(index);
         }
         void set(word index, byte val) {
@@ -150,10 +150,20 @@ struct Mem : Mode {
 
 struct Abs : Mem {
     word const abs_;
-    Reg const& reg_;
-    Abs(word abs, Reg const& reg) : abs_(abs), reg_(reg) {}
-    explicit Abs(word abs) : Abs(abs, dummy) {}
+    constexpr explicit Abs(word abs) : abs_(abs) {}
     virtual int addr() const { return abs_; }
+};
+
+struct AbsX : Mem {
+    word const abs_;
+    constexpr explicit AbsX(word abs) : abs_(abs) {}
+    virtual int addr() const { return abs_ + x.read(); }
+};
+
+struct AbsY : Mem {
+    word const abs_;
+    constexpr explicit AbsY(word abs) : abs_(abs) {}
+    virtual int addr() const { return abs_ + y.read(); }
 };
 
 struct IndY : Abs {
@@ -175,35 +185,35 @@ inline void cld() { /* IGNORED */}
 inline void clc() { c = 0; }
 inline void sec() { c = 1; }
 
-void ld(Mode& d, Mode const& s);
+void ld(Mode& d, Mode& s);
 void ld(Mode& d, byte v);
-void st(Mode& d, Mode const& s);
-void inc(Mode& d, Mode const& s);
-void dec(Mode& d, Mode const& s);
-void add(Mode& d, Mode const& s1, Mode const& s2, bool c);
-void sub(Mode& d, Mode const& s1, Mode const& s2, bool c);
-void sub(Mode& d, Mode const& s, bool c);
-void cmp(Reg& s1, Mode const& s2);
-void and_(Mode& d, Mode const& s1, Mode const& s2);
-void ora(Mode& d, Mode const& s1, Mode const& s2);
-void eor(Mode& d, Mode const& s1, Mode const& s2);
-void push(Reg const& r);
+void st(Mode& d, Mode& s);
+void inc(Mode& d, Mode& s);
+void dec(Mode& d, Mode& s);
+void add(Mode& d, Mode& s1, Mode& s2, bool c);
+void sub(Mode& d, Mode& s1, Mode& s2, bool c);
+void sub(Mode& d, Mode& s, bool c);
+void cmp(Reg& s1, Mode& s2);
+void and_(Mode& d, Mode& s1, Mode& s2);
+void ora(Mode& d, Mode& s1, Mode& s2);
+void eor(Mode& d, Mode& s1, Mode& s2);
+void push(Reg& r);
 void pull(Reg& r);
-void bit(Mode const& s);
-void lsr(Mode& d, Mode const& s);
-void asl(Mode& d, Mode const& s);
-void rol(Mode& d, Mode const& s);
-void ror(Mode& d, Mode const& s);
+void bit(Mode& s);
+void lsr(Mode& d, Mode& s);
+void asl(Mode& d, Mode& s);
+void rol(Mode& d, Mode& s);
+void ror(Mode& d, Mode& s);
 
-inline void inc()      { inc(a, a); }
-inline void inc(Abs s) { inc(s, s); }
-inline void inx()      { inc(x, x); }
-inline void iny()      { inc(y, y); }
+inline void inc(Mode& s) { inc(s, s); }
+inline void inc()        { inc(a); }
+inline void inx()        { inc(x); }
+inline void iny()        { inc(y); }
 
-inline void dec()      { dec(a, a); }
-inline void dec(Abs s) { dec(s, s); }
-inline void dex()      { dec(x, x); }
-inline void dey()      { dec(y, y); }
+inline void dec(Mode& s) { dec(s, s); }
+inline void dec()        { dec(a); }
+inline void dex()        { dec(x); }
+inline void dey()        { dec(y); }
 
 inline void tax() { ld(x, a); }
 inline void tay() { ld(y, a); }
@@ -219,30 +229,42 @@ inline void pla() { pull(a); }
 inline void plx() { pull(x); }
 inline void ply() { pull(y); }
 
-inline void lda(Mode const& s) { ld(a, s); }
-inline void ldx(Mode const& s) { ld(x, s); }
-inline void ldy(Mode const& s) { ld(y, s); }
+extern Imm imm_;
+extern Abs abs_;
+extern AbsX absX_;
+extern AbsY absY_;
+extern IndY indY_;
 
-inline void sta(Mode const& s) { ld(a, s); }
-inline void stx(Mode const& s) { ld(x, s); }
-inline void sty(Mode const& s) { ld(y, s); }
+#define IMM(v)       (*(new (&imm_) Imm(v)))
+#define ABS(v)       (*(new (&abs_) Abs(v)))
+#define ABSX(v)      (*(new (&absX_) AbsX(v)))
+#define ABSY(v)      (*(new (&absY_) AbsY(v)))
+#define INDY(v)      (*(new (&indY_) IndY(v)))
 
-inline void cmp(Mode const& s) { cmp(a, s); }
-inline void cpx(Mode const& s) { cmp(x, s); }
-inline void cpy(Mode const& s) { cmp(y, s); }
+inline void lda(Mode& s) { ld(a, s); }
+inline void ldx(Mode& s) { ld(x, s); }
+inline void ldy(Mode& s) { ld(y, s); }
 
-inline void anda(Mode const& s) { and_(a, a, s); }
-inline void ora(Mode const& s)  { ora(a, a, s); }
-inline void eor(Mode const& s)  { eor(a, a, s); }
+inline void sta(Mode& s) { st(s, a); }
+inline void stx(Mode& s) { st(s, x); }
+inline void sty(Mode& s) { st(s, y); }
+
+inline void cmp(Mode& s) { cmp(a, s); }
+inline void cpx(Mode& s) { cmp(x, s); }
+inline void cpy(Mode& s) { cmp(y, s); }
+
+inline void anda(Mode& s) { and_(a, a, s); }
+inline void ora(Mode& s)  { ora(a, a, s); }
+inline void eor(Mode& s)  { eor(a, a, s); }
 
 inline void lsr()       { lsr(a, a); }
 inline void asl()       { asl(a, a); }
 inline void rol()       { rol(a, a); }
 inline void ror()       { ror(a, a); }
-inline void lsr(Mode const& s) { lsr(const_cast<Mode&>(s), s); }
-inline void asl(Mode const& s) { asl(const_cast<Mode&>(s), s); }
-inline void rol(Mode const& s) { rol(const_cast<Mode&>(s), s); }
-inline void ror(Mode const& s) { ror(const_cast<Mode&>(s), s); }
+inline void lsr(Mode& s) { lsr(s, s); }
+inline void asl(Mode& s) { asl(s, s); }
+inline void rol(Mode& s) { rol(s, s); }
+inline void ror(Mode& s) { ror(s, s); }
 
-inline void adc(Mode const& s) { add(a, a, s, c); }
-inline void sbc(Mode const& s) { add(a, a, s, c); }
+inline void adc(Mode& s) { add(a, a, s, c); }
+inline void sbc(Mode& s) { add(a, a, s, c); }

@@ -74,7 +74,7 @@ class Imm(Expr):
         super().__init__()
         self.val = val
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False):
-        return "Imm(" + self.val.render(labels, defines) + ")"
+        return "IMM(" + self.val.render(labels, defines) + ")"
     def __str__(self):  return "(imm:%s)" % (self.val)
     def __repr__(self): return str(self)
 
@@ -236,23 +236,23 @@ class Insn(Chunk):
         if ts == [Imm]:
             return os[0].render(labels, defines)
         if ts == [Ref]:
-            return "Abs(%s)" % tuple(rs)
+            return "ABS(%s)" % tuple(rs)
         if ts == [Ref, Reg]:
-            return "Abs(%s, %s)" % tuple(rs)
+            return "ABS%s(%s)" % (rs[1].upper(), rs[0])
         if ts == [Lit]:
-            return "Abs(%s)" % tuple(rs)
+            return "ABS(%s)" % tuple(rs)
         if ts == [Lit, Reg]:
-            return "Abs(%s, %s)" % tuple(rs)
+            return "ABS%s(%s)" % (rs[1].upper(), rs[0])
         if ts == [Plus]:
-            return "Abs(%s)" % tuple(rs)
+            return "ABS(%s)" % tuple(rs)
         if ts == [Plus, Reg]:
-            return "Abs(%s, %s)" % tuple(rs)
+            return "ABS%s(%s)" % (rs[1].upper(), rs[0])
         if ts == [Minus]:
-            return "Abs(%s)" % tuple(rs)
+            return "ABS(%s)" % tuple(rs)
         if ts == [Minus, Reg]:
-            return "Abs(%s, %s)" % tuple(rs)
+            return "ABS%s(%s)" % (rs[1].upper(), rs[0])
         if ts == [Paren, Reg] and rs[1] == "y":
-            return "IndY(%s)" % (rs[0],)
+            return "INDY(%s)" % (rs[0],)
         print("##########")
         print(ts)
         print(rs)
