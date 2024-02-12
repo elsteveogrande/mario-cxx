@@ -1,6 +1,8 @@
 #include "base.h"
 #include <memory>
 
+#include "../emu/ppu.h"
+
 #include "backward.hpp"
 
 Imm imm_(0);
@@ -44,9 +46,9 @@ void add(Mode& d, Mode& s1, Mode& s2, bool cc) {
 
 void sub(Mode& d, Mode& s1, Mode& s2, bool cc) {
     word tmp = word(s1.read()) - word(s2.read()) - word(cc);
-    printf("sub: s1:%02x s2:%02x c:%1d tmp:%04x currNZC:%01d%01d%01d\n", s1.read(), s2.read(), c, tmp, n, z, c);
+    // printf("sub: s1:%02x s2:%02x c:%1d tmp:%04x currNZC:%01d%01d%01d\n", s1.read(), s2.read(), c, tmp, n, z, c);
     d.write(nzc(tmp));
-    printf("... n:%1d z:%1d c:%1d\n", n, z, c);
+    // printf("... n:%1d z:%1d c:%1d\n", n, z, c);
 }
 
 void sub(Mode& d, Mode& s, bool c) {
@@ -144,15 +146,15 @@ int main() {
         Memory::Region {
             std::make_shared<Memory::RAM>(ramBytes), 0x0000, 0x07ff });
 
-    byte ppuRegs[0x2000];
+    PPURegs ppuRegs;
     m.addRegion(
         Memory::Region {
-            std::make_shared<Memory::RAM>(ppuRegs), 0x2000, 0x1fff });
+            std::make_shared<PPURegs>(ppuRegs), 0x2000, 0x0007 });
 
-    byte otherRegs[0x2000];
-    m.addRegion(
-        Memory::Region {
-            std::make_shared<Memory::RAM>(otherRegs), 0x4000, 0x1fff });
+    // byte ioRegs[32];
+    // m.addRegion(
+    //     Memory::Region {
+    //         std::make_shared<Memory::RAM>(ioRegs), 0x4000, 0x001f });
 
     preStart();
     Start();

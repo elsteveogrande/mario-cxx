@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
 #include <memory>
+#include <cassert>
 #include <cstdio>
 
 using byte = unsigned char;
@@ -86,7 +87,7 @@ inline byte nzc(word result) {
 struct Memory {
     struct Bytes {
         virtual ~Bytes() = default;
-        virtual byte get(word index) const = 0;
+        virtual byte get(word index) = 0;
         virtual void set(word index, byte value) = 0;
     };
 
@@ -94,7 +95,7 @@ struct Memory {
         virtual ~ROM() = default;
         ROM(byte const* bytes) : bytes_(bytes) {}
         virtual void set(word, byte) override { abort(); }
-        virtual byte get(word index) const override { return bytes_[index]; }
+        virtual byte get(word index) override { return bytes_[index]; }
     private:
         byte const* bytes_;
     };
@@ -103,7 +104,7 @@ struct Memory {
         virtual ~RAM() = default;
         RAM(byte* bytes) : bytes_(bytes) {}
         virtual void set(word index, byte value) override { bytes_[index] = value; }
-        virtual byte get(word index) const override { return bytes_[index]; }
+        virtual byte get(word index) override { return bytes_[index]; }
     private:
         byte* bytes_;
     };
@@ -119,11 +120,28 @@ struct Memory {
     struct Bus {
         std::map<word, Region> baseMap;
         void* addRegion(Region reg);
-        Region& getRegion(word index) { return baseMap.lower_bound(index)->second; }
-        byte get(word index) {
-            // fprintf(stderr, "get [%04x]\n", index);
-            return getRegion(index).get(index);
+
+        Region& getRegion(word index) {
+            Region* ret = nullptr;
+            auto it = baseMap.begin();
+            while (it != baseMap.end()) {
+                if (it->second.base <= index) {
+                    ret = &(it->second);
+                    ++it;
+                } else {
+                    break;
+                }
+            }
+            assert(ret);
+            return *ret;
         }
+
+        byte get(word index) {
+            byte ret = getRegion(index).get(index);
+            fprintf(stderr, "get [%04x] -> %02x\n", index, ret);
+            return ret;
+        }
+
         void set(word index, byte val) {
             fprintf(stderr, "set [%04x] <- %02x\n", index, val);
             getRegion(index).set(index, val);

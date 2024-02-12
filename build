@@ -76,9 +76,10 @@ class CXXSingle(Target):
             "-g",
             "-Wall",
             "-Wextra",
-            "-O3",
-            "-foptimize-sibling-calls",
+            "-Og",
+            "-fno-inline",
             "-fno-omit-frame-pointer",
+            "-foptimize-sibling-calls",
         ]
         args += ["-o", self.path]
         args += ["-c"]
@@ -103,7 +104,6 @@ class CXXBinary(Target):
             "/usr/bin/env",
             "clang++",
             "-g",
-            "-flto",
             "-o",
             self.path,
         ]

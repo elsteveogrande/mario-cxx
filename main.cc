@@ -3464,37 +3464,27 @@ void ISpr0Loop() {
 
 void InitializeMemory() {
     // set initial high byte to $0700-$07ff
-    printf("%s:%d a=%02x x=%02x y=%02x nzc=%d%d%d mem=[%02x %02x %02x %02x %02x %02x %02x %02x]\n", __FILE__, __LINE__, a.read(), x.read(), y.read(), n, z, c, m.get(0), m.get(1), m.get(2), m.get(3), m.get(4), m.get(5), m.get(6), m.get(7));
     ldx(IMM(0x7));
-    printf("%s:%d a=%02x x=%02x y=%02x nzc=%d%d%d mem=[%02x %02x %02x %02x %02x %02x %02x %02x]\n", __FILE__, __LINE__, a.read(), x.read(), y.read(), n, z, c, m.get(0), m.get(1), m.get(2), m.get(3), m.get(4), m.get(5), m.get(6), m.get(7));
     // set initial low byte to start of page (at $00 of page)
     lda(IMM(0x0));
-    printf("%s:%d a=%02x x=%02x y=%02x nzc=%d%d%d mem=[%02x %02x %02x %02x %02x %02x %02x %02x]\n", __FILE__, __LINE__, a.read(), x.read(), y.read(), n, z, c, m.get(0), m.get(1), m.get(2), m.get(3), m.get(4), m.get(5), m.get(6), m.get(7));
     sta(ABS(0x6));
-    printf("%s:%d a=%02x x=%02x y=%02x nzc=%d%d%d mem=[%02x %02x %02x %02x %02x %02x %02x %02x]\n", __FILE__, __LINE__, a.read(), x.read(), y.read(), n, z, c, m.get(0), m.get(1), m.get(2), m.get(3), m.get(4), m.get(5), m.get(6), m.get(7));
     JMP(InitPageLoop);
 }
 
 void InitPageLoop() {
     stx(ABS(0x7));
-    printf("%s:%d a=%02x x=%02x y=%02x nzc=%d%d%d mem=[%02x %02x %02x %02x %02x %02x %02x %02x]\n", __FILE__, __LINE__, a.read(), x.read(), y.read(), n, z, c, m.get(0), m.get(1), m.get(2), m.get(3), m.get(4), m.get(5), m.get(6), m.get(7));
     JMP(InitByteLoop);
 }
 
 void InitByteLoop() {
     // check to see if we're on the stack ($0100-$01ff)
-    printf("%s:%d a=%02x x=%02x y=%02x nzc=%d%d%d mem=[%02x %02x %02x %02x %02x %02x %02x %02x]\n", __FILE__, __LINE__, a.read(), x.read(), y.read(), n, z, c, m.get(0), m.get(1), m.get(2), m.get(3), m.get(4), m.get(5), m.get(6), m.get(7));
     cpx(IMM(0x1));
     // if not, go ahead anyway
-    printf("%s:%d a=%02x x=%02x y=%02x nzc=%d%d%d mem=[%02x %02x %02x %02x %02x %02x %02x %02x]\n", __FILE__, __LINE__, a.read(), x.read(), y.read(), n, z, c, m.get(0), m.get(1), m.get(2), m.get(3), m.get(4), m.get(5), m.get(6), m.get(7));
     BNE(InitByte);
     // otherwise, check to see if we're at $0160-$01ff
-    printf("%s:%d a=%02x x=%02x y=%02x nzc=%d%d%d mem=[%02x %02x %02x %02x %02x %02x %02x %02x]\n", __FILE__, __LINE__, a.read(), x.read(), y.read(), n, z, c, m.get(0), m.get(1), m.get(2), m.get(3), m.get(4), m.get(5), m.get(6), m.get(7));
     cpy(IMM(0x60));
     // if so, skip write
-    printf("%s:%d a=%02x x=%02x y=%02x nzc=%d%d%d mem=[%02x %02x %02x %02x %02x %02x %02x %02x]\n", __FILE__, __LINE__, a.read(), x.read(), y.read(), n, z, c, m.get(0), m.get(1), m.get(2), m.get(3), m.get(4), m.get(5), m.get(6), m.get(7));
     BCS(SkipByte);
-    printf("%s:%d a=%02x x=%02x y=%02x nzc=%d%d%d mem=[%02x %02x %02x %02x %02x %02x %02x %02x]\n", __FILE__, __LINE__, a.read(), x.read(), y.read(), n, z, c, m.get(0), m.get(1), m.get(2), m.get(3), m.get(4), m.get(5), m.get(6), m.get(7));
     JMP(InitByte);
 }
 
@@ -3508,7 +3498,6 @@ void SkipByte() {
     dey();
     // do this until all bytes in page have been erased
     cpy(IMM(0xff));
-    printf("[06]:%02x [07]:%02x a:%02x x:%02x y:%02x n:%1d z:%1d c:%1d\n", m.get(6), m.get(7), a.read(), x.read(), y.read(), n, z, c);
     BNE(InitByteLoop);
     // go onto the next page
     dex();
