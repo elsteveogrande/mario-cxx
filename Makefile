@@ -27,9 +27,6 @@ mario++: $(OBJS)
 .o: $(HEADERS)
 	$(CC) -o $@ -c $<
 
-misc/smbdis.asm:
-	curl https://gist.githubusercontent.com/1wErt3r/4048722/raw/59e88c0028a58c6d7b9156749230ccac647bc7d4/SMBDIS.ASM > $@
-
 misc/chrrom.h misc/chrrom.cc: misc/smb1-us.nes
 	utils/extract-chr-rom \
 		misc/chrrom.h \

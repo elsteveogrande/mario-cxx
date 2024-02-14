@@ -1,22 +1,17 @@
 #include "base.h"
+#include <cstdio>
 #include <memory>
 
 #include "../emu/ppu.h"
 
 #include "backward.hpp"
+#include <SFML/Window.hpp>
 
 Imm imm_(0);
 Abs abs_(0);
 AbsX absX_(0);
 AbsY absY_(0);
 IndY indY_(0);
-
-Memory::Bus m;
-
-void* Memory::Bus::addRegion(Memory::Region reg) {
-    baseMap[reg.base] = reg;
-    return nullptr;
-}
 
 void ld(Mode& d, Mode& s) {
     d.write(nz(s.read()));
@@ -146,18 +141,41 @@ int main() {
         Memory::Region {
             std::make_shared<Memory::RAM>(ramBytes), 0x0000, 0x07ff });
 
-    PPURegs ppuRegs;
+    sf::Event event;
+    sf::Window window(sf::VideoMode(256, 240), "mario++");
+    while (!window.isOpen()) { window.pollEvent(event); }
+
+    PPU ppu(window);
+    PPUTimer ppuTimer(ppu);
+    auto ppuRegs = std::make_shared<PPURegs>(ppu);
+    m.addRegion(Memory::Region {ppuRegs, 0x2000, 0x0007 });
+
+    IORegs ioRegs(ppu, ppuRegs);
     m.addRegion(
         Memory::Region {
-            std::make_shared<PPURegs>(ppuRegs), 0x2000, 0x0007 });
+            std::make_shared<IORegs>(ioRegs), 0x4000, 0x001f });
 
-    // byte ioRegs[32];
-    // m.addRegion(
-    //     Memory::Region {
-    //         std::make_shared<Memory::RAM>(ioRegs), 0x4000, 0x001f });
+    // Call on every new vblank
+    ppu.callback = [&] {
+        // set vblank flag
+        ppuRegs->status |= 0x80;
+        // if NMI is enabled, invoke it
+        if (ppuRegs->ctrl & 0x80) {
+            NonMaskableInterrupt();
+        }
+    };
 
     preStart();
     Start();
 
-    return c;
+    while (window.isOpen()) {
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed) {
+                window.close();
+                ppuTimer.stopped = true;
+            }
+        }
+    }
+
+    return 0;
 }

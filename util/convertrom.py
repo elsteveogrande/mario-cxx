@@ -265,7 +265,6 @@ with open("main.h", "w") as h:
 
     p("")
     p("struct G {")
-    p("    byte _start;")
     for d in data_blocks:
         for cm in d.comments:
             p(cm)
@@ -294,7 +293,6 @@ with open("main.cc", "w") as cc:
 
     p("")
     p("G g {")
-    p("    ._start = 0xdd,")
     for d in data_blocks:
         for cm in d.comments:
             p(cm)
@@ -305,7 +303,7 @@ with open("main.cc", "w") as cc:
     p("void preStart() {                   \n"
       "    m.addRegion(                    \n"
       "        Memory::Region {            \n"
-      "            std::make_shared<Memory::ROM>(&g._start), 0x8000, 0x7fff });\n"
+      "            std::make_shared<Memory::ROM>((byte*)&g), 0x8000, 0x7fff });\n"
       "}")
 
     p("")
