@@ -273,7 +273,7 @@ class Ref(Expr):
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         self.of = self.of.resolve(labels, defines)
         if isinstance(self.of, Label):
-            return "offsetof(G, %s)" % (self.of.name)
+            return "0x8000+offsetof(G, %s)" % (self.of.name)
         if isinstance(self.of, Define):
             return self.of.name
         raise
@@ -291,8 +291,9 @@ class CodeBlock(Block):
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False):
         if (proto):
             return "void %s();" % (self.label.name)
-        ret = "void %s() {" % (self.label.name)
-        ret += "\n"
+        ret = "void %s() {\n" % (self.label.name)
+        ret += "    _debug(\"%s\", __FILE__, __LINE__);\n" % (self.label.name)
+        ret += "    std::this_thread::yield();\n"
         for x in self.inner:
             for c in x.comments:
                 ret += "    %s\n" % (c.render(labels, defines))

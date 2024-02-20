@@ -5,7 +5,18 @@
 #include "../emu/ppu.h"
 
 #include "backward.hpp"
-#include <SFML/Window.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Window/Event.hpp>
+
+void _debug(char const* func, char const* filename, int line) {
+    auto& ram = m.baseMap.at(0).bytes;
+    printf(
+        "%10s:%5d [%30s] a:%02x x:%02x y:%02x n:%d z:%d c:%d [%02x %02x %02x %02x %02x %02x %02x %02x]\n",
+        filename, line, func, a.read(), x.read(), y.read(), n, z, c,
+        ram.get(0), ram.get(1), ram.get(2), ram.get(3),
+        ram.get(4), ram.get(5), ram.get(6), ram.get(7));
+}
 
 Imm imm_(0);
 Abs abs_(0);
@@ -137,33 +148,19 @@ backward::SignalHandling sh;
 
 int main() {
     byte ramBytes[0x0800];
-    m.addRegion(
-        Memory::Region {
-            std::make_shared<Memory::RAM>(ramBytes), 0x0000, 0x07ff });
+    Memory::RAM ram(ramBytes);
+    m.addRegion(Memory::Region {ram, 0x0000, 0x07ff });
 
     sf::Event event;
-    sf::Window window(sf::VideoMode(256, 240), "mario++");
+    sf::RenderWindow window(sf::VideoMode(256, 240), "mario++");
     while (!window.isOpen()) { window.pollEvent(event); }
 
     PPU ppu(window);
     PPUTimer ppuTimer(ppu);
-    auto ppuRegs = std::make_shared<PPURegs>(ppu);
-    m.addRegion(Memory::Region {ppuRegs, 0x2000, 0x0007 });
+    m.addRegion(Memory::Region {ppu.regs, 0x2000, 0x0007 });
 
-    IORegs ioRegs(ppu, ppuRegs);
-    m.addRegion(
-        Memory::Region {
-            std::make_shared<IORegs>(ioRegs), 0x4000, 0x001f });
-
-    // Call on every new vblank
-    ppu.callback = [&] {
-        // set vblank flag
-        ppuRegs->status |= 0x80;
-        // if NMI is enabled, invoke it
-        if (ppuRegs->ctrl & 0x80) {
-            NonMaskableInterrupt();
-        }
-    };
+    IORegs ioRegs(ppu);
+    m.addRegion(Memory::Region {ioRegs, 0x4000, 0x001f });
 
     preStart();
     Start();
@@ -173,9 +170,21 @@ int main() {
             if (event.type == sf::Event::Closed) {
                 window.close();
                 ppuTimer.stopped = true;
+                return 0;
             }
         }
-    }
 
-    return 0;
+        // we'll busy-wait for a vblank
+        if (ppu.regs.status & 0x80) {
+            // if NMI is enabled, invoke it
+            if (ppu.regs.ctrl & 0x80) {
+                NonMaskableInterrupt();
+            }
+        } else {
+            std::this_thread::yield();
+        }
+
+        ppu.draw();
+        ppu.window.display();
+    }
 }

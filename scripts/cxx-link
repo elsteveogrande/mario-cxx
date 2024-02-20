@@ -1,13 +1,10 @@
 #!/bin/bash
 
-pkg-config --exists --print-errors sfml-window || {
-    echo "package 'sfml-window' required; doublecheck it's installed (and PKG_CONFIG_PATH is set)" ;
-    exit 2 ;
-}
-
-exec                                    \
-    clang++                             \
-    -g                                  \
-    -o mario++                          \
-    $@                                  \
-    $(pkg-config --libs sfml-window)    \
+exec                                        \
+    clang++                                 \
+    -g                                      \
+    -o mario++                              \
+    -fsanitize=thread                       \
+    $@                                      \
+    $(pkg-config --libs sfml-window)        \
+    $(pkg-config --libs sfml-graphics)      \

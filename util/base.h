@@ -11,6 +11,8 @@
 using byte = unsigned char;
 using word = unsigned short;
 
+void _debug(char const* func, char const* filename, int line);
+
 // defined in main.cc
 // (stub code to hook the "rom" data to the memory bus)
 void preStart();
@@ -124,11 +126,11 @@ struct AbsY : Mem {
 struct IndY : Abs {
     explicit IndY(word abs) : Abs(abs) {}
     virtual int addr() const override {
-        byte ret;
-        ret = int(m.get(abs_));
-        ret |= int(m.get(abs_ + 1)) << 8;
-        ret = m.get(ret);
-        return ret + y.read();
+        word tmp;
+        tmp = int(m.get(abs_ + 1)) << 8;
+        tmp |= int(m.get(abs_));
+        tmp += y.read();
+        return tmp;
     }
 };
 

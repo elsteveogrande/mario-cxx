@@ -4,47 +4,92 @@
 #include <functional>
 #include <thread>
 
-#include <SFML/Window.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
 
 #include "../util/base.h"
+#include "SFML/Graphics/RenderTarget.hpp"
 
-struct Sprite {
+struct PPU;
+struct Sprite;
+struct Tile;
+struct NameTable;
+struct PatternTable;
+struct Pattern;
+
+struct HasTexture {
+    sf::Texture texture;
+    sf::Sprite sfSprite;
+    bool dirty {false};
+    HasTexture() {
+        texture.create(8, 8);
+        sfSprite.setTexture(texture);
+    };
+    virtual ~HasTexture() = default;
+    virtual void draw(sf::RenderWindow& window, PPU& ppu, int x, int y) = 0;
+};
+
+struct Sprite : HasTexture {
     // https://www.nesdev.org/wiki/PPU_OAM
-    byte y;         // y-position of top sprite (if 2 high)
-    byte index;     // index number
+    byte y;         // y-position of top sprite (if 2 tiles high)
+    byte index;
     byte attrs;
     byte x;
+    Sprite() : HasTexture() {}
+    virtual ~Sprite() override = default;
+    virtual void draw(sf::RenderWindow& window, PPU& ppu, int x, int y) override;
+    void draw(sf::RenderWindow& window, PPU& ppu);
 };
 
-struct PPU {
-    sf::Window& window;
-    uint16_t line {0};
-    byte memory[0x4000];        // patterns and attributes
-    Sprite sprites[64];
+struct NameTable;
 
-    // initially a no-op; this is replaced in base.cc
-    std::function<void()> callback = [] {};
+struct Tile : HasTexture {
+    byte index;
+    virtual void draw(sf::RenderWindow& window, PPU& ppu, int x, int y) override;
+};
 
-    PPU(sf::Window& window)
-            : window(window) {
-        memset(memory, 0, sizeof(memory));
+struct TileAttribute {
+    byte data;
+};
+
+struct NameTable {
+    /*
+     * A region of 1024 bytes in PPU memory;
+     * this would correspond to $2000, $2400, $2800, or $2C00 within PPU RAM.
+     * https://www.nesdev.org/wiki/PPU_nametables
+     */
+    Tile tiles[32][32];
+    TileAttribute attributes[64];
+};
+
+struct Pattern {
+    /*
+     * Two 8x8 groups: 8x8 low bits then 8x8 high bits.
+     * https://www.nesdev.org/wiki/PPU_pattern_tables
+     */
+    byte data[16];
+    byte readByte(word addr) {
+        assert (addr < 0x0010);
+        return data[addr];
     }
-
-    /* called via PPUTimer */
-    void nextLine();
 };
 
-struct PPUTimer {
-    explicit PPUTimer(PPU& ppu);
-    ~PPUTimer();
-    void run();
+struct PatternTable {
+    Pattern patterns[256];
+    byte readByte(word addr) {
+        assert (addr < 0x1000);
+        return patterns[addr >> 4].readByte(addr & 0x000f);
+    }
+};
 
-    PPU& ppu;
-    bool stopped {false};
-    std::thread loopThread;
-
-    // approx 63.6µS
-    constexpr static std::chrono::nanoseconds const kLineInterval { 1000000000L / (262 * 60) };
+struct CharacterROM {
+    PatternTable patternTables[2];
+    CharacterROM();
+    byte readByte(word addr) {
+        assert (addr < 0x2000);
+        return patternTables[addr >> 12].readByte(addr & 0x0fff);
+    }
 };
 
 struct PPURegs : Memory::Bytes {
@@ -52,7 +97,7 @@ struct PPURegs : Memory::Bytes {
 
     // PPUCTRL: VPHB SINN
     // NMI enable (V), PPU master/slave (P), sprite height (H), background tile select (B),
-    // sprite tile select (S), increment mode (I), nametable select (NN)
+    // sprite tile select (S), increment mode (I), nameTable select (NN)
     byte ctrl    {0};
 
     byte mask    {0};
@@ -74,94 +119,39 @@ struct PPURegs : Memory::Bytes {
 
     explicit PPURegs(PPU& ppu) : ppu(ppu) {}
 
-    virtual byte get(word index) {
-        byte ret;
-        switch (index) {
-            case 0:
-                abort();
-            case 1:
-                abort();
-            case 2:
-                ret = status;
-                status &= 0x7f;  // clear vblank flag after read
-                gotFirstByte = false;
-                if (ppu.line >= ppu.sprites[0].y) { ret |= 0x40; }
-                return ret;
-            case 3:
-                abort();
-            case 4:
-                abort();
-            case 5:
-                abort();
-            case 6:
-                abort();
-            case 7:
-                abort();
-            default:
-                abort();
-        }
-    }
-
-    virtual void set(word index, byte value) {
-        switch (index) {
-            case 0:
-                ctrl = value;
-                return;
-
-            // https://www.nesdev.org/wiki/PPU_registers#Mask_($2001)_%3E_write
-            case 1:
-                mask = value;
-                return;
-
-            case 2:
-                status = value;
-                return;
-
-            // https://www.nesdev.org/wiki/PPU_registers#OAM_address_($2003)_%3E_write
-            case 3:
-                oamAddr = value;
-                printf("OAMADDR: %02x\n", oamAddr);
-                return;
-
-            case 4:
-                abort();
-
-            // https://www.nesdev.org/wiki/PPU_registers#PPUSCROLL
-            case 5:
-                if (!gotFirstByte) {
-                    scroll = value;
-                    gotFirstByte = true;
-                } else {
-                    scroll <<= 8;
-                    scroll |= value;
-                    scroll &= 0x3fff;
-                    gotFirstByte = false;
-                    printf("SCROLL: %04x\n", scroll);
-                }
-                return;
-
-            // https://www.nesdev.org/wiki/PPU_registers#Address_($2006)_%3E%3E_write_x2
-            case 6:
-                if (!gotFirstByte) {
-                    ppuAddr = value;
-                    gotFirstByte = true;
-                } else {
-                    ppuAddr <<= 8;
-                    ppuAddr |= value;
-                    ppuAddr &= 0x3fff;
-                    gotFirstByte = false;
-                    printf("PPUADDR: %04x\n", ppuAddr);
-                }
-                return;
-
-            // https://www.nesdev.org/wiki/PPU_registers#Data_($2007)_%3C%3E_read/write
-            case 7:
-                ppu.memory[ppuAddr] = value;
-                ppuAddr += (ctrl & 0x04) ? 32 : 1;
-                return;
-
-            default:
-                abort();
-        }
-    }
+    virtual byte get(word index) override;
+    virtual void set(word index, byte value) override;
 };
+
+struct Palettes {
+    // TODO: use actual Palette objects
+    byte data[32];
+};
+
+struct PPU {
+    sf::RenderWindow& window;
+    PPURegs regs;
+    uint16_t line {0};
+    Sprite sprites[64];
+    NameTable nameTables[2];
+    Palettes palettes;
+    CharacterROM chrROM;
+
+    explicit PPU(sf::RenderWindow& window);
+    void nextLine();
+    void draw();
+};
+
+struct PPUTimer {
+    explicit PPUTimer(PPU& ppu);
+    ~PPUTimer();
+    void run();
+
+    PPU& ppu;
+    bool stopped {false};
+    std::thread loopThread;
+
+    // approx 63.6µS
+    constexpr static std::chrono::nanoseconds const kLineInterval { 1000000000L / (262 * 60) };
+};
+

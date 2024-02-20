@@ -1,16 +1,15 @@
 #include "bus.h"
 #include "ppu.h"
+#include <memory>
 
 Memory::Bus m;
 
-void* Memory::Bus::addRegion(Memory::Region reg) {
-    baseMap[reg.base] = reg;
+void* Memory::Bus::addRegion(Memory::Region const& reg) {
+    baseMap.emplace(reg.base, reg);
     return nullptr;
 }
 
-IORegs::IORegs(PPU& ppu, std::shared_ptr<PPURegs> ppuRegs)
-        : ppu(ppu), ppuRegs(ppuRegs) {
-}
+IORegs::IORegs(PPU& ppu) : ppu(ppu) {}
 
 byte IORegs::get(word index) {
     switch (index) {
@@ -137,11 +136,14 @@ void IORegs::set(word index, byte value) {
 
         // https://www.nesdev.org/wiki/PPU_registers#OAM_DMA_($4014)_%3E_write
         case 0x14: {
-            word sd = (ppuRegs->oamAddr) << 8;
-            assert (ppuRegs->oamData == 0);
+            assert (ppu.regs.oamAddr == 0);
+            word sd = word(value) << 8;
             for (int i = 0; i < 64; i++) {
-                ppu.sprites[i] = {m.get(sd + 0), m.get(sd + 1), m.get(sd + 2), m.get(sd + 3)};
-                sd += 4;
+                ppu.sprites[i].y = m.get(sd++);
+                ppu.sprites[i].index = m.get(sd++);
+                ppu.sprites[i].attrs = m.get(sd++);
+                ppu.sprites[i].x = m.get(sd++);
+                ppu.sprites[i].dirty = true;
             }
             return;
         }

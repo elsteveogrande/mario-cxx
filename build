@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [[ ! -f compile_flags.txt ]]; then
+    scripts/gen_compile_flags  > compile_flags.txt
+fi
+
 ./util/convertrom.py misc/smbdis.asm
 
 LIST=$(ls -1 emu/*.cc util/*.cc main.cc)

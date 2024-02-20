@@ -298,12 +298,13 @@ with open("main.cc", "w") as cc:
             p(cm)
         p(d)
     p("};")
+    p("Memory::ROM gROM((byte*) &g);")
 
     p("")
     p("void preStart() {                   \n"
       "    m.addRegion(                    \n"
       "        Memory::Region {            \n"
-      "            std::make_shared<Memory::ROM>((byte*)&g), 0x8000, 0x7fff });\n"
+      "            gROM, 0x8000, 0x7fff });\n"
       "}")
 
     p("")

@@ -2,7 +2,6 @@
 
 #include <cassert>
 #include <map>
-#include <memory>
 #include <thread>
 
 using byte = unsigned char;
@@ -34,16 +33,33 @@ struct Memory {
     };
 
     struct Region {
-        std::shared_ptr<Bytes> bytes;
+        Bytes& bytes;
         word base;
         word mask;
-        byte get(word index) const { return bytes->get((index - base) & mask); }
-        void set(word index, byte val) { bytes->set((index - base) & mask, val); }
+
+        byte get(word index) const {
+            return bytes.get((index - base) & mask);
+        }
+        
+        void set(word index, byte val) {
+            bytes.set((index - base) & mask, val);
+        }
+
+        Region(Bytes& bytes, word base, word mask)
+                : bytes(bytes), base(base), mask(mask) {}
+        
+        Region(Region const& rhs)
+                : bytes(rhs.bytes), base(rhs.base), mask(rhs.mask) {}
+
+        Region& operator=(Region const& rhs) {
+            new (this) Region(rhs);
+            return *this;
+        }
     };
 
     struct Bus {
         std::map<word, Region> baseMap;
-        void* addRegion(Region reg);
+        void* addRegion(Region const& reg);
 
         Region& getRegion(word index) {
             Region* ret = nullptr;
@@ -61,31 +77,26 @@ struct Memory {
         }
 
         byte get(word index) {
-            // std::this_thread::sleep_for(std::chrono::milliseconds(1));
             byte ret = getRegion(index).get(index);
-            fprintf(stderr, "get [%04x] -> %02x\n", index, ret);
+            // printf("get [%04x] -> %02x\n", index, ret);
             return ret;
         }
 
         void set(word index, byte val) {
-            // std::this_thread::sleep_for(std::chrono::milliseconds(1));
-            fprintf(stderr, "set [%04x] <- %02x\n", index, val);
+            // printf("set [%04x] <- %02x\n", index, val);
             getRegion(index).set(index, val);
         }
     };
 };
 
 struct PPU;
-struct PPURegs;
 
 struct IORegs : Memory::Bytes {
-    IORegs(PPU& ppu, std::shared_ptr<PPURegs> ppuRegs);
-
-    virtual byte get(word index);
-    virtual void set(word index, byte value);
-
     PPU& ppu;
-    std::shared_ptr<PPURegs> ppuRegs;
+    explicit IORegs(PPU& ppu);
+
+    virtual byte get(word index) override;
+    virtual void set(word index, byte value) override;
 };
 
 extern Memory::Bus m;

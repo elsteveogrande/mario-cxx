@@ -886,9 +886,9 @@ extern G g;
 #define                           ColdBootOffset           LO8(0x7fe)
 #define                    TitleScreenDataOffset               0x1ec0
 #define                              SoundMemory                0x7b0
-#define                        SwimTileRepOffset ((offsetof(G, PlayerGraphicsTable)) + (0x9e))
-#define                    MusicHeaderOffsetData ((offsetof(G, MusicHeaderData)) - (1))
-#define                                      MHD offsetof(G, MusicHeaderData)
+#define                        SwimTileRepOffset ((0x8000+offsetof(G, PlayerGraphicsTable)) + (0x9e))
+#define                    MusicHeaderOffsetData ((0x8000+offsetof(G, MusicHeaderData)) - (1))
+#define                                      MHD 0x8000+offsetof(G, MusicHeaderData)
 #define                                 A_Button           0b10000000
 #define                                 B_Button            0b1000000
 #define                            Select_Button             0b100000

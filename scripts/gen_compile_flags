@@ -1,0 +1,20 @@
+#!/bin/bash
+
+pkg-config --exists --print-errors sfml-window      || exit 2
+pkg-config --exists --print-errors sfml-graphics    || exit 2
+
+echo "
+-xc++
+-std=c++2b
+-g2
+-Wall
+-Wextra
+-Og
+-UNDEBUG
+-fsanitize=thread
+-fno-inline
+-fno-omit-frame-pointer
+-foptimize-sibling-calls
+"
+echo $(pkg-config --cflags sfml-window)   | tr ' ' $'\n'
+echo $(pkg-config --cflags sfml-graphics) | tr ' ' $'\n'

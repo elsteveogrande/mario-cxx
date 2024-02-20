@@ -7,4 +7,4 @@ misc/chrrom.cc
 misc/smb1-us.nes
 misc/smbdis.asm
 .vscode/
-
+compile_flags.txt
