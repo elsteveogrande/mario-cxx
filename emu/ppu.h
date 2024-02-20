@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <cstring>
 #include <functional>
 #include <thread>
@@ -11,6 +12,13 @@
 #include "../util/base.h"
 #include "SFML/Graphics/RenderTarget.hpp"
 
+struct Pixel {
+    byte r {0x00};
+    byte g {0x00};
+    byte b {0x00};
+    byte a {0xff};
+} __attribute__((__packed__));
+
 struct PPU;
 struct Sprite;
 struct Tile;
@@ -18,35 +26,21 @@ struct NameTable;
 struct PatternTable;
 struct Pattern;
 
-struct HasTexture {
-    sf::Texture texture;
-    sf::Sprite sfSprite;
-    bool dirty {false};
-    HasTexture() {
-        texture.create(8, 8);
-        sfSprite.setTexture(texture);
-    };
-    virtual ~HasTexture() = default;
-    virtual void draw(sf::RenderWindow& window, PPU& ppu, int x, int y) = 0;
-};
-
-struct Sprite : HasTexture {
+struct Sprite {
     // https://www.nesdev.org/wiki/PPU_OAM
     byte y;         // y-position of top sprite (if 2 tiles high)
     byte index;
     byte attrs;
     byte x;
-    Sprite() : HasTexture() {}
-    virtual ~Sprite() override = default;
-    virtual void draw(sf::RenderWindow& window, PPU& ppu, int x, int y) override;
-    void draw(sf::RenderWindow& window, PPU& ppu);
+    void draw(Pixel* pixels, unsigned x, unsigned y, PPU& ppu);
 };
 
 struct NameTable;
 
-struct Tile : HasTexture {
+struct Tile {
     byte index;
-    virtual void draw(sf::RenderWindow& window, PPU& ppu, int x, int y) override;
+
+    void draw(Pixel* pixels, unsigned x, unsigned y, PPU& ppu);
 };
 
 struct TileAttribute {
@@ -59,8 +53,16 @@ struct NameTable {
      * this would correspond to $2000, $2400, $2800, or $2C00 within PPU RAM.
      * https://www.nesdev.org/wiki/PPU_nametables
      */
-    Tile tiles[32][32];
+    Tile tiles[32][30];
     TileAttribute attributes[64];
+
+    void draw(Pixel* pixels, unsigned x, unsigned y, PPU& ppu) {
+        for (int j = 0; j < 30; j++) {
+            for (int i = 0; i < 32; i++) {
+                tiles[j][i].draw(pixels, x + i * 8, y + j * 8, ppu);
+            }
+        }
+    }
 };
 
 struct Pattern {
@@ -73,6 +75,8 @@ struct Pattern {
         assert (addr < 0x0010);
         return data[addr];
     }
+
+    void draw(Pixel* pixels, unsigned w, unsigned x, unsigned y, PPU& ppu);
 };
 
 struct PatternTable {
@@ -105,7 +109,7 @@ struct PPURegs : Memory::Bytes {
     // PPUSTATUS: VSO- ----
     // vblank (V), sprite 0 hit (S), sprite overflow (O);
     // read resets write pair for $2005/$2006
-    byte status  {0};
+    std::atomic<byte> status {0};
 
     byte oamAddr {0};
     byte oamData {0};
@@ -140,6 +144,8 @@ struct PPU {
     explicit PPU(sf::RenderWindow& window);
     void nextLine();
     void draw();
+
+    Pattern& lookupPattern(unsigned index) { return chrROM.patternTables[0].patterns[index]; }
 };
 
 struct PPUTimer {
@@ -148,7 +154,7 @@ struct PPUTimer {
     void run();
 
     PPU& ppu;
-    bool stopped {false};
+    std::atomic<bool> stopped {false};
     std::thread loopThread;
 
     // approx 63.6µS

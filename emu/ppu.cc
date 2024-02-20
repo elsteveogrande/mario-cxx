@@ -1,4 +1,6 @@
 #include "ppu.h"
+#include "SFML/Graphics/Image.hpp"
+#include "SFML/Graphics/Rect.hpp"
 
 #include <cstdio>
 #include <fstream>
@@ -28,16 +30,18 @@ void PPUTimer::run() {
 
 void PPU::nextLine() {
     line = (line == 261) ? 0: (line + 1);
-    if (line == 261) {
-        // vblank is ending:
-        regs.status &= ~0x40;  // clear sprite0 hit
-    } else if (line == 241) {
-        // vblank is starting:
-        regs.status |= 0x80;   // set vblank flag
-    }
-
     if (line == 30) {
         regs.status |= 0x40;
+    } else if (line == 241) {
+        // vblank is starting:
+        // set vblank flag
+        regs.status.store(0x80 | regs.status.load());
+    } else if (line == 261) {
+        // vblank is ending:
+        // clear sprite0 hit
+        regs.status.store(~0x40 & (regs.status.load()));
+        // clear vblank flag
+        regs.status.store(0x80 | regs.status.load());
     }
 }
 
@@ -59,51 +63,49 @@ CharacterROM::CharacterROM() {
     }
 }
 
-void Sprite::draw(sf::RenderWindow& window, PPU&, int x, int y) {
-    sfSprite.setPosition(x, y);
-    window.draw(sfSprite);
-}
-
-void Sprite::draw(sf::RenderWindow& window, PPU& ppu) {
-    draw(window, ppu, x, y);
-}
-
-void Tile::draw(sf::RenderWindow& window, PPU&, int x, int y) {
-    sfSprite.setPosition(x, y);
-    window.draw(sfSprite);
-}
-
 void PPU::draw() {
-    window.clear(sf::Color(40, 40, 40, 255));
+    Pixel bkgd[512][240];
+    nameTables[0].draw((Pixel*) bkgd, 0, 0, *this);
+    nameTables[1].draw((Pixel*) bkgd, 256, 0, *this);
 
+    window.clear();
+    sf::Image img;
+    img.create(512, 240, (byte*) bkgd);
+    sf::Texture tex;
+    tex.create(256, 240);
+    tex.loadFromImage(img, sf::IntRect(regs.scroll >> 8, 0, 256, 240));
+    sf::Sprite spr;
+    spr.setTexture(tex);
+    window.draw(spr);
+}
 
-    // byte leftPixels[240*256*4];
-    // byte leftTiles[30][32][8][8];
-    // for (int y = 0; y < 30; y++) {
-    //     for (int x = 0; x < 32; x++) {
-    //         decodeTile(*this,
-    //                    (byte*) leftTiles[y][x],
-    //                    memory[0x2000 + (32 * y) + x],
-    //                    0x1000);
-    //     }
-    // }
-    // sf::Texture left;
-    // left.create(256, 240);
-    // left.update(leftPixels);
-    // sf::Sprite ls(left);
-    // window.draw(ls);
+void Sprite::draw(Pixel* pixels, unsigned x, unsigned y, PPU& ppu) {
+    ppu.lookupPattern(index).draw(pixels, 256, x, y, ppu);
+}
 
-    // for (int i = 0; i < 64; i++) {
-    //     Sprite* sp = sprites[i].get();
-    //     if (sp) {
-    //         if (sp->y < 0xef) {
-    //             // printf("sprite %2d: x=%3d y=%3d\n", i, sp->x, sp->y);
-    //             auto& sf = sp->sfSprite;
-    //             sf.setPosition(sp->x, sp->y);
-    //             window.draw(sf);
-    //         }
-    //     }
-    // }
+void Tile::draw(Pixel* pixels, unsigned x, unsigned y, PPU& ppu) {
+    ppu.lookupPattern(index).draw(pixels, 512, x, y, ppu);
+}
+
+void Pattern::draw(Pixel* pixels, unsigned w, unsigned x, unsigned y, PPU& ppu) {
+    for (int j = 0; j < 8; j++) {
+        for (int i = 0; i < 8; i++) {
+            byte r, g, b;
+            byte v = ((data[j * 8] >> i) & 0x01) ? 0x01 : 0x00;
+            v |= ((data[(j * 8) + 8] >> i) & 0x01) ? 0x02 : 0x00;
+            switch (v) {
+                case 0:
+                    r = 0x00; g = 0x00; b = 0x00; break;
+                case 1:
+                    r = 0x00; g = 0x00; b = 0xff; break;
+                case 2:
+                    r = 0x00; g = 0xff; b = 0x00; break;
+                case 3:
+                    r = 0xff; g = 0x00; b = 0x00; break;
+            }
+            pixels[(y + j) * w + (i + x)] = {r, g, b, 0xff};
+        }
+    }
 }
 
 byte PPURegs::get(word index) {
@@ -191,9 +193,9 @@ void PPURegs::set(word index, byte value) {
             } else {
                 scroll <<= 8;
                 scroll |= value;
-                scroll &= 0x3fff;
                 gotFirstByte = false;
             }
+            printf("@@@ SCROLL %04x\n", scroll); fflush(stdout);
             return;
 
         // https://www.nesdev.org/wiki/PPU_registers#Address_($2006)_%3E%3E_write_x2
@@ -211,7 +213,7 @@ void PPURegs::set(word index, byte value) {
 
         // https://www.nesdev.org/wiki/PPU_registers#Data_($2007)_%3C%3E_read/write
         case 7: {
-            printf("ppuAddr %04x\n", ppuAddr); fflush(stdout);
+            // printf("ppuAddr %04x\n", ppuAddr); fflush(stdout);
             if (ppuAddr >= 0x2000 && ppuAddr < 0x3000) {
                 word addr = ppuAddr - 0x2000;
                 int n = addr >> 10;

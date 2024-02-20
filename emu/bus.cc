@@ -143,7 +143,6 @@ void IORegs::set(word index, byte value) {
                 ppu.sprites[i].index = m.get(sd++);
                 ppu.sprites[i].attrs = m.get(sd++);
                 ppu.sprites[i].x = m.get(sd++);
-                ppu.sprites[i].dirty = true;
             }
             return;
         }

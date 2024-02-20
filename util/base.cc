@@ -10,12 +10,12 @@
 #include <SFML/Window/Event.hpp>
 
 void _debug(char const* func, char const* filename, int line) {
-    auto& ram = m.baseMap.at(0).bytes;
-    printf(
-        "%10s:%5d [%30s] a:%02x x:%02x y:%02x n:%d z:%d c:%d [%02x %02x %02x %02x %02x %02x %02x %02x]\n",
-        filename, line, func, a.read(), x.read(), y.read(), n, z, c,
-        ram.get(0), ram.get(1), ram.get(2), ram.get(3),
-        ram.get(4), ram.get(5), ram.get(6), ram.get(7));
+    // auto& ram = m.baseMap.at(0).bytes;
+    // printf(
+    //     "%10s:%5d [%30s] a:%02x x:%02x y:%02x n:%d z:%d c:%d [%02x %02x %02x %02x %02x %02x %02x %02x]\n",
+    //     filename, line, func, a.read(), x.read(), y.read(), n, z, c,
+    //     ram.get(0), ram.get(1), ram.get(2), ram.get(3),
+    //     ram.get(4), ram.get(5), ram.get(6), ram.get(7));
 }
 
 Imm imm_(0);
