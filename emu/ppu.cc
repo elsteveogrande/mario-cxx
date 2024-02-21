@@ -162,7 +162,13 @@ void PPU::draw() {
 
     Pixel fore[256][240];
     memset(fore, 0, sizeof(fore));
-    for (int i = 0; i < 64; i++) { sprites[i].draw((Pixel*) fore, *this); }
+    for (int i = 0; i < 64; i++) {
+        auto& s = sprites[i];
+        if (s.y < 0xef) {
+            printf("@@@ sprite %2d : x=%02x y=%02x idx=%02x attrs=%02x\n", i, s.x, s.y, s.index, s.attrs);
+            sprites[i].draw((Pixel*) fore, *this);
+        }
+    }
 
     sf::Image simg;
     simg.create(256, 240, (byte*) fore);
@@ -189,18 +195,18 @@ void NameTable::draw(Pixel* pixels, unsigned x, unsigned y, PPU& ppu) {
 }
 
 void Sprite::draw(Pixel* pixels, PPU& ppu) {
-    if (y < 0xef) {
-        byte pid = attrs & 0x03;
-        auto& pal = ppu.palettes.spritePalettes[pid];
-        ppu.lookupPattern(index).draw(pixels, 256, x, y, pal);
-    }
+    byte pid = attrs & 0x03;
+    auto& pal = ppu.palettes.spritePalettes[pid];
+    bool xflip = !!(attrs & 0x40);
+    bool yflip = !!(attrs & 0x80);
+    ppu.lookupPattern(index).draw(pixels, 256, x, y, pal, xflip, yflip);
 }
 
 void Tile::draw(Pixel* pixels, unsigned x, unsigned y, Palette& pal, PPU& ppu) {
-    ppu.lookupPattern(0x100 + index).draw(pixels, 512, x, y, pal);
+    ppu.lookupPattern(0x100 + index).draw(pixels, 512, x, y, pal, false, false);
 }
 
-void Pattern::draw(Pixel* pixels, unsigned w, unsigned x, unsigned y, Palette& pal) {
+void Pattern::draw(Pixel* pixels, unsigned w, unsigned x, unsigned y, Palette& pal, bool xflip, bool yflip) {
     for (int j = 0; j < 8; j++) {
         byte b1 = data[j + 0];
         byte b2 = data[j + 8];
@@ -208,7 +214,9 @@ void Pattern::draw(Pixel* pixels, unsigned w, unsigned x, unsigned y, Palette& p
             byte v = 0;
             if (b1 & 0x80) { v |= 1; }
             if (b2 & 0x80) { v |= 2; }
-            pixels[(y + j) * w + (i + x)] = pal.getColor(v);
+            int o = xflip ? 7 - i : i;
+            int p = yflip ? 7 - j : j;
+            pixels[(y + p) * w + (o + x)] = pal.getColor(v);
             b1 <<= 1;
             b2 <<= 1;
         }
@@ -262,6 +270,10 @@ void PPURegs::set(word index, byte value) {
     switch (index) {
         case 0:
             ctrl = value;
+            assert (!(ctrl & 0x40));  // EXT bkgd
+            assert (!(ctrl & 0x20));  // 8x16 sprites
+            assert (!(ctrl & 0x08));  // sprites use left table (8x8)
+            assert (!(ctrl & 0x03));  // base nametable
             return;
 
         // https://www.nesdev.org/wiki/PPU_registers#Mask_($2001)_%3E_write

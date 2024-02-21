@@ -292,8 +292,8 @@ class CodeBlock(Block):
         if (proto):
             return "void %s();" % (self.label.name)
         ret = "void %s() {\n" % (self.label.name)
-        ret += "    _debug(\"%s\", __FILE__, __LINE__);\n" % (self.label.name)
-        ret += "    std::this_thread::yield();\n"
+        # ret += "    _debug(\"%s\", __FILE__, __LINE__);\n" % (self.label.name)
+        # ret += "    std::this_thread::yield();\n"
         for x in self.inner:
             for c in x.comments:
                 ret += "    %s\n" % (c.render(labels, defines))

@@ -15,9 +15,9 @@ void _debug(char const* func, char const* filename, int line) {
     if (filename == lastFile && line == lastLine) { return; }
     lastFile = filename;
     lastLine = line;
-    // printf(
-    //     "%10s:%5d [%30s] a:%02x x:%02x y:%02x n:%d z:%d c:%d\n",
-    //     filename, line, func, a.read(), x.read(), y.read(), n, z, c);
+    printf(
+        "%10s:%5d [%30s] a:%02x x:%02x y:%02x n:%d z:%d c:%d\n",
+        filename, line, func, a.read(), x.read(), y.read(), n, z, c);
 }
 
 Imm imm_(0);

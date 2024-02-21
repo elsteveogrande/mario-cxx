@@ -114,7 +114,7 @@ struct Pattern {
         return data[addr];
     }
 
-    void draw(Pixel* pixels, unsigned w, unsigned x, unsigned y, Palette& pal);
+    void draw(Pixel* pixels, unsigned w, unsigned x, unsigned y, Palette& pal, bool xflip, bool yflip);
 };
 
 struct PatternTable {
