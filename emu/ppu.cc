@@ -312,6 +312,7 @@ void PPURegs::set(word index, byte value) {
 
         // https://www.nesdev.org/wiki/PPU_registers#Data_($2007)_%3C%3E_read/write
         case 7: {
+            ppuData = value;
             // printf("ppuAddr %04x\n", ppuAddr); fflush(stdout);
             if (ppuAddr >= 0x2000 && ppuAddr < 0x3000) {
                 word addr = ppuAddr - 0x2000;

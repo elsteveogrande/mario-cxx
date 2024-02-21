@@ -335,16 +335,15 @@ class DataBlock(Block):
             return ("    /* %04x (%5d) */ %s const %s[%d];" % (self.offset, self.offset, dt, self.label.name, len(self.inner) or 1))
         elif len(self.inner) > 0:
             ret = ""
+            ret += "\n    /* %04x (%5d) */\n" % (self.offset, self.offset)
             for c in self.comments:
                 ret += "    %s\n" % (c.render(labels, defines))
+            ret += "    .%s = {" % (self.label.name)
             for b in self.inner:
                 for c in b.comments:
-                    ret += "    %s\n" % (c.render(labels, defines))
-            x: list[str] = [b.expr.render(labels, defines) for b in self.inner]   # type: ignore
-            x = [("%s" % (b)) for b in x]
-            xs = ", ".join(x)
-            ret += "    "
-            ret += "/* %04x (%5d) */ .%s = {%s}," % (self.offset, self.offset, self.label.name, xs)
+                    ret += "\n    %s\n    " % (c.render(labels, defines))
+                ret += b.expr.render(labels, defines) + ", "  # type: ignore
+            ret += "},"
             return ret
         else:
             return ("    /* %04x (%5d) */ .%s = {0xee}," % (self.offset, self.offset, self.label.name))

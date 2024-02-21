@@ -1,6 +1,5 @@
 #!/bin/bash
 
-pkg-config --exists --print-errors sfml-window      || exit 2
 pkg-config --exists --print-errors sfml-graphics    || exit 2
 
 echo "
@@ -12,5 +11,4 @@ echo "
 -UNDEBUG
 -foptimize-sibling-calls
 "
-echo $(pkg-config --cflags sfml-window)   | tr ' ' $'\n'
 echo $(pkg-config --cflags sfml-graphics) | tr ' ' $'\n'

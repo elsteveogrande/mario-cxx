@@ -93,6 +93,10 @@ struct PPU;
 
 struct IORegs : Memory::Bytes {
     PPU& ppu;
+    byte strobe {0};
+    byte joy0 {0};
+    byte joy1 {0};
+
     explicit IORegs(PPU& ppu);
 
     virtual byte get(word index) override;

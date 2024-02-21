@@ -59,13 +59,17 @@ byte IORegs::get(word index) {
             abort();
 
         // https://www.nesdev.org/wiki/Controller_reading
+ 
         case 0x16: {
-            // TODO
-            return 0;
+            auto ret = (joy0 & 0x01);
+            joy0 >>= 1;
+            return ret;
         }
+ 
         case 0x17: {
-            // TODO
-            return 0;
+            auto ret = (joy1 & 0x01);
+            joy1 >>= 1;
+            return ret;
         }
 
         case 0x18:
@@ -153,7 +157,13 @@ void IORegs::set(word index, byte value) {
 
         //https://www.nesdev.org/wiki/Controller_reading
         case 0x16: {
-            // TODO
+            auto prevStrobe = strobe;
+            strobe = value;
+            if ((prevStrobe & 0x1) && !(strobe & 0x01)) {
+                // TODO
+                joy0 = 0x00;
+                joy1 = 0x00;
+            }
             break;
         }
 
