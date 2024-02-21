@@ -154,8 +154,8 @@ void PPU::draw() {
     sf::Image bimg;
     bimg.create(512, 240, (byte*) bkgd);
     sf::Texture btex;
-    btex.create(512, 240);
-    btex.loadFromImage(bimg, sf::IntRect(0, 0, 512, 240));
+    btex.create(256, 240);
+    btex.loadFromImage(bimg, sf::IntRect(regs.scroll >> 8, 0, 256, 240));
     sf::Sprite bspr;
     bspr.setTexture(btex);
     window.draw(bspr);
@@ -168,7 +168,7 @@ void PPU::draw() {
     simg.create(256, 240, (byte*) fore);
     sf::Texture stex;
     stex.create(256, 240);
-    stex.loadFromImage(simg, sf::IntRect(regs.scroll >> 8, 0, 256, 240));
+    stex.loadFromImage(simg, sf::IntRect(0, 0, 256, 240));
     sf::Sprite sspr;
     sspr.setTexture(stex);
     window.draw(sspr);
@@ -276,6 +276,7 @@ void PPURegs::set(word index, byte value) {
 
         // https://www.nesdev.org/wiki/PPU_registers#PPUSCROLL
         case 5:
+            // printf("@@@ SCROLL %02x first=%d (%04x)\n", value, gotFirstByte, scroll); fflush(stdout);
             if (!gotFirstByte) {
                 scroll = word(value) << 8;
                 gotFirstByte = true;
@@ -283,7 +284,6 @@ void PPURegs::set(word index, byte value) {
                 scroll |= word(value);
                 gotFirstByte = false;
             }
-            // printf("@@@ SCROLL %04x\n", scroll); fflush(stdout);
             return;
 
         // https://www.nesdev.org/wiki/PPU_registers#Address_($2006)_%3E%3E_write_x2
@@ -313,7 +313,7 @@ void PPURegs::set(word index, byte value) {
                     byte col = index & 0x1f;
                     assert (col < 32);
                     nt.tiles[row][col].index = value;
-                    printf("@@@ addr %04x (nt=%d row=%d col=%d) data %02x\n", ppuAddr, n, row, col, value);
+                    // printf("@@@ addr %04x (nt=%d row=%d col=%d) data %02x\n", ppuAddr, n, row, col, value);
                 } else {
                     nt.attributes[index - 960].data = value;
                 }        

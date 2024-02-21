@@ -15,9 +15,9 @@ void _debug(char const* func, char const* filename, int line) {
     if (filename == lastFile && line == lastLine) { return; }
     lastFile = filename;
     lastLine = line;
-    printf(
-        "%10s:%5d [%30s] a:%02x x:%02x y:%02x n:%d z:%d c:%d\n",
-        filename, line, func, a.read(), x.read(), y.read(), n, z, c);
+    // printf(
+    //     "%10s:%5d [%30s] a:%02x x:%02x y:%02x n:%d z:%d c:%d\n",
+    //     filename, line, func, a.read(), x.read(), y.read(), n, z, c);
 }
 
 Imm imm_(0);
@@ -155,7 +155,7 @@ int main() {
     m.addRegion(Memory::Region {ram, 0x0000, 0x07ff });
 
     sf::Event event;
-    sf::RenderWindow window(sf::VideoMode(512, 240), "mario++");
+    sf::RenderWindow window(sf::VideoMode(256, 240), "mario++");
     while (!window.isOpen()) { window.pollEvent(event); }
 
     PPU ppu(window);
@@ -168,7 +168,7 @@ int main() {
     preStart();
     Start();
 
-    window.setSize({512 * 3, 240 * 3});
+    window.setSize({256 * 3, 240 * 3});
 
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
@@ -189,6 +189,7 @@ int main() {
             std::this_thread::yield();
         }
 
+        // printf("@@@ SCROLL %04x\n", ppu.regs.scroll);
         ppu.draw();
         ppu.window.display();
     }
