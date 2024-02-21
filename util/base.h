@@ -224,4 +224,4 @@ inline void rol(Mode& s) { rol(s, s); }
 inline void ror(Mode& s) { ror(s, s); }
 
 inline void adc(Mode& s) { add(a, a, s, c); }
-inline void sbc(Mode& s) { add(a, a, s, c); }
+inline void sbc(Mode& s) { add(a, a, s, !c); }

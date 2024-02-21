@@ -11,6 +11,85 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
 
+Pixel Pixel::colors[64] = {
+    /*   0 (00) */ {0x62, 0x62, 0x62, 0xff},
+    /*   1 (01) */ {0x00, 0x23, 0x91, 0xff},
+    /*   2 (02) */ {0x18, 0x10, 0xa6, 0xff},
+    /*   3 (03) */ {0x44, 0x00, 0x99, 0xff},
+    /*   4 (04) */ {0x61, 0x00, 0x6d, 0xff},
+    /*   5 (05) */ {0x6d, 0x00, 0x2c, 0xff},
+    /*   6 (06) */ {0x68, 0x0a, 0x00, 0xff},
+    /*   7 (07) */ {0x4d, 0x24, 0x00, 0xff},
+    /*   8 (08) */ {0x28, 0x3b, 0x00, 0xff},
+    /*   9 (09) */ {0x03, 0x4b, 0x00, 0xff},
+    /*  10 (0a) */ {0x00, 0x51, 0x00, 0xff},
+    /*  11 (0b) */ {0x00, 0x4b, 0x1b, 0xff},
+    /*  12 (0c) */ {0x00, 0x3a, 0x5e, 0xff},
+    /*  13 (0d) */ {0x00, 0x00, 0x00, 0xff},
+    /*  14 (0e) */ {0x00, 0x00, 0x00, 0xff},
+    /*  15 (0f) */ {0x00, 0x00, 0x00, 0xff},
+
+    /*  16 (10) */ {0xab, 0xab, 0xab, 0xff},
+    /*  17 (11) */ {0x1e, 0x55, 0xea, 0xff},
+    /*  18 (12) */ {0x46, 0x3b, 0xff, 0xff},
+    /*  19 (13) */ {0x82, 0x20, 0xf6, 0xff},
+    /*  20 (14) */ {0xa9, 0x18, 0xb9, 0xff},
+    /*  21 (15) */ {0xba, 0x20, 0x61, 0xff},
+    /*  22 (16) */ {0xb3, 0x32, 0x15, 0xff},
+    /*  23 (17) */ {0x8d, 0x56, 0x00, 0xff},
+    /*  24 (18) */ {0x5c, 0x75, 0x00, 0xff},
+    /*  25 (19) */ {0x29, 0x8b, 0x00, 0xff},
+    /*  26 (1a) */ {0x07, 0x93, 0x00, 0xff},
+    /*  27 (1b) */ {0x00, 0x8b, 0x4a, 0xff},
+    /*  28 (1c) */ {0x00, 0x74, 0xa5, 0xff},
+    /*  29 (1d) */ {0x00, 0x00, 0x00, 0xff},
+    /*  30 (1e) */ {0x00, 0x00, 0x00, 0xff},
+    /*  31 (1f) */ {0x00, 0x00, 0x00, 0xff},
+
+    /*  32 (20) */ {0xff, 0xff, 0xff, 0xff},
+    /*  33 (21) */ {0x6c, 0xa6, 0xff, 0xff},
+    /*  34 (22) */ {0x96, 0x8b, 0xff, 0xff},
+    /*  35 (23) */ {0xd4, 0x6f, 0xff, 0xff},
+    /*  36 (24) */ {0xfd, 0x66, 0xff, 0xff},
+    /*  37 (25) */ {0xff, 0x6f, 0xb2, 0xff},
+    /*  38 (26) */ {0xff, 0x82, 0x63, 0xff},
+    /*  39 (27) */ {0xe0, 0xa7, 0x0c, 0xff},
+    /*  40 (28) */ {0xad, 0xc7, 0x00, 0xff},
+    /*  41 (29) */ {0x78, 0xde, 0x00, 0xff},
+    /*  42 (2a) */ {0x55, 0xe6, 0x32, 0xff},
+    /*  43 (2b) */ {0x3e, 0xde, 0x9a, 0xff},
+    /*  44 (2c) */ {0x49, 0xc6, 0xf8, 0xff},
+    /*  45 (2d) */ {0x4e, 0x4e, 0x4e, 0xff},
+    /*  46 (2e) */ {0x00, 0x00, 0x00, 0xff},
+    /*  47 (2f) */ {0x00, 0x00, 0x00, 0xff},
+
+    /*  48 (30) */ {0xff, 0xff, 0xff, 0xff},
+    /*  49 (31) */ {0xc4, 0xdb, 0xff, 0xff},
+    /*  50 (32) */ {0xd5, 0xd0, 0xff, 0xff},
+    /*  51 (33) */ {0xee, 0xc5, 0xff, 0xff},
+    /*  52 (34) */ {0xfe, 0xc2, 0xff, 0xff},
+    /*  53 (35) */ {0xff, 0xc5, 0xe0, 0xff},
+    /*  54 (36) */ {0xff, 0xcd, 0xc0, 0xff},
+    /*  55 (37) */ {0xf3, 0xdc, 0x9d, 0xff},
+    /*  56 (38) */ {0xde, 0xe8, 0x91, 0xff},
+    /*  57 (39) */ {0xc9, 0xf2, 0x99, 0xff},
+    /*  58 (3a) */ {0xbb, 0xf5, 0xad, 0xff},
+    /*  59 (3b) */ {0xb2, 0xf2, 0xd7, 0xff},
+    /*  60 (3c) */ {0xb6, 0xe8, 0xfc, 0xff},
+    /*  61 (3d) */ {0xb8, 0xb8, 0xb8, 0xff},
+    /*  62 (3e) */ {0x00, 0x00, 0x00, 0xff},
+    /*  63 (3f) */ {0x00, 0x00, 0x00, 0xff},
+};
+
+void Palettes::writeByte(word offset, byte val) {
+    if (offset < 0x10) {
+        bkgdPalettes[(offset >> 2) & 0x03].writeByte(offset & 0x03, val);
+    } else {
+        offset &= 0x0f;
+        spritePalettes[(offset >> 2) & 0x03].writeByte(offset & 0x03, val);
+    }
+}
+
 PPUTimer::PPUTimer(PPU& ppu)
         : ppu(ppu)
         , loopThread([this] {this->run();}) {
@@ -30,8 +109,11 @@ void PPUTimer::run() {
 
 void PPU::nextLine() {
     line = (line == 261) ? 0: (line + 1);
-    if (line == 30) {
-        regs.status |= 0x40;
+    if (line == 32) {
+        auto& s0 = sprites[0];
+        if (s0.y < 0xef && s0.index == 0xff) {
+            regs.status.store(0x40 | regs.status.load());
+        }
     } else if (line == 241) {
         // vblank is starting:
         // set vblank flag
@@ -68,42 +150,67 @@ void PPU::draw() {
     nameTables[0].draw((Pixel*) bkgd, 0, 0, *this);
     nameTables[1].draw((Pixel*) bkgd, 256, 0, *this);
 
-    window.clear();
-    sf::Image img;
-    img.create(512, 240, (byte*) bkgd);
-    sf::Texture tex;
-    tex.create(256, 240);
-    tex.loadFromImage(img, sf::IntRect(regs.scroll >> 8, 0, 256, 240));
-    sf::Sprite spr;
-    spr.setTexture(tex);
-    window.draw(spr);
+    window.clear(palettes.bkgdPalettes[0].ids[0].get().asColor());
+    sf::Image bimg;
+    bimg.create(512, 240, (byte*) bkgd);
+    sf::Texture btex;
+    btex.create(512, 240);
+    btex.loadFromImage(bimg, sf::IntRect(0, 0, 512, 240));
+    sf::Sprite bspr;
+    bspr.setTexture(btex);
+    window.draw(bspr);
+
+    Pixel fore[256][240];
+    memset(fore, 0, sizeof(fore));
+    for (int i = 0; i < 64; i++) { sprites[i].draw((Pixel*) fore, *this); }
+
+    sf::Image simg;
+    simg.create(256, 240, (byte*) fore);
+    sf::Texture stex;
+    stex.create(256, 240);
+    stex.loadFromImage(simg, sf::IntRect(regs.scroll >> 8, 0, 256, 240));
+    sf::Sprite sspr;
+    sspr.setTexture(stex);
+    window.draw(sspr);
 }
 
-void Sprite::draw(Pixel* pixels, unsigned x, unsigned y, PPU& ppu) {
-    ppu.lookupPattern(index).draw(pixels, 256, x, y, ppu);
+void NameTable::draw(Pixel* pixels, unsigned x, unsigned y, PPU& ppu) {
+    for (int j = 0; j < 30; j++) {
+        for (int i = 0; i < 32; i++) {
+            byte pid = getPaletteID(i, j);
+            tiles[j][i].draw(
+                pixels,
+                x + i * 8,
+                y + j * 8,
+                ppu.palettes.bkgdPalettes[pid],
+                ppu);
+        }
+    }
 }
 
-void Tile::draw(Pixel* pixels, unsigned x, unsigned y, PPU& ppu) {
-    ppu.lookupPattern(index).draw(pixels, 512, x, y, ppu);
+void Sprite::draw(Pixel* pixels, PPU& ppu) {
+    if (y < 0xef) {
+        byte pid = attrs & 0x03;
+        auto& pal = ppu.palettes.spritePalettes[pid];
+        ppu.lookupPattern(index).draw(pixels, 256, x, y, pal);
+    }
 }
 
-void Pattern::draw(Pixel* pixels, unsigned w, unsigned x, unsigned y, PPU& ppu) {
+void Tile::draw(Pixel* pixels, unsigned x, unsigned y, Palette& pal, PPU& ppu) {
+    ppu.lookupPattern(0x100 + index).draw(pixels, 512, x, y, pal);
+}
+
+void Pattern::draw(Pixel* pixels, unsigned w, unsigned x, unsigned y, Palette& pal) {
     for (int j = 0; j < 8; j++) {
+        byte b1 = data[j + 0];
+        byte b2 = data[j + 8];
         for (int i = 0; i < 8; i++) {
-            byte r, g, b;
-            byte v = ((data[j * 8] >> i) & 0x01) ? 0x01 : 0x00;
-            v |= ((data[(j * 8) + 8] >> i) & 0x01) ? 0x02 : 0x00;
-            switch (v) {
-                case 0:
-                    r = 0x00; g = 0x00; b = 0x00; break;
-                case 1:
-                    r = 0x00; g = 0x00; b = 0xff; break;
-                case 2:
-                    r = 0x00; g = 0xff; b = 0x00; break;
-                case 3:
-                    r = 0xff; g = 0x00; b = 0x00; break;
-            }
-            pixels[(y + j) * w + (i + x)] = {r, g, b, 0xff};
+            byte v = 0;
+            if (b1 & 0x80) { v |= 1; }
+            if (b2 & 0x80) { v |= 2; }
+            pixels[(y + j) * w + (i + x)] = pal.getColor(v);
+            b1 <<= 1;
+            b2 <<= 1;
         }
     }
 }
@@ -111,23 +218,11 @@ void Pattern::draw(Pixel* pixels, unsigned w, unsigned x, unsigned y, PPU& ppu) 
 byte PPURegs::get(word index) {
     byte ret;
     switch (index) {
-        case 0:
-            abort();
-        case 1:
-            abort();
         case 2:
             ret = status;
             status &= 0x7f;  // clear vblank flag after read
             gotFirstByte = false;
             return ret;
-        case 3:
-            abort();
-        case 4:
-            abort();
-        case 5:
-            abort();
-        case 6:
-            abort();
 
         case 7: {
             byte const ret = ppuData;
@@ -142,7 +237,7 @@ byte PPURegs::get(word index) {
                 word index = ppuAddr & 0x3ff;
                 if (index < 960) {
                     byte row = index >> 5;
-                    assert (row < 32);
+                    assert (row < 30);
                     byte col = index & 0x1f;
                     assert (col < 32);
                     ppuData = nt.tiles[row][col].index;
@@ -174,38 +269,30 @@ void PPURegs::set(word index, byte value) {
             mask = value;
             return;
 
-        case 2:
-            abort();
-
         // https://www.nesdev.org/wiki/PPU_registers#OAM_address_($2003)_%3E_write
         case 3:
             oamAddr = value;
             return;
 
-        case 4:
-            abort();
-
         // https://www.nesdev.org/wiki/PPU_registers#PPUSCROLL
         case 5:
             if (!gotFirstByte) {
-                scroll = value;
+                scroll = word(value) << 8;
                 gotFirstByte = true;
             } else {
-                scroll <<= 8;
-                scroll |= value;
+                scroll |= word(value);
                 gotFirstByte = false;
             }
-            printf("@@@ SCROLL %04x\n", scroll); fflush(stdout);
+            // printf("@@@ SCROLL %04x\n", scroll); fflush(stdout);
             return;
 
         // https://www.nesdev.org/wiki/PPU_registers#Address_($2006)_%3E%3E_write_x2
         case 6:
             if (!gotFirstByte) {
-                ppuAddr = value;
+                ppuAddr = word(value) << 8;
                 gotFirstByte = true;
             } else {
-                ppuAddr <<= 8;
-                ppuAddr |= value;
+                ppuAddr |= word(value);
                 ppuAddr &= 0x3fff;
                 gotFirstByte = false;
             }
@@ -226,12 +313,14 @@ void PPURegs::set(word index, byte value) {
                     byte col = index & 0x1f;
                     assert (col < 32);
                     nt.tiles[row][col].index = value;
+                    printf("@@@ addr %04x (nt=%d row=%d col=%d) data %02x\n", ppuAddr, n, row, col, value);
                 } else {
                     nt.attributes[index - 960].data = value;
                 }        
-            } else if (ppuAddr >= 0x3f00 && ppuAddr < 0x3f20) {
+            } else if (ppuAddr >= 0x3f00) {
                 // https://www.nesdev.org/wiki/PPU_palettes
                 word addr = ppuAddr - 0x3f00;
+                addr &= 0x1f;  // mirroring at 3f20 and up ?
                 if (addr == 0x10 || addr == 0x14 || addr == 0x18 || addr == 0x1c) {
                     // from above url:
                     // "Addresses $3F10/$3F14/$3F18/$3F1C are mirrors of $3F00/$3F04/$3F08/$3F0C.
@@ -240,7 +329,7 @@ void PPURegs::set(word index, byte value) {
                     // Super Mario Bros., which writes the backdrop color through $3F10.
                     addr &= ~0x10;
                 }
-                ppu.palettes.data[addr] = value;
+                ppu.palettes.writeByte(addr, value);
             } else {
                 fprintf(stderr, "!!! bad PPU address: %04x", ppuAddr);
                 fflush(stderr);

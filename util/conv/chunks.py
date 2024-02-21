@@ -327,26 +327,27 @@ class DataBlock(Block):
     def __init__(self, label: Label) -> None:
         super().__init__()
         self.label = label
+        self.offset = -1
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         # FIXME: comments are broken
         dt = "word" if (self.inner and isinstance(self.inner[0], Word)) else "byte"
         if proto:
-            return ("    %s const %s[%d];" % (dt, self.label.name, len(self.inner) or 1))
+            return ("    /* %04x (%5d) */ %s const %s[%d];" % (self.offset, self.offset, dt, self.label.name, len(self.inner) or 1))
         elif len(self.inner) > 0:
             ret = ""
             for c in self.comments:
                 ret += "    %s\n" % (c.render(labels, defines))
-            # for b in self.inner:
-            #     for c in b.comments:
-            #         ret += "    %s\n" % (c.render(labels, defines))
+            for b in self.inner:
+                for c in b.comments:
+                    ret += "    %s\n" % (c.render(labels, defines))
             x: list[str] = [b.expr.render(labels, defines) for b in self.inner]   # type: ignore
             x = [("%s" % (b)) for b in x]
             xs = ", ".join(x)
             ret += "    "
-            ret += ".%s = {%s}," % (self.label.name, xs)
+            ret += "/* %04x (%5d) */ .%s = {%s}," % (self.offset, self.offset, self.label.name, xs)
             return ret
         else:
-            return ("    .%s = {0xee}," % (self.label.name))
+            return ("    /* %04x (%5d) */ .%s = {0xee}," % (self.offset, self.offset, self.label.name))
     def __str__(self):  return "(datablock:%s)" % (self.label)
     def __repr__(self): return str(self)
 

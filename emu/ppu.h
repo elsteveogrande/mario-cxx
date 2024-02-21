@@ -17,6 +17,15 @@ struct Pixel {
     byte g {0x00};
     byte b {0x00};
     byte a {0xff};
+
+    sf::Color asColor() const { return {r, g, b, a}; }
+
+    static Pixel colors[64];
+
+    static Pixel get(int v) {
+        assert (v <= 0x3f);
+        return colors[v];
+    }
 } __attribute__((__packed__));
 
 struct PPU;
@@ -26,13 +35,35 @@ struct NameTable;
 struct PatternTable;
 struct Pattern;
 
+struct ColorID {
+    byte id;
+    Pixel get() {
+        assert (id <= 0x3f);
+        return Pixel::colors[id & 0x3f];
+    }
+} __attribute__((__packed__));
+
+struct Palette {
+    // idx 0 is unused (represents background color; maps to 0x3f00 instead)
+    ColorID ids[4] {{0}, {0}, {0}, {0}};
+    void writeByte(word offset, byte val) { ids[offset] = {val}; }
+
+    Pixel getColor(byte v) {
+        if (v == 0) {
+            return {0, 0, 0, 0};
+        } else {
+            return ids[v].get();
+        }
+    }
+} __attribute__((__packed__));
+
 struct Sprite {
     // https://www.nesdev.org/wiki/PPU_OAM
     byte y;         // y-position of top sprite (if 2 tiles high)
     byte index;
     byte attrs;
     byte x;
-    void draw(Pixel* pixels, unsigned x, unsigned y, PPU& ppu);
+    void draw(Pixel* pixels, PPU& ppu);
 };
 
 struct NameTable;
@@ -40,7 +71,7 @@ struct NameTable;
 struct Tile {
     byte index;
 
-    void draw(Pixel* pixels, unsigned x, unsigned y, PPU& ppu);
+    void draw(Pixel* pixels, unsigned x, unsigned y, Palette& pal, PPU& ppu);
 };
 
 struct TileAttribute {
@@ -56,13 +87,20 @@ struct NameTable {
     Tile tiles[32][30];
     TileAttribute attributes[64];
 
-    void draw(Pixel* pixels, unsigned x, unsigned y, PPU& ppu) {
-        for (int j = 0; j < 30; j++) {
-            for (int i = 0; i < 32; i++) {
-                tiles[j][i].draw(pixels, x + i * 8, y + j * 8, ppu);
-            }
-        }
+    byte getPaletteID(byte i, byte j) {
+        byte gx = i >> 2;
+        byte gy = j >> 2;
+        auto& ta = attributes[gy * 8 + gx];
+        i = (i >> 1) & 0x01;
+        j = (j >> 1) & 0x01;
+        if (i == 0 && j == 0) { return (ta.data >> 0) & 0x03; }
+        if (i == 1 && j == 0) { return (ta.data >> 2) & 0x03; }
+        if (i == 0 && j == 1) { return (ta.data >> 4) & 0x03; }
+        if (i == 1 && j == 1) { return (ta.data >> 6) & 0x03; }
+        abort();
     }
+
+    void draw(Pixel* pixels, unsigned x, unsigned y, PPU& ppu);
 };
 
 struct Pattern {
@@ -76,7 +114,7 @@ struct Pattern {
         return data[addr];
     }
 
-    void draw(Pixel* pixels, unsigned w, unsigned x, unsigned y, PPU& ppu);
+    void draw(Pixel* pixels, unsigned w, unsigned x, unsigned y, Palette& pal);
 };
 
 struct PatternTable {
@@ -128,8 +166,9 @@ struct PPURegs : Memory::Bytes {
 };
 
 struct Palettes {
-    // TODO: use actual Palette objects
-    byte data[32];
+    Palette bkgdPalettes[4];
+    Palette spritePalettes[4];
+    void writeByte(word offset, byte val);
 };
 
 struct PPU {
@@ -145,7 +184,14 @@ struct PPU {
     void nextLine();
     void draw();
 
-    Pattern& lookupPattern(unsigned index) { return chrROM.patternTables[0].patterns[index]; }
+    Pattern& lookupPattern(unsigned index) {
+        // printf("pattern %03x :", index);
+        auto& ret = chrROM.patternTables[index >> 8].patterns[index & 0xff];
+        // for (int i = 0; i < 16; i++) { printf(" %02x", ret.data[i]); }
+        // printf("\n");
+        // fflush(stdout);
+        return ret;
+    }
 };
 
 struct PPUTimer {

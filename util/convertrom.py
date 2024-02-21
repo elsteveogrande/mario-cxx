@@ -265,10 +265,16 @@ with open("main.h", "w") as h:
 
     p("")
     p("struct G {")
+    offset = 32768
     for d in data_blocks:
         for cm in d.comments:
             p(cm)
+        d.offset = offset
         p(d, proto=True)
+        if d.inner:
+            offset += len(d.inner) * (2 if (isinstance(d.inner[0], Word)) else 1)
+        else:
+            offset += 1
     p("} __attribute__((__packed__));")
     p("extern G g;")
 

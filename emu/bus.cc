@@ -157,24 +157,7 @@ void IORegs::set(word index, byte value) {
             break;
         }
 
-        case 0x17:
-            abort();    // not writable
-
-        case 0x18:
-            abort();
-        case 0x19:
-            abort();
-        case 0x1a:
-            abort();
-        case 0x1b:
-            abort();
-        case 0x1c:
-            abort();
-        case 0x1d:
-            abort();
-        case 0x1e:
-            abort();
-        case 0x1f:
+        default:
             abort();
     }
 }

@@ -10,12 +10,14 @@
 #include <SFML/Window/Event.hpp>
 
 void _debug(char const* func, char const* filename, int line) {
-    // auto& ram = m.baseMap.at(0).bytes;
-    // printf(
-    //     "%10s:%5d [%30s] a:%02x x:%02x y:%02x n:%d z:%d c:%d [%02x %02x %02x %02x %02x %02x %02x %02x]\n",
-    //     filename, line, func, a.read(), x.read(), y.read(), n, z, c,
-    //     ram.get(0), ram.get(1), ram.get(2), ram.get(3),
-    //     ram.get(4), ram.get(5), ram.get(6), ram.get(7));
+    static char const* lastFile = nullptr;
+    static int lastLine = -1;
+    if (filename == lastFile && line == lastLine) { return; }
+    lastFile = filename;
+    lastLine = line;
+    printf(
+        "%10s:%5d [%30s] a:%02x x:%02x y:%02x n:%d z:%d c:%d\n",
+        filename, line, func, a.read(), x.read(), y.read(), n, z, c);
 }
 
 Imm imm_(0);
@@ -54,6 +56,7 @@ void sub(Mode& d, Mode& s1, Mode& s2, bool cc) {
     word tmp = word(s1.read()) - word(s2.read()) - word(cc);
     // printf("sub: s1:%02x s2:%02x c:%1d tmp:%04x currNZC:%01d%01d%01d\n", s1.read(), s2.read(), c, tmp, n, z, c);
     d.write(nzc(tmp));
+    c = !c;
     // printf("... n:%1d z:%1d c:%1d\n", n, z, c);
 }
 
@@ -152,7 +155,7 @@ int main() {
     m.addRegion(Memory::Region {ram, 0x0000, 0x07ff });
 
     sf::Event event;
-    sf::RenderWindow window(sf::VideoMode(256, 240), "mario++");
+    sf::RenderWindow window(sf::VideoMode(512, 240), "mario++");
     while (!window.isOpen()) { window.pollEvent(event); }
 
     PPU ppu(window);
@@ -164,6 +167,8 @@ int main() {
 
     preStart();
     Start();
+
+    window.setSize({512 * 3, 240 * 3});
 
     while (window.isOpen()) {
         while (window.pollEvent(event)) {

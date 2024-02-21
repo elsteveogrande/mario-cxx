@@ -4,7 +4,6 @@ exec                                        \
     clang++                                 \
     -g                                      \
     -o mario++                              \
-    -fsanitize=thread                       \
     $@                                      \
     $(pkg-config --libs sfml-window)        \
     $(pkg-config --libs sfml-graphics)      \

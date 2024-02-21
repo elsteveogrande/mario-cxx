@@ -9,11 +9,7 @@ echo "
 -g2
 -Wall
 -Wextra
--Og
 -UNDEBUG
--fsanitize=thread
--fno-inline
--fno-omit-frame-pointer
 -foptimize-sibling-calls
 "
 echo $(pkg-config --cflags sfml-window)   | tr ' ' $'\n'
