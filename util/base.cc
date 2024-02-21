@@ -13,6 +13,18 @@ void _debug(char const* func, char const* filename, int line) {
     static char const* lastFile = nullptr;
     static int lastLine = -1;
     if (filename == lastFile && line == lastLine) { return; }
+
+    if (!strcmp(func, "DecTimersLoop")) { return; }
+    if (!strcmp(func, "SkipExpTimer")) { return; }
+    if (!strcmp(func, "InitByteLoop")) { return; }
+    if (!strcmp(func, "InitByte")) { return; }
+    if (!strcmp(func, "SkipByte")) { return; }
+    if (!strcmp(func, "MiscLoop")) { return; }
+    if (!strcmp(func, "MiscLoopBack")) { return; }
+    if (!strcmp(func, "NextSprOffset")) { return; }
+    if (!strcmp(func, "StrSprOffset")) { return; }
+    if (!strcmp(func, "ShuffleLoop")) { return; }
+
     lastFile = filename;
     lastLine = line;
     printf(

@@ -3,6 +3,7 @@
 exec                                        \
     clang++                                 \
     -g                                      \
+    -fsanitize=address                      \
     -o mario++                              \
     $@                                      \
     $(pkg-config --libs sfml-graphics)      \

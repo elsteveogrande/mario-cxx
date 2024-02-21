@@ -241,8 +241,7 @@ for c in chunks:
 prev: Optional[CodeBlock] = None
 for c in code_blocks:
     if prev and not (isinstance(prev.inner[-1], DispatchBlock)
-                     or (isinstance(prev.inner[-1], Insn)
-                         and prev.inner[-1].is_terminal())):
+                     or (isinstance(prev.inner[-1], Insn) and prev.inner[-1].is_terminal())):
         prev.inner.append(Insn(name="jmp", opds=[Ref(c.label)]))
     prev = c
 

@@ -1651,6 +1651,7 @@ void preStart() {
 }
 
 void Start() {
+    _debug("Start", __FILE__, __LINE__);
     // pretty standard 6502 type init here
     sei();
     cld();
@@ -1664,6 +1665,7 @@ void Start() {
 }
 
 void VBlank1() {
+    _debug("VBlank1", __FILE__, __LINE__);
     // wait two frames
     lda(ABS(PPU_STATUS));
     BPL(VBlank1);
@@ -1671,6 +1673,7 @@ void VBlank1() {
 }
 
 void VBlank2() {
+    _debug("VBlank2", __FILE__, __LINE__);
     lda(ABS(PPU_STATUS));
     BPL(VBlank2);
     // load default cold boot pointer
@@ -1681,6 +1684,7 @@ void VBlank2() {
 }
 
 void WBootCheck() {
+    _debug("WBootCheck", __FILE__, __LINE__);
     // check each score digit in the top score
     lda(ABSX(TopScoreDisplay));
     // to see if we have a valid digit
@@ -1700,6 +1704,7 @@ void WBootCheck() {
 }
 
 void ColdBoot() {
+    _debug("ColdBoot", __FILE__, __LINE__);
     // clear memory using pointer in Y
     JSR(InitializeMemory);
     // reset delta counter load register
@@ -1730,6 +1735,7 @@ void ColdBoot() {
 }
 
 void NonMaskableInterrupt() {
+    _debug("NonMaskableInterrupt", __FILE__, __LINE__);
     // disable NMIs in mirror reg
     lda(ABS(Mirror_PPU_CTRL_REG1));
     // save all other bits
@@ -1753,6 +1759,7 @@ void NonMaskableInterrupt() {
 }
 
 void ScreenOff() {
+    _debug("ScreenOff", __FILE__, __LINE__);
     // save bits for later but not in register at the moment
     sta(ABS(Mirror_PPU_CTRL_REG2));
     // disable screen for now
@@ -1787,6 +1794,7 @@ void ScreenOff() {
 }
 
 void InitBuffer() {
+    _debug("InitBuffer", __FILE__, __LINE__);
     ldx(ABSY(0x8000+offsetof(G, VRAM_Buffer_Offset)));
     // clear buffer header at last location
     lda(IMM(0x0));
@@ -1818,6 +1826,7 @@ void InitBuffer() {
 }
 
 void DecTimers() {
+    _debug("DecTimers", __FILE__, __LINE__);
     // load end offset for end of frame timers
     ldx(IMM(0x14));
     // decrement interval timer control,
@@ -1833,6 +1842,7 @@ void DecTimers() {
 }
 
 void DecTimersLoop() {
+    _debug("DecTimersLoop", __FILE__, __LINE__);
     // check current timer
     lda(ABSX(Timers));
     // if current timer expired, branch to skip,
@@ -1843,6 +1853,7 @@ void DecTimersLoop() {
 }
 
 void SkipExpTimer() {
+    _debug("SkipExpTimer", __FILE__, __LINE__);
     // move onto next timer
     dex();
     // do this until all timers are dealt with
@@ -1851,12 +1862,14 @@ void SkipExpTimer() {
 }
 
 void NoDecTimers() {
+    _debug("NoDecTimers", __FILE__, __LINE__);
     // increment frame counter
     inc(ABS(FrameCounter));
     JMP(PauseSkip);
 }
 
 void PauseSkip() {
+    _debug("PauseSkip", __FILE__, __LINE__);
     ldx(IMM(0x0));
     ldy(IMM(0x7));
     // get first memory location of LSFR bytes
@@ -1880,6 +1893,7 @@ void PauseSkip() {
 }
 
 void RotPRandomBit() {
+    _debug("RotPRandomBit", __FILE__, __LINE__);
     // rotate carry into d7, and rotate last bit into carry
     ror(ABSX(PseudoRandomBitReg));
     // increment to next byte
@@ -1894,6 +1908,7 @@ void RotPRandomBit() {
 }
 
 void Sprite0Clr() {
+    _debug("Sprite0Clr", __FILE__, __LINE__);
     // wait for sprite 0 flag to clear, which will
     lda(ABS(PPU_STATUS));
     // not happen until vblank has ended
@@ -1909,6 +1924,7 @@ void Sprite0Clr() {
 }
 
 void Sprite0Hit() {
+    _debug("Sprite0Hit", __FILE__, __LINE__);
     // do sprite #0 hit detection
     lda(ABS(PPU_STATUS));
     anda(IMM(0b1000000));
@@ -1919,12 +1935,14 @@ void Sprite0Hit() {
 }
 
 void HBlankDelay() {
+    _debug("HBlankDelay", __FILE__, __LINE__);
     dey();
     BNE(HBlankDelay);
     JMP(SkipSprite0);
 }
 
 void SkipSprite0() {
+    _debug("SkipSprite0", __FILE__, __LINE__);
     // set scroll registers from variables
     lda(ABS(HorizontalScroll));
     sta(ABS(PPU_SCROLL_REG));
@@ -1944,6 +1962,7 @@ void SkipSprite0() {
 }
 
 void SkipMainOper() {
+    _debug("SkipMainOper", __FILE__, __LINE__);
     // reset flip-flop
     lda(ABS(PPU_STATUS));
     pla();
@@ -1955,6 +1974,7 @@ void SkipMainOper() {
 }
 
 void PauseRoutine() {
+    _debug("PauseRoutine", __FILE__, __LINE__);
     // are we in victory mode?
     lda(ABS(OperMode));
     // if so, go ahead
@@ -1973,6 +1993,7 @@ void PauseRoutine() {
 }
 
 void ChkPauseTimer() {
+    _debug("ChkPauseTimer", __FILE__, __LINE__);
     // check if pause timer is still counting down
     lda(ABS(GamePauseTimer));
     BEQ(ChkStart);
@@ -1982,6 +2003,7 @@ void ChkPauseTimer() {
 }
 
 void ChkStart() {
+    _debug("ChkStart", __FILE__, __LINE__);
     // check to see if start is pressed
     lda(ABS(SavedJoypad1Bits));
     // on controller 1
@@ -2010,6 +2032,7 @@ void ChkStart() {
 }
 
 void ClrPauseTimer() {
+    _debug("ClrPauseTimer", __FILE__, __LINE__);
     // clear timer flag if timer is at zero and start button
     lda(ABS(GamePauseStatus));
     // is not pressed
@@ -2018,15 +2041,18 @@ void ClrPauseTimer() {
 }
 
 void SetPause() {
+    _debug("SetPause", __FILE__, __LINE__);
     sta(ABS(GamePauseStatus));
     JMP(ExitPause);
 }
 
 void ExitPause() {
+    _debug("ExitPause", __FILE__, __LINE__);
     return;
 }
 
 void SpriteShuffler() {
+    _debug("SpriteShuffler", __FILE__, __LINE__);
     // load level type, likely residual code
     ldy(ABS(AreaType));
     // load preset value which will put it at
@@ -2039,6 +2065,7 @@ void SpriteShuffler() {
 }
 
 void ShuffleLoop() {
+    _debug("ShuffleLoop", __FILE__, __LINE__);
     // check for offset value against
     lda(ABSX(SprDataOffset));
     // the preset value
@@ -2059,12 +2086,14 @@ void ShuffleLoop() {
 }
 
 void StrSprOffset() {
+    _debug("StrSprOffset", __FILE__, __LINE__);
     // store new offset here or old one if branched to here
     sta(ABSX(SprDataOffset));
     JMP(NextSprOffset);
 }
 
 void NextSprOffset() {
+    _debug("NextSprOffset", __FILE__, __LINE__);
     // move backwards to next one
     dex();
     BPL(ShuffleLoop);
@@ -2081,6 +2110,7 @@ void NextSprOffset() {
 }
 
 void SetAmtOffset() {
+    _debug("SetAmtOffset", __FILE__, __LINE__);
     stx(ABS(SprShuffleAmtOffset));
     // load offsets for values and storage
     ldx(IMM(0x8));
@@ -2089,6 +2119,7 @@ void SetAmtOffset() {
 }
 
 void SetMiscOffset() {
+    _debug("SetMiscOffset", __FILE__, __LINE__);
     // load one of three OAM data offsets
     lda(ABSY(((SprDataOffset) + (5))));
     // store first one unmodified, but
@@ -2113,6 +2144,7 @@ void SetMiscOffset() {
 }
 
 void OperModeExecutionTree() {
+    _debug("OperModeExecutionTree", __FILE__, __LINE__);
     // this is the heart of the entire program,
     lda(ABS(OperMode));
     // most of what goes on starts here
@@ -2126,12 +2158,14 @@ void OperModeExecutionTree() {
 }
 
 void MoveAllSpritesOffscreen() {
+    _debug("MoveAllSpritesOffscreen", __FILE__, __LINE__);
     // this routine moves all sprites off the screen
     ldy(IMM(0x0));
     JMP(MoveSpritesOffscreen);
 }
 
 void MoveSpritesOffscreen() {
+    _debug("MoveSpritesOffscreen", __FILE__, __LINE__);
     // this routine moves all but sprite 0
     ldy(IMM(0x4));
     // off the screen
@@ -2140,6 +2174,7 @@ void MoveSpritesOffscreen() {
 }
 
 void SprInitLoop() {
+    _debug("SprInitLoop", __FILE__, __LINE__);
     // write 248 into OAM data's Y coordinate
     sta(ABSY(Sprite_Y_Position));
     // which will move it off the screen
@@ -2152,6 +2187,7 @@ void SprInitLoop() {
 }
 
 void TitleScreenMode() {
+    _debug("TitleScreenMode", __FILE__, __LINE__);
     lda(ABS(OperMode_Task));
     static JUMP_ENTRY jumptable[4] = {
         InitializeGame,
@@ -2163,6 +2199,7 @@ void TitleScreenMode() {
 }
 
 void GameMenuRoutine() {
+    _debug("GameMenuRoutine", __FILE__, __LINE__);
     ldy(IMM(0x0));
     // check to see if either player pressed
     lda(ABS(SavedJoypad1Bits));
@@ -2178,12 +2215,14 @@ void GameMenuRoutine() {
 }
 
 void StartGame() {
+    _debug("StartGame", __FILE__, __LINE__);
     // if either start or A + start, execute here
     JMP(ChkContinue);
     JMP(ChkSelect);
 }
 
 void ChkSelect() {
+    _debug("ChkSelect", __FILE__, __LINE__);
     // check to see if the select button was pressed
     cmp(IMM(Select_Button));
     // if so, branch reset demo timer
@@ -2204,6 +2243,7 @@ void ChkSelect() {
 }
 
 void ChkWorldSel() {
+    _debug("ChkWorldSel", __FILE__, __LINE__);
     // check to see if world selection has been enabled
     ldx(ABS(WorldSelectEnableFlag));
     BEQ(NullJoypad);
@@ -2216,6 +2256,7 @@ void ChkWorldSel() {
 }
 
 void SelectBLogic() {
+    _debug("SelectBLogic", __FILE__, __LINE__);
     // if select or B pressed, check demo timer one last time
     lda(ABS(DemoTimer));
     // if demo timer expired, branch to reset title screen mode
@@ -2245,6 +2286,7 @@ void SelectBLogic() {
 }
 
 void IncWorldSel() {
+    _debug("IncWorldSel", __FILE__, __LINE__);
     // increment world select number
     ldx(ABS(WorldSelectNumber));
     inx();
@@ -2258,6 +2300,7 @@ void IncWorldSel() {
 }
 
 void UpdateShroom() {
+    _debug("UpdateShroom", __FILE__, __LINE__);
     // write template for world select in vram buffer
     lda(ABSX(0x8000+offsetof(G, WSelectBufferTemplate)));
     // do this until all bytes are written
@@ -2275,6 +2318,7 @@ void UpdateShroom() {
 }
 
 void NullJoypad() {
+    _debug("NullJoypad", __FILE__, __LINE__);
     // clear joypad bits for player 1
     lda(IMM(0x0));
     sta(ABS(SavedJoypad1Bits));
@@ -2282,6 +2326,7 @@ void NullJoypad() {
 }
 
 void RunDemo() {
+    _debug("RunDemo", __FILE__, __LINE__);
     // run game engine
     JSR(GameCoreRoutine);
     // check to see if we're running lose life routine
@@ -2293,6 +2338,7 @@ void RunDemo() {
 }
 
 void ResetTitle() {
+    _debug("ResetTitle", __FILE__, __LINE__);
     // reset game modes, disable
     lda(IMM(0x0));
     // sprite 0 check and disable
@@ -2305,6 +2351,7 @@ void ResetTitle() {
 }
 
 void ChkContinue() {
+    _debug("ChkContinue", __FILE__, __LINE__);
     // if timer for demo has expired, reset modes
     ldy(ABS(DemoTimer));
     BEQ(ResetTitle);
@@ -2320,6 +2367,7 @@ void ChkContinue() {
 }
 
 void StartWorld1() {
+    _debug("StartWorld1", __FILE__, __LINE__);
     JSR(LoadAreaPointer);
     // set 1-up box flag for both players
     inc(ABS(Hidden1UpFlag));
@@ -2342,6 +2390,7 @@ void StartWorld1() {
 }
 
 void InitScores() {
+    _debug("InitScores", __FILE__, __LINE__);
     // clear player scores and coin displays
     sta(ABSX(ScoreAndCoinDisplay));
     dex();
@@ -2350,10 +2399,12 @@ void InitScores() {
 }
 
 void ExitMenu() {
+    _debug("ExitMenu", __FILE__, __LINE__);
     return;
 }
 
 void GoContinue() {
+    _debug("GoContinue", __FILE__, __LINE__);
     // start both players at the first area
     sta(ABS(WorldNumber));
     // of the previously saved world number
@@ -2367,12 +2418,14 @@ void GoContinue() {
 }
 
 void DrawMushroomIcon() {
+    _debug("DrawMushroomIcon", __FILE__, __LINE__);
     // read eight bytes to be read by transfer routine
     ldy(IMM(0x7));
     JMP(IconDataRead);
 }
 
 void IconDataRead() {
+    _debug("IconDataRead", __FILE__, __LINE__);
     // note that the default position is set for a
     lda(ABSY(0x8000+offsetof(G, MushroomIconData)));
     // 1-player game
@@ -2393,10 +2446,12 @@ void IconDataRead() {
 }
 
 void ExitIcon() {
+    _debug("ExitIcon", __FILE__, __LINE__);
     return;
 }
 
 void DemoEngine() {
+    _debug("DemoEngine", __FILE__, __LINE__);
     // load current demo action
     ldx(ABS(DemoAction));
     // load current action timer
@@ -2418,6 +2473,7 @@ void DemoEngine() {
 }
 
 void DoAction() {
+    _debug("DoAction", __FILE__, __LINE__);
     // get and perform action (current or next)
     lda(ABSX(((0x8000+offsetof(G, DemoActionData)) - (1))));
     sta(ABS(SavedJoypad1Bits));
@@ -2429,10 +2485,12 @@ void DoAction() {
 }
 
 void DemoOver() {
+    _debug("DemoOver", __FILE__, __LINE__);
     return;
 }
 
 void VictoryMode() {
+    _debug("VictoryMode", __FILE__, __LINE__);
     // run victory mode subroutines
     JSR(VictoryModeSubroutines);
     // get current task of victory mode
@@ -2448,6 +2506,7 @@ void VictoryMode() {
 }
 
 void AutoPlayer() {
+    _debug("AutoPlayer", __FILE__, __LINE__);
     // get player's relative coordinates
     JSR(RelativePlayerPosition);
     // draw the player, then leave
@@ -2456,6 +2515,7 @@ void AutoPlayer() {
 }
 
 void VictoryModeSubroutines() {
+    _debug("VictoryModeSubroutines", __FILE__, __LINE__);
     lda(ABS(OperMode_Task));
     static JUMP_ENTRY jumptable[5] = {
         BridgeCollapse,
@@ -2468,6 +2528,7 @@ void VictoryModeSubroutines() {
 }
 
 void SetupVictoryMode() {
+    _debug("SetupVictoryMode", __FILE__, __LINE__);
     // get page location of right side of screen
     ldx(ABS(ScreenRight_PageLoc));
     // increment to next page
@@ -2483,6 +2544,7 @@ void SetupVictoryMode() {
 }
 
 void PlayerVictoryWalk() {
+    _debug("PlayerVictoryWalk", __FILE__, __LINE__);
     // set value here to not walk player by default
     ldy(IMM(0x0));
     sty(ABS(VictoryWalkControl));
@@ -2502,6 +2564,7 @@ void PlayerVictoryWalk() {
 }
 
 void PerformWalk() {
+    _debug("PerformWalk", __FILE__, __LINE__);
     // otherwise increment value and Y
     inc(ABS(VictoryWalkControl));
     // note Y will be used to walk the player
@@ -2510,6 +2573,7 @@ void PerformWalk() {
 }
 
 void DontWalk() {
+    _debug("DontWalk", __FILE__, __LINE__);
     // put contents of Y in A and
     tya();
     // use A to move player to the right or not
@@ -2542,6 +2606,7 @@ void DontWalk() {
 }
 
 void ExitVWalk() {
+    _debug("ExitVWalk", __FILE__, __LINE__);
     // load value set here
     lda(ABS(VictoryWalkControl));
     // if zero, branch to change modes
@@ -2551,6 +2616,7 @@ void ExitVWalk() {
 }
 
 void PrintVictoryMessages() {
+    _debug("PrintVictoryMessages", __FILE__, __LINE__);
     // load secondary message counter
     lda(ABS(SecondaryMsgCounter));
     // if set, branch to increment message counters
@@ -2580,6 +2646,7 @@ void PrintVictoryMessages() {
 }
 
 void MRetainerMsg() {
+    _debug("MRetainerMsg", __FILE__, __LINE__);
     // check primary message counter
     cmp(IMM(0x2));
     // if not at 2 yet (world 1-7 only), branch
@@ -2588,6 +2655,7 @@ void MRetainerMsg() {
 }
 
 void ThankPlayer() {
+    _debug("ThankPlayer", __FILE__, __LINE__);
     // put primary message counter into Y
     tay();
     // if counter nonzero, skip this part, do not print first message
@@ -2604,6 +2672,7 @@ void ThankPlayer() {
 }
 
 void SecondPartMsg() {
+    _debug("SecondPartMsg", __FILE__, __LINE__);
     // increment Y to do world 8's message
     iny();
     lda(ABS(WorldNumber));
@@ -2625,6 +2694,7 @@ void SecondPartMsg() {
 }
 
 void EvalForMusic() {
+    _debug("EvalForMusic", __FILE__, __LINE__);
     // if counter not yet at 3 (world 8 only), branch
     cpy(IMM(0x3));
     // to print message only (note world 1-7 will only
@@ -2637,6 +2707,7 @@ void EvalForMusic() {
 }
 
 void PrintMsg() {
+    _debug("PrintMsg", __FILE__, __LINE__);
     // put primary message counter in A
     tya();
     // add $0c or 12 to counter thus giving an appropriate value,
@@ -2649,6 +2720,7 @@ void PrintMsg() {
 }
 
 void IncMsgCounter() {
+    _debug("IncMsgCounter", __FILE__, __LINE__);
     lda(ABS(SecondaryMsgCounter));
     clc();
     // add four to secondary message counter
@@ -2664,6 +2736,7 @@ void IncMsgCounter() {
 }
 
 void SetEndTimer() {
+    _debug("SetEndTimer", __FILE__, __LINE__);
     // if not reached value yet, branch to leave
     BCC(ExitMsgs);
     lda(IMM(0x6));
@@ -2673,17 +2746,20 @@ void SetEndTimer() {
 }
 
 void IncModeTask_A() {
+    _debug("IncModeTask_A", __FILE__, __LINE__);
     // move onto next task in mode
     inc(ABS(OperMode_Task));
     JMP(ExitMsgs);
 }
 
 void ExitMsgs() {
+    _debug("ExitMsgs", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void PlayerEndWorld() {
+    _debug("PlayerEndWorld", __FILE__, __LINE__);
     // check to see if world end timer expired
     lda(ABS(WorldEndTimer));
     // branch to leave if not
@@ -2714,11 +2790,13 @@ void PlayerEndWorld() {
 }
 
 void EndExitOne() {
+    _debug("EndExitOne", __FILE__, __LINE__);
     // and leave
     return;
 }
 
 void EndChkBButton() {
+    _debug("EndChkBButton", __FILE__, __LINE__);
     lda(ABS(SavedJoypad1Bits));
     // check to see if B button was pressed on
     ora(ABS(SavedJoypad2Bits));
@@ -2738,11 +2816,13 @@ void EndChkBButton() {
 }
 
 void EndExitTwo() {
+    _debug("EndExitTwo", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void FloateyNumbersRoutine() {
+    _debug("FloateyNumbersRoutine", __FILE__, __LINE__);
     // load control for floatey number
     lda(ABSX(FloateyNum_Control));
     // if zero, branch to leave
@@ -2758,6 +2838,7 @@ void FloateyNumbersRoutine() {
 }
 
 void ChkNumTimer() {
+    _debug("ChkNumTimer", __FILE__, __LINE__);
     // use as Y
     tay();
     // check value here
@@ -2770,6 +2851,7 @@ void ChkNumTimer() {
 }
 
 void DecNumTimer() {
+    _debug("DecNumTimer", __FILE__, __LINE__);
     // decrement value here
     dec(ABSX(FloateyNum_Timer));
     // if not reached a certain point, branch
@@ -2788,6 +2870,7 @@ void DecNumTimer() {
 }
 
 void LoadNumTiles() {
+    _debug("LoadNumTiles", __FILE__, __LINE__);
     // load point value here
     lda(ABSY(0x8000+offsetof(G, ScoreUpdateData)));
     // move high nybble to low
@@ -2809,6 +2892,7 @@ void LoadNumTiles() {
 }
 
 void ChkTallEnemy() {
+    _debug("ChkTallEnemy", __FILE__, __LINE__);
     // get OAM data offset for enemy object
     ldy(ABSX(Enemy_SprDataOffset));
     // get enemy object identifier
@@ -2839,6 +2923,7 @@ void ChkTallEnemy() {
 }
 
 void GetAltOffset() {
+    _debug("GetAltOffset", __FILE__, __LINE__);
     // load some kind of control bit
     ldx(ABS(SprDataOffset_Ctrl));
     // get alternate OAM data offset
@@ -2849,6 +2934,7 @@ void GetAltOffset() {
 }
 
 void FloateyPart() {
+    _debug("FloateyPart", __FILE__, __LINE__);
     // get vertical coordinate for
     lda(ABSX(FloateyNum_Y_Pos));
     // floatey number, if coordinate in the
@@ -2862,6 +2948,7 @@ void FloateyPart() {
 }
 
 void SetupNumSpr() {
+    _debug("SetupNumSpr", __FILE__, __LINE__);
     // get vertical coordinate
     lda(ABSX(FloateyNum_Y_Pos));
     // subtract eight and dump into the
@@ -2899,6 +2986,7 @@ void SetupNumSpr() {
 }
 
 void ScreenRoutines() {
+    _debug("ScreenRoutines", __FILE__, __LINE__);
     // run one of the following subroutines
     lda(ABS(ScreenRoutineTask));
     static JUMP_ENTRY jumptable[15] = {
@@ -2922,6 +3010,7 @@ void ScreenRoutines() {
 }
 
 void InitScreen() {
+    _debug("InitScreen", __FILE__, __LINE__);
     // initialize all sprites including sprite #0
     JSR(MoveAllSpritesOffscreen);
     // and erase both name and attribute tables
@@ -2936,6 +3025,7 @@ void InitScreen() {
 }
 
 void SetupIntermediate() {
+    _debug("SetupIntermediate", __FILE__, __LINE__);
     // save current background color control
     lda(ABS(BackgroundColorCtrl));
     // and player status to stack
@@ -2965,6 +3055,7 @@ void SetupIntermediate() {
 }
 
 void GetAreaPalette() {
+    _debug("GetAreaPalette", __FILE__, __LINE__);
     // select appropriate palette to load
     ldy(ABS(AreaType));
     // based on area type
@@ -2973,18 +3064,21 @@ void GetAreaPalette() {
 }
 
 void SetVRAMAddr_A() {
+    _debug("SetVRAMAddr_A", __FILE__, __LINE__);
     // store offset into buffer control
     stx(ABS(VRAM_Buffer_AddrCtrl));
     JMP(NextSubtask);
 }
 
 void NextSubtask() {
+    _debug("NextSubtask", __FILE__, __LINE__);
     // move onto next task
     JMP(IncSubtask);
     JMP(GetBackgroundColor);
 }
 
 void GetBackgroundColor() {
+    _debug("GetBackgroundColor", __FILE__, __LINE__);
     // check background color control
     ldy(ABS(BackgroundColorCtrl));
     // if not set, increment task and fetch palette
@@ -2997,12 +3091,14 @@ void GetBackgroundColor() {
 }
 
 void NoBGColor() {
+    _debug("NoBGColor", __FILE__, __LINE__);
     // increment to next subtask and plod on through
     inc(ABS(ScreenRoutineTask));
     JMP(GetPlayerColors);
 }
 
 void GetPlayerColors() {
+    _debug("GetPlayerColors", __FILE__, __LINE__);
     // get current buffer offset
     ldx(ABS(VRAM_Buffer1_Offset));
     ldy(IMM(0x0));
@@ -3015,6 +3111,7 @@ void GetPlayerColors() {
 }
 
 void ChkFiery() {
+    _debug("ChkFiery", __FILE__, __LINE__);
     // check player status
     lda(ABS(PlayerStatus));
     cmp(IMM(0x2));
@@ -3025,6 +3122,7 @@ void ChkFiery() {
 }
 
 void StartClrGet() {
+    _debug("StartClrGet", __FILE__, __LINE__);
     // do four colors
     lda(IMM(0x3));
     sta(ABS(0x0));
@@ -3032,6 +3130,7 @@ void StartClrGet() {
 }
 
 void ClrGetLoop() {
+    _debug("ClrGetLoop", __FILE__, __LINE__);
     // fetch player colors and store them
     lda(ABSY(0x8000+offsetof(G, PlayerColors)));
     // in the buffer
@@ -3052,6 +3151,7 @@ void ClrGetLoop() {
 }
 
 void SetBGColor() {
+    _debug("SetBGColor", __FILE__, __LINE__);
     // to background color instead
     lda(ABSY(0x8000+offsetof(G, BackgroundColors)));
     sta(ABSX(((VRAM_Buffer1) + (3))));
@@ -3076,12 +3176,14 @@ void SetBGColor() {
 }
 
 void SetVRAMOffset() {
+    _debug("SetVRAMOffset", __FILE__, __LINE__);
     // store as new vram buffer offset
     sta(ABS(VRAM_Buffer1_Offset));
     return;
 }
 
 void GetAlternatePalette1() {
+    _debug("GetAlternatePalette1", __FILE__, __LINE__);
     // check for mushroom level style
     lda(ABS(AreaStyle));
     cmp(IMM(0x1));
@@ -3092,17 +3194,20 @@ void GetAlternatePalette1() {
 }
 
 void SetVRAMAddr_B() {
+    _debug("SetVRAMAddr_B", __FILE__, __LINE__);
     sta(ABS(VRAM_Buffer_AddrCtrl));
     JMP(NoAltPal);
 }
 
 void NoAltPal() {
+    _debug("NoAltPal", __FILE__, __LINE__);
     // now onto the next task
     JMP(IncSubtask);
     JMP(WriteTopStatusLine);
 }
 
 void WriteTopStatusLine() {
+    _debug("WriteTopStatusLine", __FILE__, __LINE__);
     // select main status bar
     lda(IMM(0x0));
     // output it
@@ -3113,6 +3218,7 @@ void WriteTopStatusLine() {
 }
 
 void WriteBottomStatusLine() {
+    _debug("WriteBottomStatusLine", __FILE__, __LINE__);
     // write player's score and coin tally to screen
     JSR(GetSBNybbles);
     ldx(ABS(VRAM_Buffer1_Offset));
@@ -3151,6 +3257,7 @@ void WriteBottomStatusLine() {
 }
 
 void DisplayTimeUp() {
+    _debug("DisplayTimeUp", __FILE__, __LINE__);
     // if game timer not expired, increment task
     lda(ABS(GameTimerExpiredFlag));
     // control 2 tasks forward, otherwise, stay here
@@ -3165,6 +3272,7 @@ void DisplayTimeUp() {
 }
 
 void NoTimeUp() {
+    _debug("NoTimeUp", __FILE__, __LINE__);
     // increment control task 2 tasks forward
     inc(ABS(ScreenRoutineTask));
     JMP(IncSubtask);
@@ -3172,6 +3280,7 @@ void NoTimeUp() {
 }
 
 void DisplayIntermediate() {
+    _debug("DisplayIntermediate", __FILE__, __LINE__);
     // check primary mode of operation
     lda(ABS(OperMode));
     // if in title screen mode, skip this
@@ -3197,6 +3306,7 @@ void DisplayIntermediate() {
 }
 
 void PlayerInter() {
+    _debug("PlayerInter", __FILE__, __LINE__);
     // put player in appropriate place for
     JSR(DrawPlayer_Intermediate);
     // lives display, then output lives display to buffer
@@ -3205,6 +3315,7 @@ void PlayerInter() {
 }
 
 void OutputInter() {
+    _debug("OutputInter", __FILE__, __LINE__);
     JSR(WriteGameText);
     JSR(ResetScreenTimer);
     lda(IMM(0x0));
@@ -3214,6 +3325,7 @@ void OutputInter() {
 }
 
 void GameOverInter() {
+    _debug("GameOverInter", __FILE__, __LINE__);
     // set screen timer
     lda(IMM(0x12));
     sta(ABS(ScreenTimer));
@@ -3225,6 +3337,7 @@ void GameOverInter() {
 }
 
 void NoInter() {
+    _debug("NoInter", __FILE__, __LINE__);
     // set for specific task and leave
     lda(IMM(0x8));
     sta(ABS(ScreenRoutineTask));
@@ -3232,12 +3345,14 @@ void NoInter() {
 }
 
 void AreaParserTaskControl() {
+    _debug("AreaParserTaskControl", __FILE__, __LINE__);
     // turn off screen
     inc(ABS(DisableScreenFlag));
     JMP(TaskLoop);
 }
 
 void TaskLoop() {
+    _debug("TaskLoop", __FILE__, __LINE__);
     // render column set of current area
     JSR(AreaParserTaskHandler);
     // check number of tasks
@@ -3253,6 +3368,7 @@ void TaskLoop() {
 }
 
 void OutputCol() {
+    _debug("OutputCol", __FILE__, __LINE__);
     // set vram buffer to output rendered column set
     lda(IMM(0x6));
     // on next NMI
@@ -3261,6 +3377,7 @@ void OutputCol() {
 }
 
 void DrawTitleScreen() {
+    _debug("DrawTitleScreen", __FILE__, __LINE__);
     // are we in title screen mode?
     lda(ABS(OperMode));
     // if not, exit
@@ -3283,6 +3400,7 @@ void DrawTitleScreen() {
 }
 
 void OutputTScr() {
+    _debug("OutputTScr", __FILE__, __LINE__);
     // get title screen from chr-rom
     lda(ABS(PPU_DATA));
     // store 256 bytes into buffer
@@ -3296,6 +3414,7 @@ void OutputTScr() {
 }
 
 void ChkHiByte() {
+    _debug("ChkHiByte", __FILE__, __LINE__);
     // check high byte?
     lda(ABS(0x1));
     // at $0400?
@@ -3314,6 +3433,7 @@ void ChkHiByte() {
 }
 
 void ClearBuffersDrawIcon() {
+    _debug("ClearBuffersDrawIcon", __FILE__, __LINE__);
     // check game mode
     lda(ABS(OperMode));
     // if not title screen mode, leave
@@ -3324,6 +3444,7 @@ void ClearBuffersDrawIcon() {
 }
 
 void TScrClear() {
+    _debug("TScrClear", __FILE__, __LINE__);
     sta(ABSX(((VRAM_Buffer1) - (1))));
     sta(ABSX(((((VRAM_Buffer1) - (1))) + (0x100))));
     dex();
@@ -3334,12 +3455,14 @@ void TScrClear() {
 }
 
 void IncSubtask() {
+    _debug("IncSubtask", __FILE__, __LINE__);
     // move onto next task
     inc(ABS(ScreenRoutineTask));
     return;
 }
 
 void WriteTopScore() {
+    _debug("WriteTopScore", __FILE__, __LINE__);
     // run display routine to display top score on title
     lda(IMM(0xfa));
     JSR(UpdateNumber);
@@ -3347,12 +3470,14 @@ void WriteTopScore() {
 }
 
 void IncModeTask_B() {
+    _debug("IncModeTask_B", __FILE__, __LINE__);
     // move onto next mode
     inc(ABS(OperMode_Task));
     return;
 }
 
 void WriteGameText() {
+    _debug("WriteGameText", __FILE__, __LINE__);
     // save text number to stack
     pha();
     asl();
@@ -3372,6 +3497,7 @@ void WriteGameText() {
 }
 
 void Chk2Players() {
+    _debug("Chk2Players", __FILE__, __LINE__);
     // check for number of players
     lda(ABS(NumberOfPlayers));
     // if there are two, use current offset to also print name
@@ -3382,6 +3508,7 @@ void Chk2Players() {
 }
 
 void LdGameText() {
+    _debug("LdGameText", __FILE__, __LINE__);
     // get offset to message we want to print
     ldx(ABSY(0x8000+offsetof(G, GameTextOffsets)));
     ldy(IMM(0x0));
@@ -3389,6 +3516,7 @@ void LdGameText() {
 }
 
 void GameTextLoop() {
+    _debug("GameTextLoop", __FILE__, __LINE__);
     // load message data
     lda(ABSX(0x8000+offsetof(G, GameText)));
     // check for terminator
@@ -3406,6 +3534,7 @@ void GameTextLoop() {
 }
 
 void EndGameText() {
+    _debug("EndGameText", __FILE__, __LINE__);
     // put null terminator at end
     lda(IMM(0x0));
     sta(ABSY(VRAM_Buffer1));
@@ -3437,6 +3566,7 @@ void EndGameText() {
 }
 
 void PutLives() {
+    _debug("PutLives", __FILE__, __LINE__);
     sta(ABS(((VRAM_Buffer1) + (8))));
     // write world and level numbers (incremented for display)
     ldy(ABS(WorldNumber));
@@ -3451,6 +3581,7 @@ void PutLives() {
 }
 
 void CheckPlayerName() {
+    _debug("CheckPlayerName", __FILE__, __LINE__);
     // check number of players
     lda(ABS(NumberOfPlayers));
     // if only 1 player, leave
@@ -3470,6 +3601,7 @@ void CheckPlayerName() {
 }
 
 void ChkLuigi() {
+    _debug("ChkLuigi", __FILE__, __LINE__);
     lsr();
     // if mario is current player, do not change the name
     BCC(ExitChkName);
@@ -3478,6 +3610,7 @@ void ChkLuigi() {
 }
 
 void NameLoop() {
+    _debug("NameLoop", __FILE__, __LINE__);
     // otherwise, replace "MARIO" with "LUIGI"
     lda(ABSY(0x8000+offsetof(G, LuigiName)));
     sta(ABSY(((VRAM_Buffer1) + (3))));
@@ -3488,10 +3621,12 @@ void NameLoop() {
 }
 
 void ExitChkName() {
+    _debug("ExitChkName", __FILE__, __LINE__);
     return;
 }
 
 void PrintWarpZoneNumbers() {
+    _debug("PrintWarpZoneNumbers", __FILE__, __LINE__);
     // subtract 4 and then shift to the left
     sbc(IMM(0x4));
     // twice to get proper warp zone number
@@ -3504,6 +3639,7 @@ void PrintWarpZoneNumbers() {
 }
 
 void WarpNumLoop() {
+    _debug("WarpNumLoop", __FILE__, __LINE__);
     // print warp zone numbers into the
     lda(ABSX(0x8000+offsetof(G, WarpZoneNumbers)));
     // placeholders from earlier
@@ -3523,6 +3659,7 @@ void WarpNumLoop() {
 }
 
 void ResetSpritesAndScreenTimer() {
+    _debug("ResetSpritesAndScreenTimer", __FILE__, __LINE__);
     // check if screen timer has expired
     lda(ABS(ScreenTimer));
     // if not, branch to leave
@@ -3533,6 +3670,7 @@ void ResetSpritesAndScreenTimer() {
 }
 
 void ResetScreenTimer() {
+    _debug("ResetScreenTimer", __FILE__, __LINE__);
     // reset timer again
     lda(IMM(0x7));
     sta(ABS(ScreenTimer));
@@ -3542,10 +3680,12 @@ void ResetScreenTimer() {
 }
 
 void NoReset() {
+    _debug("NoReset", __FILE__, __LINE__);
     return;
 }
 
 void RenderAreaGraphics() {
+    _debug("RenderAreaGraphics", __FILE__, __LINE__);
     // store LSB of where we're at
     lda(ABS(CurrentColumnPos));
     anda(IMM(0x1));
@@ -3570,6 +3710,7 @@ void RenderAreaGraphics() {
 }
 
 void DrawMTLoop() {
+    _debug("DrawMTLoop", __FILE__, __LINE__);
     // store init value of 0 or incremented offset for buffer
     stx(ABS(0x1));
     // get first metatile number, and mask out all but 2 MSB
@@ -3637,6 +3778,7 @@ void DrawMTLoop() {
 }
 
 void RightCheck() {
+    _debug("RightCheck", __FILE__, __LINE__);
     // get LSB of current row we're rendering
     lda(ABS(0x1));
     // branch if set (clear = top right, set = bottom right)
@@ -3653,6 +3795,7 @@ void RightCheck() {
 }
 
 void LLeft() {
+    _debug("LLeft", __FILE__, __LINE__);
     // shift attribute bits 2 to the right
     lsr(ABS(0x3));
     // thus in d5-d4 for lower left square
@@ -3661,12 +3804,14 @@ void LLeft() {
 }
 
 void NextMTRow() {
+    _debug("NextMTRow", __FILE__, __LINE__);
     // move onto next attribute row
     inc(ABS(0x4));
     JMP(SetAttrib);
 }
 
 void SetAttrib() {
+    _debug("SetAttrib", __FILE__, __LINE__);
     // get previously saved bits from before
     lda(ABSY(AttributeBuffer));
     // if any, and put new bits, if any, onto
@@ -3714,12 +3859,14 @@ void SetAttrib() {
 }
 
 void ExitDrawM() {
+    _debug("ExitDrawM", __FILE__, __LINE__);
     // jump to set buffer to $0341 and leave
     JMP(SetVRAMCtrl);
     JMP(RenderAttributeTables);
 }
 
 void RenderAttributeTables() {
+    _debug("RenderAttributeTables", __FILE__, __LINE__);
     // get low byte of next name table address
     lda(ABS(CurrentNTAddr_Low));
     // to be written to, mask out all but 5 LSB,
@@ -3739,6 +3886,7 @@ void RenderAttributeTables() {
 }
 
 void SetATHigh() {
+    _debug("SetATHigh", __FILE__, __LINE__);
     // mask out all other bits
     anda(IMM(0b100));
     // add $2300 to the high byte and store
@@ -3760,6 +3908,7 @@ void SetATHigh() {
 }
 
 void AttribLoop() {
+    _debug("AttribLoop", __FILE__, __LINE__);
     lda(ABS(0x0));
     // store high byte of attribute table address
     sta(ABSY(VRAM_Buffer2));
@@ -3799,6 +3948,7 @@ void AttribLoop() {
 }
 
 void SetVRAMCtrl() {
+    _debug("SetVRAMCtrl", __FILE__, __LINE__);
     lda(IMM(0x6));
     // set buffer to $0341 and leave
     sta(ABS(VRAM_Buffer_AddrCtrl));
@@ -3806,6 +3956,7 @@ void SetVRAMCtrl() {
 }
 
 void ColorRotation() {
+    _debug("ColorRotation", __FILE__, __LINE__);
     // get frame counter
     lda(ABS(FrameCounter));
     // mask out all but three LSB
@@ -3823,6 +3974,7 @@ void ColorRotation() {
 }
 
 void GetBlankPal() {
+    _debug("GetBlankPal", __FILE__, __LINE__);
     // get blank palette for palette 3
     lda(ABSY(0x8000+offsetof(G, BlankPalette)));
     // store it in the vram buffer
@@ -3849,6 +4001,7 @@ void GetBlankPal() {
 }
 
 void GetAreaPal() {
+    _debug("GetAreaPal", __FILE__, __LINE__);
     // fetch palette to be written based on area type
     lda(ABSY(0x8000+offsetof(G, Palette3Data)));
     // store it to overwrite blank palette in vram buffer
@@ -3885,11 +4038,13 @@ void GetAreaPal() {
 }
 
 void ExitColorRot() {
+    _debug("ExitColorRot", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void RemoveCoin_Axe() {
+    _debug("RemoveCoin_Axe", __FILE__, __LINE__);
     // set low byte so offset points to $0341
     ldy(IMM(0x41));
     // load offset for default blank metatile
@@ -3904,6 +4059,7 @@ void RemoveCoin_Axe() {
 }
 
 void WriteBlankMT() {
+    _debug("WriteBlankMT", __FILE__, __LINE__);
     // do a sub to write blank metatile to vram buffer
     JSR(PutBlockMetatile);
     lda(IMM(0x6));
@@ -3913,6 +4069,7 @@ void WriteBlankMT() {
 }
 
 void ReplaceBlockMetatile() {
+    _debug("ReplaceBlockMetatile", __FILE__, __LINE__);
     // write metatile to vram buffer to replace block object
     JSR(WriteBlockMetatile);
     // increment unused counter (residual code)
@@ -3924,12 +4081,14 @@ void ReplaceBlockMetatile() {
 }
 
 void DestroyBlockMetatile() {
+    _debug("DestroyBlockMetatile", __FILE__, __LINE__);
     // force blank metatile if branched/jumped to this point
     lda(IMM(0x0));
     JMP(WriteBlockMetatile);
 }
 
 void WriteBlockMetatile() {
+    _debug("WriteBlockMetatile", __FILE__, __LINE__);
     // load offset for blank metatile
     ldy(IMM(0x3));
     // check contents of A for blank metatile
@@ -3958,6 +4117,7 @@ void WriteBlockMetatile() {
 }
 
 void UseBOffset() {
+    _debug("UseBOffset", __FILE__, __LINE__);
     // put Y in A
     tya();
     // get vram buffer offset
@@ -3970,6 +4130,7 @@ void UseBOffset() {
 }
 
 void MoveVOffset() {
+    _debug("MoveVOffset", __FILE__, __LINE__);
     // decrement vram buffer offset
     dey();
     // add 10 bytes to it
@@ -3982,6 +4143,7 @@ void MoveVOffset() {
 }
 
 void PutBlockMetatile() {
+    _debug("PutBlockMetatile", __FILE__, __LINE__);
     // store control bit from SprDataOffset_Ctrl
     stx(ABS(0x0));
     // store vram buffer offset for next byte
@@ -4004,6 +4166,7 @@ void PutBlockMetatile() {
 }
 
 void SaveHAdder() {
+    _debug("SaveHAdder", __FILE__, __LINE__);
     // save high byte here
     sty(ABS(0x3));
     // mask out high nybble of block buffer pointer
@@ -4045,6 +4208,7 @@ void SaveHAdder() {
 }
 
 void RemBridge() {
+    _debug("RemBridge", __FILE__, __LINE__);
     // write top left and top right
     lda(ABSX(0x8000+offsetof(G, BlockGfxData)));
     // tile numbers into first spot
@@ -4088,6 +4252,7 @@ void RemBridge() {
 }
 
 void InitializeNameTables() {
+    _debug("InitializeNameTables", __FILE__, __LINE__);
     // reset flip-flop
     lda(ABS(PPU_STATUS));
     // load mirror of ppu reg $2000
@@ -4106,6 +4271,7 @@ void InitializeNameTables() {
 }
 
 void WriteNTAddr() {
+    _debug("WriteNTAddr", __FILE__, __LINE__);
     sta(ABS(PPU_ADDRESS));
     lda(IMM(0x0));
     sta(ABS(PPU_ADDRESS));
@@ -4117,6 +4283,7 @@ void WriteNTAddr() {
 }
 
 void InitNTLoop() {
+    _debug("InitNTLoop", __FILE__, __LINE__);
     // count out exactly 768 tiles
     sta(ABS(PPU_DATA));
     dey();
@@ -4134,6 +4301,7 @@ void InitNTLoop() {
 }
 
 void InitATLoop() {
+    _debug("InitATLoop", __FILE__, __LINE__);
     sta(ABS(PPU_DATA));
     dey();
     BNE(InitATLoop);
@@ -4146,6 +4314,7 @@ void InitATLoop() {
 }
 
 void ReadJoypads() {
+    _debug("ReadJoypads", __FILE__, __LINE__);
     // reset and clear strobe of joypad ports
     lda(IMM(0x1));
     sta(ABS(JOYPAD_PORT));
@@ -4160,11 +4329,13 @@ void ReadJoypads() {
 }
 
 void ReadPortBits() {
+    _debug("ReadPortBits", __FILE__, __LINE__);
     ldy(IMM(0x8));
     JMP(PortLoop);
 }
 
 void PortLoop() {
+    _debug("PortLoop", __FILE__, __LINE__);
     // push previous bit onto stack
     pha();
     // read current bit on joypad port
@@ -4201,6 +4372,7 @@ void PortLoop() {
 }
 
 void Save8Bits() {
+    _debug("Save8Bits", __FILE__, __LINE__);
     pla();
     // save with all bits in another place and leave
     sta(ABSX(JoypadBitMask));
@@ -4208,6 +4380,7 @@ void Save8Bits() {
 }
 
 void WriteBufferToScreen() {
+    _debug("WriteBufferToScreen", __FILE__, __LINE__);
     // store high byte of vram address
     sta(ABS(PPU_ADDRESS));
     iny();
@@ -4233,6 +4406,7 @@ void WriteBufferToScreen() {
 }
 
 void SetupWrites() {
+    _debug("SetupWrites", __FILE__, __LINE__);
     // write to register
     JSR(WritePPUReg1);
     // pull from stack and shift to left again
@@ -4247,6 +4421,7 @@ void SetupWrites() {
 }
 
 void GetLength() {
+    _debug("GetLength", __FILE__, __LINE__);
     // shift back to the right to get proper length
     lsr();
     // note that d1 will now be in carry
@@ -4256,6 +4431,7 @@ void GetLength() {
 }
 
 void OutputToVRAM() {
+    _debug("OutputToVRAM", __FILE__, __LINE__);
     // if carry set, repeat loading the same byte
     BCS(RepeatByte);
     // otherwise increment Y to load next byte
@@ -4264,6 +4440,7 @@ void OutputToVRAM() {
 }
 
 void RepeatByte() {
+    _debug("RepeatByte", __FILE__, __LINE__);
     // load more data from buffer and write to vram
     lda(INDY((0x0)));
     sta(ABS(PPU_DATA));
@@ -4291,6 +4468,7 @@ void RepeatByte() {
 }
 
 void UpdateScreen() {
+    _debug("UpdateScreen", __FILE__, __LINE__);
     // reset flip-flop
     ldx(ABS(PPU_STATUS));
     // load first byte from indirect as a pointer
@@ -4302,6 +4480,7 @@ void UpdateScreen() {
 }
 
 void InitScroll() {
+    _debug("InitScroll", __FILE__, __LINE__);
     // store contents of A into scroll registers
     sta(ABS(PPU_SCROLL_REG));
     // and end whatever subroutine led us here
@@ -4310,6 +4489,7 @@ void InitScroll() {
 }
 
 void WritePPUReg1() {
+    _debug("WritePPUReg1", __FILE__, __LINE__);
     // write contents of A to PPU register 1
     sta(ABS(PPU_CTRL_REG1));
     // and its mirror
@@ -4318,6 +4498,7 @@ void WritePPUReg1() {
 }
 
 void PrintStatusBarNumbers() {
+    _debug("PrintStatusBarNumbers", __FILE__, __LINE__);
     // store player-specific offset
     sta(ABS(0x0));
     // use first nybble to print the coin display
@@ -4333,6 +4514,7 @@ void PrintStatusBarNumbers() {
 }
 
 void OutputNumbers() {
+    _debug("OutputNumbers", __FILE__, __LINE__);
     // add 1 to low nybble
     clc();
     adc(IMM(0x1));
@@ -4358,6 +4540,7 @@ void OutputNumbers() {
 }
 
 void SetupNums() {
+    _debug("SetupNums", __FILE__, __LINE__);
     sta(ABSX(VRAM_Buffer1));
     // write low vram address and length of thing
     lda(ABSY(0x8000+offsetof(G, StatusBarData)));
@@ -4384,6 +4567,7 @@ void SetupNums() {
 }
 
 void DigitPLoop() {
+    _debug("DigitPLoop", __FILE__, __LINE__);
     // write digits to the buffer
     lda(ABSY(DisplayDigits));
     sta(ABSX(((VRAM_Buffer1) + (3))));
@@ -4405,10 +4589,12 @@ void DigitPLoop() {
 }
 
 void ExitOutputN() {
+    _debug("ExitOutputN", __FILE__, __LINE__);
     return;
 }
 
 void DigitsMathRoutine() {
+    _debug("DigitsMathRoutine", __FILE__, __LINE__);
     // check mode of operation
     lda(ABS(OperMode));
     cmp(IMM(TitleScreenModeValue));
@@ -4419,6 +4605,7 @@ void DigitsMathRoutine() {
 }
 
 void AddModLoop() {
+    _debug("AddModLoop", __FILE__, __LINE__);
     // load digit amount to increment
     lda(ABSX(DigitModifier));
     clc();
@@ -4433,6 +4620,7 @@ void AddModLoop() {
 }
 
 void StoreNewD() {
+    _debug("StoreNewD", __FILE__, __LINE__);
     // store as new score or game timer digit
     sta(ABSY(DisplayDigits));
     // move onto next digits in score or game timer
@@ -4445,6 +4633,7 @@ void StoreNewD() {
 }
 
 void EraseDMods() {
+    _debug("EraseDMods", __FILE__, __LINE__);
     // store zero here
     lda(IMM(0x0));
     // start with the last digit
@@ -4453,6 +4642,7 @@ void EraseDMods() {
 }
 
 void EraseMLoop() {
+    _debug("EraseMLoop", __FILE__, __LINE__);
     // initialize the digit amounts to increment
     sta(ABSX(((DigitModifier) - (1))));
     dex();
@@ -4462,6 +4652,7 @@ void EraseMLoop() {
 }
 
 void BorrowOne() {
+    _debug("BorrowOne", __FILE__, __LINE__);
     // decrement the previous digit, then put $09 in
     dec(ABSX(((DigitModifier) - (1))));
     // the game timer digit we're currently on to "borrow
@@ -4472,6 +4663,7 @@ void BorrowOne() {
 }
 
 void CarryOne() {
+    _debug("CarryOne", __FILE__, __LINE__);
     // subtract ten from our digit to make it a
     sec();
     // proper BCD number, then increment the digit
@@ -4484,6 +4676,7 @@ void CarryOne() {
 }
 
 void UpdateTopScore() {
+    _debug("UpdateTopScore", __FILE__, __LINE__);
     // start with mario's score
     ldx(IMM(0x5));
     JSR(TopScoreCheck);
@@ -4493,6 +4686,7 @@ void UpdateTopScore() {
 }
 
 void TopScoreCheck() {
+    _debug("TopScoreCheck", __FILE__, __LINE__);
     // start with the lowest digit
     ldy(IMM(0x5));
     sec();
@@ -4500,6 +4694,7 @@ void TopScoreCheck() {
 }
 
 void GetScoreDiff() {
+    _debug("GetScoreDiff", __FILE__, __LINE__);
     // subtract each player digit from each high score digit
     lda(ABSX(PlayerScoreDisplay));
     // from lowest to highest, if any top score digit exceeds
@@ -4518,6 +4713,7 @@ void GetScoreDiff() {
 }
 
 void CopyScore() {
+    _debug("CopyScore", __FILE__, __LINE__);
     // store player's score digits into high score memory area
     lda(ABSX(PlayerScoreDisplay));
     sta(ABSY(TopScoreDisplay));
@@ -4530,10 +4726,12 @@ void CopyScore() {
 }
 
 void NoTopSc() {
+    _debug("NoTopSc", __FILE__, __LINE__);
     return;
 }
 
 void InitializeGame() {
+    _debug("InitializeGame", __FILE__, __LINE__);
     // clear all memory as in initialization procedure,
     ldy(IMM(0x6f));
     // but this time, clear only as far as $076f
@@ -4543,6 +4741,7 @@ void InitializeGame() {
 }
 
 void ClrSndLoop() {
+    _debug("ClrSndLoop", __FILE__, __LINE__);
     // clear out memory used
     sta(ABSY(SoundMemory));
     // by the sound engines
@@ -4556,6 +4755,7 @@ void ClrSndLoop() {
 }
 
 void InitializeArea() {
+    _debug("InitializeArea", __FILE__, __LINE__);
     // clear all memory again, only as far as $074b
     ldy(IMM(0x4b));
     // this is only necessary if branching from
@@ -4566,6 +4766,7 @@ void InitializeArea() {
 }
 
 void ClrTimersLoop() {
+    _debug("ClrTimersLoop", __FILE__, __LINE__);
     // clear out memory between
     sta(ABSX(Timers));
     // $0780 and $07a1
@@ -4581,6 +4782,7 @@ void ClrTimersLoop() {
 }
 
 void StartPage() {
+    _debug("StartPage", __FILE__, __LINE__);
     // set as value here
     sta(ABS(ScreenLeft_PageLoc));
     // also set as current page
@@ -4600,6 +4802,7 @@ void StartPage() {
 }
 
 void SetInitNTHigh() {
+    _debug("SetInitNTHigh", __FILE__, __LINE__);
     // store name table address
     sty(ABS(CurrentNTAddr_High));
     ldy(IMM(0x80));
@@ -4641,12 +4844,14 @@ void SetInitNTHigh() {
 }
 
 void SetSecHard() {
+    _debug("SetSecHard", __FILE__, __LINE__);
     // set secondary hard mode flag for areas 5-3 and beyond
     inc(ABS(SecondaryHardMode));
     JMP(CheckHalfway);
 }
 
 void CheckHalfway() {
+    _debug("CheckHalfway", __FILE__, __LINE__);
     lda(ABS(HalfwayPage));
     BEQ(DoneInitArea);
     // if halfway page set, overwrite start position from header
@@ -4656,6 +4861,7 @@ void CheckHalfway() {
 }
 
 void DoneInitArea() {
+    _debug("DoneInitArea", __FILE__, __LINE__);
     // silence music
     lda(IMM(Silence));
     sta(ABS(AreaMusicQueue));
@@ -4668,6 +4874,7 @@ void DoneInitArea() {
 }
 
 void PrimaryGameSetup() {
+    _debug("PrimaryGameSetup", __FILE__, __LINE__);
     lda(IMM(0x1));
     // set flag to load game timer from header
     sta(ABS(FetchNewGameTimerFlag));
@@ -4681,6 +4888,7 @@ void PrimaryGameSetup() {
 }
 
 void SecondaryGameSetup() {
+    _debug("SecondaryGameSetup", __FILE__, __LINE__);
     lda(IMM(0x0));
     // enable screen output
     sta(ABS(DisableScreenFlag));
@@ -4689,6 +4897,7 @@ void SecondaryGameSetup() {
 }
 
 void ClearVRLoop() {
+    _debug("ClearVRLoop", __FILE__, __LINE__);
     // clear buffer at $0300-$03ff
     sta(ABSY(((VRAM_Buffer1) - (1))));
     iny();
@@ -4727,6 +4936,7 @@ void ClearVRLoop() {
 }
 
 void ShufAmtLoop() {
+    _debug("ShufAmtLoop", __FILE__, __LINE__);
     lda(ABSX(0x8000+offsetof(G, DefaultSprOffsets)));
     sta(ABSX(SprDataOffset));
     // do this until they're all set
@@ -4738,6 +4948,7 @@ void ShufAmtLoop() {
 }
 
 void ISpr0Loop() {
+    _debug("ISpr0Loop", __FILE__, __LINE__);
     lda(ABSY(0x8000+offsetof(G, Sprite0Data)));
     sta(ABSY(Sprite_Data));
     dey();
@@ -4753,6 +4964,7 @@ void ISpr0Loop() {
 }
 
 void InitializeMemory() {
+    _debug("InitializeMemory", __FILE__, __LINE__);
     // set initial high byte to $0700-$07ff
     ldx(IMM(0x7));
     // set initial low byte to start of page (at $00 of page)
@@ -4762,11 +4974,13 @@ void InitializeMemory() {
 }
 
 void InitPageLoop() {
+    _debug("InitPageLoop", __FILE__, __LINE__);
     stx(ABS(0x7));
     JMP(InitByteLoop);
 }
 
 void InitByteLoop() {
+    _debug("InitByteLoop", __FILE__, __LINE__);
     // check to see if we're on the stack ($0100-$01ff)
     cpx(IMM(0x1));
     // if not, go ahead anyway
@@ -4779,12 +4993,14 @@ void InitByteLoop() {
 }
 
 void InitByte() {
+    _debug("InitByte", __FILE__, __LINE__);
     // otherwise, initialize byte with current low byte in Y
     sta(INDY((0x6)));
     JMP(SkipByte);
 }
 
 void SkipByte() {
+    _debug("SkipByte", __FILE__, __LINE__);
     dey();
     // do this until all bytes in page have been erased
     cpy(IMM(0xff));
@@ -4797,6 +5013,7 @@ void SkipByte() {
 }
 
 void GetAreaMusic() {
+    _debug("GetAreaMusic", __FILE__, __LINE__);
     // if in title screen mode, leave
     lda(ABS(OperMode));
     BEQ(ExitGetM);
@@ -4820,6 +5037,7 @@ void GetAreaMusic() {
 }
 
 void ChkAreaType() {
+    _debug("ChkAreaType", __FILE__, __LINE__);
     // load area type as offset for music bit
     ldy(ABS(AreaType));
     lda(ABS(CloudTypeOverride));
@@ -4831,6 +5049,7 @@ void ChkAreaType() {
 }
 
 void StoreMusic() {
+    _debug("StoreMusic", __FILE__, __LINE__);
     // otherwise select appropriate music for level type
     lda(ABSY(0x8000+offsetof(G, MusicSelectData)));
     // store in queue and leave
@@ -4839,10 +5058,12 @@ void StoreMusic() {
 }
 
 void ExitGetM() {
+    _debug("ExitGetM", __FILE__, __LINE__);
     return;
 }
 
 void Entrance_GameTimerSetup() {
+    _debug("Entrance_GameTimerSetup", __FILE__, __LINE__);
     // set current page for area objects
     lda(ABS(ScreenLeft_PageLoc));
     // as page location for player
@@ -4873,6 +5094,7 @@ void Entrance_GameTimerSetup() {
 }
 
 void ChkStPos() {
+    _debug("ChkStPos", __FILE__, __LINE__);
     sty(ABS(SwimmingFlag));
     // get starting position loaded from header
     ldx(ABS(PlayerEntranceCtrl));
@@ -4887,6 +5109,7 @@ void ChkStPos() {
 }
 
 void SetStPos() {
+    _debug("SetStPos", __FILE__, __LINE__);
     // load appropriate horizontal position
     lda(ABSY(0x8000+offsetof(G, PlayerStarting_X_Pos)));
     // and vertical positions for the player, using
@@ -4926,6 +5149,7 @@ void SetStPos() {
 }
 
 void ChkOverR() {
+    _debug("ChkOverR", __FILE__, __LINE__);
     // if controller bits not set, branch to skip this part
     ldy(ABS(JoypadOverride));
     BEQ(ChkSwimE);
@@ -4948,6 +5172,7 @@ void ChkOverR() {
 }
 
 void ChkSwimE() {
+    _debug("ChkSwimE", __FILE__, __LINE__);
     // if level not water-type,
     ldy(ABS(AreaType));
     // skip this subroutine
@@ -4958,6 +5183,7 @@ void ChkSwimE() {
 }
 
 void SetPESub() {
+    _debug("SetPESub", __FILE__, __LINE__);
     // set to run player entrance subroutine
     lda(IMM(0x7));
     // on the next frame of game engine
@@ -4966,6 +5192,7 @@ void SetPESub() {
 }
 
 void PlayerLoseLife() {
+    _debug("PlayerLoseLife", __FILE__, __LINE__);
     // disable screen and sprite 0 check
     inc(ABS(DisableScreenFlag));
     lda(IMM(0x0));
@@ -4988,6 +5215,7 @@ void PlayerLoseLife() {
 }
 
 void StillInGame() {
+    _debug("StillInGame", __FILE__, __LINE__);
     // multiply world number by 2 and use
     lda(ABS(WorldNumber));
     // as offset
@@ -5004,6 +5232,7 @@ void StillInGame() {
 }
 
 void GetHalfway() {
+    _debug("GetHalfway", __FILE__, __LINE__);
     // get halfway page number with offset
     ldy(ABSX(0x8000+offsetof(G, HalfwayPageNybbles)));
     // check area number's LSB
@@ -5022,6 +5251,7 @@ void GetHalfway() {
 }
 
 void MaskHPNyb() {
+    _debug("MaskHPNyb", __FILE__, __LINE__);
     // mask out all but lower nybble
     anda(IMM(0b1111));
     cmp(ABS(ScreenLeft_PageLoc));
@@ -5035,6 +5265,7 @@ void MaskHPNyb() {
 }
 
 void SetHalfway() {
+    _debug("SetHalfway", __FILE__, __LINE__);
     // store as halfway page for player
     sta(ABS(HalfwayPage));
     // switch players around if 2-player game
@@ -5045,6 +5276,7 @@ void SetHalfway() {
 }
 
 void GameOverMode() {
+    _debug("GameOverMode", __FILE__, __LINE__);
     lda(ABS(OperMode_Task));
     static JUMP_ENTRY jumptable[3] = {
         SetupGameOver,
@@ -5055,6 +5287,7 @@ void GameOverMode() {
 }
 
 void SetupGameOver() {
+    _debug("SetupGameOver", __FILE__, __LINE__);
     // reset screen routine task control for title screen, game,
     lda(IMM(0x0));
     // and game over modes
@@ -5072,6 +5305,7 @@ void SetupGameOver() {
 }
 
 void RunGameOver() {
+    _debug("RunGameOver", __FILE__, __LINE__);
     // reenable screen
     lda(IMM(0x0));
     sta(ABS(DisableScreenFlag));
@@ -5087,6 +5321,7 @@ void RunGameOver() {
 }
 
 void TerminateGame() {
+    _debug("TerminateGame", __FILE__, __LINE__);
     // silence music
     lda(IMM(Silence));
     sta(ABS(EventMusicQueue));
@@ -5110,6 +5345,7 @@ void TerminateGame() {
 }
 
 void ContinueGame() {
+    _debug("ContinueGame", __FILE__, __LINE__);
     // update level pointer with
     JSR(LoadAreaPointer);
     // actual world and area numbers, then
@@ -5135,10 +5371,12 @@ void ContinueGame() {
 }
 
 void GameIsOn() {
+    _debug("GameIsOn", __FILE__, __LINE__);
     return;
 }
 
 void TransposePlayers() {
+    _debug("TransposePlayers", __FILE__, __LINE__);
     // set carry flag by default to end game
     sec();
     // if only a 1 player game, leave
@@ -5158,6 +5396,7 @@ void TransposePlayers() {
 }
 
 void TransLoop() {
+    _debug("TransLoop", __FILE__, __LINE__);
     // transpose the information
     lda(ABSX(OnscreenPlayerInfo));
     // of the onscreen player
@@ -5175,10 +5414,12 @@ void TransLoop() {
 }
 
 void ExTrans() {
+    _debug("ExTrans", __FILE__, __LINE__);
     return;
 }
 
 void DoNothing1() {
+    _debug("DoNothing1", __FILE__, __LINE__);
     // this is residual code, this value is
     lda(IMM(0xff));
     // not used anywhere in the program
@@ -5187,10 +5428,12 @@ void DoNothing1() {
 }
 
 void DoNothing2() {
+    _debug("DoNothing2", __FILE__, __LINE__);
     return;
 }
 
 void AreaParserTaskHandler() {
+    _debug("AreaParserTaskHandler", __FILE__, __LINE__);
     // check number of tasks here
     ldy(ABS(AreaParserTaskNum));
     // if already set, go ahead
@@ -5202,6 +5445,7 @@ void AreaParserTaskHandler() {
 }
 
 void DoAPTasks() {
+    _debug("DoAPTasks", __FILE__, __LINE__);
     dey();
     tya();
     JSR(AreaParserTasks);
@@ -5214,10 +5458,12 @@ void DoAPTasks() {
 }
 
 void SkipATRender() {
+    _debug("SkipATRender", __FILE__, __LINE__);
     return;
 }
 
 void AreaParserTasks() {
+    _debug("AreaParserTasks", __FILE__, __LINE__);
     static JUMP_ENTRY jumptable[8] = {
         IncrementColumnPos,
         RenderAreaGraphics,
@@ -5232,6 +5478,7 @@ void AreaParserTasks() {
 }
 
 void IncrementColumnPos() {
+    _debug("IncrementColumnPos", __FILE__, __LINE__);
     // increment column where we're at
     inc(ABS(CurrentColumnPos));
     lda(ABS(CurrentColumnPos));
@@ -5246,6 +5493,7 @@ void IncrementColumnPos() {
 }
 
 void NoColWrap() {
+    _debug("NoColWrap", __FILE__, __LINE__);
     // increment column offset where we're at
     inc(ABS(BlockBufferColumnPos));
     lda(ABS(BlockBufferColumnPos));
@@ -5257,6 +5505,7 @@ void NoColWrap() {
 }
 
 void AreaParserCore() {
+    _debug("AreaParserCore", __FILE__, __LINE__);
     // check to see if we are starting right of start
     lda(ABS(BackloadingFlag));
     // if not, go ahead and render background, foreground and terrain
@@ -5267,12 +5516,14 @@ void AreaParserCore() {
 }
 
 void RenderSceneryTerrain() {
+    _debug("RenderSceneryTerrain", __FILE__, __LINE__);
     ldx(IMM(0xc));
     lda(IMM(0x0));
     JMP(ClrMTBuf);
 }
 
 void ClrMTBuf() {
+    _debug("ClrMTBuf", __FILE__, __LINE__);
     // clear out metatile buffer
     sta(ABSX(MetatileBuffer));
     dex();
@@ -5287,6 +5538,7 @@ void ClrMTBuf() {
 }
 
 void ThirdP() {
+    _debug("ThirdP", __FILE__, __LINE__);
     cmp(IMM(0x3));
     // if less than three we're there
     BMI(RendBack);
@@ -5299,6 +5551,7 @@ void ThirdP() {
 }
 
 void RendBack() {
+    _debug("RendBack", __FILE__, __LINE__);
     // move results to higher nybble
     asl();
     asl();
@@ -5342,6 +5595,7 @@ void RendBack() {
 }
 
 void SceLoop1() {
+    _debug("SceLoop1", __FILE__, __LINE__);
     // load metatile data from offset of (lsb - 1) * 3
     lda(ABSX(0x8000+offsetof(G, BackSceneryMetatiles)));
     // store into buffer from offset of (msb / 16)
@@ -5358,6 +5612,7 @@ void SceLoop1() {
 }
 
 void RendFore() {
+    _debug("RendFore", __FILE__, __LINE__);
     // check for foreground data needed or not
     ldx(ABS(ForegroundScenery));
     // if not, skip this part
@@ -5370,6 +5625,7 @@ void RendFore() {
 }
 
 void SceLoop2() {
+    _debug("SceLoop2", __FILE__, __LINE__);
     // load data until counter expires
     lda(ABSY(0x8000+offsetof(G, ForeSceneryData)));
     // do not store if zero found
@@ -5379,6 +5635,7 @@ void SceLoop2() {
 }
 
 void NoFore() {
+    _debug("NoFore", __FILE__, __LINE__);
     iny();
     inx();
     // store up to end of metatile buffer
@@ -5388,6 +5645,7 @@ void NoFore() {
 }
 
 void RendTerr() {
+    _debug("RendTerr", __FILE__, __LINE__);
     // check world type for water level
     ldy(ABS(AreaType));
     // if not water level, skip this part
@@ -5405,6 +5663,7 @@ void RendTerr() {
 }
 
 void TerMTile() {
+    _debug("TerMTile", __FILE__, __LINE__);
     // otherwise get appropriate metatile for area type
     lda(ABSY(0x8000+offsetof(G, TerrainMetatiles)));
     // check for cloud type override
@@ -5417,6 +5676,7 @@ void TerMTile() {
 }
 
 void StoreMT() {
+    _debug("StoreMT", __FILE__, __LINE__);
     // store value here
     sta(ABS(0x7));
     // initialize X, use as metatile buffer offset
@@ -5430,6 +5690,7 @@ void StoreMT() {
 }
 
 void TerrLoop() {
+    _debug("TerrLoop", __FILE__, __LINE__);
     // get one of the terrain rendering bit data
     lda(ABSY(0x8000+offsetof(G, TerrainRenderBits)));
     sta(ABS(0x0));
@@ -5450,12 +5711,14 @@ void TerrLoop() {
 }
 
 void NoCloud2() {
+    _debug("NoCloud2", __FILE__, __LINE__);
     // start at beginning of bitmasks
     ldy(IMM(0x0));
     JMP(TerrBChk);
 }
 
 void TerrBChk() {
+    _debug("TerrBChk", __FILE__, __LINE__);
     // load bitmask, then perform AND on contents of first byte
     lda(ABSY(0x8000+offsetof(G, Bitmasks)));
     bit(ABS(0x0));
@@ -5468,6 +5731,7 @@ void TerrBChk() {
 }
 
 void NextTBit() {
+    _debug("NextTBit", __FILE__, __LINE__);
     // continue until end of buffer
     inx();
     cpx(IMM(0xd));
@@ -5488,6 +5752,7 @@ void NextTBit() {
 }
 
 void EndUChk() {
+    _debug("EndUChk", __FILE__, __LINE__);
     // increment bitmasks offset in Y
     iny();
     cpy(IMM(0x8));
@@ -5500,6 +5765,7 @@ void EndUChk() {
 }
 
 void RendBBuf() {
+    _debug("RendBBuf", __FILE__, __LINE__);
     // do the area data loading routine now
     JSR(ProcessAreaData);
     lda(ABS(BlockBufferColumnPos));
@@ -5512,6 +5778,7 @@ void RendBBuf() {
 }
 
 void ChkMTLow() {
+    _debug("ChkMTLow", __FILE__, __LINE__);
     sty(ABS(0x0));
     // load stored metatile number
     lda(ABSX(MetatileBuffer));
@@ -5535,6 +5802,7 @@ void ChkMTLow() {
 }
 
 void StrBlock() {
+    _debug("StrBlock", __FILE__, __LINE__);
     // get offset for block buffer
     ldy(ABS(0x0));
     // store value into block buffer
@@ -5553,12 +5821,14 @@ void StrBlock() {
 }
 
 void ProcessAreaData() {
+    _debug("ProcessAreaData", __FILE__, __LINE__);
     // start at the end of area object buffer
     ldx(IMM(0x2));
     JMP(ProcADLoop);
 }
 
 void ProcADLoop() {
+    _debug("ProcADLoop", __FILE__, __LINE__);
     stx(ABS(ObjectOffset));
     // reset flag
     lda(IMM(0x0));
@@ -5591,6 +5861,7 @@ void ProcADLoop() {
 }
 
 void Chk1Row13() {
+    _debug("Chk1Row13", __FILE__, __LINE__);
     dey();
     // reread first byte of level object
     lda(INDY((AreaData)));
@@ -5623,6 +5894,7 @@ void Chk1Row13() {
 }
 
 void Chk1Row14() {
+    _debug("Chk1Row14", __FILE__, __LINE__);
     // row 14?
     cmp(IMM(0xe));
     BNE(CheckRear);
@@ -5634,6 +5906,7 @@ void Chk1Row14() {
 }
 
 void CheckRear() {
+    _debug("CheckRear", __FILE__, __LINE__);
     // check to see if current page of level object is
     lda(ABS(AreaObjectPageLoc));
     // behind current page of renderer
@@ -5644,6 +5917,7 @@ void CheckRear() {
 }
 
 void RdyDecode() {
+    _debug("RdyDecode", __FILE__, __LINE__);
     // do sub and do not turn on flag
     JSR(DecodeAreaData);
     JMP(ChkLength);
@@ -5651,18 +5925,21 @@ void RdyDecode() {
 }
 
 void SetBehind() {
+    _debug("SetBehind", __FILE__, __LINE__);
     // turn on flag if object is behind renderer
     inc(ABS(BehindAreaParserFlag));
     JMP(NextAObj);
 }
 
 void NextAObj() {
+    _debug("NextAObj", __FILE__, __LINE__);
     // increment buffer offset and move on
     JSR(IncAreaObjOffset);
     JMP(ChkLength);
 }
 
 void ChkLength() {
+    _debug("ChkLength", __FILE__, __LINE__);
     // get buffer offset
     ldx(ABS(ObjectOffset));
     // check object length for anything stored here
@@ -5675,6 +5952,7 @@ void ChkLength() {
 }
 
 void ProcLoopb() {
+    _debug("ProcLoopb", __FILE__, __LINE__);
     // decrement buffer offset
     dex();
     // and loopback unless exceeded buffer
@@ -5691,10 +5969,12 @@ void ProcLoopb() {
 }
 
 void EndAParse() {
+    _debug("EndAParse", __FILE__, __LINE__);
     return;
 }
 
 void IncAreaObjOffset() {
+    _debug("IncAreaObjOffset", __FILE__, __LINE__);
     // increment offset of level pointer
     inc(ABS(AreaDataOffset));
     inc(ABS(AreaDataOffset));
@@ -5705,6 +5985,7 @@ void IncAreaObjOffset() {
 }
 
 void DecodeAreaData() {
+    _debug("DecodeAreaData", __FILE__, __LINE__);
     // check current buffer flag
     lda(ABSX(AreaObjectLength));
     BMI(Chk1stB);
@@ -5714,6 +5995,7 @@ void DecodeAreaData() {
 }
 
 void Chk1stB() {
+    _debug("Chk1stB", __FILE__, __LINE__);
     // load offset of 16 for special row 15
     ldx(IMM(0x10));
     // get first byte of level object again
@@ -5739,6 +6021,7 @@ void Chk1stB() {
 }
 
 void ChkRow14() {
+    _debug("ChkRow14", __FILE__, __LINE__);
     // store whatever value we just loaded here
     stx(ABS(0x7));
     // get object offset again
@@ -5757,6 +6040,7 @@ void ChkRow14() {
 }
 
 void ChkRow13() {
+    _debug("ChkRow13", __FILE__, __LINE__);
     // row 13?
     cmp(IMM(0xd));
     BNE(ChkSRows);
@@ -5784,6 +6068,7 @@ void ChkRow13() {
 }
 
 void Mask2MSB() {
+    _debug("Mask2MSB", __FILE__, __LINE__);
     // mask out d7 and d6
     anda(IMM(0b111111));
     // and jump
@@ -5792,6 +6077,7 @@ void Mask2MSB() {
 }
 
 void ChkSRows() {
+    _debug("ChkSRows", __FILE__, __LINE__);
     // row 12-15?
     cmp(IMM(0xc));
     BCS(SpecObj);
@@ -5814,6 +6100,7 @@ void ChkSRows() {
 }
 
 void LrgObj() {
+    _debug("LrgObj", __FILE__, __LINE__);
     // store value here (branch for large objects)
     sta(ABS(0x0));
     // check for vertical pipe object
@@ -5832,6 +6119,7 @@ void LrgObj() {
 }
 
 void NotWPipe() {
+    _debug("NotWPipe", __FILE__, __LINE__);
     // get value and jump ahead
     lda(ABS(0x0));
     JMP(MoveAOId);
@@ -5839,6 +6127,7 @@ void NotWPipe() {
 }
 
 void SpecObj() {
+    _debug("SpecObj", __FILE__, __LINE__);
     // branch here for rows 12-15
     iny();
     lda(INDY((AreaData)));
@@ -5848,6 +6137,7 @@ void SpecObj() {
 }
 
 void MoveAOId() {
+    _debug("MoveAOId", __FILE__, __LINE__);
     // move d6-d4 to lower nybble
     lsr();
     lsr();
@@ -5857,6 +6147,7 @@ void MoveAOId() {
 }
 
 void NormObj() {
+    _debug("NormObj", __FILE__, __LINE__);
     // store value here (branch for small objects and rows 13 and 14)
     sta(ABS(0x0));
     // is there something stored here already?
@@ -5884,10 +6175,12 @@ void NormObj() {
 }
 
 void LeavePar() {
+    _debug("LeavePar", __FILE__, __LINE__);
     return;
 }
 
 void InitRear() {
+    _debug("InitRear", __FILE__, __LINE__);
     // check backloading flag to see if it's been initialized
     lda(ABS(BackloadingFlag));
     // branch to column-wise check
@@ -5902,10 +6195,12 @@ void InitRear() {
 }
 
 void LoopCmdE() {
+    _debug("LoopCmdE", __FILE__, __LINE__);
     return;
 }
 
 void BackColC() {
+    _debug("BackColC", __FILE__, __LINE__);
     // get first byte again
     ldy(ABS(AreaDataOffset));
     lda(INDY((AreaData)));
@@ -5923,6 +6218,7 @@ void BackColC() {
 }
 
 void StrAObj() {
+    _debug("StrAObj", __FILE__, __LINE__);
     // if so, load area obj offset and store in buffer
     lda(ABS(AreaDataOffset));
     sta(ABSX(AreaObjOffsetBuffer));
@@ -5932,6 +6228,7 @@ void StrAObj() {
 }
 
 void RunAObj() {
+    _debug("RunAObj", __FILE__, __LINE__);
     // get stored value and add offset to it
     lda(ABS(0x0));
     // then use the jump engine with current contents of A
@@ -5990,6 +6287,7 @@ void RunAObj() {
 }
 
 void AlterAreaAttributes() {
+    _debug("AlterAreaAttributes", __FILE__, __LINE__);
     // load offset for level object data saved in buffer
     ldy(ABSX(AreaObjOffsetBuffer));
     // load second byte
@@ -6022,6 +6320,7 @@ void AlterAreaAttributes() {
 }
 
 void Alter2() {
+    _debug("Alter2", __FILE__, __LINE__);
     pla();
     // mask out all but 3 LSB
     anda(IMM(0b111));
@@ -6035,12 +6334,14 @@ void Alter2() {
 }
 
 void SetFore() {
+    _debug("SetFore", __FILE__, __LINE__);
     // otherwise set new foreground scenery bits
     sta(ABS(ForegroundScenery));
     return;
 }
 
 void ScrollLockObject_Warp() {
+    _debug("ScrollLockObject_Warp", __FILE__, __LINE__);
     // load value of 4 for game text routine as default
     ldx(IMM(0x4));
     // warp zone (4-3-2), then check world number
@@ -6059,6 +6360,7 @@ void ScrollLockObject_Warp() {
 }
 
 void WarpNum() {
+    _debug("WarpNum", __FILE__, __LINE__);
     txa();
     // store number here to be used by warp zone routine
     sta(ABS(WarpZoneControl));
@@ -6071,6 +6373,7 @@ void WarpNum() {
 }
 
 void ScrollLockObject() {
+    _debug("ScrollLockObject", __FILE__, __LINE__);
     // invert scroll lock to turn it on
     lda(ABS(ScrollLock));
     eor(IMM(0b1));
@@ -6079,6 +6382,7 @@ void ScrollLockObject() {
 }
 
 void KillEnemies() {
+    _debug("KillEnemies", __FILE__, __LINE__);
     // store identifier here
     sta(ABS(0x0));
     lda(IMM(0x0));
@@ -6088,6 +6392,7 @@ void KillEnemies() {
 }
 
 void KillELoop() {
+    _debug("KillELoop", __FILE__, __LINE__);
     ldy(ABSX(Enemy_ID));
     // if not found, branch
     cpy(ABS(0x0));
@@ -6098,6 +6403,7 @@ void KillELoop() {
 }
 
 void NoKillE() {
+    _debug("NoKillE", __FILE__, __LINE__);
     // do this until all slots are checked
     dex();
     BPL(KillELoop);
@@ -6105,6 +6411,7 @@ void NoKillE() {
 }
 
 void AreaFrenzy() {
+    _debug("AreaFrenzy", __FILE__, __LINE__);
     // use area object identifier bit as offset
     ldx(ABS(0x0));
     // note that it starts at 8, thus weird address here
@@ -6114,6 +6421,7 @@ void AreaFrenzy() {
 }
 
 void FreCompLoop() {
+    _debug("FreCompLoop", __FILE__, __LINE__);
     // check regular slots of enemy object buffer
     dey();
     // if all slots checked and enemy object not found, branch to store
@@ -6127,12 +6435,14 @@ void FreCompLoop() {
 }
 
 void ExitAFrenzy() {
+    _debug("ExitAFrenzy", __FILE__, __LINE__);
     // store enemy into frenzy queue
     sta(ABS(EnemyFrenzyQueue));
     return;
 }
 
 void AreaStyleObject() {
+    _debug("AreaStyleObject", __FILE__, __LINE__);
     // load level object style and jump to the right sub
     lda(ABS(AreaStyle));
     static JUMP_ENTRY jumptable[3] = {
@@ -6144,6 +6454,7 @@ void AreaStyleObject() {
 }
 
 void TreeLedge() {
+    _debug("TreeLedge", __FILE__, __LINE__);
     // get row and length of green ledge
     JSR(GetLrgObjAttrib);
     // check length counter for expiration
@@ -6164,6 +6475,7 @@ void TreeLedge() {
 }
 
 void MidTreeL() {
+    _debug("MidTreeL", __FILE__, __LINE__);
     ldx(ABS(0x7));
     // render middle of tree ledge
     lda(IMM(0x17));
@@ -6177,6 +6489,7 @@ void MidTreeL() {
 }
 
 void EndTreeL() {
+    _debug("EndTreeL", __FILE__, __LINE__);
     // render end of tree ledge
     lda(IMM(0x18));
     JMP(NoUnder);
@@ -6184,6 +6497,7 @@ void EndTreeL() {
 }
 
 void MushroomLedge() {
+    _debug("MushroomLedge", __FILE__, __LINE__);
     // get shroom dimensions
     JSR(ChkLrgObjLength);
     // store length here for now
@@ -6200,6 +6514,7 @@ void MushroomLedge() {
 }
 
 void EndMushL() {
+    _debug("EndMushL", __FILE__, __LINE__);
     // if at the end, render end of mushroom
     lda(IMM(0x1b));
     ldy(ABSX(AreaObjectLength));
@@ -6225,6 +6540,7 @@ void EndMushL() {
 }
 
 void AllUnder() {
+    _debug("AllUnder", __FILE__, __LINE__);
     inx();
     // set $0f to render all way down
     ldy(IMM(0xf));
@@ -6234,6 +6550,7 @@ void AllUnder() {
 }
 
 void NoUnder() {
+    _debug("NoUnder", __FILE__, __LINE__);
     // load row of ledge
     ldx(ABS(0x7));
     // set 0 for no bottom on this part
@@ -6243,6 +6560,7 @@ void NoUnder() {
 }
 
 void PulleyRopeObject() {
+    _debug("PulleyRopeObject", __FILE__, __LINE__);
     // get length of pulley/rope object
     JSR(ChkLrgObjLength);
     // initialize metatile offset
@@ -6259,6 +6577,7 @@ void PulleyRopeObject() {
 }
 
 void RenderPul() {
+    _debug("RenderPul", __FILE__, __LINE__);
     lda(ABSY(0x8000+offsetof(G, PulleyRopeMetatiles)));
     // render at the top of the screen
     sta(ABS(MetatileBuffer));
@@ -6266,11 +6585,13 @@ void RenderPul() {
 }
 
 void MushLExit() {
+    _debug("MushLExit", __FILE__, __LINE__);
     // and leave
     return;
 }
 
 void CastleObject() {
+    _debug("CastleObject", __FILE__, __LINE__);
     // save lower nybble as starting row
     JSR(GetLrgObjAttrib);
     // if starting row is above $0a, game will crash!!!
@@ -6292,6 +6613,7 @@ void CastleObject() {
 }
 
 void CRendLoop() {
+    _debug("CRendLoop", __FILE__, __LINE__);
     // load current byte using offset
     lda(ABSY(0x8000+offsetof(G, CastleMetatiles)));
     sta(ABSX(MetatileBuffer));
@@ -6313,6 +6635,7 @@ void CRendLoop() {
 }
 
 void ChkCFloor() {
+    _debug("ChkCFloor", __FILE__, __LINE__);
     // have we reached the row just before floor?
     cpx(IMM(0xb));
     // if not, go back and do another row
@@ -6338,6 +6661,7 @@ void ChkCFloor() {
 }
 
 void NotTall() {
+    _debug("NotTall", __FILE__, __LINE__);
     // if not tall castle, check to see if we're at the third column
     cmp(IMM(0x2));
     // if we aren't and the castle is tall, don't create flag yet
@@ -6368,6 +6692,7 @@ void NotTall() {
 }
 
 void PlayerStop() {
+    _debug("PlayerStop", __FILE__, __LINE__);
     // put brick at floor to stop player at end of level
     ldy(IMM(0x52));
     // this is only done if we're on the second column
@@ -6376,10 +6701,12 @@ void PlayerStop() {
 }
 
 void ExitCastle() {
+    _debug("ExitCastle", __FILE__, __LINE__);
     return;
 }
 
 void WaterPipe() {
+    _debug("WaterPipe", __FILE__, __LINE__);
     // get row and lower nybble
     JSR(GetLrgObjAttrib);
     // get length (residual code, water pipe is 1 col thick)
@@ -6395,6 +6722,7 @@ void WaterPipe() {
 }
 
 void IntroPipe() {
+    _debug("IntroPipe", __FILE__, __LINE__);
     // check if length set, if not set, set it
     ldy(IMM(0x3));
     JSR(ChkLrgObjFixedLength);
@@ -6409,6 +6737,7 @@ void IntroPipe() {
 }
 
 void VPipeSectLoop() {
+    _debug("VPipeSectLoop", __FILE__, __LINE__);
     // all the way to the top of the screen
     lda(IMM(0x0));
     // because otherwise it will look like exit pipe
@@ -6422,10 +6751,12 @@ void VPipeSectLoop() {
 }
 
 void NoBlankP() {
+    _debug("NoBlankP", __FILE__, __LINE__);
     return;
 }
 
 void ExitPipe() {
+    _debug("ExitPipe", __FILE__, __LINE__);
     // check if length set, if not set, set it
     ldy(IMM(0x3));
     JSR(ChkLrgObjFixedLength);
@@ -6435,6 +6766,7 @@ void ExitPipe() {
 }
 
 void RenderSidewaysPipe() {
+    _debug("RenderSidewaysPipe", __FILE__, __LINE__);
     // decrement twice to make room for shaft at bottom
     dey();
     // and store here for now as vertical length
@@ -6462,6 +6794,7 @@ void RenderSidewaysPipe() {
 }
 
 void DrawSidePart() {
+    _debug("DrawSidePart", __FILE__, __LINE__);
     // render side pipe part at the bottom
     ldy(ABS(0x6));
     lda(ABSY(0x8000+offsetof(G, SidePipeTopPart)));
@@ -6474,6 +6807,7 @@ void DrawSidePart() {
 }
 
 void VerticalPipe() {
+    _debug("VerticalPipe", __FILE__, __LINE__);
     JSR(GetPipeHeight);
     // check to see if value was nullified earlier
     lda(ABS(0x0));
@@ -6488,6 +6822,7 @@ void VerticalPipe() {
 }
 
 void WarpPipe() {
+    _debug("WarpPipe", __FILE__, __LINE__);
     // save value in stack
     tya();
     pha();
@@ -6530,6 +6865,7 @@ void WarpPipe() {
 }
 
 void DrawPipe() {
+    _debug("DrawPipe", __FILE__, __LINE__);
     // get value saved earlier and use as Y
     pla();
     tay();
@@ -6550,6 +6886,7 @@ void DrawPipe() {
 }
 
 void GetPipeHeight() {
+    _debug("GetPipeHeight", __FILE__, __LINE__);
     // check for length loaded, if not, load
     ldy(IMM(0x1));
     // pipe length of 2 (horizontal)
@@ -6567,12 +6904,14 @@ void GetPipeHeight() {
 }
 
 void FindEmptyEnemySlot() {
+    _debug("FindEmptyEnemySlot", __FILE__, __LINE__);
     // start at first enemy slot
     ldx(IMM(0x0));
     JMP(EmptyChkLoop);
 }
 
 void EmptyChkLoop() {
+    _debug("EmptyChkLoop", __FILE__, __LINE__);
     // clear carry flag by default
     clc();
     // check enemy buffer for nonzero
@@ -6587,11 +6926,13 @@ void EmptyChkLoop() {
 }
 
 void ExitEmptyChk() {
+    _debug("ExitEmptyChk", __FILE__, __LINE__);
     // if all values nonzero, carry flag is set
     return;
 }
 
 void Hole_Water() {
+    _debug("Hole_Water", __FILE__, __LINE__);
     // get low nybble and save as length
     JSR(ChkLrgObjLength);
     // render waves
@@ -6606,12 +6947,14 @@ void Hole_Water() {
 }
 
 void QuestionBlockRow_High() {
+    _debug("QuestionBlockRow_High", __FILE__, __LINE__);
     // start on the fourth row
     lda(IMM(0x3));
     JMP(QuestionBlockRow_Low);
 }
 
 void QuestionBlockRow_Low() {
+    _debug("QuestionBlockRow_Low", __FILE__, __LINE__);
     // start on the eighth row
     lda(IMM(0x7));
     // save whatever row to the stack for now
@@ -6627,18 +6970,21 @@ void QuestionBlockRow_Low() {
 }
 
 void Bridge_High() {
+    _debug("Bridge_High", __FILE__, __LINE__);
     // start on the seventh row from top of screen
     lda(IMM(0x6));
     JMP(Bridge_Middle);
 }
 
 void Bridge_Middle() {
+    _debug("Bridge_Middle", __FILE__, __LINE__);
     // start on the eighth row
     lda(IMM(0x7));
     JMP(Bridge_Low);
 }
 
 void Bridge_Low() {
+    _debug("Bridge_Low", __FILE__, __LINE__);
     // start on the tenth row
     lda(IMM(0x9));
     // save whatever row to the stack for now
@@ -6659,6 +7005,7 @@ void Bridge_Low() {
 }
 
 void FlagBalls_Residual() {
+    _debug("FlagBalls_Residual", __FILE__, __LINE__);
     // get low nybble from object byte
     JSR(GetLrgObjAttrib);
     // render flag balls on third row from top
@@ -6670,6 +7017,7 @@ void FlagBalls_Residual() {
 }
 
 void FlagpoleObject() {
+    _debug("FlagpoleObject", __FILE__, __LINE__);
     // render flagpole ball on top
     lda(IMM(0x24));
     sta(ABS(MetatileBuffer));
@@ -6708,6 +7056,7 @@ void FlagpoleObject() {
 }
 
 void EndlessRope() {
+    _debug("EndlessRope", __FILE__, __LINE__);
     // render rope from the top to the bottom of screen
     ldx(IMM(0x0));
     ldy(IMM(0xf));
@@ -6716,6 +7065,7 @@ void EndlessRope() {
 }
 
 void BalancePlatRope() {
+    _debug("BalancePlatRope", __FILE__, __LINE__);
     // save object buffer offset for now
     txa();
     pha();
@@ -6735,6 +7085,7 @@ void BalancePlatRope() {
 }
 
 void DrawRope() {
+    _debug("DrawRope", __FILE__, __LINE__);
     // render the actual rope
     lda(IMM(0x40));
     JMP(RenderUnderPart);
@@ -6742,6 +7093,7 @@ void DrawRope() {
 }
 
 void RowOfCoins() {
+    _debug("RowOfCoins", __FILE__, __LINE__);
     // get area type
     ldy(ABS(AreaType));
     // load appropriate coin metatile
@@ -6751,6 +7103,7 @@ void RowOfCoins() {
 }
 
 void CastleBridgeObj() {
+    _debug("CastleBridgeObj", __FILE__, __LINE__);
     // load length of 13 columns
     ldy(IMM(0xc));
     JSR(ChkLrgObjFixedLength);
@@ -6759,6 +7112,7 @@ void CastleBridgeObj() {
 }
 
 void AxeObj() {
+    _debug("AxeObj", __FILE__, __LINE__);
     // load bowser's palette into sprite portion of palette
     lda(IMM(0x8));
     sta(ABS(VRAM_Buffer_AddrCtrl));
@@ -6766,6 +7120,7 @@ void AxeObj() {
 }
 
 void ChainObj() {
+    _debug("ChainObj", __FILE__, __LINE__);
     // get value loaded earlier from decoder
     ldy(ABS(0x0));
     // get appropriate row and metatile for object
@@ -6776,6 +7131,7 @@ void ChainObj() {
 }
 
 void EmptyBlock() {
+    _debug("EmptyBlock", __FILE__, __LINE__);
     // get row location
     JSR(GetLrgObjAttrib);
     ldx(ABS(0x7));
@@ -6784,6 +7140,7 @@ void EmptyBlock() {
 }
 
 void ColObj() {
+    _debug("ColObj", __FILE__, __LINE__);
     // column length of 1
     ldy(IMM(0x0));
     JMP(RenderUnderPart);
@@ -6791,6 +7148,7 @@ void ColObj() {
 }
 
 void RowOfBricks() {
+    _debug("RowOfBricks", __FILE__, __LINE__);
     // load area type obtained from area offset pointer
     ldy(ABS(AreaType));
     // check for cloud type override
@@ -6802,6 +7160,7 @@ void RowOfBricks() {
 }
 
 void DrawBricks() {
+    _debug("DrawBricks", __FILE__, __LINE__);
     // get appropriate metatile
     lda(ABSY(0x8000+offsetof(G, BrickMetatiles)));
     // and go render it
@@ -6810,6 +7169,7 @@ void DrawBricks() {
 }
 
 void RowOfSolidBlocks() {
+    _debug("RowOfSolidBlocks", __FILE__, __LINE__);
     // load area type obtained from area offset pointer
     ldy(ABS(AreaType));
     // get metatile
@@ -6818,6 +7178,7 @@ void RowOfSolidBlocks() {
 }
 
 void GetRow() {
+    _debug("GetRow", __FILE__, __LINE__);
     // store metatile here
     pha();
     // get row number, load length
@@ -6826,6 +7187,7 @@ void GetRow() {
 }
 
 void DrawRow() {
+    _debug("DrawRow", __FILE__, __LINE__);
     ldx(ABS(0x7));
     // set vertical height of 1
     ldy(IMM(0x0));
@@ -6836,6 +7198,7 @@ void DrawRow() {
 }
 
 void ColumnOfBricks() {
+    _debug("ColumnOfBricks", __FILE__, __LINE__);
     // load area type obtained from area offset
     ldy(ABS(AreaType));
     // get metatile (no cloud override as for row)
@@ -6845,6 +7208,7 @@ void ColumnOfBricks() {
 }
 
 void ColumnOfSolidBlocks() {
+    _debug("ColumnOfSolidBlocks", __FILE__, __LINE__);
     // load area type obtained from area offset
     ldy(ABS(AreaType));
     // get metatile
@@ -6853,6 +7217,7 @@ void ColumnOfSolidBlocks() {
 }
 
 void GetRow2() {
+    _debug("GetRow2", __FILE__, __LINE__);
     // save metatile to stack for now
     pha();
     // get length and row
@@ -6867,6 +7232,7 @@ void GetRow2() {
 }
 
 void BulletBillCannon() {
+    _debug("BulletBillCannon", __FILE__, __LINE__);
     // get row and length of bullet bill cannon
     JSR(GetLrgObjAttrib);
     // start at first row
@@ -6892,6 +7258,7 @@ void BulletBillCannon() {
 }
 
 void SetupCannon() {
+    _debug("SetupCannon", __FILE__, __LINE__);
     // get offset for data used by cannons and whirlpools
     ldx(ABS(Cannon_Offset));
     // get proper vertical coordinate for cannon
@@ -6916,12 +7283,14 @@ void SetupCannon() {
 }
 
 void StrCOffset() {
+    _debug("StrCOffset", __FILE__, __LINE__);
     // save new offset and leave
     stx(ABS(Cannon_Offset));
     return;
 }
 
 void StaircaseObject() {
+    _debug("StaircaseObject", __FILE__, __LINE__);
     // check and load length
     JSR(ChkLrgObjLength);
     // if length already loaded, skip init part
@@ -6934,6 +7303,7 @@ void StaircaseObject() {
 }
 
 void NextStair() {
+    _debug("NextStair", __FILE__, __LINE__);
     // move onto next step (or first if starting)
     dec(ABS(StaircaseControl));
     ldy(ABS(StaircaseControl));
@@ -6948,6 +7318,7 @@ void NextStair() {
 }
 
 void Jumpspring() {
+    _debug("Jumpspring", __FILE__, __LINE__);
     JSR(GetLrgObjAttrib);
     // find empty space in enemy object buffer
     JSR(FindEmptyEnemySlot);
@@ -6982,6 +7353,7 @@ void Jumpspring() {
 }
 
 void Hidden1UpBlock() {
+    _debug("Hidden1UpBlock", __FILE__, __LINE__);
     // if flag not set, do not render object
     lda(ABS(Hidden1UpFlag));
     BEQ(ExitDecBlock);
@@ -6994,6 +7366,7 @@ void Hidden1UpBlock() {
 }
 
 void QuestionBlock() {
+    _debug("QuestionBlock", __FILE__, __LINE__);
     // get value from level decoder routine
     JSR(GetAreaObjectID);
     // go to render it
@@ -7002,6 +7375,7 @@ void QuestionBlock() {
 }
 
 void BrickWithCoins() {
+    _debug("BrickWithCoins", __FILE__, __LINE__);
     // initialize multi-coin timer flag
     lda(IMM(0x0));
     sta(ABS(BrickCoinTimerFlag));
@@ -7009,6 +7383,7 @@ void BrickWithCoins() {
 }
 
 void BrickWithItem() {
+    _debug("BrickWithItem", __FILE__, __LINE__);
     // save area object ID
     JSR(GetAreaObjectID);
     sty(ABS(0x7));
@@ -7025,6 +7400,7 @@ void BrickWithItem() {
 }
 
 void BWithL() {
+    _debug("BWithL", __FILE__, __LINE__);
     // add object ID to adder
     clc();
     adc(ABS(0x7));
@@ -7034,6 +7410,7 @@ void BWithL() {
 }
 
 void DrawQBlk() {
+    _debug("DrawQBlk", __FILE__, __LINE__);
     // get appropriate metatile for brick (question block
     lda(ABSY(0x8000+offsetof(G, BrickQBlockMetatiles)));
     // if branched to here from question block routine)
@@ -7046,6 +7423,7 @@ void DrawQBlk() {
 }
 
 void GetAreaObjectID() {
+    _debug("GetAreaObjectID", __FILE__, __LINE__);
     // get value saved from area parser routine
     lda(ABS(0x0));
     sec();
@@ -7057,10 +7435,12 @@ void GetAreaObjectID() {
 }
 
 void ExitDecBlock() {
+    _debug("ExitDecBlock", __FILE__, __LINE__);
     return;
 }
 
 void Hole_Empty() {
+    _debug("Hole_Empty", __FILE__, __LINE__);
     // get lower nybble and save as length
     JSR(ChkLrgObjLength);
     // skip this part if length already loaded
@@ -7109,12 +7489,14 @@ void Hole_Empty() {
 }
 
 void StrWOffset() {
+    _debug("StrWOffset", __FILE__, __LINE__);
     // save new offset here
     stx(ABS(Whirlpool_Offset));
     JMP(NoWhirlP);
 }
 
 void NoWhirlP() {
+    _debug("NoWhirlP", __FILE__, __LINE__);
     // get appropriate metatile, then
     ldx(ABS(AreaType));
     // render the hole proper
@@ -7126,6 +7508,7 @@ void NoWhirlP() {
 }
 
 void RenderUnderPart() {
+    _debug("RenderUnderPart", __FILE__, __LINE__);
     // store vertical length to render
     sty(ABS(AreaObjectHeight));
     // check current spot to see if there's something
@@ -7154,12 +7537,14 @@ void RenderUnderPart() {
 }
 
 void DrawThisRow() {
+    _debug("DrawThisRow", __FILE__, __LINE__);
     // render contents of A from routine that called this
     sta(ABSX(MetatileBuffer));
     JMP(WaitOneRow);
 }
 
 void WaitOneRow() {
+    _debug("WaitOneRow", __FILE__, __LINE__);
     inx();
     // stop rendering if we're at the bottom of the screen
     cpx(IMM(0xd));
@@ -7172,16 +7557,19 @@ void WaitOneRow() {
 }
 
 void ExitUPartR() {
+    _debug("ExitUPartR", __FILE__, __LINE__);
     return;
 }
 
 void ChkLrgObjLength() {
+    _debug("ChkLrgObjLength", __FILE__, __LINE__);
     // get row location and size (length if branched to from here)
     JSR(GetLrgObjAttrib);
     JMP(ChkLrgObjFixedLength);
 }
 
 void ChkLrgObjFixedLength() {
+    _debug("ChkLrgObjFixedLength", __FILE__, __LINE__);
     // check for set length counter
     lda(ABSX(AreaObjectLength));
     // clear carry flag for not just starting
@@ -7197,10 +7585,12 @@ void ChkLrgObjFixedLength() {
 }
 
 void LenSet() {
+    _debug("LenSet", __FILE__, __LINE__);
     return;
 }
 
 void GetLrgObjAttrib() {
+    _debug("GetLrgObjAttrib", __FILE__, __LINE__);
     // get offset saved from area obj decoding routine
     ldy(ABSX(AreaObjOffsetBuffer));
     // get first byte of level object
@@ -7218,6 +7608,7 @@ void GetLrgObjAttrib() {
 }
 
 void GetAreaObjXPosition() {
+    _debug("GetAreaObjXPosition", __FILE__, __LINE__);
     // multiply current offset where we're at by 16
     lda(ABS(CurrentColumnPos));
     // to obtain horizontal pixel coordinate
@@ -7229,6 +7620,7 @@ void GetAreaObjXPosition() {
 }
 
 void GetAreaObjYPosition() {
+    _debug("GetAreaObjYPosition", __FILE__, __LINE__);
     // multiply value by 16
     lda(ABS(0x7));
     asl();
@@ -7243,6 +7635,7 @@ void GetAreaObjYPosition() {
 }
 
 void GetBlockBufferAddr() {
+    _debug("GetBlockBufferAddr", __FILE__, __LINE__);
     // take value of A, save
     pha();
     // move high nybble to low
@@ -7267,6 +7660,7 @@ void GetBlockBufferAddr() {
 }
 
 void LoadAreaPointer() {
+    _debug("LoadAreaPointer", __FILE__, __LINE__);
     // find it and store it here
     JSR(FindAreaPointer);
     sta(ABS(AreaPointer));
@@ -7274,6 +7668,7 @@ void LoadAreaPointer() {
 }
 
 void GetAreaType() {
+    _debug("GetAreaType", __FILE__, __LINE__);
     // mask out all but d6 and d5
     anda(IMM(0b1100000));
     asl();
@@ -7287,6 +7682,7 @@ void GetAreaType() {
 }
 
 void FindAreaPointer() {
+    _debug("FindAreaPointer", __FILE__, __LINE__);
     // load offset from world variable
     ldy(ABS(WorldNumber));
     lda(ABSY(0x8000+offsetof(G, WorldAddrOffsets)));
@@ -7300,6 +7696,7 @@ void FindAreaPointer() {
 }
 
 void GetAreaDataAddrs() {
+    _debug("GetAreaDataAddrs", __FILE__, __LINE__);
     // use 2 MSB for Y
     lda(ABS(AreaPointer));
     JSR(GetAreaType);
@@ -7349,6 +7746,7 @@ void GetAreaDataAddrs() {
 }
 
 void StoreFore() {
+    _debug("StoreFore", __FILE__, __LINE__);
     // if less, save value here as foreground scenery
     sta(ABS(ForegroundScenery));
     // pull byte from stack and push it back
@@ -7411,6 +7809,7 @@ void StoreFore() {
 }
 
 void StoreStyle() {
+    _debug("StoreStyle", __FILE__, __LINE__);
     sta(ABS(AreaStyle));
     // increment area data address by 2 bytes
     lda(ABS(AreaDataLow));
@@ -7424,6 +7823,7 @@ void StoreStyle() {
 }
 
 void GameMode() {
+    _debug("GameMode", __FILE__, __LINE__);
     lda(ABS(OperMode_Task));
     static JUMP_ENTRY jumptable[4] = {
         InitializeArea,
@@ -7435,6 +7835,7 @@ void GameMode() {
 }
 
 void GameCoreRoutine() {
+    _debug("GameCoreRoutine", __FILE__, __LINE__);
     // get which player is on the screen
     ldx(ABS(CurrentPlayer));
     // use appropriate player's controller bits
@@ -7453,6 +7854,7 @@ void GameCoreRoutine() {
 }
 
 void GameEngine() {
+    _debug("GameEngine", __FILE__, __LINE__);
     // process fireballs and air bubbles
     JSR(ProcFireball_Bubble);
     ldx(IMM(0x0));
@@ -7460,6 +7862,7 @@ void GameEngine() {
 }
 
 void ProcELoop() {
+    _debug("ProcELoop", __FILE__, __LINE__);
     // put incremented offset in X as enemy object offset
     stx(ABS(ObjectOffset));
     // process enemy objects
@@ -7521,6 +7924,7 @@ void ProcELoop() {
 }
 
 void NoChgMus() {
+    _debug("NoChgMus", __FILE__, __LINE__);
     // get invincibility timer
     ldy(ABS(StarInvincibleTimer));
     // get frame counter
@@ -7536,6 +7940,7 @@ void NoChgMus() {
 }
 
 void CycleTwo() {
+    _debug("CycleTwo", __FILE__, __LINE__);
     // if branched here, divide by 2 to cycle every other frame
     lsr();
     // do sub to cycle the palette (note: shares fire flower code)
@@ -7546,12 +7951,14 @@ void CycleTwo() {
 }
 
 void ClrPlrPal() {
+    _debug("ClrPlrPal", __FILE__, __LINE__);
     // do sub to clear player's palette bits in attributes
     JSR(ResetPalStar);
     JMP(SaveAB);
 }
 
 void SaveAB() {
+    _debug("SaveAB", __FILE__, __LINE__);
     // save current A and B button
     lda(ABS(A_B_Buttons));
     // into temp variable to be used on next frame
@@ -7563,6 +7970,7 @@ void SaveAB() {
 }
 
 void UpdScrollVar() {
+    _debug("UpdScrollVar", __FILE__, __LINE__);
     lda(ABS(VRAM_Buffer_AddrCtrl));
     // if vram address controller set to 6 (one of two $0341s)
     cmp(IMM(0x6));
@@ -7590,17 +7998,20 @@ void UpdScrollVar() {
 }
 
 void RunParser() {
+    _debug("RunParser", __FILE__, __LINE__);
     // update the name table with more level graphics
     JSR(AreaParserTaskHandler);
     JMP(ExitEng);
 }
 
 void ExitEng() {
+    _debug("ExitEng", __FILE__, __LINE__);
     // and after all that, we're finally done!
     return;
 }
 
 void ScrollHandler() {
+    _debug("ScrollHandler", __FILE__, __LINE__);
     // load value saved here
     lda(ABS(Player_X_Scroll));
     clc();
@@ -7637,6 +8048,7 @@ void ScrollHandler() {
 }
 
 void ChkNearMid() {
+    _debug("ChkNearMid", __FILE__, __LINE__);
     lda(ABS(Player_Pos_ForScroll));
     // check player's horizontal screen position
     cmp(IMM(0x70));
@@ -7648,6 +8060,7 @@ void ChkNearMid() {
 }
 
 void ScrollScreen() {
+    _debug("ScrollScreen", __FILE__, __LINE__);
     tya();
     // save value here
     sta(ABS(ScrollAmount));
@@ -7692,6 +8105,7 @@ void ScrollScreen() {
 }
 
 void InitScrlAmt() {
+    _debug("InitScrlAmt", __FILE__, __LINE__);
     lda(IMM(0x0));
     // initialize value here
     sta(ABS(ScrollAmount));
@@ -7699,6 +8113,7 @@ void InitScrlAmt() {
 }
 
 void ChkPOffscr() {
+    _debug("ChkPOffscr", __FILE__, __LINE__);
     // set X for player offset
     ldx(IMM(0x0));
     // get horizontal offscreen bits for player
@@ -7722,6 +8137,7 @@ void ChkPOffscr() {
 }
 
 void KeepOnscr() {
+    _debug("KeepOnscr", __FILE__, __LINE__);
     // get left or right side coordinate based on offset
     lda(ABSY(ScreenEdge_X_Pos));
     sec();
@@ -7748,6 +8164,7 @@ void KeepOnscr() {
 }
 
 void InitPlatScrl() {
+    _debug("InitPlatScrl", __FILE__, __LINE__);
     // nullify platform force imposed on scroll
     lda(IMM(0x0));
     sta(ABS(Platform_X_Scroll));
@@ -7755,6 +8172,7 @@ void InitPlatScrl() {
 }
 
 void GetScreenPosition() {
+    _debug("GetScreenPosition", __FILE__, __LINE__);
     // get coordinate of screen's left boundary
     lda(ABS(ScreenLeft_X_Pos));
     clc();
@@ -7772,6 +8190,7 @@ void GetScreenPosition() {
 }
 
 void GameRoutines() {
+    _debug("GameRoutines", __FILE__, __LINE__);
     // run routine based on number (a few of these routines are
     lda(ABS(GameEngineSubroutine));
     // merely placeholders as conditions for other routines)
@@ -7794,6 +8213,7 @@ void GameRoutines() {
 }
 
 void PlayerEntrance() {
+    _debug("PlayerEntrance", __FILE__, __LINE__);
     // check for mode of alternate entry
     lda(ABS(AltEntranceControl));
     cmp(IMM(0x2));
@@ -7818,6 +8238,7 @@ void PlayerEntrance() {
 }
 
 void ChkBehPipe() {
+    _debug("ChkBehPipe", __FILE__, __LINE__);
     // check for sprite attributes
     lda(ABS(Player_SprAttrib));
     // branch if found
@@ -7829,6 +8250,7 @@ void ChkBehPipe() {
 }
 
 void IntroEntr() {
+    _debug("IntroEntr", __FILE__, __LINE__);
     // execute sub to move player to the right
     JSR(EnterSidePipe);
     // decrement timer for change of area
@@ -7843,6 +8265,7 @@ void IntroEntr() {
 }
 
 void EntrMode2() {
+    _debug("EntrMode2", __FILE__, __LINE__);
     // if controller override bits set here,
     lda(ABS(JoypadOverride));
     // branch to enter with vine
@@ -7862,6 +8285,7 @@ void EntrMode2() {
 }
 
 void VineEntr() {
+    _debug("VineEntr", __FILE__, __LINE__);
     lda(ABS(VineHeight));
     // check vine height
     cmp(IMM(0x60));
@@ -7890,6 +8314,7 @@ void VineEntr() {
 }
 
 void OffVine() {
+    _debug("OffVine", __FILE__, __LINE__);
     // set collision detection disable flag
     sty(ABS(DisableCollisionDet));
     // use contents of A to move player up or right, execute sub
@@ -7903,6 +8328,7 @@ void OffVine() {
 }
 
 void PlayerRdy() {
+    _debug("PlayerRdy", __FILE__, __LINE__);
     // set routine to be executed by game engine next frame
     lda(IMM(0x8));
     sta(ABS(GameEngineSubroutine));
@@ -7921,17 +8347,20 @@ void PlayerRdy() {
 }
 
 void ExitEntr() {
+    _debug("ExitEntr", __FILE__, __LINE__);
     // leave!
     return;
 }
 
 void AutoControlPlayer() {
+    _debug("AutoControlPlayer", __FILE__, __LINE__);
     // override controller bits with contents of A if executing here
     sta(ABS(SavedJoypadBits));
     JMP(PlayerCtrlRoutine);
 }
 
 void PlayerCtrlRoutine() {
+    _debug("PlayerCtrlRoutine", __FILE__, __LINE__);
     // check task here
     lda(ABS(GameEngineSubroutine));
     // if certain value is set, branch to skip controller bit loading
@@ -7955,6 +8384,7 @@ void PlayerCtrlRoutine() {
 }
 
 void DisJoyp() {
+    _debug("DisJoyp", __FILE__, __LINE__);
     // disable controller bits
     lda(IMM(0x0));
     sta(ABS(SavedJoypadBits));
@@ -7962,6 +8392,7 @@ void DisJoyp() {
 }
 
 void SaveJoyp() {
+    _debug("SaveJoyp", __FILE__, __LINE__);
     // otherwise store A and B buttons in $0a
     lda(ABS(SavedJoypadBits));
     anda(IMM(0b11000000));
@@ -7995,6 +8426,7 @@ void SaveJoyp() {
 }
 
 void SizeChk() {
+    _debug("SizeChk", __FILE__, __LINE__);
     // run movement subroutines
     JSR(PlayerMovementSubs);
     // is player small?
@@ -8012,6 +8444,7 @@ void SizeChk() {
 }
 
 void ChkMoveDir() {
+    _debug("ChkMoveDir", __FILE__, __LINE__);
     // set contents of Y as player's bounding box size control
     sty(ABS(Player_BoundBoxCtrl));
     // set moving direction to right by default
@@ -8028,12 +8461,14 @@ void ChkMoveDir() {
 }
 
 void SetMoveDir() {
+    _debug("SetMoveDir", __FILE__, __LINE__);
     // set moving direction
     sta(ABS(Player_MovingDir));
     JMP(PlayerSubs);
 }
 
 void PlayerSubs() {
+    _debug("PlayerSubs", __FILE__, __LINE__);
     // move the screen if necessary
     JSR(ScrollHandler);
     // get player's offscreen bits
@@ -8070,6 +8505,7 @@ void PlayerSubs() {
 }
 
 void PlayerHole() {
+    _debug("PlayerHole", __FILE__, __LINE__);
     // check player's vertical high byte
     lda(ABS(Player_Y_HighPos));
     // for below the screen
@@ -8096,6 +8532,7 @@ void PlayerHole() {
 }
 
 void HoleDie() {
+    _debug("HoleDie", __FILE__, __LINE__);
     // set flag in X for player death
     inx();
     ldy(ABS(GameEngineSubroutine));
@@ -8116,6 +8553,7 @@ void HoleDie() {
 }
 
 void HoleBottom() {
+    _debug("HoleBottom", __FILE__, __LINE__);
     ldy(IMM(0x6));
     // change value here
     sty(ABS(0x7));
@@ -8123,6 +8561,7 @@ void HoleBottom() {
 }
 
 void ChkHoleX() {
+    _debug("ChkHoleX", __FILE__, __LINE__);
     // compare vertical high byte with value set here
     cmp(ABS(0x7));
     // if less, branch to leave
@@ -8143,11 +8582,13 @@ void ChkHoleX() {
 }
 
 void ExitCtrl() {
+    _debug("ExitCtrl", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void CloudExit() {
+    _debug("CloudExit", __FILE__, __LINE__);
     lda(IMM(0x0));
     // clear controller override bits if any are set
     sta(ABS(JoypadOverride));
@@ -8159,6 +8600,7 @@ void CloudExit() {
 }
 
 void Vine_AutoClimb() {
+    _debug("Vine_AutoClimb", __FILE__, __LINE__);
     // check to see whether player reached position
     lda(ABS(Player_Y_HighPos));
     // above the status bar yet and if so, set modes
@@ -8170,6 +8612,7 @@ void Vine_AutoClimb() {
 }
 
 void AutoClimb() {
+    _debug("AutoClimb", __FILE__, __LINE__);
     // set controller bits override to up
     lda(IMM(0b1000));
     sta(ABS(JoypadOverride));
@@ -8181,6 +8624,7 @@ void AutoClimb() {
 }
 
 void SetEntr() {
+    _debug("SetEntr", __FILE__, __LINE__);
     // set starting position to override
     lda(IMM(0x2));
     sta(ABS(AltEntranceControl));
@@ -8190,6 +8634,7 @@ void SetEntr() {
 }
 
 void VerticalPipeEntry() {
+    _debug("VerticalPipeEntry", __FILE__, __LINE__);
     // set 1 as movement amount
     lda(IMM(0x1));
     // do sub to move player downwards
@@ -8215,6 +8660,7 @@ void VerticalPipeEntry() {
 }
 
 void MovePlayerYAxis() {
+    _debug("MovePlayerYAxis", __FILE__, __LINE__);
     clc();
     // add contents of A to player position
     adc(ABS(Player_Y_Position));
@@ -8223,6 +8669,7 @@ void MovePlayerYAxis() {
 }
 
 void SideExitPipeEntry() {
+    _debug("SideExitPipeEntry", __FILE__, __LINE__);
     // execute sub to move player to the right
     JSR(EnterSidePipe);
     ldy(IMM(0x2));
@@ -8230,6 +8677,7 @@ void SideExitPipeEntry() {
 }
 
 void ChgAreaPipe() {
+    _debug("ChgAreaPipe", __FILE__, __LINE__);
     // decrement timer for change of area
     dec(ABS(ChangeAreaTimer));
     BNE(ExitCAPipe);
@@ -8239,6 +8687,7 @@ void ChgAreaPipe() {
 }
 
 void ChgAreaMode() {
+    _debug("ChgAreaMode", __FILE__, __LINE__);
     // set flag to disable screen output
     inc(ABS(DisableScreenFlag));
     lda(IMM(0x0));
@@ -8250,11 +8699,13 @@ void ChgAreaMode() {
 }
 
 void ExitCAPipe() {
+    _debug("ExitCAPipe", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void EnterSidePipe() {
+    _debug("EnterSidePipe", __FILE__, __LINE__);
     // set player's horizontal speed
     lda(IMM(0x8));
     sta(ABS(Player_X_Speed));
@@ -8273,6 +8724,7 @@ void EnterSidePipe() {
 }
 
 void RightPipe() {
+    _debug("RightPipe", __FILE__, __LINE__);
     // use contents of Y to
     tya();
     // execute player control routine with ctrl bits nulled
@@ -8281,6 +8733,7 @@ void RightPipe() {
 }
 
 void PlayerChangeSize() {
+    _debug("PlayerChangeSize", __FILE__, __LINE__);
     // check master timer control
     lda(ABS(TimerControl));
     // for specific moment in time
@@ -8293,6 +8746,7 @@ void PlayerChangeSize() {
 }
 
 void EndChgSize() {
+    _debug("EndChgSize", __FILE__, __LINE__);
     // check again for another specific moment
     cmp(IMM(0xc4));
     // and branch to leave if before or after that point
@@ -8303,11 +8757,13 @@ void EndChgSize() {
 }
 
 void ExitChgSize() {
+    _debug("ExitChgSize", __FILE__, __LINE__);
     // and then leave
     return;
 }
 
 void PlayerInjuryBlink() {
+    _debug("PlayerInjuryBlink", __FILE__, __LINE__);
     // check master timer control
     lda(ABS(TimerControl));
     // for specific moment in time
@@ -8324,12 +8780,14 @@ void PlayerInjuryBlink() {
 }
 
 void ExitBlink() {
+    _debug("ExitBlink", __FILE__, __LINE__);
     // do unconditional branch to leave
     BNE(ExitBoth);
     JMP(InitChangeSize);
 }
 
 void InitChangeSize() {
+    _debug("InitChangeSize", __FILE__, __LINE__);
     // if growing/shrinking flag already set
     ldy(ABS(PlayerChangeSizeFlag));
     // then branch to leave
@@ -8346,11 +8804,13 @@ void InitChangeSize() {
 }
 
 void ExitBoth() {
+    _debug("ExitBoth", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void PlayerDeath() {
+    _debug("PlayerDeath", __FILE__, __LINE__);
     // check master timer control
     lda(ABS(TimerControl));
     // for specific moment in time
@@ -8363,6 +8823,7 @@ void PlayerDeath() {
 }
 
 void DonePlayerTask() {
+    _debug("DonePlayerTask", __FILE__, __LINE__);
     lda(IMM(0x0));
     // initialize master timer control to continue timers
     sta(ABS(TimerControl));
@@ -8374,6 +8835,7 @@ void DonePlayerTask() {
 }
 
 void PlayerFireFlower() {
+    _debug("PlayerFireFlower", __FILE__, __LINE__);
     // check master timer control
     lda(ABS(TimerControl));
     // for specific moment in time
@@ -8389,6 +8851,7 @@ void PlayerFireFlower() {
 }
 
 void CyclePlayerPalette() {
+    _debug("CyclePlayerPalette", __FILE__, __LINE__);
     // mask out all but d1-d0 (previously d3-d2)
     anda(IMM(0x3));
     // store result here to use as palette bits
@@ -8406,12 +8869,14 @@ void CyclePlayerPalette() {
 }
 
 void ResetPalFireFlower() {
+    _debug("ResetPalFireFlower", __FILE__, __LINE__);
     // do sub to init timer control and run player control routine
     JSR(DonePlayerTask);
     JMP(ResetPalStar);
 }
 
 void ResetPalStar() {
+    _debug("ResetPalStar", __FILE__, __LINE__);
     // get player attributes
     lda(ABS(Player_SprAttrib));
     // mask out palette bits to force palette 0
@@ -8423,11 +8888,13 @@ void ResetPalStar() {
 }
 
 void ExitDeath() {
+    _debug("ExitDeath", __FILE__, __LINE__);
     // leave from death routine
     return;
 }
 
 void FlagpoleSlide() {
+    _debug("FlagpoleSlide", __FILE__, __LINE__);
     // check special use enemy slot
     lda(ABS(((Enemy_ID) + (5))));
     // for flagpole flag object
@@ -8452,12 +8919,14 @@ void FlagpoleSlide() {
 }
 
 void SlidePlayer() {
+    _debug("SlidePlayer", __FILE__, __LINE__);
     // jump to player control routine
     JMP(AutoControlPlayer);
     JMP(NoFPObj);
 }
 
 void NoFPObj() {
+    _debug("NoFPObj", __FILE__, __LINE__);
     // increment to next routine (this may
     inc(ABS(GameEngineSubroutine));
     // be residual code)
@@ -8465,6 +8934,7 @@ void NoFPObj() {
 }
 
 void PlayerEndLevel() {
+    _debug("PlayerEndLevel", __FILE__, __LINE__);
     // force player to walk to the right
     lda(IMM(0x1));
     JSR(AutoControlPlayer);
@@ -8487,6 +8957,7 @@ void PlayerEndLevel() {
 }
 
 void ChkStop() {
+    _debug("ChkStop", __FILE__, __LINE__);
     // get player collision bits
     lda(ABS(Player_CollisionBits));
     // check for d0 set
@@ -8503,6 +8974,7 @@ void ChkStop() {
 }
 
 void InCastle() {
+    _debug("InCastle", __FILE__, __LINE__);
     // set player's background priority bit to
     lda(IMM(0b100000));
     // give illusion of being inside the castle
@@ -8511,6 +8983,7 @@ void InCastle() {
 }
 
 void RdyNextA() {
+    _debug("RdyNextA", __FILE__, __LINE__);
     lda(ABS(StarFlagTaskControl));
     // if star flag task control not yet set
     cmp(IMM(0x5));
@@ -8537,6 +9010,7 @@ void RdyNextA() {
 }
 
 void NextArea() {
+    _debug("NextArea", __FILE__, __LINE__);
     // increment area number used for address loader
     inc(ABS(AreaNumber));
     // get new level pointer
@@ -8554,10 +9028,12 @@ void NextArea() {
 }
 
 void ExitNA() {
+    _debug("ExitNA", __FILE__, __LINE__);
     return;
 }
 
 void PlayerMovementSubs() {
+    _debug("PlayerMovementSubs", __FILE__, __LINE__);
     // set A to init crouch flag by default
     lda(IMM(0x0));
     // is player small?
@@ -8576,12 +9052,14 @@ void PlayerMovementSubs() {
 }
 
 void SetCrouch() {
+    _debug("SetCrouch", __FILE__, __LINE__);
     // store value in crouch flag
     sta(ABS(CrouchingFlag));
     JMP(ProcMove);
 }
 
 void ProcMove() {
+    _debug("ProcMove", __FILE__, __LINE__);
     // run sub related to jumping and swimming
     JSR(PlayerPhysicsSub);
     // if growing/shrinking flag set,
@@ -8600,6 +9078,7 @@ void ProcMove() {
 }
 
 void MoveSubs() {
+    _debug("MoveSubs", __FILE__, __LINE__);
     static JUMP_ENTRY jumptable[4] = {
         OnGroundStateSub,
         JumpSwimSub,
@@ -8610,10 +9089,12 @@ void MoveSubs() {
 }
 
 void NoMoveSub() {
+    _debug("NoMoveSub", __FILE__, __LINE__);
     return;
 }
 
 void OnGroundStateSub() {
+    _debug("OnGroundStateSub", __FILE__, __LINE__);
     // do a sub to set animation frame timing
     JSR(GetPlayerAnimSpeed);
     lda(ABS(Left_Right_Buttons));
@@ -8625,6 +9106,7 @@ void OnGroundStateSub() {
 }
 
 void GndMove() {
+    _debug("GndMove", __FILE__, __LINE__);
     // do a sub to impose friction on player's walk/run
     JSR(ImposeFriction);
     // do another sub to move player horizontally
@@ -8635,6 +9117,7 @@ void GndMove() {
 }
 
 void FallingSub() {
+    _debug("FallingSub", __FILE__, __LINE__);
     lda(ABS(VerticalForceDown));
     // dump vertical movement force for falling into main one
     sta(ABS(VerticalForce));
@@ -8644,6 +9127,7 @@ void FallingSub() {
 }
 
 void JumpSwimSub() {
+    _debug("JumpSwimSub", __FILE__, __LINE__);
     // if player's vertical speed zero
     ldy(ABS(Player_Y_Speed));
     // or moving downwards, branch to falling
@@ -8668,6 +9152,7 @@ void JumpSwimSub() {
 }
 
 void DumpFall() {
+    _debug("DumpFall", __FILE__, __LINE__);
     // otherwise dump falling into main fractional
     lda(ABS(VerticalForceDown));
     sta(ABS(VerticalForce));
@@ -8675,6 +9160,7 @@ void DumpFall() {
 }
 
 void ProcSwim() {
+    _debug("ProcSwim", __FILE__, __LINE__);
     // if swimming flag not set,
     lda(ABS(SwimmingFlag));
     // branch ahead to last part
@@ -8693,6 +9179,7 @@ void ProcSwim() {
 }
 
 void LRWater() {
+    _debug("LRWater", __FILE__, __LINE__);
     // check left/right controller bits (check for swimming)
     lda(ABS(Left_Right_Buttons));
     // if not pressing any, skip
@@ -8703,6 +9190,7 @@ void LRWater() {
 }
 
 void LRAir() {
+    _debug("LRAir", __FILE__, __LINE__);
     // check left/right controller bits (check for jumping/falling)
     lda(ABS(Left_Right_Buttons));
     // if not pressing any, skip
@@ -8713,6 +9201,7 @@ void LRAir() {
 }
 
 void JSMove() {
+    _debug("JSMove", __FILE__, __LINE__);
     // do a sub to move player horizontally
     JSR(MovePlayerHorizontally);
     // set player's speed here, to be used for scroll later
@@ -8729,12 +9218,14 @@ void JSMove() {
 }
 
 void ExitMov1() {
+    _debug("ExitMov1", __FILE__, __LINE__);
     // jump to move player vertically, then leave
     JMP(MovePlayerVertically);
     JMP(ClimbingSub);
 }
 
 void ClimbingSub() {
+    _debug("ClimbingSub", __FILE__, __LINE__);
     lda(ABS(Player_YMF_Dummy));
     // add movement force to dummy variable
     clc();
@@ -8753,6 +9244,7 @@ void ClimbingSub() {
 }
 
 void MoveOnVine() {
+    _debug("MoveOnVine", __FILE__, __LINE__);
     // store adder here
     sty(ABS(0x0));
     // add carry to player's vertical position
@@ -8792,6 +9284,7 @@ void MoveOnVine() {
 }
 
 void ClimbFD() {
+    _debug("ClimbFD", __FILE__, __LINE__);
     // check to see if facing right
     dey();
     // if so, branch, do not increment
@@ -8802,6 +9295,7 @@ void ClimbFD() {
 }
 
 void CSetFDir() {
+    _debug("CSetFDir", __FILE__, __LINE__);
     lda(ABS(Player_X_Position));
     // add or subtract from player's horizontal position
     clc();
@@ -8823,17 +9317,20 @@ void CSetFDir() {
 }
 
 void ExitCSub() {
+    _debug("ExitCSub", __FILE__, __LINE__);
     // then leave
     return;
 }
 
 void InitCSTimer() {
+    _debug("InitCSTimer", __FILE__, __LINE__);
     // initialize timer here
     sta(ABS(ClimbSideTimer));
     return;
 }
 
 void PlayerPhysicsSub() {
+    _debug("PlayerPhysicsSub", __FILE__, __LINE__);
     // check player state
     lda(ABS(Player_State));
     cmp(IMM(0x3));
@@ -8855,6 +9352,7 @@ void PlayerPhysicsSub() {
 }
 
 void ProcClimb() {
+    _debug("ProcClimb", __FILE__, __LINE__);
     // load value here
     ldx(ABSY(0x8000+offsetof(G, Climb_Y_MForceData)));
     // store as vertical movement force
@@ -8873,12 +9371,14 @@ void ProcClimb() {
 }
 
 void SetCAnim() {
+    _debug("SetCAnim", __FILE__, __LINE__);
     // store animation timer setting and leave
     sta(ABS(PlayerAnimTimerSet));
     return;
 }
 
 void CheckForJumping() {
+    _debug("CheckForJumping", __FILE__, __LINE__);
     // if jumpspring animating,
     lda(ABS(JumpspringAnimCtrl));
     // skip ahead to something else
@@ -8895,12 +9395,14 @@ void CheckForJumping() {
 }
 
 void NoJump() {
+    _debug("NoJump", __FILE__, __LINE__);
     // otherwise, jump to something else
     JMP(X_Physics);
     JMP(ProcJumping);
 }
 
 void ProcJumping() {
+    _debug("ProcJumping", __FILE__, __LINE__);
     // check player state
     lda(ABS(Player_State));
     // if on the ground, branch
@@ -8922,6 +9424,7 @@ void ProcJumping() {
 }
 
 void InitJS() {
+    _debug("InitJS", __FILE__, __LINE__);
     // set jump/swim timer
     lda(IMM(0x20));
     sta(ABS(JumpSwimTimer));
@@ -8959,6 +9462,7 @@ void InitJS() {
 }
 
 void ChkWtr() {
+    _debug("ChkWtr", __FILE__, __LINE__);
     // set value here (apparently always set to 1)
     lda(IMM(0x1));
     sta(ABS(DiffToHaltJump));
@@ -8976,6 +9480,7 @@ void ChkWtr() {
 }
 
 void GetYPhy() {
+    _debug("GetYPhy", __FILE__, __LINE__);
     // store appropriate jump/swim
     lda(ABSY(0x8000+offsetof(G, JumpMForceData)));
     // data here
@@ -9008,6 +9513,7 @@ void GetYPhy() {
 }
 
 void PJumpSnd() {
+    _debug("PJumpSnd", __FILE__, __LINE__);
     // load big mario's jump sound by default
     lda(IMM(Sfx_BigJump));
     // is mario big?
@@ -9019,12 +9525,14 @@ void PJumpSnd() {
 }
 
 void SJumpSnd() {
+    _debug("SJumpSnd", __FILE__, __LINE__);
     // store appropriate jump sound in square 1 sfx queue
     sta(ABS(Square1SoundQueue));
     JMP(X_Physics);
 }
 
 void X_Physics() {
+    _debug("X_Physics", __FILE__, __LINE__);
     ldy(IMM(0x0));
     // init value here
     sty(ABS(0x0));
@@ -9043,6 +9551,7 @@ void X_Physics() {
 }
 
 void ProcPRun() {
+    _debug("ProcPRun", __FILE__, __LINE__);
     // if mario on the ground, increment Y
     iny();
     // check area type
@@ -9070,6 +9579,7 @@ void ProcPRun() {
 }
 
 void ChkRFast() {
+    _debug("ChkRFast", __FILE__, __LINE__);
     // if running timer not set or level type is water,
     iny();
     // increment Y again and temp variable in memory
@@ -9086,6 +9596,7 @@ void ChkRFast() {
 }
 
 void FastXSp() {
+    _debug("FastXSp", __FILE__, __LINE__);
     // if running speed set or speed => $21 increment $00
     inc(ABS(0x0));
     // and jump ahead
@@ -9094,6 +9605,7 @@ void FastXSp() {
 }
 
 void SetRTmr() {
+    _debug("SetRTmr", __FILE__, __LINE__);
     // if b button pressed, set running timer
     lda(IMM(0xa));
     sta(ABS(RunningTimer));
@@ -9101,6 +9613,7 @@ void SetRTmr() {
 }
 
 void GetXPhy() {
+    _debug("GetXPhy", __FILE__, __LINE__);
     // get maximum speed to the left
     lda(ABSY(0x8000+offsetof(G, MaxLeftXSpdData)));
     sta(ABS(MaximumLeftSpeed));
@@ -9116,6 +9629,7 @@ void GetXPhy() {
 }
 
 void GetXPhy2() {
+    _debug("GetXPhy2", __FILE__, __LINE__);
     // get maximum speed to the right
     lda(ABSY(0x8000+offsetof(G, MaxRightXSpdData)));
     sta(ABS(MaximumRightSpeed));
@@ -9140,11 +9654,13 @@ void GetXPhy2() {
 }
 
 void ExitPhy() {
+    _debug("ExitPhy", __FILE__, __LINE__);
     // and then leave
     return;
 }
 
 void GetPlayerAnimSpeed() {
+    _debug("GetPlayerAnimSpeed", __FILE__, __LINE__);
     // initialize offset in Y
     ldy(IMM(0x0));
     // check player's walking/running speed
@@ -9165,6 +9681,7 @@ void GetPlayerAnimSpeed() {
 }
 
 void ChkSkid() {
+    _debug("ChkSkid", __FILE__, __LINE__);
     // get controller bits
     lda(ABS(SavedJoypadBits));
     // mask out A button
@@ -9183,6 +9700,7 @@ void ChkSkid() {
 }
 
 void SetRunSpd() {
+    _debug("SetRunSpd", __FILE__, __LINE__);
     // store zero or running speed here
     sta(ABS(RunningSpeed));
     JMP(SetAnimSpd);
@@ -9190,6 +9708,7 @@ void SetRunSpd() {
 }
 
 void ProcSkid() {
+    _debug("ProcSkid", __FILE__, __LINE__);
     // check player's walking/running speed
     lda(ABS(Player_XSpeedAbsolute));
     // against one last amount
@@ -9208,6 +9727,7 @@ void ProcSkid() {
 }
 
 void SetAnimSpd() {
+    _debug("SetAnimSpd", __FILE__, __LINE__);
     // get animation timer setting using Y as offset
     lda(ABSY(0x8000+offsetof(G, PlayerAnimTmrData)));
     sta(ABS(PlayerAnimTimerSet));
@@ -9215,6 +9735,7 @@ void SetAnimSpd() {
 }
 
 void ImposeFriction() {
+    _debug("ImposeFriction", __FILE__, __LINE__);
     // perform AND between left/right controller bits and collision flag
     anda(ABS(Player_CollisionBits));
     // then compare to zero (this instruction is redundant)
@@ -9232,6 +9753,7 @@ void ImposeFriction() {
 }
 
 void JoypFrict() {
+    _debug("JoypFrict", __FILE__, __LINE__);
     // put right controller bit into carry
     lsr();
     // if left button pressed, carry = 0, thus branch
@@ -9240,6 +9762,7 @@ void JoypFrict() {
 }
 
 void LeftFrict() {
+    _debug("LeftFrict", __FILE__, __LINE__);
     // load value set here
     lda(ABS(Player_X_MoveForce));
     clc();
@@ -9266,6 +9789,7 @@ void LeftFrict() {
 }
 
 void RghtFrict() {
+    _debug("RghtFrict", __FILE__, __LINE__);
     // load value set here
     lda(ABS(Player_X_MoveForce));
     sec();
@@ -9290,6 +9814,7 @@ void RghtFrict() {
 }
 
 void XSpdSign() {
+    _debug("XSpdSign", __FILE__, __LINE__);
     // if player not moving or moving to the right,
     cmp(IMM(0x0));
     // branch and leave horizontal speed value unmodified
@@ -9303,12 +9828,14 @@ void XSpdSign() {
 }
 
 void SetAbsSpd() {
+    _debug("SetAbsSpd", __FILE__, __LINE__);
     // store walking/running speed here and leave
     sta(ABS(Player_XSpeedAbsolute));
     return;
 }
 
 void ProcFireball_Bubble() {
+    _debug("ProcFireball_Bubble", __FILE__, __LINE__);
     // check player's status
     lda(ABS(PlayerStatus));
     cmp(IMM(0x2));
@@ -9361,6 +9888,7 @@ void ProcFireball_Bubble() {
 }
 
 void ProcFireballs() {
+    _debug("ProcFireballs", __FILE__, __LINE__);
     ldx(IMM(0x0));
     // process first fireball object
     JSR(FireballObjCore);
@@ -9371,6 +9899,7 @@ void ProcFireballs() {
 }
 
 void ProcAirBubbles() {
+    _debug("ProcAirBubbles", __FILE__, __LINE__);
     // if not water type level, skip the rest of this
     lda(ABS(AreaType));
     BNE(BublExit);
@@ -9380,6 +9909,7 @@ void ProcAirBubbles() {
 }
 
 void BublLoop() {
+    _debug("BublLoop", __FILE__, __LINE__);
     // store offset
     stx(ABS(ObjectOffset));
     // check timers and coordinates, create air bubble
@@ -9397,11 +9927,13 @@ void BublLoop() {
 }
 
 void BublExit() {
+    _debug("BublExit", __FILE__, __LINE__);
     // then leave
     return;
 }
 
 void FireballObjCore() {
+    _debug("FireballObjCore", __FILE__, __LINE__);
     // store offset as current object
     stx(ABS(ObjectOffset));
     // check for d7 = 1
@@ -9450,6 +9982,7 @@ void FireballObjCore() {
 }
 
 void RunFB() {
+    _debug("RunFB", __FILE__, __LINE__);
     // add 7 to offset to use
     txa();
     // as fireball offset for next routines
@@ -9491,6 +10024,7 @@ void RunFB() {
 }
 
 void EraseFB() {
+    _debug("EraseFB", __FILE__, __LINE__);
     // erase fireball state
     lda(IMM(0x0));
     sta(ABSX(Fireball_State));
@@ -9498,17 +10032,20 @@ void EraseFB() {
 }
 
 void NoFBall() {
+    _debug("NoFBall", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void FireballExplosion() {
+    _debug("FireballExplosion", __FILE__, __LINE__);
     JSR(RelativeFireballPosition);
     JMP(DrawExplosion_Fireball);
     JMP(BubbleCheck);
 }
 
 void BubbleCheck() {
+    _debug("BubbleCheck", __FILE__, __LINE__);
     // get part of LSFR
     lda(ABSX(((PseudoRandomBitReg) + (1))));
     anda(IMM(0x1));
@@ -9528,6 +10065,7 @@ void BubbleCheck() {
 }
 
 void SetupBubble() {
+    _debug("SetupBubble", __FILE__, __LINE__);
     // load default value here
     ldy(IMM(0x0));
     // get player's facing direction
@@ -9542,6 +10080,7 @@ void SetupBubble() {
 }
 
 void PosBubl() {
+    _debug("PosBubl", __FILE__, __LINE__);
     // use value loaded as adder
     tya();
     // add to player's horizontal position
@@ -9572,6 +10111,7 @@ void PosBubl() {
 }
 
 void MoveBubl() {
+    _debug("MoveBubl", __FILE__, __LINE__);
     // get pseudorandom bit again, use as offset
     ldy(ABS(0x7));
     lda(ABSX(Bubble_YMF_Dummy));
@@ -9593,17 +10133,20 @@ void MoveBubl() {
 }
 
 void Y_Bubl() {
+    _debug("Y_Bubl", __FILE__, __LINE__);
     // store as new vertical coordinate for air bubble
     sta(ABSX(Bubble_Y_Position));
     JMP(ExitBubl);
 }
 
 void ExitBubl() {
+    _debug("ExitBubl", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void RunGameTimer() {
+    _debug("RunGameTimer", __FILE__, __LINE__);
     // get primary mode of operation
     lda(ABS(OperMode));
     // branch to leave if in title screen mode
@@ -9650,6 +10193,7 @@ void RunGameTimer() {
 }
 
 void ResGTCtrl() {
+    _debug("ResGTCtrl", __FILE__, __LINE__);
     // reset game timer control
     lda(IMM(0x18));
     sta(ABS(GameTimerCtrlTimer));
@@ -9668,6 +10212,7 @@ void ResGTCtrl() {
 }
 
 void TimeUpOn() {
+    _debug("TimeUpOn", __FILE__, __LINE__);
     // init player status (note A will always be zero here)
     sta(ABS(PlayerStatus));
     // do sub to kill the player (note player is small here)
@@ -9678,11 +10223,13 @@ void TimeUpOn() {
 }
 
 void ExGTimer() {
+    _debug("ExGTimer", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void WarpZoneObject() {
+    _debug("WarpZoneObject", __FILE__, __LINE__);
     // check for scroll lock flag
     lda(ABS(ScrollLock));
     // branch if not set to leave
@@ -9703,6 +10250,7 @@ void WarpZoneObject() {
 }
 
 void ProcessWhirlpools() {
+    _debug("ProcessWhirlpools", __FILE__, __LINE__);
     // check for water type level
     lda(ABS(AreaType));
     // branch to leave if not found
@@ -9719,6 +10267,7 @@ void ProcessWhirlpools() {
 }
 
 void WhLoop() {
+    _debug("WhLoop", __FILE__, __LINE__);
     // get left extent of whirlpool
     lda(ABSY(Whirlpool_LeftExtent));
     clc();
@@ -9760,6 +10309,7 @@ void WhLoop() {
 }
 
 void NextWh() {
+    _debug("NextWh", __FILE__, __LINE__);
     // move onto next whirlpool data
     dey();
     // do this until all whirlpools are checked
@@ -9768,11 +10318,13 @@ void NextWh() {
 }
 
 void ExitWh() {
+    _debug("ExitWh", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void WhirlpoolActivate() {
+    _debug("WhirlpoolActivate", __FILE__, __LINE__);
     // get length of whirlpool
     lda(ABSY(Whirlpool_Length));
     // divide by 2
@@ -9825,6 +10377,7 @@ void WhirlpoolActivate() {
 }
 
 void LeftWh() {
+    _debug("LeftWh", __FILE__, __LINE__);
     // get player's collision bits
     lda(ABS(Player_CollisionBits));
     // shift d0 into carry
@@ -9845,12 +10398,14 @@ void LeftWh() {
 }
 
 void SetPWh() {
+    _debug("SetPWh", __FILE__, __LINE__);
     // set player's new page location
     sta(ABS(Player_PageLoc));
     JMP(WhPull);
 }
 
 void WhPull() {
+    _debug("WhPull", __FILE__, __LINE__);
     lda(IMM(0x10));
     // set vertical movement force
     sta(ABS(0x0));
@@ -9868,6 +10423,7 @@ void WhPull() {
 }
 
 void FlagpoleRoutine() {
+    _debug("FlagpoleRoutine", __FILE__, __LINE__);
     // set enemy object offset
     ldx(IMM(0x5));
     // to special use slot
@@ -9925,12 +10481,14 @@ void FlagpoleRoutine() {
 }
 
 void SkipScore() {
+    _debug("SkipScore", __FILE__, __LINE__);
     // jump to skip ahead and draw flag and floatey number
     JMP(FPGfx);
     JMP(GiveFPScr);
 }
 
 void GiveFPScr() {
+    _debug("GiveFPScr", __FILE__, __LINE__);
     // get score offset from earlier (when player touched flagpole)
     ldy(ABS(FlagpoleScore));
     // get amount to award player points
@@ -9948,6 +10506,7 @@ void GiveFPScr() {
 }
 
 void FPGfx() {
+    _debug("FPGfx", __FILE__, __LINE__);
     // get offscreen information
     JSR(GetEnemyOffscreenBits);
     // get relative coordinates
@@ -9958,10 +10517,12 @@ void FPGfx() {
 }
 
 void ExitFlagP() {
+    _debug("ExitFlagP", __FILE__, __LINE__);
     return;
 }
 
 void JumpspringHandler() {
+    _debug("JumpspringHandler", __FILE__, __LINE__);
     // get offscreen information
     JSR(GetEnemyOffscreenBits);
     // check master timer control
@@ -9990,6 +10551,7 @@ void JumpspringHandler() {
 }
 
 void DownJSpr() {
+    _debug("DownJSpr", __FILE__, __LINE__);
     // move player's vertical position up two pixels
     dec(ABS(Player_Y_Position));
     dec(ABS(Player_Y_Position));
@@ -9997,6 +10559,7 @@ void DownJSpr() {
 }
 
 void PosJSpr() {
+    _debug("PosJSpr", __FILE__, __LINE__);
     // get permanent vertical position
     lda(ABSX(Jumpspring_FixedYPos));
     clc();
@@ -10024,6 +10587,7 @@ void PosJSpr() {
 }
 
 void BounceJS() {
+    _debug("BounceJS", __FILE__, __LINE__);
     // check frame control offset again
     cpy(IMM(0x3));
     // skip to last part if not yet at fifth frame ($03)
@@ -10038,6 +10602,7 @@ void BounceJS() {
 }
 
 void DrawJSpr() {
+    _debug("DrawJSpr", __FILE__, __LINE__);
     // get jumpspring's relative coordinates
     JSR(RelativeEnemyPosition);
     // draw jumpspring
@@ -10060,11 +10625,13 @@ void DrawJSpr() {
 }
 
 void ExJSpring() {
+    _debug("ExJSpring", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void Setup_Vine() {
+    _debug("Setup_Vine", __FILE__, __LINE__);
     // load identifier for vine object
     lda(IMM(VineObject));
     // store in buffer
@@ -10091,6 +10658,7 @@ void Setup_Vine() {
 }
 
 void NextVO() {
+    _debug("NextVO", __FILE__, __LINE__);
     // store object offset to next available vine slot
     txa();
     // using vine flag as offset
@@ -10104,6 +10672,7 @@ void NextVO() {
 }
 
 void VineObjectHandler() {
+    _debug("VineObjectHandler", __FILE__, __LINE__);
     // check enemy offset for special use slot
     cpx(IMM(0x5));
     // if not in last slot, branch to leave
@@ -10134,6 +10703,7 @@ void VineObjectHandler() {
 }
 
 void RunVSubs() {
+    _debug("RunVSubs", __FILE__, __LINE__);
     // if vine still very small,
     lda(ABS(VineHeight));
     // branch to leave
@@ -10149,6 +10719,7 @@ void RunVSubs() {
 }
 
 void VDrawLoop() {
+    _debug("VDrawLoop", __FILE__, __LINE__);
     // draw vine
     JSR(DrawVine);
     // increment offset
@@ -10168,6 +10739,7 @@ void VDrawLoop() {
 }
 
 void KillVine() {
+    _debug("KillVine", __FILE__, __LINE__);
     // get enemy object offset for this vine object
     ldx(ABSY(VineObjOffset));
     // kill this vine object
@@ -10184,6 +10756,7 @@ void KillVine() {
 }
 
 void WrCMTile() {
+    _debug("WrCMTile", __FILE__, __LINE__);
     // check vine height
     lda(ABS(VineHeight));
     // if vine small (less than 32 pixels tall)
@@ -10214,12 +10787,14 @@ void WrCMTile() {
 }
 
 void ExitVH() {
+    _debug("ExitVH", __FILE__, __LINE__);
     // get enemy object offset and leave
     ldx(ABS(ObjectOffset));
     return;
 }
 
 void ProcessCannons() {
+    _debug("ProcessCannons", __FILE__, __LINE__);
     // get area type
     lda(ABS(AreaType));
     // if water type area, branch to leave
@@ -10229,6 +10804,7 @@ void ProcessCannons() {
 }
 
 void ThreeSChk() {
+    _debug("ThreeSChk", __FILE__, __LINE__);
     // start at third enemy slot
     stx(ABS(ObjectOffset));
     // check enemy buffer flag
@@ -10265,6 +10841,7 @@ void ThreeSChk() {
 }
 
 void FireCannon() {
+    _debug("FireCannon", __FILE__, __LINE__);
     // if master timer control set,
     lda(ABS(TimerControl));
     // branch to check enemy
@@ -10309,6 +10886,7 @@ void FireCannon() {
 }
 
 void Chk_BB() {
+    _debug("Chk_BB", __FILE__, __LINE__);
     // check enemy identifier for bullet bill (cannon variant)
     lda(ABSX(Enemy_ID));
     cmp(IMM(BulletBill_CannonVar));
@@ -10328,6 +10906,7 @@ void Chk_BB() {
 }
 
 void Next3Slt() {
+    _debug("Next3Slt", __FILE__, __LINE__);
     // move onto next slot
     dex();
     // do this until first three slots are checked
@@ -10336,11 +10915,13 @@ void Next3Slt() {
 }
 
 void ExCannon() {
+    _debug("ExCannon", __FILE__, __LINE__);
     // then leave
     return;
 }
 
 void BulletBillHandler() {
+    _debug("BulletBillHandler", __FILE__, __LINE__);
     // if master timer control set,
     lda(ABS(TimerControl));
     // branch to run subroutines except movement sub
@@ -10368,6 +10949,7 @@ void BulletBillHandler() {
 }
 
 void SetupBB() {
+    _debug("SetupBB", __FILE__, __LINE__);
     // set bullet bill's moving direction
     sty(ABSX(Enemy_MovingDir));
     // decrement to use as offset
@@ -10397,6 +10979,7 @@ void SetupBB() {
 }
 
 void ChkDSte() {
+    _debug("ChkDSte", __FILE__, __LINE__);
     // check enemy state for d5 set
     lda(ABSX(Enemy_State));
     anda(IMM(0b100000));
@@ -10408,12 +10991,14 @@ void ChkDSte() {
 }
 
 void BBFly() {
+    _debug("BBFly", __FILE__, __LINE__);
     // do sub to move bullet bill horizontally
     JSR(MoveEnemyHorizontally);
     JMP(RunBBSubs);
 }
 
 void RunBBSubs() {
+    _debug("RunBBSubs", __FILE__, __LINE__);
     // get offscreen information
     JSR(GetEnemyOffscreenBits);
     // get relative coordinates
@@ -10428,12 +11013,14 @@ void RunBBSubs() {
 }
 
 void KillBB() {
+    _debug("KillBB", __FILE__, __LINE__);
     // kill bullet bill and leave
     JSR(EraseEnemyObject);
     return;
 }
 
 void SpawnHammerObj() {
+    _debug("SpawnHammerObj", __FILE__, __LINE__);
     // get pseudorandom bits from
     lda(ABS(((PseudoRandomBitReg) + (1))));
     // second part of LSFR
@@ -10447,6 +11034,7 @@ void SpawnHammerObj() {
 }
 
 void SetMOfs() {
+    _debug("SetMOfs", __FILE__, __LINE__);
     // use either d3 or d2-d0 for offset here
     tay();
     // if any values loaded in
@@ -10476,6 +11064,7 @@ void SetMOfs() {
 }
 
 void NoHammer() {
+    _debug("NoHammer", __FILE__, __LINE__);
     // get original enemy object offset
     ldx(ABS(ObjectOffset));
     // return with carry clear
@@ -10484,6 +11073,7 @@ void NoHammer() {
 }
 
 void ProcHammerObj() {
+    _debug("ProcHammerObj", __FILE__, __LINE__);
     // if master timer control set
     lda(ABS(TimerControl));
     // skip all of this code and go to last subs at the end
@@ -10530,6 +11120,7 @@ void ProcHammerObj() {
 }
 
 void SetHSpd() {
+    _debug("SetHSpd", __FILE__, __LINE__);
     lda(IMM(0xfe));
     // set hammer's vertical speed
     sta(ABSX(Misc_Y_Speed));
@@ -10553,6 +11144,7 @@ void SetHSpd() {
 }
 
 void SetHPos() {
+    _debug("SetHPos", __FILE__, __LINE__);
     // decrement hammer's state
     dec(ABSX(Misc_State));
     // get enemy's horizontal position
@@ -10584,12 +11176,14 @@ void SetHPos() {
 }
 
 void RunAllH() {
+    _debug("RunAllH", __FILE__, __LINE__);
     // handle collisions
     JSR(PlayerHammerCollision);
     JMP(RunHSubs);
 }
 
 void RunHSubs() {
+    _debug("RunHSubs", __FILE__, __LINE__);
     // get offscreen information
     JSR(GetMiscOffscreenBits);
     // get relative coordinates
@@ -10603,6 +11197,7 @@ void RunHSubs() {
 }
 
 void CoinBlock() {
+    _debug("CoinBlock", __FILE__, __LINE__);
     // set offset for empty or last misc object buffer slot
     JSR(FindEmptyMiscSlot);
     // get page location of block object
@@ -10627,6 +11222,7 @@ void CoinBlock() {
 }
 
 void SetupJumpCoin() {
+    _debug("SetupJumpCoin", __FILE__, __LINE__);
     // set offset for empty or last misc object buffer slot
     JSR(FindEmptyMiscSlot);
     // get page location saved earlier
@@ -10654,6 +11250,7 @@ void SetupJumpCoin() {
 }
 
 void JCoinC() {
+    _debug("JCoinC", __FILE__, __LINE__);
     lda(IMM(0xfb));
     // set vertical speed
     sta(ABSY(Misc_Y_Speed));
@@ -10674,12 +11271,14 @@ void JCoinC() {
 }
 
 void FindEmptyMiscSlot() {
+    _debug("FindEmptyMiscSlot", __FILE__, __LINE__);
     // start at end of misc objects buffer
     ldy(IMM(0x8));
     JMP(FMiscLoop);
 }
 
 void FMiscLoop() {
+    _debug("FMiscLoop", __FILE__, __LINE__);
     // get misc object state
     lda(ABSY(Misc_State));
     // branch if none found to use current offset
@@ -10696,18 +11295,21 @@ void FMiscLoop() {
 }
 
 void UseMiscS() {
+    _debug("UseMiscS", __FILE__, __LINE__);
     // store offset of misc object buffer here (residual)
     sty(ABS(JumpCoinMiscOffset));
     return;
 }
 
 void MiscObjectsCore() {
+    _debug("MiscObjectsCore", __FILE__, __LINE__);
     // set at end of misc object buffer
     ldx(IMM(0x8));
     JMP(MiscLoop);
 }
 
 void MiscLoop() {
+    _debug("MiscLoop", __FILE__, __LINE__);
     // store misc object offset here
     stx(ABS(ObjectOffset));
     // check misc object state
@@ -10726,6 +11328,7 @@ void MiscLoop() {
 }
 
 void ProcJumpCoin() {
+    _debug("ProcJumpCoin", __FILE__, __LINE__);
     // check misc object state
     ldy(ABSX(Misc_State));
     // decrement to see if it's set to 1
@@ -10762,6 +11365,7 @@ void ProcJumpCoin() {
 }
 
 void JCoinRun() {
+    _debug("JCoinRun", __FILE__, __LINE__);
     txa();
     // add 13 bytes to offset for next subroutine
     clc();
@@ -10794,6 +11398,7 @@ void JCoinRun() {
 }
 
 void RunJCSubs() {
+    _debug("RunJCSubs", __FILE__, __LINE__);
     // get relative coordinates
     JSR(RelativeMiscPosition);
     // get offscreen information
@@ -10806,6 +11411,7 @@ void RunJCSubs() {
 }
 
 void MiscLoopBack() {
+    _debug("MiscLoopBack", __FILE__, __LINE__);
     // decrement misc object offset
     dex();
     // loop back until all misc objects handled
@@ -10815,6 +11421,7 @@ void MiscLoopBack() {
 }
 
 void GiveOneCoin() {
+    _debug("GiveOneCoin", __FILE__, __LINE__);
     // set digit modifier to add 1 coin
     lda(IMM(0x1));
     // to the current player's coin tally
@@ -10844,6 +11451,7 @@ void GiveOneCoin() {
 }
 
 void CoinPoints() {
+    _debug("CoinPoints", __FILE__, __LINE__);
     // set digit modifier to award
     lda(IMM(0x2));
     // 200 points to the player
@@ -10852,6 +11460,7 @@ void CoinPoints() {
 }
 
 void AddToScore() {
+    _debug("AddToScore", __FILE__, __LINE__);
     // get current player
     ldx(ABS(CurrentPlayer));
     // get offset for player's score
@@ -10862,6 +11471,7 @@ void AddToScore() {
 }
 
 void GetSBNybbles() {
+    _debug("GetSBNybbles", __FILE__, __LINE__);
     // get current player
     ldy(ABS(CurrentPlayer));
     // get nybbles based on player, use to update score and coins
@@ -10870,6 +11480,7 @@ void GetSBNybbles() {
 }
 
 void UpdateNumber() {
+    _debug("UpdateNumber", __FILE__, __LINE__);
     // print status bar numbers based on nybbles, whatever they be
     JSR(PrintStatusBarNumbers);
     ldy(ABS(VRAM_Buffer1_Offset));
@@ -10883,12 +11494,14 @@ void UpdateNumber() {
 }
 
 void NoZSup() {
+    _debug("NoZSup", __FILE__, __LINE__);
     // get enemy object buffer offset
     ldx(ABS(ObjectOffset));
     return;
 }
 
 void SetupPowerUp() {
+    _debug("SetupPowerUp", __FILE__, __LINE__);
     // load power-up identifier into
     lda(IMM(PowerUpObject));
     // special use slot of enemy object buffer
@@ -10915,6 +11528,7 @@ void SetupPowerUp() {
 }
 
 void PwrUpJmp() {
+    _debug("PwrUpJmp", __FILE__, __LINE__);
     // this is a residual jump point in enemy object jump table
     lda(IMM(0x1));
     // set power-up object's state
@@ -10940,12 +11554,14 @@ void PwrUpJmp() {
 }
 
 void StrType() {
+    _debug("StrType", __FILE__, __LINE__);
     // store type here
     sta(ABS(PowerUpType));
     JMP(PutBehind);
 }
 
 void PutBehind() {
+    _debug("PutBehind", __FILE__, __LINE__);
     lda(IMM(0b100000));
     // set background priority bit
     sta(ABS(((Enemy_SprAttrib) + (5))));
@@ -10956,6 +11572,7 @@ void PutBehind() {
 }
 
 void PowerUpObjHandler() {
+    _debug("PowerUpObjHandler", __FILE__, __LINE__);
     // set object offset for last slot in enemy object buffer
     ldx(IMM(0x5));
     stx(ABS(ObjectOffset));
@@ -10991,6 +11608,7 @@ void PowerUpObjHandler() {
 }
 
 void ShroomM() {
+    _debug("ShroomM", __FILE__, __LINE__);
     // do sub to make mushrooms move
     JSR(MoveNormalEnemy);
     // deal with collisions
@@ -11001,6 +11619,7 @@ void ShroomM() {
 }
 
 void GrowThePowerUp() {
+    _debug("GrowThePowerUp", __FILE__, __LINE__);
     // get frame counter
     lda(ABS(FrameCounter));
     // mask out all but 2 LSB
@@ -11035,6 +11654,7 @@ void GrowThePowerUp() {
 }
 
 void ChkPUSte() {
+    _debug("ChkPUSte", __FILE__, __LINE__);
     // check power-up object's state
     lda(ABS(((Enemy_State) + (5))));
     // for if power-up has risen enough
@@ -11045,6 +11665,7 @@ void ChkPUSte() {
 }
 
 void RunPUSubs() {
+    _debug("RunPUSubs", __FILE__, __LINE__);
     // get coordinates relative to screen
     JSR(RelativeEnemyPosition);
     // get offscreen bits
@@ -11061,11 +11682,13 @@ void RunPUSubs() {
 }
 
 void ExitPUp() {
+    _debug("ExitPUp", __FILE__, __LINE__);
     // and we're done
     return;
 }
 
 void PlayerHeadCollision() {
+    _debug("PlayerHeadCollision", __FILE__, __LINE__);
     // store metatile number to stack
     pha();
     // load unbreakable block object state by default
@@ -11082,6 +11705,7 @@ void PlayerHeadCollision() {
 }
 
 void DBlockSte() {
+    _debug("DBlockSte", __FILE__, __LINE__);
     // store into block object buffer
     sta(ABSX(Block_State));
     // store blank metatile in vram buffer to write to name table
@@ -11113,6 +11737,7 @@ void DBlockSte() {
 }
 
 void ChkBrick() {
+    _debug("ChkBrick", __FILE__, __LINE__);
     // if no match was found in previous sub, skip ahead
     BCC(PutMTileB);
     // otherwise load unbreakable state into block object buffer
@@ -11135,6 +11760,7 @@ void ChkBrick() {
 }
 
 void StartBTmr() {
+    _debug("StartBTmr", __FILE__, __LINE__);
     // check brick coin timer flag
     lda(ABS(BrickCoinTimerFlag));
     // if set, timer expired or counting down, thus branch
@@ -11148,6 +11774,7 @@ void StartBTmr() {
 }
 
 void ContBTmr() {
+    _debug("ContBTmr", __FILE__, __LINE__);
     // check brick coin timer
     lda(ABS(BrickCoinTimer));
     // if not yet expired, branch to use current metatile
@@ -11158,12 +11785,14 @@ void ContBTmr() {
 }
 
 void PutOldMT() {
+    _debug("PutOldMT", __FILE__, __LINE__);
     // put metatile into A
     tya();
     JMP(PutMTileB);
 }
 
 void PutMTileB() {
+    _debug("PutMTileB", __FILE__, __LINE__);
     // store whatever metatile be appropriate here
     sta(ABSX(Block_Metatile));
     // get block object horizontal coordinates saved
@@ -11194,12 +11823,14 @@ void PutMTileB() {
 }
 
 void SmallBP() {
+    _debug("SmallBP", __FILE__, __LINE__);
     // increment for small or big and crouching
     iny();
     JMP(BigBP);
 }
 
 void BigBP() {
+    _debug("BigBP", __FILE__, __LINE__);
     // get player's vertical coordinate
     lda(ABS(Player_Y_Position));
     clc();
@@ -11222,12 +11853,14 @@ void BigBP() {
 }
 
 void Unbreak() {
+    _debug("Unbreak", __FILE__, __LINE__);
     // execute code for unbreakable brick or question block
     JSR(BumpBlock);
     JMP(InvOBit);
 }
 
 void InvOBit() {
+    _debug("InvOBit", __FILE__, __LINE__);
     // invert control bit used by block objects
     lda(ABS(SprDataOffset_Ctrl));
     // and floatey numbers
@@ -11238,6 +11871,7 @@ void InvOBit() {
 }
 
 void InitBlock_XY_Pos() {
+    _debug("InitBlock_XY_Pos", __FILE__, __LINE__);
     // get player's horizontal coordinate
     lda(ABS(Player_X_Position));
     clc();
@@ -11262,6 +11896,7 @@ void InitBlock_XY_Pos() {
 }
 
 void BumpBlock() {
+    _debug("BumpBlock", __FILE__, __LINE__);
     // check to see if there's a coin directly above this block
     JSR(CheckTopOfBlock);
     lda(IMM(Sfx_Bump));
@@ -11295,6 +11930,7 @@ void BumpBlock() {
 }
 
 void BlockCode() {
+    _debug("BlockCode", __FILE__, __LINE__);
     // run appropriate subroutine depending on block number
     static JUMP_ENTRY jumptable[9] = {
         MushFlowerBlock,
@@ -11311,18 +11947,21 @@ void BlockCode() {
 }
 
 void MushFlowerBlock() {
+    _debug("MushFlowerBlock", __FILE__, __LINE__);
     // load mushroom/fire flower into power-up type
     lda(IMM(0x0));
     JMP(StarBlock);
 }
 
 void StarBlock() {
+    _debug("StarBlock", __FILE__, __LINE__);
     // load star into power-up type
     lda(IMM(0x2));
     JMP(ExtraLifeMushBlock);
 }
 
 void ExtraLifeMushBlock() {
+    _debug("ExtraLifeMushBlock", __FILE__, __LINE__);
     // load 1-up mushroom into power-up type
     lda(IMM(0x3));
     // store correct power-up type
@@ -11332,6 +11971,7 @@ void ExtraLifeMushBlock() {
 }
 
 void VineBlock() {
+    _debug("VineBlock", __FILE__, __LINE__);
     // load last slot for enemy object buffer
     ldx(IMM(0x5));
     // get control bit
@@ -11342,17 +11982,20 @@ void VineBlock() {
 }
 
 void ExitBlockChk() {
+    _debug("ExitBlockChk", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void BlockBumpedChk() {
+    _debug("BlockBumpedChk", __FILE__, __LINE__);
     // start at end of metatile data
     ldy(IMM(0xd));
     JMP(BumpChkLoop);
 }
 
 void BumpChkLoop() {
+    _debug("BumpChkLoop", __FILE__, __LINE__);
     // check to see if current metatile matches
     cmp(ABSY(0x8000+offsetof(G, BrickQBlockMetatiles)));
     // metatile found in block buffer, branch if so
@@ -11367,11 +12010,13 @@ void BumpChkLoop() {
 }
 
 void MatchBump() {
+    _debug("MatchBump", __FILE__, __LINE__);
     // note carry is set if found match
     return;
 }
 
 void BrickShatter() {
+    _debug("BrickShatter", __FILE__, __LINE__);
     // check to see if there's a coin directly above this block
     JSR(CheckTopOfBlock);
     lda(IMM(Sfx_BrickShatter));
@@ -11395,6 +12040,7 @@ void BrickShatter() {
 }
 
 void CheckTopOfBlock() {
+    _debug("CheckTopOfBlock", __FILE__, __LINE__);
     // load control bit
     ldx(ABS(SprDataOffset_Ctrl));
     // get vertical high nybble offset used in block buffer
@@ -11428,11 +12074,13 @@ void CheckTopOfBlock() {
 }
 
 void TopEx() {
+    _debug("TopEx", __FILE__, __LINE__);
     // leave!
     return;
 }
 
 void SpawnBrickChunks() {
+    _debug("SpawnBrickChunks", __FILE__, __LINE__);
     // set horizontal coordinate of block object
     lda(ABSX(Block_X_Position));
     // as original horizontal coordinate here
@@ -11470,6 +12118,7 @@ void SpawnBrickChunks() {
 }
 
 void BlockObjectsCore() {
+    _debug("BlockObjectsCore", __FILE__, __LINE__);
     // get state of block object
     lda(ABSX(Block_State));
     // if not set, branch to leave
@@ -11530,6 +12179,7 @@ void BlockObjectsCore() {
 }
 
 void ChkTop() {
+    _debug("ChkTop", __FILE__, __LINE__);
     // get top block object's vertical coordinate
     lda(ABSX(Block_Y_Position));
     // see if it went to the bottom of the screen
@@ -11544,6 +12194,7 @@ void ChkTop() {
 }
 
 void BouncingBlockHandler() {
+    _debug("BouncingBlockHandler", __FILE__, __LINE__);
     // do sub to impose gravity on block object
     JSR(ImposeGravityBlock);
     // get block object offset
@@ -11571,24 +12222,28 @@ void BouncingBlockHandler() {
 }
 
 void KillBlock() {
+    _debug("KillBlock", __FILE__, __LINE__);
     // if branched here, nullify object state
     lda(IMM(0x0));
     JMP(UpdSte);
 }
 
 void UpdSte() {
+    _debug("UpdSte", __FILE__, __LINE__);
     // store contents of A in block object state
     sta(ABSX(Block_State));
     return;
 }
 
 void BlockObjMT_Updater() {
+    _debug("BlockObjMT_Updater", __FILE__, __LINE__);
     // set offset to start with second block object
     ldx(IMM(0x1));
     JMP(UpdateLoop);
 }
 
 void UpdateLoop() {
+    _debug("UpdateLoop", __FILE__, __LINE__);
     // set offset here
     stx(ABS(ObjectOffset));
     // if vram buffer already being used here,
@@ -11624,6 +12279,7 @@ void UpdateLoop() {
 }
 
 void NextBUpd() {
+    _debug("NextBUpd", __FILE__, __LINE__);
     // decrement block object offset
     dex();
     // do this until both block objects are dealt with
@@ -11633,6 +12289,7 @@ void NextBUpd() {
 }
 
 void MoveEnemyHorizontally() {
+    _debug("MoveEnemyHorizontally", __FILE__, __LINE__);
     // increment offset for enemy offset
     inx();
     // position object horizontally according to
@@ -11644,6 +12301,7 @@ void MoveEnemyHorizontally() {
 }
 
 void MovePlayerHorizontally() {
+    _debug("MovePlayerHorizontally", __FILE__, __LINE__);
     // if jumpspring currently animating,
     lda(ABS(JumpspringAnimCtrl));
     // branch to leave
@@ -11654,6 +12312,7 @@ void MovePlayerHorizontally() {
 }
 
 void MoveObjectHorizontally() {
+    _debug("MoveObjectHorizontally", __FILE__, __LINE__);
     // get currently saved value (horizontal
     lda(ABSX(SprObject_X_Speed));
     // speed, secondary counter, whatever)
@@ -11680,6 +12339,7 @@ void MoveObjectHorizontally() {
 }
 
 void SaveXSpd() {
+    _debug("SaveXSpd", __FILE__, __LINE__);
     // save result here
     sta(ABS(0x0));
     // load default Y value here
@@ -11693,6 +12353,7 @@ void SaveXSpd() {
 }
 
 void UseAdder() {
+    _debug("UseAdder", __FILE__, __LINE__);
     // save Y here
     sty(ABS(0x2));
     // get whatever number's here
@@ -11729,11 +12390,13 @@ void UseAdder() {
 }
 
 void ExXMove() {
+    _debug("ExXMove", __FILE__, __LINE__);
     // and leave
     return;
 }
 
 void MovePlayerVertically() {
+    _debug("MovePlayerVertically", __FILE__, __LINE__);
     // set X for player offset
     ldx(IMM(0x0));
     lda(ABS(TimerControl));
@@ -11747,6 +12410,7 @@ void MovePlayerVertically() {
 }
 
 void NoJSChk() {
+    _debug("NoJSChk", __FILE__, __LINE__);
     // dump vertical force
     lda(ABS(VerticalForce));
     sta(ABS(0x0));
@@ -11758,6 +12422,7 @@ void NoJSChk() {
 }
 
 void MoveD_EnemyVertically() {
+    _debug("MoveD_EnemyVertically", __FILE__, __LINE__);
     // set quick movement amount downwards
     ldy(IMM(0x3d));
     // then check enemy state
@@ -11770,18 +12435,21 @@ void MoveD_EnemyVertically() {
 }
 
 void MoveFallingPlatform() {
+    _debug("MoveFallingPlatform", __FILE__, __LINE__);
     // set movement amount
     ldy(IMM(0x20));
     JMP(ContVMove);
 }
 
 void ContVMove() {
+    _debug("ContVMove", __FILE__, __LINE__);
     // jump to skip the rest of this
     JMP(SetHiMax);
     JMP(MoveRedPTroopaDown);
 }
 
 void MoveRedPTroopaDown() {
+    _debug("MoveRedPTroopaDown", __FILE__, __LINE__);
     // set Y to move downwards
     ldy(IMM(0x0));
     // skip to movement routine
@@ -11790,12 +12458,14 @@ void MoveRedPTroopaDown() {
 }
 
 void MoveRedPTroopaUp() {
+    _debug("MoveRedPTroopaUp", __FILE__, __LINE__);
     // set Y to move upwards
     ldy(IMM(0x1));
     JMP(MoveRedPTroopa);
 }
 
 void MoveRedPTroopa() {
+    _debug("MoveRedPTroopa", __FILE__, __LINE__);
     // increment X for enemy offset
     inx();
     lda(IMM(0x3));
@@ -11815,6 +12485,7 @@ void MoveRedPTroopa() {
 }
 
 void MoveDropPlatform() {
+    _debug("MoveDropPlatform", __FILE__, __LINE__);
     // set movement amount for drop platform
     ldy(IMM(0x7f));
     // skip ahead of other value set here
@@ -11823,12 +12494,14 @@ void MoveDropPlatform() {
 }
 
 void MoveEnemySlowVert() {
+    _debug("MoveEnemySlowVert", __FILE__, __LINE__);
     // set movement amount for bowser/other objects
     ldy(IMM(0xf));
     JMP(SetMdMax);
 }
 
 void SetMdMax() {
+    _debug("SetMdMax", __FILE__, __LINE__);
     // set maximum speed in A
     lda(IMM(0x2));
     // unconditional branch
@@ -11837,18 +12510,21 @@ void SetMdMax() {
 }
 
 void MoveJ_EnemyVertically() {
+    _debug("MoveJ_EnemyVertically", __FILE__, __LINE__);
     // set movement amount for podoboo/other objects
     ldy(IMM(0x1c));
     JMP(SetHiMax);
 }
 
 void SetHiMax() {
+    _debug("SetHiMax", __FILE__, __LINE__);
     // set maximum speed in A
     lda(IMM(0x3));
     JMP(SetXMoveAmt);
 }
 
 void SetXMoveAmt() {
+    _debug("SetXMoveAmt", __FILE__, __LINE__);
     // set movement amount here
     sty(ABS(0x0));
     // increment X for enemy offset
@@ -11861,12 +12537,14 @@ void SetXMoveAmt() {
 }
 
 void ResidualGravityCode() {
+    _debug("ResidualGravityCode", __FILE__, __LINE__);
     // this part appears to be residual,
     ldy(IMM(0x0));
     JMP(ImposeGravityBlock);
 }
 
 void ImposeGravityBlock() {
+    _debug("ImposeGravityBlock", __FILE__, __LINE__);
     // set offset for maximum speed
     ldy(IMM(0x1));
     // set movement amount here
@@ -11878,6 +12556,7 @@ void ImposeGravityBlock() {
 }
 
 void ImposeGravitySprObj() {
+    _debug("ImposeGravitySprObj", __FILE__, __LINE__);
     // set maximum speed here
     sta(ABS(0x2));
     // set value to move downwards
@@ -11888,12 +12567,14 @@ void ImposeGravitySprObj() {
 }
 
 void MovePlatformDown() {
+    _debug("MovePlatformDown", __FILE__, __LINE__);
     // save value to stack (if branching here, execute next
     lda(IMM(0x0));
     JMP(MovePlatformUp);
 }
 
 void MovePlatformUp() {
+    _debug("MovePlatformUp", __FILE__, __LINE__);
     // save value to stack
     lda(IMM(0x1));
     pha();
@@ -11913,6 +12594,7 @@ void MovePlatformUp() {
 }
 
 void SetDplSpd() {
+    _debug("SetDplSpd", __FILE__, __LINE__);
     // save downward movement amount here
     sta(ABS(0x0));
     // save upward movement amount here
@@ -11929,6 +12611,7 @@ void SetDplSpd() {
 }
 
 void RedPTroopaGrav() {
+    _debug("RedPTroopaGrav", __FILE__, __LINE__);
     // do a sub to move object gradually
     JSR(ImposeGravity);
     // get enemy object offset and leave
@@ -11937,6 +12620,7 @@ void RedPTroopaGrav() {
 }
 
 void ImposeGravity() {
+    _debug("ImposeGravity", __FILE__, __LINE__);
     // push value to stack
     pha();
     lda(ABSX(SprObject_YMF_Dummy));
@@ -11956,6 +12640,7 @@ void ImposeGravity() {
 }
 
 void AlterYP() {
+    _debug("AlterYP", __FILE__, __LINE__);
     // store Y here
     sty(ABS(0x7));
     // add vertical position to vertical speed plus carry
@@ -11994,6 +12679,7 @@ void AlterYP() {
 }
 
 void ChkUpM() {
+    _debug("ChkUpM", __FILE__, __LINE__);
     // get value from stack
     pla();
     // if set to zero, branch to leave
@@ -12035,11 +12721,13 @@ void ChkUpM() {
 }
 
 void ExVMove() {
+    _debug("ExVMove", __FILE__, __LINE__);
     // leave!
     return;
 }
 
 void EnemiesAndLoopsCore() {
+    _debug("EnemiesAndLoopsCore", __FILE__, __LINE__);
     // check data here for MSB set
     lda(ABSX(Enemy_Flag));
     // save in stack
@@ -12057,6 +12745,7 @@ void EnemiesAndLoopsCore() {
 }
 
 void ChkAreaTsk() {
+    _debug("ChkAreaTsk", __FILE__, __LINE__);
     // check number of tasks to perform
     lda(ABS(AreaParserTaskNum));
     anda(IMM(0x7));
@@ -12069,6 +12758,7 @@ void ChkAreaTsk() {
 }
 
 void ChkBowserF() {
+    _debug("ChkBowserF", __FILE__, __LINE__);
     // get data from stack
     pla();
     // mask out high nybble
@@ -12083,10 +12773,12 @@ void ChkBowserF() {
 }
 
 void ExitELCore() {
+    _debug("ExitELCore", __FILE__, __LINE__);
     return;
 }
 
 void ExecGameLoopback() {
+    _debug("ExecGameLoopback", __FILE__, __LINE__);
     // send player back four pages
     lda(ABS(Player_PageLoc));
     sec();
@@ -12132,6 +12824,7 @@ void ExecGameLoopback() {
 }
 
 void ProcLoopCommand() {
+    _debug("ProcLoopCommand", __FILE__, __LINE__);
     // check if loop command was found
     lda(ABS(LoopCommand));
     BEQ(ChkEnemyFrenzy);
@@ -12145,6 +12838,7 @@ void ProcLoopCommand() {
 }
 
 void FindLoop() {
+    _debug("FindLoop", __FILE__, __LINE__);
     dey();
     // if all data is checked and not match, do not loop
     BMI(ChkEnemyFrenzy);
@@ -12181,6 +12875,7 @@ void FindLoop() {
 }
 
 void IncMLoop() {
+    _debug("IncMLoop", __FILE__, __LINE__);
     // increment master multi-part counter
     inc(ABS(MultiLoopPassCntr));
     // have we done all three parts?
@@ -12199,6 +12894,7 @@ void IncMLoop() {
 }
 
 void WrongChk() {
+    _debug("WrongChk", __FILE__, __LINE__);
     // are we in world 7? (check performed on
     lda(ABS(WorldNumber));
     // incorrect vertical position or not on solid ground)
@@ -12208,6 +12904,7 @@ void WrongChk() {
 }
 
 void DoLpBack() {
+    _debug("DoLpBack", __FILE__, __LINE__);
     // if player is not in right place, loop back
     JSR(ExecGameLoopback);
     JSR(KillAllEnemies);
@@ -12215,6 +12912,7 @@ void DoLpBack() {
 }
 
 void InitMLp() {
+    _debug("InitMLp", __FILE__, __LINE__);
     // initialize counters used for multi-part loop commands
     lda(IMM(0x0));
     sta(ABS(MultiLoopPassCntr));
@@ -12223,6 +12921,7 @@ void InitMLp() {
 }
 
 void InitLCmd() {
+    _debug("InitLCmd", __FILE__, __LINE__);
     // initialize loop command flag
     lda(IMM(0x0));
     sta(ABS(LoopCommand));
@@ -12230,6 +12929,7 @@ void InitLCmd() {
 }
 
 void ChkEnemyFrenzy() {
+    _debug("ChkEnemyFrenzy", __FILE__, __LINE__);
     // check for enemy object in frenzy queue
     lda(ABS(EnemyFrenzyQueue));
     // if not, skip this part
@@ -12249,6 +12949,7 @@ void ChkEnemyFrenzy() {
 }
 
 void ProcessEnemyData() {
+    _debug("ProcessEnemyData", __FILE__, __LINE__);
     // get offset of enemy object data
     ldy(ABS(EnemyDataOffset));
     // load first byte
@@ -12262,6 +12963,7 @@ void ProcessEnemyData() {
 }
 
 void CheckEndofBuffer() {
+    _debug("CheckEndofBuffer", __FILE__, __LINE__);
     // check for special row $0e
     anda(IMM(0b1111));
     cmp(IMM(0xe));
@@ -12285,6 +12987,7 @@ void CheckEndofBuffer() {
 }
 
 void CheckRightBounds() {
+    _debug("CheckRightBounds", __FILE__, __LINE__);
     // add 48 to pixel coordinate of right boundary
     lda(ABS(ScreenRight_X_Pos));
     clc();
@@ -12314,6 +13017,7 @@ void CheckRightBounds() {
 }
 
 void CheckPageCtrlRow() {
+    _debug("CheckPageCtrlRow", __FILE__, __LINE__);
     dey();
     // reread first byte
     lda(INDY((EnemyData)));
@@ -12343,6 +13047,7 @@ void CheckPageCtrlRow() {
 }
 
 void PositionEnemyObj() {
+    _debug("PositionEnemyObj", __FILE__, __LINE__);
     // store page control as page location
     lda(ABS(EnemyObjectPageLoc));
     // for enemy object
@@ -12372,6 +13077,7 @@ void PositionEnemyObj() {
 }
 
 void CheckRightExtBounds() {
+    _debug("CheckRightExtBounds", __FILE__, __LINE__);
     // check right boundary + 48 against
     lda(ABS(0x7));
     // column position without subtracting,
@@ -12413,6 +13119,7 @@ void CheckRightExtBounds() {
 }
 
 void CheckForEnemyGroup() {
+    _debug("CheckForEnemyGroup", __FILE__, __LINE__);
     // get second byte and mask out 2 MSB
     lda(INDY((EnemyData)));
     anda(IMM(0b111111));
@@ -12427,6 +13134,7 @@ void CheckForEnemyGroup() {
 }
 
 void BuzzyBeetleMutate() {
+    _debug("BuzzyBeetleMutate", __FILE__, __LINE__);
     // if below $37, check for goomba
     cmp(IMM(Goomba));
     // value ($3f or more always fails)
@@ -12440,6 +13148,7 @@ void BuzzyBeetleMutate() {
 }
 
 void StrID() {
+    _debug("StrID", __FILE__, __LINE__);
     // store enemy object number into buffer
     sta(ABSX(Enemy_ID));
     lda(IMM(0x1));
@@ -12454,6 +13163,7 @@ void StrID() {
 }
 
 void CheckFrenzyBuffer() {
+    _debug("CheckFrenzyBuffer", __FILE__, __LINE__);
     // if enemy object stored in frenzy buffer
     lda(ABS(EnemyFrenzyBuffer));
     // then branch ahead to store in enemy object buffer
@@ -12469,12 +13179,14 @@ void CheckFrenzyBuffer() {
 }
 
 void StrFre() {
+    _debug("StrFre", __FILE__, __LINE__);
     // store contents of frenzy buffer into enemy identifier value
     sta(ABSX(Enemy_ID));
     JMP(InitEnemyObject);
 }
 
 void InitEnemyObject() {
+    _debug("InitEnemyObject", __FILE__, __LINE__);
     // initialize enemy state
     lda(IMM(0x0));
     sta(ABSX(Enemy_State));
@@ -12484,17 +13196,20 @@ void InitEnemyObject() {
 }
 
 void ExEPar() {
+    _debug("ExEPar", __FILE__, __LINE__);
     // then leave
     return;
 }
 
 void DoGroup() {
+    _debug("DoGroup", __FILE__, __LINE__);
     // handle enemy group objects
     JMP(HandleGroupEnemies);
     JMP(ParseRow0e);
 }
 
 void ParseRow0e() {
+    _debug("ParseRow0e", __FILE__, __LINE__);
     // increment Y to load third byte of object
     iny();
     iny();
@@ -12527,11 +13242,13 @@ void ParseRow0e() {
 }
 
 void NotUse() {
+    _debug("NotUse", __FILE__, __LINE__);
     JMP(Inc3B);
     JMP(CheckThreeBytes);
 }
 
 void CheckThreeBytes() {
+    _debug("CheckThreeBytes", __FILE__, __LINE__);
     // load current offset for enemy object data
     ldy(ABS(EnemyDataOffset));
     // get first byte
@@ -12544,12 +13261,14 @@ void CheckThreeBytes() {
 }
 
 void Inc3B() {
+    _debug("Inc3B", __FILE__, __LINE__);
     // if row = $0e, increment three bytes
     inc(ABS(EnemyDataOffset));
     JMP(Inc2B);
 }
 
 void Inc2B() {
+    _debug("Inc2B", __FILE__, __LINE__);
     // otherwise increment two bytes
     inc(ABS(EnemyDataOffset));
     inc(ABS(EnemyDataOffset));
@@ -12563,6 +13282,7 @@ void Inc2B() {
 }
 
 void CheckpointEnemyID() {
+    _debug("CheckpointEnemyID", __FILE__, __LINE__);
     lda(ABSX(Enemy_ID));
     // check enemy object identifier for $15 or greater
     cmp(IMM(0x15));
@@ -12584,6 +13304,7 @@ void CheckpointEnemyID() {
 }
 
 void InitEnemyRoutines() {
+    _debug("InitEnemyRoutines", __FILE__, __LINE__);
     static JUMP_ENTRY jumptable[55] = {
         InitNormalEnemy,
         InitNormalEnemy,
@@ -12645,11 +13366,13 @@ void InitEnemyRoutines() {
 }
 
 void NoInitCode() {
+    _debug("NoInitCode", __FILE__, __LINE__);
     // this executed when enemy object has no init code
     return;
 }
 
 void InitGoomba() {
+    _debug("InitGoomba", __FILE__, __LINE__);
     // set appropriate horizontal speed
     JSR(InitNormalEnemy);
     // set $09 as bounding box control, set other values
@@ -12658,6 +13381,7 @@ void InitGoomba() {
 }
 
 void InitPodoboo() {
+    _debug("InitPodoboo", __FILE__, __LINE__);
     // set enemy position to below
     lda(IMM(0x2));
     // the bottom of the screen
@@ -12675,6 +13399,7 @@ void InitPodoboo() {
 }
 
 void InitRetainerObj() {
+    _debug("InitRetainerObj", __FILE__, __LINE__);
     // set fixed vertical position for
     lda(IMM(0xb8));
     // princess/mushroom retainer object
@@ -12683,6 +13408,7 @@ void InitRetainerObj() {
 }
 
 void InitNormalEnemy() {
+    _debug("InitNormalEnemy", __FILE__, __LINE__);
     // load offset of 1 by default
     ldy(IMM(0x1));
     // check for primary hard mode flag set
@@ -12694,12 +13420,14 @@ void InitNormalEnemy() {
 }
 
 void GetESpd() {
+    _debug("GetESpd", __FILE__, __LINE__);
     // get appropriate horizontal speed
     lda(ABSY(0x8000+offsetof(G, NormalXSpdData)));
     JMP(SetESpd);
 }
 
 void SetESpd() {
+    _debug("SetESpd", __FILE__, __LINE__);
     // store as speed for enemy object
     sta(ABSX(Enemy_X_Speed));
     // branch to set bounding box control and other data
@@ -12708,6 +13436,7 @@ void SetESpd() {
 }
 
 void InitRedKoopa() {
+    _debug("InitRedKoopa", __FILE__, __LINE__);
     // load appropriate horizontal speed
     JSR(InitNormalEnemy);
     // set enemy state for red koopa troopa $03
@@ -12717,6 +13446,7 @@ void InitRedKoopa() {
 }
 
 void InitHammerBro() {
+    _debug("InitHammerBro", __FILE__, __LINE__);
     // init horizontal speed and timer used by hammer bro
     lda(IMM(0x0));
     // apparently to time hammer throwing
@@ -12734,6 +13464,7 @@ void InitHammerBro() {
 }
 
 void InitHorizFlySwimEnemy() {
+    _debug("InitHorizFlySwimEnemy", __FILE__, __LINE__);
     // initialize horizontal speed
     lda(IMM(0x0));
     JMP(SetESpd);
@@ -12741,6 +13472,7 @@ void InitHorizFlySwimEnemy() {
 }
 
 void InitBloober() {
+    _debug("InitBloober", __FILE__, __LINE__);
     // initialize horizontal speed
     lda(IMM(0x0));
     sta(ABSX(BlooperMoveSpeed));
@@ -12748,6 +13480,7 @@ void InitBloober() {
 }
 
 void SmallBBox() {
+    _debug("SmallBBox", __FILE__, __LINE__);
     // set specific bounding box size control
     lda(IMM(0x9));
     // unconditional branch
@@ -12756,6 +13489,7 @@ void SmallBBox() {
 }
 
 void InitRedPTroopa() {
+    _debug("InitRedPTroopa", __FILE__, __LINE__);
     // load central position adder for 48 pixels down
     ldy(IMM(0x30));
     // set vertical coordinate into location to
@@ -12770,6 +13504,7 @@ void InitRedPTroopa() {
 }
 
 void GetCent() {
+    _debug("GetCent", __FILE__, __LINE__);
     // send central position adder to A
     tya();
     // add to current vertical coordinate
@@ -12780,12 +13515,14 @@ void GetCent() {
 }
 
 void TallBBox() {
+    _debug("TallBBox", __FILE__, __LINE__);
     // set specific bounding box size control
     lda(IMM(0x3));
     JMP(SetBBox);
 }
 
 void SetBBox() {
+    _debug("SetBBox", __FILE__, __LINE__);
     // set bounding box control here
     sta(ABSX(Enemy_BoundBoxCtrl));
     // set moving direction for left
@@ -12795,6 +13532,7 @@ void SetBBox() {
 }
 
 void InitVStf() {
+    _debug("InitVStf", __FILE__, __LINE__);
     // initialize vertical speed
     lda(IMM(0x0));
     // and movement force
@@ -12804,6 +13542,7 @@ void InitVStf() {
 }
 
 void InitBulletBill() {
+    _debug("InitBulletBill", __FILE__, __LINE__);
     // set moving direction for left
     lda(IMM(0x2));
     sta(ABSX(Enemy_MovingDir));
@@ -12814,6 +13553,7 @@ void InitBulletBill() {
 }
 
 void InitCheepCheep() {
+    _debug("InitCheepCheep", __FILE__, __LINE__);
     // set vertical bounding box, speed, init others
     JSR(SmallBBox);
     // check one portion of LSFR
@@ -12829,6 +13569,7 @@ void InitCheepCheep() {
 }
 
 void InitLakitu() {
+    _debug("InitLakitu", __FILE__, __LINE__);
     // check to see if an enemy is already in
     lda(ABS(EnemyFrenzyBuffer));
     // the frenzy buffer, and branch to kill lakitu if so
@@ -12837,6 +13578,7 @@ void InitLakitu() {
 }
 
 void SetupLakitu() {
+    _debug("SetupLakitu", __FILE__, __LINE__);
     // erase counter for lakitu's reappearance
     lda(IMM(0x0));
     sta(ABS(LakituReappearTimer));
@@ -12848,11 +13590,13 @@ void SetupLakitu() {
 }
 
 void KillLakitu() {
+    _debug("KillLakitu", __FILE__, __LINE__);
     JMP(EraseEnemyObject);
     JMP(LakituAndSpinyHandler);
 }
 
 void LakituAndSpinyHandler() {
+    _debug("LakituAndSpinyHandler", __FILE__, __LINE__);
     // if timer here not expired, leave
     lda(ABS(FrenzyEnemyTimer));
     BNE(ExLSHand);
@@ -12868,6 +13612,7 @@ void LakituAndSpinyHandler() {
 }
 
 void ChkLak() {
+    _debug("ChkLak", __FILE__, __LINE__);
     // check all enemy slots to see
     lda(ABSY(Enemy_ID));
     // if lakitu is on one of them
@@ -12891,6 +13636,7 @@ void ChkLak() {
 }
 
 void ChkNoEn() {
+    _debug("ChkNoEn", __FILE__, __LINE__);
     // check enemy buffer flag for non-active enemy slot
     lda(ABSX(Enemy_Flag));
     // branch out of loop if found
@@ -12905,6 +13651,7 @@ void ChkNoEn() {
 }
 
 void CreateL() {
+    _debug("CreateL", __FILE__, __LINE__);
     // initialize enemy state
     lda(IMM(0x0));
     sta(ABSX(Enemy_State));
@@ -12920,16 +13667,19 @@ void CreateL() {
 }
 
 void RetEOfs() {
+    _debug("RetEOfs", __FILE__, __LINE__);
     // get enemy object buffer offset again and leave
     ldx(ABS(ObjectOffset));
     JMP(ExLSHand);
 }
 
 void ExLSHand() {
+    _debug("ExLSHand", __FILE__, __LINE__);
     return;
 }
 
 void CreateSpiny() {
+    _debug("CreateSpiny", __FILE__, __LINE__);
     // if player above a certain point, branch to leave
     lda(ABS(Player_Y_Position));
     cmp(IMM(0x2c));
@@ -12960,6 +13710,7 @@ void CreateSpiny() {
 }
 
 void DifLoop() {
+    _debug("DifLoop", __FILE__, __LINE__);
     // get three values and save them
     lda(ABSY(0x8000+offsetof(G, PRDiffAdjustData)));
     // to $01-$03
@@ -12998,12 +13749,14 @@ void DifLoop() {
 }
 
 void UsePosv() {
+    _debug("UsePosv", __FILE__, __LINE__);
     // put value from A in Y back to A (they will be lost anyway)
     tya();
     JMP(SetSpSpd);
 }
 
 void SetSpSpd() {
+    _debug("SetSpSpd", __FILE__, __LINE__);
     // set bounding box control, init attributes, lose contents of A
     JSR(SmallBBox);
     ldy(IMM(0x2));
@@ -13018,6 +13771,7 @@ void SetSpSpd() {
 }
 
 void SpinyRte() {
+    _debug("SpinyRte", __FILE__, __LINE__);
     // set moving direction to the right
     sty(ABSX(Enemy_MovingDir));
     lda(IMM(0xfd));
@@ -13033,16 +13787,19 @@ void SpinyRte() {
 }
 
 void ChpChpEx() {
+    _debug("ChpChpEx", __FILE__, __LINE__);
     return;
 }
 
 void InitLongFirebar() {
+    _debug("InitLongFirebar", __FILE__, __LINE__);
     // create enemy object for long firebar
     JSR(DuplicateEnemyObj);
     JMP(InitShortFirebar);
 }
 
 void InitShortFirebar() {
+    _debug("InitShortFirebar", __FILE__, __LINE__);
     // initialize low byte of spin state
     lda(IMM(0x0));
     sta(ABSX(FirebarSpinState_Low));
@@ -13078,6 +13835,7 @@ void InitShortFirebar() {
 }
 
 void InitFlyingCheepCheep() {
+    _debug("InitFlyingCheepCheep", __FILE__, __LINE__);
     // if timer here not expired yet, branch to leave
     lda(ABS(FrenzyEnemyTimer));
     BNE(ChpChpEx);
@@ -13101,6 +13859,7 @@ void InitFlyingCheepCheep() {
 }
 
 void MaxCC() {
+    _debug("MaxCC", __FILE__, __LINE__);
     // store whatever pseudorandom bits are in Y
     sty(ABS(0x0));
     // compare enemy object buffer offset with Y
@@ -13133,6 +13892,7 @@ void MaxCC() {
 }
 
 void GSeed() {
+    _debug("GSeed", __FILE__, __LINE__);
     // save to stack
     pha();
     clc();
@@ -13154,6 +13914,7 @@ void GSeed() {
 }
 
 void RSeed() {
+    _debug("RSeed", __FILE__, __LINE__);
     // get value from stack we saved earlier
     pla();
     clc();
@@ -13191,6 +13952,7 @@ void RSeed() {
 }
 
 void D2XPos1() {
+    _debug("D2XPos1", __FILE__, __LINE__);
     // get first LSFR or third LSFR lower nybble again
     tya();
     anda(IMM(0b10));
@@ -13212,6 +13974,7 @@ void D2XPos1() {
 }
 
 void D2XPos2() {
+    _debug("D2XPos2", __FILE__, __LINE__);
     // get player's horizontal position
     lda(ABS(Player_X_Position));
     sec();
@@ -13227,6 +13990,7 @@ void D2XPos2() {
 }
 
 void FinCCSt() {
+    _debug("FinCCSt", __FILE__, __LINE__);
     // save as enemy's page location
     sta(ABSX(Enemy_PageLoc));
     lda(IMM(0x1));
@@ -13241,6 +14005,7 @@ void FinCCSt() {
 }
 
 void InitBowser() {
+    _debug("InitBowser", __FILE__, __LINE__);
     // jump to create another bowser object
     JSR(DuplicateEnemyObj);
     // save offset of first here
@@ -13272,12 +14037,14 @@ void InitBowser() {
 }
 
 void DuplicateEnemyObj() {
+    _debug("DuplicateEnemyObj", __FILE__, __LINE__);
     // start at beginning of enemy slots
     ldy(IMM(0xff));
     JMP(FSLoop);
 }
 
 void FSLoop() {
+    _debug("FSLoop", __FILE__, __LINE__);
     // increment one slot
     iny();
     // check enemy buffer flag for empty slot
@@ -13310,11 +14077,13 @@ void FSLoop() {
 }
 
 void FlmEx() {
+    _debug("FlmEx", __FILE__, __LINE__);
     // and then leave
     return;
 }
 
 void InitBowserFlame() {
+    _debug("InitBowserFlame", __FILE__, __LINE__);
     // if timer not expired yet, branch to leave
     lda(ABS(FrenzyEnemyTimer));
     BNE(FlmEx);
@@ -13346,6 +14115,7 @@ void InitBowserFlame() {
 }
 
 void SetFrT() {
+    _debug("SetFrT", __FILE__, __LINE__);
     // set timer accordingly
     sta(ABS(FrenzyEnemyTimer));
     lda(ABSX(PseudoRandomBitReg));
@@ -13361,6 +14131,7 @@ void SetFrT() {
 }
 
 void PutAtRightExtent() {
+    _debug("PutAtRightExtent", __FILE__, __LINE__);
     // set vertical position
     sta(ABSX(Enemy_Y_Position));
     lda(ABS(ScreenRight_X_Pos));
@@ -13378,6 +14149,7 @@ void PutAtRightExtent() {
 }
 
 void SpawnFromMouth() {
+    _debug("SpawnFromMouth", __FILE__, __LINE__);
     // get bowser's horizontal position
     lda(ABSY(Enemy_X_Position));
     sec();
@@ -13415,6 +14187,7 @@ void SpawnFromMouth() {
 }
 
 void SetMF() {
+    _debug("SetMF", __FILE__, __LINE__);
     // get value here and save
     lda(ABSY(0x8000+offsetof(G, FlameYMFAdderData)));
     // to vertical movement force
@@ -13426,6 +14199,7 @@ void SetMF() {
 }
 
 void FinishFlame() {
+    _debug("FinishFlame", __FILE__, __LINE__);
     // set $08 for bounding box control
     lda(IMM(0x8));
     sta(ABSX(Enemy_BoundBoxCtrl));
@@ -13443,6 +14217,7 @@ void FinishFlame() {
 }
 
 void InitFireworks() {
+    _debug("InitFireworks", __FILE__, __LINE__);
     // if timer not expired yet, branch to leave
     lda(ABS(FrenzyEnemyTimer));
     BNE(ExitFWk);
@@ -13457,6 +14232,7 @@ void InitFireworks() {
 }
 
 void StarFChk() {
+    _debug("StarFChk", __FILE__, __LINE__);
     dey();
     // check for presence of star flag object
     lda(ABSY(Enemy_ID));
@@ -13514,10 +14290,12 @@ void StarFChk() {
 }
 
 void ExitFWk() {
+    _debug("ExitFWk", __FILE__, __LINE__);
     return;
 }
 
 void BulletBillCheepCheep() {
+    _debug("BulletBillCheepCheep", __FILE__, __LINE__);
     // if timer not expired yet, branch to leave
     lda(ABS(FrenzyEnemyTimer));
     BNE(ExF17);
@@ -13542,6 +14320,7 @@ void BulletBillCheepCheep() {
 }
 
 void ChkW2() {
+    _debug("ChkW2", __FILE__, __LINE__);
     // check world number
     lda(ABS(WorldNumber));
     cmp(IMM(World2));
@@ -13553,6 +14332,7 @@ void ChkW2() {
 }
 
 void Get17ID() {
+    _debug("Get17ID", __FILE__, __LINE__);
     tya();
     // mask out all but last bit of offset
     anda(IMM(0b1));
@@ -13563,6 +14343,7 @@ void Get17ID() {
 }
 
 void Set17ID() {
+    _debug("Set17ID", __FILE__, __LINE__);
     // store whatever's in A as enemy identifier
     sta(ABSX(Enemy_ID));
     lda(ABS(BitMFilter));
@@ -13576,6 +14357,7 @@ void Set17ID() {
 }
 
 void GetRBit() {
+    _debug("GetRBit", __FILE__, __LINE__);
     // get first part of LSFR
     lda(ABSX(PseudoRandomBitReg));
     // mask out all but 3 LSB
@@ -13584,6 +14366,7 @@ void GetRBit() {
 }
 
 void ChkRBit() {
+    _debug("ChkRBit", __FILE__, __LINE__);
     // use as offset
     tay();
     // load bitmask
@@ -13602,6 +14385,7 @@ void ChkRBit() {
 }
 
 void AddFBit() {
+    _debug("AddFBit", __FILE__, __LINE__);
     // add bit to already set bits in filter
     ora(ABS(BitMFilter));
     // and store
@@ -13621,12 +14405,14 @@ void AddFBit() {
 }
 
 void DoBulletBills() {
+    _debug("DoBulletBills", __FILE__, __LINE__);
     // start at beginning of enemy slots
     ldy(IMM(0xff));
     JMP(BB_SLoop);
 }
 
 void BB_SLoop() {
+    _debug("BB_SLoop", __FILE__, __LINE__);
     // move onto the next slot
     iny();
     // branch to play sound if we've done all slots
@@ -13645,11 +14431,13 @@ void BB_SLoop() {
 }
 
 void ExF17() {
+    _debug("ExF17", __FILE__, __LINE__);
     // if found, leave
     return;
 }
 
 void FireBulletBill() {
+    _debug("FireBulletBill", __FILE__, __LINE__);
     lda(ABS(Square2SoundQueue));
     // play fireworks/gunfire sound
     ora(IMM(Sfx_Blast));
@@ -13662,6 +14450,7 @@ void FireBulletBill() {
 }
 
 void HandleGroupEnemies() {
+    _debug("HandleGroupEnemies", __FILE__, __LINE__);
     // load value for green koopa troopa
     ldy(IMM(0x0));
     sec();
@@ -13687,12 +14476,14 @@ void HandleGroupEnemies() {
 }
 
 void PullID() {
+    _debug("PullID", __FILE__, __LINE__);
     // get second copy from stack
     pla();
     JMP(SnglID);
 }
 
 void SnglID() {
+    _debug("SnglID", __FILE__, __LINE__);
     // save enemy id here
     sty(ABS(0x1));
     // load default y coordinate
@@ -13707,6 +14498,7 @@ void SnglID() {
 }
 
 void SetYGp() {
+    _debug("SetYGp", __FILE__, __LINE__);
     // save y coordinate here
     sty(ABS(0x0));
     // get page number of right edge of screen
@@ -13731,18 +14523,21 @@ void SetYGp() {
 }
 
 void CntGrp() {
+    _debug("CntGrp", __FILE__, __LINE__);
     // save number of enemies here
     sty(ABS(NumberofGroupEnemies));
     JMP(GrLoop);
 }
 
 void GrLoop() {
+    _debug("GrLoop", __FILE__, __LINE__);
     // start at beginning of enemy buffers
     ldx(IMM(0xff));
     JMP(GSltLp);
 }
 
 void GSltLp() {
+    _debug("GSltLp", __FILE__, __LINE__);
     // increment and branch if past
     inx();
     // end of buffers
@@ -13787,12 +14582,14 @@ void GSltLp() {
 }
 
 void NextED() {
+    _debug("NextED", __FILE__, __LINE__);
     // jump to increment data offset and leave
     JMP(Inc2B);
     JMP(InitPiranhaPlant);
 }
 
 void InitPiranhaPlant() {
+    _debug("InitPiranhaPlant", __FILE__, __LINE__);
     // set initial speed
     lda(IMM(0x1));
     sta(ABSX(PiranhaPlant_Y_Speed));
@@ -13815,6 +14612,7 @@ void InitPiranhaPlant() {
 }
 
 void InitEnemyFrenzy() {
+    _debug("InitEnemyFrenzy", __FILE__, __LINE__);
     // load enemy identifier
     lda(ABSX(Enemy_ID));
     // save in enemy frenzy buffer
@@ -13834,16 +14632,19 @@ void InitEnemyFrenzy() {
 }
 
 void NoFrenzyCode() {
+    _debug("NoFrenzyCode", __FILE__, __LINE__);
     return;
 }
 
 void EndFrenzy() {
+    _debug("EndFrenzy", __FILE__, __LINE__);
     // start at last slot
     ldy(IMM(0x5));
     JMP(LakituChk);
 }
 
 void LakituChk() {
+    _debug("LakituChk", __FILE__, __LINE__);
     // check enemy identifiers
     lda(ABSY(Enemy_ID));
     // for lakitu
@@ -13856,6 +14657,7 @@ void LakituChk() {
 }
 
 void NextFSlot() {
+    _debug("NextFSlot", __FILE__, __LINE__);
     // move onto the next slot
     dey();
     // do this until all slots are checked
@@ -13869,6 +14671,7 @@ void NextFSlot() {
 }
 
 void InitJumpGPTroopa() {
+    _debug("InitJumpGPTroopa", __FILE__, __LINE__);
     // set for movement to the left
     lda(IMM(0x2));
     sta(ABSX(Enemy_MovingDir));
@@ -13879,18 +14682,21 @@ void InitJumpGPTroopa() {
 }
 
 void TallBBox2() {
+    _debug("TallBBox2", __FILE__, __LINE__);
     // set specific value for bounding box control
     lda(IMM(0x3));
     JMP(SetBBox2);
 }
 
 void SetBBox2() {
+    _debug("SetBBox2", __FILE__, __LINE__);
     // set bounding box control then leave
     sta(ABSX(Enemy_BoundBoxCtrl));
     return;
 }
 
 void InitBalPlatform() {
+    _debug("InitBalPlatform", __FILE__, __LINE__);
     // raise vertical position by two pixels
     dec(ABSX(Enemy_Y_Position));
     dec(ABSX(Enemy_Y_Position));
@@ -13906,6 +14712,7 @@ void InitBalPlatform() {
 }
 
 void AlignP() {
+    _debug("AlignP", __FILE__, __LINE__);
     // set default value here for now
     ldy(IMM(0xff));
     // get current balance platform alignment
@@ -13922,6 +14729,7 @@ void AlignP() {
 }
 
 void SetBPA() {
+    _debug("SetBPA", __FILE__, __LINE__);
     // store whatever value's in Y here
     sty(ABS(BalPlatformAlignment));
     lda(IMM(0x0));
@@ -13935,6 +14743,7 @@ void SetBPA() {
 }
 
 void InitDropPlatform() {
+    _debug("InitDropPlatform", __FILE__, __LINE__);
     lda(IMM(0xff));
     // set some value here
     sta(ABSX(PlatformCollisionFlag));
@@ -13944,6 +14753,7 @@ void InitDropPlatform() {
 }
 
 void InitHoriPlatform() {
+    _debug("InitHoriPlatform", __FILE__, __LINE__);
     lda(IMM(0x0));
     // init one of the moving counters
     sta(ABSX(XMoveSecondaryCounter));
@@ -13953,6 +14763,7 @@ void InitHoriPlatform() {
 }
 
 void InitVertPlatform() {
+    _debug("InitVertPlatform", __FILE__, __LINE__);
     // set default value here
     ldy(IMM(0x40));
     // check vertical position
@@ -13969,6 +14780,7 @@ void InitVertPlatform() {
 }
 
 void SetYO() {
+    _debug("SetYO", __FILE__, __LINE__);
     // save as top vertical position
     sta(ABSX(YPlatformTopYPos));
     tya();
@@ -13982,12 +14794,14 @@ void SetYO() {
 }
 
 void CommonPlatCode() {
+    _debug("CommonPlatCode", __FILE__, __LINE__);
     // do a sub to init certain other values
     JSR(InitVStf);
     JMP(SPBBox);
 }
 
 void SPBBox() {
+    _debug("SPBBox", __FILE__, __LINE__);
     // set default bounding box size control
     lda(IMM(0x5));
     ldy(ABS(AreaType));
@@ -14005,12 +14819,14 @@ void SPBBox() {
 }
 
 void CasPBB() {
+    _debug("CasPBB", __FILE__, __LINE__);
     // set bounding box size control here and leave
     sta(ABSX(Enemy_BoundBoxCtrl));
     return;
 }
 
 void LargeLiftUp() {
+    _debug("LargeLiftUp", __FILE__, __LINE__);
     // execute code for platforms going up
     JSR(PlatLiftUp);
     // overwrite bounding box for large platforms
@@ -14019,18 +14835,21 @@ void LargeLiftUp() {
 }
 
 void LargeLiftDown() {
+    _debug("LargeLiftDown", __FILE__, __LINE__);
     // execute code for platforms going down
     JSR(PlatLiftDown);
     JMP(LargeLiftBBox);
 }
 
 void LargeLiftBBox() {
+    _debug("LargeLiftBBox", __FILE__, __LINE__);
     // jump to overwrite bounding box size control
     JMP(SPBBox);
     JMP(PlatLiftUp);
 }
 
 void PlatLiftUp() {
+    _debug("PlatLiftUp", __FILE__, __LINE__);
     // set movement amount here
     lda(IMM(0x10));
     sta(ABSX(Enemy_Y_MoveForce));
@@ -14043,6 +14862,7 @@ void PlatLiftUp() {
 }
 
 void PlatLiftDown() {
+    _debug("PlatLiftDown", __FILE__, __LINE__);
     // set movement amount here
     lda(IMM(0xf0));
     sta(ABSX(Enemy_Y_MoveForce));
@@ -14053,6 +14873,7 @@ void PlatLiftDown() {
 }
 
 void CommonSmallLift() {
+    _debug("CommonSmallLift", __FILE__, __LINE__);
     ldy(IMM(0x1));
     // do a sub to add 12 pixels due to preset value
     JSR(PosPlatform);
@@ -14063,6 +14884,7 @@ void CommonSmallLift() {
 }
 
 void PosPlatform() {
+    _debug("PosPlatform", __FILE__, __LINE__);
     // get horizontal coordinate
     lda(ABSX(Enemy_X_Position));
     clc();
@@ -14080,10 +14902,12 @@ void PosPlatform() {
 }
 
 void EndOfEnemyInitCode() {
+    _debug("EndOfEnemyInitCode", __FILE__, __LINE__);
     return;
 }
 
 void RunEnemyObjectsCore() {
+    _debug("RunEnemyObjectsCore", __FILE__, __LINE__);
     // get offset for enemy object buffer
     ldx(ABS(ObjectOffset));
     // load value 0 for jump engine by default
@@ -14100,6 +14924,7 @@ void RunEnemyObjectsCore() {
 }
 
 void JmpEO() {
+    _debug("JmpEO", __FILE__, __LINE__);
     static JUMP_ENTRY jumptable[34] = {
         RunNormalEnemies,
         RunBowserFlame,
@@ -14140,10 +14965,12 @@ void JmpEO() {
 }
 
 void NoRunCode() {
+    _debug("NoRunCode", __FILE__, __LINE__);
     return;
 }
 
 void RunRetainerObj() {
+    _debug("RunRetainerObj", __FILE__, __LINE__);
     JSR(GetEnemyOffscreenBits);
     JSR(RelativeEnemyPosition);
     JMP(EnemyGfxHandler);
@@ -14151,6 +14978,7 @@ void RunRetainerObj() {
 }
 
 void RunNormalEnemies() {
+    _debug("RunNormalEnemies", __FILE__, __LINE__);
     // init sprite attributes
     lda(IMM(0x0));
     sta(ABSX(Enemy_SprAttrib));
@@ -14169,11 +14997,13 @@ void RunNormalEnemies() {
 }
 
 void SkipMove() {
+    _debug("SkipMove", __FILE__, __LINE__);
     JMP(OffscreenBoundsCheck);
     JMP(EnemyMovementSubs);
 }
 
 void EnemyMovementSubs() {
+    _debug("EnemyMovementSubs", __FILE__, __LINE__);
     lda(ABSX(Enemy_ID));
     static JUMP_ENTRY jumptable[21] = {
         MoveNormalEnemy,
@@ -14202,10 +15032,12 @@ void EnemyMovementSubs() {
 }
 
 void NoMoveCode() {
+    _debug("NoMoveCode", __FILE__, __LINE__);
     return;
 }
 
 void RunBowserFlame() {
+    _debug("RunBowserFlame", __FILE__, __LINE__);
     JSR(ProcBowserFlame);
     JSR(GetEnemyOffscreenBits);
     JSR(RelativeEnemyPosition);
@@ -14216,12 +15048,14 @@ void RunBowserFlame() {
 }
 
 void RunFirebarObj() {
+    _debug("RunFirebarObj", __FILE__, __LINE__);
     JSR(ProcFirebar);
     JMP(OffscreenBoundsCheck);
     JMP(RunSmallPlatform);
 }
 
 void RunSmallPlatform() {
+    _debug("RunSmallPlatform", __FILE__, __LINE__);
     JSR(GetEnemyOffscreenBits);
     JSR(RelativeEnemyPosition);
     JSR(SmallPlatformBoundBox);
@@ -14234,6 +15068,7 @@ void RunSmallPlatform() {
 }
 
 void RunLargePlatform() {
+    _debug("RunLargePlatform", __FILE__, __LINE__);
     JSR(GetEnemyOffscreenBits);
     JSR(RelativeEnemyPosition);
     JSR(LargePlatformBoundBox);
@@ -14247,6 +15082,7 @@ void RunLargePlatform() {
 }
 
 void SkipPT() {
+    _debug("SkipPT", __FILE__, __LINE__);
     JSR(RelativeEnemyPosition);
     JSR(DrawLargePlatform);
     JMP(OffscreenBoundsCheck);
@@ -14254,6 +15090,7 @@ void SkipPT() {
 }
 
 void LargePlatformSubroutines() {
+    _debug("LargePlatformSubroutines", __FILE__, __LINE__);
     // subtract $24 to get proper offset for jump table
     lda(ABSX(Enemy_ID));
     sec();
@@ -14271,6 +15108,7 @@ void LargePlatformSubroutines() {
 }
 
 void EraseEnemyObject() {
+    _debug("EraseEnemyObject", __FILE__, __LINE__);
     // clear all enemy object variables
     lda(IMM(0x0));
     sta(ABSX(Enemy_Flag));
@@ -14285,6 +15123,7 @@ void EraseEnemyObject() {
 }
 
 void MovePodoboo() {
+    _debug("MovePodoboo", __FILE__, __LINE__);
     // check enemy timer
     lda(ABSX(EnemyIntervalTimer));
     // branch to move enemy if not expired
@@ -14310,12 +15149,14 @@ void MovePodoboo() {
 }
 
 void PdbM() {
+    _debug("PdbM", __FILE__, __LINE__);
     // branch to impose gravity on podoboo
     JMP(MoveJ_EnemyVertically);
     JMP(ProcHammerBro);
 }
 
 void ProcHammerBro() {
+    _debug("ProcHammerBro", __FILE__, __LINE__);
     // check hammer bro's enemy state for d5 set
     lda(ABSX(Enemy_State));
     anda(IMM(0b100000));
@@ -14327,6 +15168,7 @@ void ProcHammerBro() {
 }
 
 void ChkJH() {
+    _debug("ChkJH", __FILE__, __LINE__);
     // check jump timer
     lda(ABSX(HammerBroJumpTimer));
     // if expired, branch to jump
@@ -14362,6 +15204,7 @@ void ChkJH() {
 }
 
 void DecHT() {
+    _debug("DecHT", __FILE__, __LINE__);
     // decrement timer
     dec(ABSX(HammerThrowingTimer));
     // jump to move hammer bro
@@ -14370,6 +15213,7 @@ void DecHT() {
 }
 
 void HammerBroJumpCode() {
+    _debug("HammerBroJumpCode", __FILE__, __LINE__);
     // get hammer bro's enemy state
     lda(ABSX(Enemy_State));
     // mask out all but 3 LSB
@@ -14409,6 +15253,7 @@ void HammerBroJumpCode() {
 }
 
 void SetHJ() {
+    _debug("SetHJ", __FILE__, __LINE__);
     // set vertical speed for jumping
     sty(ABSX(Enemy_Y_Speed));
     // set d0 in enemy state for jumping
@@ -14430,6 +15275,7 @@ void SetHJ() {
 }
 
 void HJump() {
+    _debug("HJump", __FILE__, __LINE__);
     // get jump length timer data using offset from before
     lda(ABSY(0x8000+offsetof(G, HammerBroJumpLData)));
     // save in enemy timer
@@ -14443,6 +15289,7 @@ void HJump() {
 }
 
 void MoveHammerBroXDir() {
+    _debug("MoveHammerBroXDir", __FILE__, __LINE__);
     // move hammer bro a little to the left
     ldy(IMM(0xfc));
     lda(ABS(FrameCounter));
@@ -14455,6 +15302,7 @@ void MoveHammerBroXDir() {
 }
 
 void Shimmy() {
+    _debug("Shimmy", __FILE__, __LINE__);
     // store horizontal speed
     sty(ABSX(Enemy_X_Speed));
     // set to face right by default
@@ -14476,12 +15324,14 @@ void Shimmy() {
 }
 
 void SetShim() {
+    _debug("SetShim", __FILE__, __LINE__);
     // set moving direction
     sty(ABSX(Enemy_MovingDir));
     JMP(MoveNormalEnemy);
 }
 
 void MoveNormalEnemy() {
+    _debug("MoveNormalEnemy", __FILE__, __LINE__);
     // init Y to leave horizontal movement as-is
     ldy(IMM(0x0));
     lda(ABSX(Enemy_State));
@@ -14514,6 +15364,7 @@ void MoveNormalEnemy() {
 }
 
 void FallE() {
+    _debug("FallE", __FILE__, __LINE__);
     // do a sub here to move enemy downwards
     JSR(MoveD_EnemyVertically);
     ldy(IMM(0x0));
@@ -14536,18 +15387,21 @@ void FallE() {
 }
 
 void MEHor() {
+    _debug("MEHor", __FILE__, __LINE__);
     // jump here to move enemy horizontally for <> $2e and d6 set
     JMP(MoveEnemyHorizontally);
     JMP(SlowM);
 }
 
 void SlowM() {
+    _debug("SlowM", __FILE__, __LINE__);
     // if branched here, increment Y to slow horizontal movement
     ldy(IMM(0x1));
     JMP(SteadM);
 }
 
 void SteadM() {
+    _debug("SteadM", __FILE__, __LINE__);
     // get current horizontal speed
     lda(ABSX(Enemy_X_Speed));
     // save to stack
@@ -14561,6 +15415,7 @@ void SteadM() {
 }
 
 void AddHS() {
+    _debug("AddHS", __FILE__, __LINE__);
     clc();
     // add value here to slow enemy down if necessary
     adc(ABSY(0x8000+offsetof(G, XSpeedAdderData)));
@@ -14576,6 +15431,7 @@ void AddHS() {
 }
 
 void ReviveStunned() {
+    _debug("ReviveStunned", __FILE__, __LINE__);
     // if enemy timer not expired yet,
     lda(ABSX(EnemyIntervalTimer));
     // skip ahead to something else
@@ -14603,6 +15459,7 @@ void ReviveStunned() {
 }
 
 void SetRSpd() {
+    _debug("SetRSpd", __FILE__, __LINE__);
     // load and store new horizontal speed
     lda(ABSY(0x8000+offsetof(G, RevivedXSpeed)));
     // and leave
@@ -14611,6 +15468,7 @@ void SetRSpd() {
 }
 
 void MoveDefeatedEnemy() {
+    _debug("MoveDefeatedEnemy", __FILE__, __LINE__);
     // execute sub to move defeated enemy downwards
     JSR(MoveD_EnemyVertically);
     // now move defeated enemy horizontally
@@ -14619,6 +15477,7 @@ void MoveDefeatedEnemy() {
 }
 
 void ChkKillGoomba() {
+    _debug("ChkKillGoomba", __FILE__, __LINE__);
     // check to see if enemy timer has reached
     cmp(IMM(0xe));
     // a certain point, and branch to leave if not
@@ -14634,11 +15493,13 @@ void ChkKillGoomba() {
 }
 
 void NKGmba() {
+    _debug("NKGmba", __FILE__, __LINE__);
     // leave!
     return;
 }
 
 void MoveJumpingEnemy() {
+    _debug("MoveJumpingEnemy", __FILE__, __LINE__);
     // do a sub to impose gravity on green paratroopa
     JSR(MoveJ_EnemyVertically);
     // jump to move enemy horizontally
@@ -14647,6 +15508,7 @@ void MoveJumpingEnemy() {
 }
 
 void ProcMoveRedPTroopa() {
+    _debug("ProcMoveRedPTroopa", __FILE__, __LINE__);
     lda(ABSX(Enemy_Y_Speed));
     // check for any vertical force or speed
     ora(ABSX(Enemy_Y_MoveForce));
@@ -14671,11 +15533,13 @@ void ProcMoveRedPTroopa() {
 }
 
 void NoIncPT() {
+    _debug("NoIncPT", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void MoveRedPTUpOrDown() {
+    _debug("MoveRedPTUpOrDown", __FILE__, __LINE__);
     // check current vs. central vertical coordinate
     lda(ABSX(Enemy_Y_Position));
     cmp(ABSX(RedPTroopaCenterYPos));
@@ -14687,12 +15551,14 @@ void MoveRedPTUpOrDown() {
 }
 
 void MovPTDwn() {
+    _debug("MovPTDwn", __FILE__, __LINE__);
     // move downwards
     JMP(MoveRedPTroopaDown);
     JMP(MoveFlyGreenPTroopa);
 }
 
 void MoveFlyGreenPTroopa() {
+    _debug("MoveFlyGreenPTroopa", __FILE__, __LINE__);
     // do sub to increment primary and secondary counters
     JSR(XMoveCntr_GreenPTroopa);
     // do sub to move green paratroopa accordingly, and horizontally
@@ -14715,6 +15581,7 @@ void MoveFlyGreenPTroopa() {
 }
 
 void YSway() {
+    _debug("YSway", __FILE__, __LINE__);
     // store adder here
     sty(ABS(0x0));
     lda(ABSX(Enemy_Y_Position));
@@ -14727,17 +15594,20 @@ void YSway() {
 }
 
 void NoMGPT() {
+    _debug("NoMGPT", __FILE__, __LINE__);
     // leave!
     return;
 }
 
 void XMoveCntr_GreenPTroopa() {
+    _debug("XMoveCntr_GreenPTroopa", __FILE__, __LINE__);
     // load preset maximum value for secondary counter
     lda(IMM(0x13));
     JMP(XMoveCntr_Platform);
 }
 
 void XMoveCntr_Platform() {
+    _debug("XMoveCntr_Platform", __FILE__, __LINE__);
     // store value here
     sta(ABS(0x1));
     lda(ABS(FrameCounter));
@@ -14762,16 +15632,19 @@ void XMoveCntr_Platform() {
 }
 
 void NoIncXM() {
+    _debug("NoIncXM", __FILE__, __LINE__);
     return;
 }
 
 void IncPXM() {
+    _debug("IncPXM", __FILE__, __LINE__);
     // increment primary counter and leave
     inc(ABSX(XMovePrimaryCounter));
     return;
 }
 
 void DecSeXM() {
+    _debug("DecSeXM", __FILE__, __LINE__);
     // put secondary counter in A
     tya();
     // if secondary counter at zero, branch back
@@ -14782,6 +15655,7 @@ void DecSeXM() {
 }
 
 void MoveWithXMCntrs() {
+    _debug("MoveWithXMCntrs", __FILE__, __LINE__);
     // save secondary counter to stack
     lda(ABSX(XMoveSecondaryCounter));
     pha();
@@ -14805,6 +15679,7 @@ void MoveWithXMCntrs() {
 }
 
 void XMRight() {
+    _debug("XMRight", __FILE__, __LINE__);
     // store as moving direction
     sty(ABSX(Enemy_MovingDir));
     JSR(MoveEnemyHorizontally);
@@ -14818,6 +15693,7 @@ void XMRight() {
 }
 
 void MoveBloober() {
+    _debug("MoveBloober", __FILE__, __LINE__);
     lda(ABSX(Enemy_State));
     // check enemy state for d5 set
     anda(IMM(0b100000));
@@ -14844,6 +15720,7 @@ void MoveBloober() {
 }
 
 void FBLeft() {
+    _debug("FBLeft", __FILE__, __LINE__);
     // set left moving direction by default
     ldy(IMM(0x2));
     // get horizontal difference between player and bloober
@@ -14856,12 +15733,14 @@ void FBLeft() {
 }
 
 void SBMDir() {
+    _debug("SBMDir", __FILE__, __LINE__);
     // set moving direction of bloober, then continue on here
     sty(ABSX(Enemy_MovingDir));
     JMP(BlooberSwim);
 }
 
 void BlooberSwim() {
+    _debug("BlooberSwim", __FILE__, __LINE__);
     // execute sub to make bloober swim characteristically
     JSR(ProcSwimmingB);
     // get vertical coordinate
@@ -14879,6 +15758,7 @@ void BlooberSwim() {
 }
 
 void SwimX() {
+    _debug("SwimX", __FILE__, __LINE__);
     // check moving direction
     ldy(ABSX(Enemy_MovingDir));
     dey();
@@ -14899,6 +15779,7 @@ void SwimX() {
 }
 
 void LeftSwim() {
+    _debug("LeftSwim", __FILE__, __LINE__);
     lda(ABSX(Enemy_X_Position));
     // subtract movement speed from horizontal coordinate
     sec();
@@ -14914,12 +15795,14 @@ void LeftSwim() {
 }
 
 void MoveDefeatedBloober() {
+    _debug("MoveDefeatedBloober", __FILE__, __LINE__);
     // jump to move defeated bloober downwards
     JMP(MoveEnemySlowVert);
     JMP(ProcSwimmingB);
 }
 
 void ProcSwimmingB() {
+    _debug("ProcSwimmingB", __FILE__, __LINE__);
     // get enemy's movement counter
     lda(ABSX(BlooperMoveCounter));
     // check for d1 set
@@ -14958,10 +15841,12 @@ void ProcSwimmingB() {
 }
 
 void BSwimE() {
+    _debug("BSwimE", __FILE__, __LINE__);
     return;
 }
 
 void SlowSwim() {
+    _debug("SlowSwim", __FILE__, __LINE__);
     // pull 3 LSB of frame counter from the stack
     pla();
     // branch to leave, execute code only every eighth frame
@@ -14985,11 +15870,13 @@ void SlowSwim() {
 }
 
 void NoSSw() {
+    _debug("NoSSw", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void ChkForFloatdown() {
+    _debug("ChkForFloatdown", __FILE__, __LINE__);
     // get enemy timer
     lda(ABSX(EnemyIntervalTimer));
     // branch if expired
@@ -14998,6 +15885,7 @@ void ChkForFloatdown() {
 }
 
 void Floatdown() {
+    _debug("Floatdown", __FILE__, __LINE__);
     // get frame counter
     lda(ABS(FrameCounter));
     // check for d0 set
@@ -15010,11 +15898,13 @@ void Floatdown() {
 }
 
 void NoFD() {
+    _debug("NoFD", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void ChkNearPlayer() {
+    _debug("ChkNearPlayer", __FILE__, __LINE__);
     // get vertical coordinate
     lda(ABSX(Enemy_Y_Position));
     // add sixteen pixels
@@ -15030,6 +15920,7 @@ void ChkNearPlayer() {
 }
 
 void MoveBulletBill() {
+    _debug("MoveBulletBill", __FILE__, __LINE__);
     // check bullet bill's enemy object state for d5 set
     lda(ABSX(Enemy_State));
     anda(IMM(0b100000));
@@ -15041,6 +15932,7 @@ void MoveBulletBill() {
 }
 
 void NotDefB() {
+    _debug("NotDefB", __FILE__, __LINE__);
     // set bullet bill's horizontal speed
     lda(IMM(0xe8));
     // and move it accordingly (note: this bullet bill
@@ -15051,6 +15943,7 @@ void NotDefB() {
 }
 
 void MoveSwimmingCheepCheep() {
+    _debug("MoveSwimmingCheepCheep", __FILE__, __LINE__);
     // check cheep-cheep's enemy object state
     lda(ABSX(Enemy_State));
     // for d5 set
@@ -15063,6 +15956,7 @@ void MoveSwimmingCheepCheep() {
 }
 
 void CCSwim() {
+    _debug("CCSwim", __FILE__, __LINE__);
     // save enemy state in $03
     sta(ABS(0x3));
     // get enemy identifier
@@ -15127,6 +16021,7 @@ void CCSwim() {
 }
 
 void CCSwimUpwards() {
+    _debug("CCSwimUpwards", __FILE__, __LINE__);
     lda(ABSX(Enemy_YMF_Dummy));
     sec();
     // subtract preset value to dummy variable to get borrow
@@ -15146,6 +16041,7 @@ void CCSwimUpwards() {
 }
 
 void ChkSwimYPos() {
+    _debug("ChkSwimYPos", __FILE__, __LINE__);
     // save new page location here
     sta(ABSX(Enemy_Y_HighPos));
     // load movement speed to upwards by default
@@ -15168,6 +16064,7 @@ void ChkSwimYPos() {
 }
 
 void YPDiff() {
+    _debug("YPDiff", __FILE__, __LINE__);
     // if difference between original vs. current vertical
     cmp(IMM(0xf));
     // coordinates < 15 pixels, leave movement speed alone
@@ -15179,11 +16076,13 @@ void YPDiff() {
 }
 
 void ExSwCC() {
+    _debug("ExSwCC", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void ProcFirebar() {
+    _debug("ProcFirebar", __FILE__, __LINE__);
     // get offscreen information
     JSR(GetEnemyOffscreenBits);
     // check for d3 set
@@ -15207,6 +16106,7 @@ void ProcFirebar() {
 }
 
 void SusFbar() {
+    _debug("SusFbar", __FILE__, __LINE__);
     // get high byte of spinstate
     lda(ABSX(FirebarSpinState_High));
     // check enemy identifier
@@ -15225,6 +16125,7 @@ void SusFbar() {
 }
 
 void SkpFSte() {
+    _debug("SkpFSte", __FILE__, __LINE__);
     clc();
     // add one to spinning thing to avoid horizontal state
     adc(IMM(0x1));
@@ -15233,6 +16134,7 @@ void SkpFSte() {
 }
 
 void SetupGFB() {
+    _debug("SetupGFB", __FILE__, __LINE__);
     // save high byte of spinning thing, modified or otherwise
     sta(ABS(0xef));
     // get relative coordinates to screen
@@ -15271,6 +16173,7 @@ void SetupGFB() {
 }
 
 void SetMFbar() {
+    _debug("SetMFbar", __FILE__, __LINE__);
     // store maximum value for length of firebars
     sty(ABS(0xed));
     lda(IMM(0x0));
@@ -15280,6 +16183,7 @@ void SetMFbar() {
 }
 
 void DrawFbar() {
+    _debug("DrawFbar", __FILE__, __LINE__);
     // load high byte of spinstate
     lda(ABS(0xef));
     // get fireball position data depending on firebar part
@@ -15300,6 +16204,7 @@ void DrawFbar() {
 }
 
 void NextFbar() {
+    _debug("NextFbar", __FILE__, __LINE__);
     // move onto the next firebar part
     inc(ABS(0x0));
     lda(ABS(0x0));
@@ -15311,10 +16216,12 @@ void NextFbar() {
 }
 
 void SkipFBar() {
+    _debug("SkipFBar", __FILE__, __LINE__);
     return;
 }
 
 void DrawFirebar_Collision() {
+    _debug("DrawFirebar_Collision", __FILE__, __LINE__);
     // store mirror data elsewhere
     lda(ABS(0x3));
     sta(ABS(0x5));
@@ -15333,6 +16240,7 @@ void DrawFirebar_Collision() {
 }
 
 void AddHA() {
+    _debug("AddHA", __FILE__, __LINE__);
     // add horizontal coordinate relative to screen to
     clc();
     // horizontal adder, modified or otherwise
@@ -15355,6 +16263,7 @@ void AddHA() {
 }
 
 void SubtR1() {
+    _debug("SubtR1", __FILE__, __LINE__);
     // subtract original X from the
     sec();
     // current sprite X
@@ -15363,6 +16272,7 @@ void SubtR1() {
 }
 
 void ChkFOfs() {
+    _debug("ChkFOfs", __FILE__, __LINE__);
     // if difference of coordinates within a certain range,
     cmp(IMM(0x59));
     // continue by handling vertical adder
@@ -15375,6 +16285,7 @@ void ChkFOfs() {
 }
 
 void VAHandl() {
+    _debug("VAHandl", __FILE__, __LINE__);
     // if vertical relative coordinate offscreen,
     lda(ABS(Enemy_Rel_YPos));
     // skip ahead of this part and write into sprite Y coordinate
@@ -15393,6 +16304,7 @@ void VAHandl() {
 }
 
 void AddVA() {
+    _debug("AddVA", __FILE__, __LINE__);
     // add vertical coordinate relative to screen to
     clc();
     // the second data, modified or otherwise
@@ -15401,6 +16313,7 @@ void AddVA() {
 }
 
 void SetVFbr() {
+    _debug("SetVFbr", __FILE__, __LINE__);
     // store as Y coordinate here
     sta(ABSY(Sprite_Y_Position));
     // also store here for now
@@ -15409,6 +16322,7 @@ void SetVFbr() {
 }
 
 void FirebarCollision() {
+    _debug("FirebarCollision", __FILE__, __LINE__);
     // run sub here to draw current tile of firebar
     JSR(DrawFirebar);
     // return OAM data offset and save
@@ -15441,6 +16355,7 @@ void FirebarCollision() {
 }
 
 void AdjSm() {
+    _debug("AdjSm", __FILE__, __LINE__);
     // if small or big but crouching, execute this part
     inc(ABS(0x5));
     // first increment our counter twice (setting $02 as flag)
@@ -15455,12 +16370,14 @@ void AdjSm() {
 }
 
 void BigJp() {
+    _debug("BigJp", __FILE__, __LINE__);
     // get vertical coordinate, altered or otherwise, from Y
     tya();
     JMP(FBCLoop);
 }
 
 void FBCLoop() {
+    _debug("FBCLoop", __FILE__, __LINE__);
     // subtract vertical position of firebar
     sec();
     // from the vertical coordinate of the player
@@ -15476,6 +16393,7 @@ void FBCLoop() {
 }
 
 void ChkVFBD() {
+    _debug("ChkVFBD", __FILE__, __LINE__);
     // if difference => 8 pixels, skip ahead of this part
     cmp(IMM(0x8));
     BCS(Chk2Ofs);
@@ -15506,6 +16424,7 @@ void ChkVFBD() {
 }
 
 void ChkFBCl() {
+    _debug("ChkFBCl", __FILE__, __LINE__);
     // if difference < 8 pixels, collision, thus branch
     cmp(IMM(0x8));
     // to process
@@ -15514,6 +16433,7 @@ void ChkFBCl() {
 }
 
 void Chk2Ofs() {
+    _debug("Chk2Ofs", __FILE__, __LINE__);
     // if value of $02 was set earlier for whatever reason,
     lda(ABS(0x5));
     // branch to increment OAM offset and leave, no collision
@@ -15532,6 +16452,7 @@ void Chk2Ofs() {
 }
 
 void ChgSDir() {
+    _debug("ChgSDir", __FILE__, __LINE__);
     // set movement direction by default
     ldx(IMM(0x1));
     // if OAM X coordinate of player's sprite 1
@@ -15546,6 +16467,7 @@ void ChgSDir() {
 }
 
 void SetSDir() {
+    _debug("SetSDir", __FILE__, __LINE__);
     // store movement direction here
     stx(ABS(Enemy_MovingDir));
     ldx(IMM(0x0));
@@ -15561,6 +16483,7 @@ void SetSDir() {
 }
 
 void NoColFB() {
+    _debug("NoColFB", __FILE__, __LINE__);
     // get OAM data offset
     pla();
     // add four to it and save
@@ -15573,6 +16496,7 @@ void NoColFB() {
 }
 
 void GetFirebarPosition() {
+    _debug("GetFirebarPosition", __FILE__, __LINE__);
     // save high byte of spinstate to the stack
     pha();
     // mask out low nybble
@@ -15588,6 +16512,7 @@ void GetFirebarPosition() {
 }
 
 void GetHAdder() {
+    _debug("GetHAdder", __FILE__, __LINE__);
     // store result, modified or not, here
     sta(ABS(0x1));
     // load number of firebar ball where we're at
@@ -15622,6 +16547,7 @@ void GetHAdder() {
 }
 
 void GetVAdder() {
+    _debug("GetVAdder", __FILE__, __LINE__);
     // store result here
     sta(ABS(0x2));
     ldy(ABS(0x0));
@@ -15650,6 +16576,7 @@ void GetVAdder() {
 }
 
 void MoveFlyingCheepCheep() {
+    _debug("MoveFlyingCheepCheep", __FILE__, __LINE__);
     // check cheep-cheep's enemy state
     lda(ABSX(Enemy_State));
     // for d5 set
@@ -15665,6 +16592,7 @@ void MoveFlyingCheepCheep() {
 }
 
 void FlyCC() {
+    _debug("FlyCC", __FILE__, __LINE__);
     // move cheep-cheep horizontally based on speed and force
     JSR(MoveEnemyHorizontally);
     // set vertical movement amount
@@ -15697,6 +16625,7 @@ void FlyCC() {
 }
 
 void AddCCF() {
+    _debug("AddCCF", __FILE__, __LINE__);
     // if result or two's compliment greater than eight,
     cmp(IMM(0x8));
     // skip to the end without changing movement force
@@ -15716,6 +16645,7 @@ void AddCCF() {
 }
 
 void BPGet() {
+    _debug("BPGet", __FILE__, __LINE__);
     // load bg priority data and store (this is very likely
     lda(ABSY(0x8000+offsetof(G, FlyCCBPriority)));
     // broken or residual code, value is overwritten before
@@ -15725,6 +16655,7 @@ void BPGet() {
 }
 
 void MoveLakitu() {
+    _debug("MoveLakitu", __FILE__, __LINE__);
     // check lakitu's enemy state
     lda(ABSX(Enemy_State));
     // for d5 set
@@ -15737,6 +16668,7 @@ void MoveLakitu() {
 }
 
 void ChkLS() {
+    _debug("ChkLS", __FILE__, __LINE__);
     // if lakitu's enemy state not set at all,
     lda(ABSX(Enemy_State));
     // go ahead and continue with code
@@ -15753,6 +16685,7 @@ void ChkLS() {
 }
 
 void Fr12S() {
+    _debug("Fr12S", __FILE__, __LINE__);
     lda(IMM(Spiny));
     // set spiny identifier in frenzy buffer
     sta(ABS(EnemyFrenzyBuffer));
@@ -15761,6 +16694,7 @@ void Fr12S() {
 }
 
 void LdLDa() {
+    _debug("LdLDa", __FILE__, __LINE__);
     // load values
     lda(ABSY(0x8000+offsetof(G, LakituDiffAdj)));
     // store in zero page
@@ -15774,6 +16708,7 @@ void LdLDa() {
 }
 
 void SetLSpd() {
+    _debug("SetLSpd", __FILE__, __LINE__);
     // set movement speed returned from sub
     sta(ABSX(LakituMoveSpeed));
     // set moving direction to right by default
@@ -15796,6 +16731,7 @@ void SetLSpd() {
 }
 
 void SetLMov() {
+    _debug("SetLMov", __FILE__, __LINE__);
     // store moving direction
     sty(ABSX(Enemy_MovingDir));
     // move lakitu horizontally
@@ -15804,6 +16740,7 @@ void SetLMov() {
 }
 
 void PlayerLakituDiff() {
+    _debug("PlayerLakituDiff", __FILE__, __LINE__);
     // set Y for default value
     ldy(IMM(0x0));
     // get horizontal difference between enemy and player
@@ -15823,6 +16760,7 @@ void PlayerLakituDiff() {
 }
 
 void ChkLakDif() {
+    _debug("ChkLakDif", __FILE__, __LINE__);
     // get low byte of horizontal difference
     lda(ABS(0x0));
     // if within a certain distance of player, branch
@@ -15855,6 +16793,7 @@ void ChkLakDif() {
 }
 
 void SetLMovD() {
+    _debug("SetLMovD", __FILE__, __LINE__);
     // set horizontal direction depending on horizontal
     tya();
     // difference between enemy and player if necessary
@@ -15863,6 +16802,7 @@ void SetLMovD() {
 }
 
 void ChkPSpeed() {
+    _debug("ChkPSpeed", __FILE__, __LINE__);
     lda(ABS(0x0));
     // mask out all but four bits in the middle
     anda(IMM(0b111100));
@@ -15896,6 +16836,7 @@ void ChkPSpeed() {
 }
 
 void ChkSpinyO() {
+    _debug("ChkSpinyO", __FILE__, __LINE__);
     // check for spiny object
     lda(ABSX(Enemy_ID));
     cmp(IMM(Spiny));
@@ -15908,6 +16849,7 @@ void ChkSpinyO() {
 }
 
 void ChkEmySpd() {
+    _debug("ChkEmySpd", __FILE__, __LINE__);
     // check vertical speed
     lda(ABSX(Enemy_Y_Speed));
     // branch if nonzero
@@ -15918,6 +16860,7 @@ void ChkEmySpd() {
 }
 
 void SubDifAdj() {
+    _debug("SubDifAdj", __FILE__, __LINE__);
     // get one of three saved values from earlier
     lda(ABSY(0x1));
     // get saved horizontal difference
@@ -15926,6 +16869,7 @@ void SubDifAdj() {
 }
 
 void SPixelLak() {
+    _debug("SPixelLak", __FILE__, __LINE__);
     // subtract one for each pixel of horizontal difference
     sec();
     // from one of three saved values
@@ -15937,11 +16881,13 @@ void SPixelLak() {
 }
 
 void ExMoveLak() {
+    _debug("ExMoveLak", __FILE__, __LINE__);
     // leave!!!
     return;
 }
 
 void BridgeCollapse() {
+    _debug("BridgeCollapse", __FILE__, __LINE__);
     // get enemy offset for bowser
     ldx(ABS(BowserFront_Offset));
     // check enemy object identifier for bowser
@@ -15967,6 +16913,7 @@ void BridgeCollapse() {
 }
 
 void SetM2() {
+    _debug("SetM2", __FILE__, __LINE__);
     // silence music
     lda(IMM(Silence));
     sta(ABS(EventMusicQueue));
@@ -15978,6 +16925,7 @@ void SetM2() {
 }
 
 void MoveD_Bowser() {
+    _debug("MoveD_Bowser", __FILE__, __LINE__);
     // do a sub to move bowser downwards
     JSR(MoveEnemySlowVert);
     // jump to draw bowser's front and rear, then leave
@@ -15986,6 +16934,7 @@ void MoveD_Bowser() {
 }
 
 void RemoveBridge() {
+    _debug("RemoveBridge", __FILE__, __LINE__);
     // decrement timer to control bowser's feet
     dec(ABS(BowserFeetCounter));
     // if not expired, skip all of this
@@ -16043,12 +16992,14 @@ void RemoveBridge() {
 }
 
 void NoBFall() {
+    _debug("NoBFall", __FILE__, __LINE__);
     // jump to code that draws bowser
     JMP(BowserGfxHandler);
     JMP(RunBowser);
 }
 
 void RunBowser() {
+    _debug("RunBowser", __FILE__, __LINE__);
     // if d5 in enemy state is not set
     lda(ABSX(Enemy_State));
     // then branch elsewhere to run bowser
@@ -16064,12 +17015,14 @@ void RunBowser() {
 }
 
 void KillAllEnemies() {
+    _debug("KillAllEnemies", __FILE__, __LINE__);
     // start with last enemy slot
     ldx(IMM(0x4));
     JMP(KillLoop);
 }
 
 void KillLoop() {
+    _debug("KillLoop", __FILE__, __LINE__);
     // branch to kill enemy objects
     JSR(EraseEnemyObject);
     // move onto next enemy slot
@@ -16084,6 +17037,7 @@ void KillLoop() {
 }
 
 void BowserControl() {
+    _debug("BowserControl", __FILE__, __LINE__);
     lda(IMM(0x0));
     // empty frenzy buffer
     sta(ABS(EnemyFrenzyBuffer));
@@ -16097,6 +17051,7 @@ void BowserControl() {
 }
 
 void ChkMouth() {
+    _debug("ChkMouth", __FILE__, __LINE__);
     // check bowser's mouth
     lda(ABS(BowserBodyControls));
     // if bit clear, go ahead with code here
@@ -16107,6 +17062,7 @@ void ChkMouth() {
 }
 
 void FeetTmr() {
+    _debug("FeetTmr", __FILE__, __LINE__);
     // decrement timer to control bowser's feet
     dec(ABS(BowserFeetCounter));
     // if not expired, skip this part
@@ -16123,6 +17079,7 @@ void FeetTmr() {
 }
 
 void ResetMDr() {
+    _debug("ResetMDr", __FILE__, __LINE__);
     // check frame counter
     lda(ABS(FrameCounter));
     // if not on every sixteenth frame, skip
@@ -16137,6 +17094,7 @@ void ResetMDr() {
 }
 
 void B_FaceP() {
+    _debug("B_FaceP", __FILE__, __LINE__);
     // if timer set here expired,
     lda(ABSX(EnemyFrameTimer));
     // branch to next section
@@ -16165,6 +17123,7 @@ void B_FaceP() {
 }
 
 void GetPRCmp() {
+    _debug("GetPRCmp", __FILE__, __LINE__);
     // get frame counter
     lda(ABS(FrameCounter));
     anda(IMM(0b11));
@@ -16187,6 +17146,7 @@ void GetPRCmp() {
 }
 
 void GetDToO() {
+    _debug("GetDToO", __FILE__, __LINE__);
     lda(ABSX(Enemy_X_Position));
     // add movement speed to bowser's horizontal
     clc();
@@ -16215,6 +17175,7 @@ void GetDToO() {
 }
 
 void CompDToO() {
+    _debug("CompDToO", __FILE__, __LINE__);
     // compare difference with pseudorandom value
     cmp(ABS(MaxRangeFromOrigin));
     // if difference < pseudorandom value, leave speed alone
@@ -16225,6 +17186,7 @@ void CompDToO() {
 }
 
 void HammerChk() {
+    _debug("HammerChk", __FILE__, __LINE__);
     // if timer set here not expired yet, skip ahead to
     lda(ABSX(EnemyFrameTimer));
     // some other section of code
@@ -16247,6 +17209,7 @@ void HammerChk() {
 }
 
 void SetHmrTmr() {
+    _debug("SetHmrTmr", __FILE__, __LINE__);
     // get current vertical position
     lda(ABSX(Enemy_Y_Position));
     // if still above a certain point
@@ -16265,12 +17228,14 @@ void SetHmrTmr() {
 }
 
 void SkipToFB() {
+    _debug("SkipToFB", __FILE__, __LINE__);
     // jump to execute flames code
     JMP(ChkFireB);
     JMP(MakeBJump);
 }
 
 void MakeBJump() {
+    _debug("MakeBJump", __FILE__, __LINE__);
     // if timer not yet about to expire,
     cmp(IMM(0x1));
     // skip ahead to next part
@@ -16286,6 +17251,7 @@ void MakeBJump() {
 }
 
 void ChkFireB() {
+    _debug("ChkFireB", __FILE__, __LINE__);
     // check world number here
     lda(ABS(WorldNumber));
     // world 8?
@@ -16300,6 +17266,7 @@ void ChkFireB() {
 }
 
 void SpawnFBr() {
+    _debug("SpawnFBr", __FILE__, __LINE__);
     // check timer here
     lda(ABS(BowserFireBreathTimer));
     // if not expired yet, skip all of this
@@ -16326,6 +17293,7 @@ void SpawnFBr() {
 }
 
 void SetFBTmr() {
+    _debug("SetFBTmr", __FILE__, __LINE__);
     // set value as timer here
     sta(ABS(BowserFireBreathTimer));
     // put bowser's flame identifier
@@ -16336,6 +17304,7 @@ void SetFBTmr() {
 }
 
 void BowserGfxHandler() {
+    _debug("BowserGfxHandler", __FILE__, __LINE__);
     // do a sub here to process bowser's front
     JSR(ProcessBowserHalf);
     // load default value here to position bowser's rear
@@ -16351,6 +17320,7 @@ void BowserGfxHandler() {
 }
 
 void CopyFToR() {
+    _debug("CopyFToR", __FILE__, __LINE__);
     // move bowser's rear object position value to A
     tya();
     clc();
@@ -16396,11 +17366,13 @@ void CopyFToR() {
 }
 
 void ExBGfxH() {
+    _debug("ExBGfxH", __FILE__, __LINE__);
     // leave!
     return;
 }
 
 void ProcessBowserHalf() {
+    _debug("ProcessBowserHalf", __FILE__, __LINE__);
     // increment bowser's graphics flag, then run subroutines
     inc(ABS(BowserGfxFlag));
     // to get offscreen bits, relative position and draw bowser (finally!)
@@ -16419,6 +17391,7 @@ void ProcessBowserHalf() {
 }
 
 void SetFlameTimer() {
+    _debug("SetFlameTimer", __FILE__, __LINE__);
     // load counter as offset
     ldy(ABS(BowserFlameTimerCtrl));
     // increment
@@ -16434,10 +17407,12 @@ void SetFlameTimer() {
 }
 
 void ExFl() {
+    _debug("ExFl", __FILE__, __LINE__);
     return;
 }
 
 void ProcBowserFlame() {
+    _debug("ProcBowserFlame", __FILE__, __LINE__);
     // if master timer control flag set,
     lda(ABS(TimerControl));
     // skip all of this
@@ -16453,6 +17428,7 @@ void ProcBowserFlame() {
 }
 
 void SFlmX() {
+    _debug("SFlmX", __FILE__, __LINE__);
     // store value here
     sta(ABS(0x0));
     lda(ABSX(Enemy_X_MoveForce));
@@ -16487,6 +17463,7 @@ void SFlmX() {
 }
 
 void SetGfxF() {
+    _debug("SetGfxF", __FILE__, __LINE__);
     // get new relative coordinates
     JSR(RelativeEnemyPosition);
     // if bowser's flame not in normal state,
@@ -16510,6 +17487,7 @@ void SetGfxF() {
 }
 
 void FlmeAt() {
+    _debug("FlmeAt", __FILE__, __LINE__);
     // set bowser's flame sprite attributes here
     sty(ABS(0x1));
     // get OAM data offset
@@ -16519,6 +17497,7 @@ void FlmeAt() {
 }
 
 void DrawFlameLoop() {
+    _debug("DrawFlameLoop", __FILE__, __LINE__);
     // get Y relative coordinate of current enemy object
     lda(ABS(Enemy_Rel_YPos));
     // write into Y coordinate of OAM data
@@ -16569,6 +17548,7 @@ void DrawFlameLoop() {
 }
 
 void M3FOfs() {
+    _debug("M3FOfs", __FILE__, __LINE__);
     // get bits from stack
     pla();
     // move d1 to carry and move bits back to stack
@@ -16583,6 +17563,7 @@ void M3FOfs() {
 }
 
 void M2FOfs() {
+    _debug("M2FOfs", __FILE__, __LINE__);
     // get bits from stack again
     pla();
     // move d2 to carry and move bits back to stack again
@@ -16597,6 +17578,7 @@ void M2FOfs() {
 }
 
 void M1FOfs() {
+    _debug("M1FOfs", __FILE__, __LINE__);
     // get bits from stack one last time
     pla();
     // move d3 to carry
@@ -16610,11 +17592,13 @@ void M1FOfs() {
 }
 
 void ExFlmeD() {
+    _debug("ExFlmeD", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void RunFireworks() {
+    _debug("RunFireworks", __FILE__, __LINE__);
     // decrement explosion timing counter here
     dec(ABSX(ExplosionTimerCounter));
     // if not expired, skip this part
@@ -16633,6 +17617,7 @@ void RunFireworks() {
 }
 
 void SetupExpl() {
+    _debug("SetupExpl", __FILE__, __LINE__);
     // get relative coordinates of explosion
     JSR(RelativeEnemyPosition);
     // copy relative coordinates
@@ -16652,6 +17637,7 @@ void SetupExpl() {
 }
 
 void FireworksSoundScore() {
+    _debug("FireworksSoundScore", __FILE__, __LINE__);
     // disable enemy buffer flag
     lda(IMM(0x0));
     sta(ABSX(Enemy_Flag));
@@ -16667,6 +17653,7 @@ void FireworksSoundScore() {
 }
 
 void RunStarFlagObj() {
+    _debug("RunStarFlagObj", __FILE__, __LINE__);
     // initialize enemy frenzy buffer
     lda(IMM(0x0));
     sta(ABS(EnemyFrenzyBuffer));
@@ -16687,6 +17674,7 @@ void RunStarFlagObj() {
 }
 
 void GameTimerFireworks() {
+    _debug("GameTimerFireworks", __FILE__, __LINE__);
     // set default state for star flag object
     ldy(IMM(0x5));
     // get game timer's last digit
@@ -16710,6 +17698,7 @@ void GameTimerFireworks() {
 }
 
 void SetFWC() {
+    _debug("SetFWC", __FILE__, __LINE__);
     // set fireworks counter here
     sta(ABS(FireworksCounter));
     // set whatever state we have in star flag object
@@ -16718,17 +17707,20 @@ void SetFWC() {
 }
 
 void IncrementSFTask1() {
+    _debug("IncrementSFTask1", __FILE__, __LINE__);
     // increment star flag object task number
     inc(ABS(StarFlagTaskControl));
     JMP(StarFlagExit);
 }
 
 void StarFlagExit() {
+    _debug("StarFlagExit", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void AwardGameTimerPoints() {
+    _debug("AwardGameTimerPoints", __FILE__, __LINE__);
     // check all game timer digits for any intervals left
     lda(ABS(GameTimerDisplay));
     ora(ABS(((GameTimerDisplay) + (1))));
@@ -16747,6 +17739,7 @@ void AwardGameTimerPoints() {
 }
 
 void NoTTick() {
+    _debug("NoTTick", __FILE__, __LINE__);
     // set offset here to subtract from game timer's last digit
     ldy(IMM(0x23));
     // set adder here to $ff, or -1, to subtract one
@@ -16763,6 +17756,7 @@ void NoTTick() {
 }
 
 void EndAreaPoints() {
+    _debug("EndAreaPoints", __FILE__, __LINE__);
     // load offset for mario's score by default
     ldy(IMM(0xb));
     // check player on the screen
@@ -16775,6 +17769,7 @@ void EndAreaPoints() {
 }
 
 void ELPGive() {
+    _debug("ELPGive", __FILE__, __LINE__);
     // award 50 points per game timer interval
     JSR(DigitsMathRoutine);
     // get player on the screen (or 500 points per
@@ -16793,6 +17788,7 @@ void ELPGive() {
 }
 
 void RaiseFlagSetoffFWorks() {
+    _debug("RaiseFlagSetoffFWorks", __FILE__, __LINE__);
     // check star flag's vertical position
     lda(ABSX(Enemy_Y_Position));
     // against preset value
@@ -16807,6 +17803,7 @@ void RaiseFlagSetoffFWorks() {
 }
 
 void SetoffF() {
+    _debug("SetoffF", __FILE__, __LINE__);
     // check fireworks counter
     lda(ABS(FireworksCounter));
     // if no fireworks left to go off, skip this part
@@ -16820,6 +17817,7 @@ void SetoffF() {
 }
 
 void DrawStarFlag() {
+    _debug("DrawStarFlag", __FILE__, __LINE__);
     // get relative coordinates of star flag
     JSR(RelativeEnemyPosition);
     // get OAM data offset
@@ -16830,6 +17828,7 @@ void DrawStarFlag() {
 }
 
 void DSFLoop() {
+    _debug("DSFLoop", __FILE__, __LINE__);
     // get relative vertical coordinate
     lda(ABS(Enemy_Rel_YPos));
     clc();
@@ -16868,6 +17867,7 @@ void DSFLoop() {
 }
 
 void DrawFlagSetTimer() {
+    _debug("DrawFlagSetTimer", __FILE__, __LINE__);
     // do sub to draw star flag
     JSR(DrawStarFlag);
     lda(IMM(0x6));
@@ -16877,12 +17877,14 @@ void DrawFlagSetTimer() {
 }
 
 void IncrementSFTask2() {
+    _debug("IncrementSFTask2", __FILE__, __LINE__);
     // move onto next task
     inc(ABS(StarFlagTaskControl));
     return;
 }
 
 void DelayToAreaEnd() {
+    _debug("DelayToAreaEnd", __FILE__, __LINE__);
     // do sub to draw star flag
     JSR(DrawStarFlag);
     // if interval timer set in previous task
@@ -16897,11 +17899,13 @@ void DelayToAreaEnd() {
 }
 
 void StarFlagExit2() {
+    _debug("StarFlagExit2", __FILE__, __LINE__);
     // otherwise leave
     return;
 }
 
 void MovePiranhaPlant() {
+    _debug("MovePiranhaPlant", __FILE__, __LINE__);
     // check enemy state
     lda(ABSX(Enemy_State));
     // if set at all, branch to leave
@@ -16934,6 +17938,7 @@ void MovePiranhaPlant() {
 }
 
 void ChkPlayerNearPipe() {
+    _debug("ChkPlayerNearPipe", __FILE__, __LINE__);
     // get saved horizontal difference
     lda(ABS(0x0));
     cmp(IMM(0x21));
@@ -16943,6 +17948,7 @@ void ChkPlayerNearPipe() {
 }
 
 void ReversePlantSpeed() {
+    _debug("ReversePlantSpeed", __FILE__, __LINE__);
     // get vertical speed
     lda(ABSX(PiranhaPlant_Y_Speed));
     eor(IMM(0xff));
@@ -16957,6 +17963,7 @@ void ReversePlantSpeed() {
 }
 
 void SetupToMovePPlant() {
+    _debug("SetupToMovePPlant", __FILE__, __LINE__);
     // get original vertical coordinate (lowest point)
     lda(ABSX(PiranhaPlantDownYPos));
     // get vertical speed
@@ -16969,6 +17976,7 @@ void SetupToMovePPlant() {
 }
 
 void RiseFallPiranhaPlant() {
+    _debug("RiseFallPiranhaPlant", __FILE__, __LINE__);
     // save vertical coordinate here
     sta(ABS(0x0));
     // get frame counter
@@ -17001,6 +18009,7 @@ void RiseFallPiranhaPlant() {
 }
 
 void PutinPipe() {
+    _debug("PutinPipe", __FILE__, __LINE__);
     // set background priority bit in sprite
     lda(IMM(0b100000));
     // attributes to give illusion of being inside pipe
@@ -17010,6 +18019,7 @@ void PutinPipe() {
 }
 
 void FirebarSpin() {
+    _debug("FirebarSpin", __FILE__, __LINE__);
     // save spinning speed here
     sta(ABS(0x7));
     // check spinning direction
@@ -17031,6 +18041,7 @@ void FirebarSpin() {
 }
 
 void SpinCounterClockwise() {
+    _debug("SpinCounterClockwise", __FILE__, __LINE__);
     // possibly residual ldy
     ldy(IMM(0x8));
     lda(ABSX(FirebarSpinState_Low));
@@ -17046,6 +18057,7 @@ void SpinCounterClockwise() {
 }
 
 void BalancePlatform() {
+    _debug("BalancePlatform", __FILE__, __LINE__);
     // check high byte of vertical position
     lda(ABSX(Enemy_Y_HighPos));
     cmp(IMM(0x3));
@@ -17056,6 +18068,7 @@ void BalancePlatform() {
 }
 
 void DoBPl() {
+    _debug("DoBPl", __FILE__, __LINE__);
     // get object's state (set to $ff or other platform offset)
     lda(ABSX(Enemy_State));
     // if doing other balance platform, branch to leave
@@ -17064,6 +18077,7 @@ void DoBPl() {
 }
 
 void CheckBalPlatform() {
+    _debug("CheckBalPlatform", __FILE__, __LINE__);
     // save offset from state as Y
     tay();
     // get collision flag of platform
@@ -17079,6 +18093,7 @@ void CheckBalPlatform() {
 }
 
 void ChkForFall() {
+    _debug("ChkForFall", __FILE__, __LINE__);
     // check if platform is above a certain point
     lda(IMM(0x2d));
     cmp(ABSX(Enemy_Y_Position));
@@ -17099,12 +18114,14 @@ void ChkForFall() {
 }
 
 void MakePlatformFall() {
+    _debug("MakePlatformFall", __FILE__, __LINE__);
     // make platforms fall
     JMP(InitPlatformFall);
     JMP(ChkOtherForFall);
 }
 
 void ChkOtherForFall() {
+    _debug("ChkOtherForFall", __FILE__, __LINE__);
     // check if other platform is above a certain point
     cmp(ABSY(Enemy_Y_Position));
     // if not, branch elsewhere
@@ -17124,6 +18141,7 @@ void ChkOtherForFall() {
 }
 
 void ChkToMoveBalPlat() {
+    _debug("ChkToMoveBalPlat", __FILE__, __LINE__);
     // save vertical position to stack
     lda(ABSX(Enemy_Y_Position));
     pha();
@@ -17155,6 +18173,7 @@ void ChkToMoveBalPlat() {
 }
 
 void ColFlg() {
+    _debug("ColFlg", __FILE__, __LINE__);
     // if collision flag matches
     cmp(ABS(ObjectOffset));
     // current enemy object offset, branch
@@ -17163,6 +18182,7 @@ void ColFlg() {
 }
 
 void PlatUp() {
+    _debug("PlatUp", __FILE__, __LINE__);
     // do a sub to move upwards
     JSR(MovePlatformUp);
     // jump ahead to remaining code
@@ -17171,6 +18191,7 @@ void PlatUp() {
 }
 
 void PlatSt() {
+    _debug("PlatSt", __FILE__, __LINE__);
     // do a sub to stop movement
     JSR(StopPlatforms);
     // jump ahead to remaining code
@@ -17179,12 +18200,14 @@ void PlatSt() {
 }
 
 void PlatDn() {
+    _debug("PlatDn", __FILE__, __LINE__);
     // do a sub to move downwards
     JSR(MovePlatformDown);
     JMP(DoOtherPlatform);
 }
 
 void DoOtherPlatform() {
+    _debug("DoOtherPlatform", __FILE__, __LINE__);
     // get offset of other platform
     ldy(ABSX(Enemy_State));
     // get old vertical coordinate from stack
@@ -17208,6 +18231,7 @@ void DoOtherPlatform() {
 }
 
 void DrawEraseRope() {
+    _debug("DrawEraseRope", __FILE__, __LINE__);
     // get enemy object offset
     ldy(ABS(ObjectOffset));
     // check to see if current platform is
@@ -17253,6 +18277,7 @@ void DrawEraseRope() {
 }
 
 void EraseR1() {
+    _debug("EraseR1", __FILE__, __LINE__);
     // put blank tiles in vram buffer
     lda(IMM(0x24));
     // to erase rope
@@ -17262,6 +18287,7 @@ void EraseR1() {
 }
 
 void OtherRope() {
+    _debug("OtherRope", __FILE__, __LINE__);
     // get offset of other platform from state
     lda(ABSY(Enemy_State));
     // use as Y here
@@ -17299,6 +18325,7 @@ void OtherRope() {
 }
 
 void EraseR2() {
+    _debug("EraseR2", __FILE__, __LINE__);
     // put blank tiles in vram buffer
     lda(IMM(0x24));
     // to erase rope
@@ -17308,6 +18335,7 @@ void EraseR2() {
 }
 
 void EndRp() {
+    _debug("EndRp", __FILE__, __LINE__);
     // put null terminator at the end
     lda(IMM(0x0));
     sta(ABSX(((VRAM_Buffer1) + (10))));
@@ -17321,12 +18349,14 @@ void EndRp() {
 }
 
 void ExitRp() {
+    _debug("ExitRp", __FILE__, __LINE__);
     // get enemy object buffer offset and leave
     ldx(ABS(ObjectOffset));
     return;
 }
 
 void SetupPlatformRope() {
+    _debug("SetupPlatformRope", __FILE__, __LINE__);
     // save second/third copy to stack
     pha();
     // get horizontal coordinate
@@ -17345,6 +18375,7 @@ void SetupPlatformRope() {
 }
 
 void GetLRp() {
+    _debug("GetLRp", __FILE__, __LINE__);
     // save modified horizontal coordinate to stack
     pha();
     lda(ABSY(Enemy_PageLoc));
@@ -17378,6 +18409,7 @@ void GetLRp() {
 }
 
 void GetHRp() {
+    _debug("GetHRp", __FILE__, __LINE__);
     // move vertical coordinate to A
     txa();
     // get vram buffer offset
@@ -17428,11 +18460,13 @@ void GetHRp() {
 }
 
 void ExPRp() {
+    _debug("ExPRp", __FILE__, __LINE__);
     // leave!
     return;
 }
 
 void InitPlatformFall() {
+    _debug("InitPlatformFall", __FILE__, __LINE__);
     // move offset of other platform from Y to X
     tya();
     tax();
@@ -17454,6 +18488,7 @@ void InitPlatformFall() {
 }
 
 void StopPlatforms() {
+    _debug("StopPlatforms", __FILE__, __LINE__);
     // initialize vertical speed and low byte
     JSR(InitVStf);
     // for both platforms and leave
@@ -17463,6 +18498,7 @@ void StopPlatforms() {
 }
 
 void PlatformFall() {
+    _debug("PlatformFall", __FILE__, __LINE__);
     // save offset for other platform to stack
     tya();
     pha();
@@ -17486,12 +18522,14 @@ void PlatformFall() {
 }
 
 void ExPF() {
+    _debug("ExPF", __FILE__, __LINE__);
     // get enemy object buffer offset and leave
     ldx(ABS(ObjectOffset));
     return;
 }
 
 void YMovingPlatform() {
+    _debug("YMovingPlatform", __FILE__, __LINE__);
     // if platform moving up or down, skip ahead to
     lda(ABSX(Enemy_Y_Speed));
     // check on other position
@@ -17514,12 +18552,14 @@ void YMovingPlatform() {
 }
 
 void SkipIY() {
+    _debug("SkipIY", __FILE__, __LINE__);
     // skip ahead to last part
     JMP(ChkYPCollision);
     JMP(ChkYCenterPos);
 }
 
 void ChkYCenterPos() {
+    _debug("ChkYCenterPos", __FILE__, __LINE__);
     // if current vertical position < central position, branch
     lda(ABSX(Enemy_Y_Position));
     // to slow ascent/move downwards
@@ -17532,12 +18572,14 @@ void ChkYCenterPos() {
 }
 
 void YMDown() {
+    _debug("YMDown", __FILE__, __LINE__);
     // start slowing ascent/moving downwards
     JSR(MovePlatformDown);
     JMP(ChkYPCollision);
 }
 
 void ChkYPCollision() {
+    _debug("ChkYPCollision", __FILE__, __LINE__);
     // if collision flag not set here, branch
     lda(ABSX(PlatformCollisionFlag));
     // to leave
@@ -17548,11 +18590,13 @@ void ChkYPCollision() {
 }
 
 void ExYPl() {
+    _debug("ExYPl", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void XMovingPlatform() {
+    _debug("XMovingPlatform", __FILE__, __LINE__);
     // load preset maximum value for secondary counter
     lda(IMM(0xe));
     // do a sub to increment counters for movement
@@ -17567,6 +18611,7 @@ void XMovingPlatform() {
 }
 
 void PositionPlayerOnHPlat() {
+    _debug("PositionPlayerOnHPlat", __FILE__, __LINE__);
     lda(ABS(Player_X_Position));
     // add saved value from second subroutine to
     clc();
@@ -17588,12 +18633,14 @@ void PositionPlayerOnHPlat() {
 }
 
 void PPHSubt() {
+    _debug("PPHSubt", __FILE__, __LINE__);
     // subtract borrow from page location
     sbc(IMM(0x0));
     JMP(SetPVar);
 }
 
 void SetPVar() {
+    _debug("SetPVar", __FILE__, __LINE__);
     // save result to player's page location
     sta(ABS(Player_PageLoc));
     // put saved value from second sub here to be used later
@@ -17604,11 +18651,13 @@ void SetPVar() {
 }
 
 void ExXMP() {
+    _debug("ExXMP", __FILE__, __LINE__);
     // and we are done here
     return;
 }
 
 void DropPlatform() {
+    _debug("DropPlatform", __FILE__, __LINE__);
     // if no collision between platform and player
     lda(ABSX(PlatformCollisionFlag));
     // occurred, just leave without moving anything
@@ -17621,11 +18670,13 @@ void DropPlatform() {
 }
 
 void ExDPl() {
+    _debug("ExDPl", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void RightPlatform() {
+    _debug("RightPlatform", __FILE__, __LINE__);
     // move platform with current horizontal speed, if any
     JSR(MoveEnemyHorizontally);
     // store saved value here (residual code)
@@ -17643,11 +18694,13 @@ void RightPlatform() {
 }
 
 void ExRPl() {
+    _debug("ExRPl", __FILE__, __LINE__);
     // then leave
     return;
 }
 
 void MoveLargeLiftPlat() {
+    _debug("MoveLargeLiftPlat", __FILE__, __LINE__);
     // execute common to all large and small lift platforms
     JSR(MoveLiftPlatforms);
     // branch to position player correctly
@@ -17656,6 +18709,7 @@ void MoveLargeLiftPlat() {
 }
 
 void MoveSmallPlatform() {
+    _debug("MoveSmallPlatform", __FILE__, __LINE__);
     // execute common to all large and small lift platforms
     JSR(MoveLiftPlatforms);
     // branch to position player correctly
@@ -17664,6 +18718,7 @@ void MoveSmallPlatform() {
 }
 
 void MoveLiftPlatforms() {
+    _debug("MoveLiftPlatforms", __FILE__, __LINE__);
     // if master timer control set, skip all of this
     lda(ABS(TimerControl));
     // and branch to leave
@@ -17683,6 +18738,7 @@ void MoveLiftPlatforms() {
 }
 
 void ChkSmallPlatCollision() {
+    _debug("ChkSmallPlatCollision", __FILE__, __LINE__);
     // get bounding box counter saved in collision flag
     lda(ABSX(PlatformCollisionFlag));
     // if none found, leave player position alone
@@ -17693,11 +18749,13 @@ void ChkSmallPlatCollision() {
 }
 
 void ExLiftP() {
+    _debug("ExLiftP", __FILE__, __LINE__);
     // then leave
     return;
 }
 
 void OffscreenBoundsCheck() {
+    _debug("OffscreenBoundsCheck", __FILE__, __LINE__);
     // check for cheep-cheep object
     lda(ABSX(Enemy_ID));
     // branch to leave if found
@@ -17717,12 +18775,14 @@ void OffscreenBoundsCheck() {
 }
 
 void LimitB() {
+    _debug("LimitB", __FILE__, __LINE__);
     // add 56 pixels to coordinate if hammer bro or piranha plant
     adc(IMM(0x38));
     JMP(ExtendLB);
 }
 
 void ExtendLB() {
+    _debug("ExtendLB", __FILE__, __LINE__);
     // subtract 72 pixels regardless of enemy object
     sbc(IMM(0x48));
     // store result here
@@ -17782,17 +18842,20 @@ void ExtendLB() {
 }
 
 void TooFar() {
+    _debug("TooFar", __FILE__, __LINE__);
     // erase object if necessary
     JSR(EraseEnemyObject);
     JMP(ExScrnBd);
 }
 
 void ExScrnBd() {
+    _debug("ExScrnBd", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void FireballEnemyCollision() {
+    _debug("FireballEnemyCollision", __FILE__, __LINE__);
     // check to see if fireball state is set at all
     lda(ABSX(Fireball_State));
     // branch to leave if not
@@ -17819,6 +18882,7 @@ void FireballEnemyCollision() {
 }
 
 void FireballEnemyCDLoop() {
+    _debug("FireballEnemyCDLoop", __FILE__, __LINE__);
     // store enemy object offset here
     stx(ABS(0x1));
     tya();
@@ -17845,6 +18909,7 @@ void FireballEnemyCDLoop() {
 }
 
 void GoombaDie() {
+    _debug("GoombaDie", __FILE__, __LINE__);
     // check for goomba identifier
     cmp(IMM(Goomba));
     // if not found, continue with code
@@ -17859,6 +18924,7 @@ void GoombaDie() {
 }
 
 void NotGoomba() {
+    _debug("NotGoomba", __FILE__, __LINE__);
     // if any masked offscreen bits set,
     lda(ABSX(EnemyOffscrBitsMasked));
     // skip to next enemy slot
@@ -17889,6 +18955,7 @@ void NotGoomba() {
 }
 
 void NoFToECol() {
+    _debug("NoFToECol", __FILE__, __LINE__);
     // pull fireball offset from stack
     pla();
     // put it in Y
@@ -17903,12 +18970,14 @@ void NoFToECol() {
 }
 
 void ExitFBallEnemy() {
+    _debug("ExitFBallEnemy", __FILE__, __LINE__);
     // get original fireball offset and leave
     ldx(ABS(ObjectOffset));
     return;
 }
 
 void HandleEnemyFBallCol() {
+    _debug("HandleEnemyFBallCol", __FILE__, __LINE__);
     // get relative coordinate of enemy
     JSR(RelativeEnemyPosition);
     // get current enemy object offset
@@ -17932,6 +19001,7 @@ void HandleEnemyFBallCol() {
 }
 
 void ChkBuzzyBeetle() {
+    _debug("ChkBuzzyBeetle", __FILE__, __LINE__);
     lda(ABSX(Enemy_ID));
     // check for buzzy beetle
     cmp(IMM(BuzzyBeetle));
@@ -17945,6 +19015,7 @@ void ChkBuzzyBeetle() {
 }
 
 void HurtBowser() {
+    _debug("HurtBowser", __FILE__, __LINE__);
     // decrement bowser's hit points
     dec(ABS(BowserHitPoints));
     // if bowser still has hit points, branch to leave
@@ -17976,6 +19047,7 @@ void HurtBowser() {
 }
 
 void SetDBSte() {
+    _debug("SetDBSte", __FILE__, __LINE__);
     // set defeated enemy state
     sta(ABSX(Enemy_State));
     lda(IMM(Sfx_BowserFall));
@@ -17991,6 +19063,7 @@ void SetDBSte() {
 }
 
 void ChkOtherEnemies() {
+    _debug("ChkOtherEnemies", __FILE__, __LINE__);
     cmp(IMM(BulletBill_FrenzyVar));
     // branch to leave if bullet bill (frenzy variant)
     BEQ(ExHCF);
@@ -18004,6 +19077,7 @@ void ChkOtherEnemies() {
 }
 
 void ShellOrBlockDefeat() {
+    _debug("ShellOrBlockDefeat", __FILE__, __LINE__);
     // check for piranha plant
     lda(ABSX(Enemy_ID));
     cmp(IMM(PiranhaPlant));
@@ -18017,6 +19091,7 @@ void ShellOrBlockDefeat() {
 }
 
 void StnE() {
+    _debug("StnE", __FILE__, __LINE__);
     // do yet another sub
     JSR(ChkToStunEnemies);
     lda(ABSX(Enemy_State));
@@ -18038,6 +19113,7 @@ void StnE() {
 }
 
 void GoombaPoints() {
+    _debug("GoombaPoints", __FILE__, __LINE__);
     // check for goomba
     cpy(IMM(Goomba));
     // branch if not found
@@ -18048,6 +19124,7 @@ void GoombaPoints() {
 }
 
 void EnemySmackScore() {
+    _debug("EnemySmackScore", __FILE__, __LINE__);
     // update necessary score variables
     JSR(SetupFloateyNumber);
     // play smack enemy sound
@@ -18057,11 +19134,13 @@ void EnemySmackScore() {
 }
 
 void ExHCF() {
+    _debug("ExHCF", __FILE__, __LINE__);
     // and now let's leave
     return;
 }
 
 void PlayerHammerCollision() {
+    _debug("PlayerHammerCollision", __FILE__, __LINE__);
     // get frame counter
     lda(ABS(FrameCounter));
     // shift d0 into carry
@@ -18114,6 +19193,7 @@ void PlayerHammerCollision() {
 }
 
 void ClHCol() {
+    _debug("ClHCol", __FILE__, __LINE__);
     // clear collision flag
     lda(IMM(0x0));
     sta(ABSX(Misc_Collision_Flag));
@@ -18121,10 +19201,12 @@ void ClHCol() {
 }
 
 void ExPHC() {
+    _debug("ExPHC", __FILE__, __LINE__);
     return;
 }
 
 void HandlePowerUpCollision() {
+    _debug("HandlePowerUpCollision", __FILE__, __LINE__);
     // erase the power-up object
     JSR(EraseEnemyObject);
     lda(IMM(0x6));
@@ -18152,6 +19234,7 @@ void HandlePowerUpCollision() {
 }
 
 void Shroom_Flower_PUp() {
+    _debug("Shroom_Flower_PUp", __FILE__, __LINE__);
     // if player status = small, branch
     lda(ABS(PlayerStatus));
     BEQ(UpToSuper);
@@ -18175,6 +19258,7 @@ void Shroom_Flower_PUp() {
 }
 
 void SetFor1Up() {
+    _debug("SetFor1Up", __FILE__, __LINE__);
     // change 1000 points into 1-up instead
     lda(IMM(0xb));
     // and then leave
@@ -18183,6 +19267,7 @@ void SetFor1Up() {
 }
 
 void UpToSuper() {
+    _debug("UpToSuper", __FILE__, __LINE__);
     // set player status to super
     lda(IMM(0x1));
     sta(ABS(PlayerStatus));
@@ -18192,6 +19277,7 @@ void UpToSuper() {
 }
 
 void UpToFiery() {
+    _debug("UpToFiery", __FILE__, __LINE__);
     // set value to be used as new player state
     ldy(IMM(0x0));
     // set values to stop certain things in motion
@@ -18200,10 +19286,12 @@ void UpToFiery() {
 }
 
 void NoPUp() {
+    _debug("NoPUp", __FILE__, __LINE__);
     return;
 }
 
 void PlayerEnemyCollision() {
+    _debug("PlayerEnemyCollision", __FILE__, __LINE__);
     // check counter for d0 set
     lda(ABS(FrameCounter));
     lsr();
@@ -18243,10 +19331,12 @@ void PlayerEnemyCollision() {
 }
 
 void NoPECol() {
+    _debug("NoPECol", __FILE__, __LINE__);
     return;
 }
 
 void CheckForPUpCollision() {
+    _debug("CheckForPUpCollision", __FILE__, __LINE__);
     ldy(ABSX(Enemy_ID));
     // check for power-up object
     cpy(IMM(PowerUpObject));
@@ -18258,6 +19348,7 @@ void CheckForPUpCollision() {
 }
 
 void EColl() {
+    _debug("EColl", __FILE__, __LINE__);
     // if star mario invincibility timer expired,
     lda(ABS(StarInvincibleTimer));
     // perform task here, otherwise kill enemy like
@@ -18268,6 +19359,7 @@ void EColl() {
 }
 
 void HandlePECollisions() {
+    _debug("HandlePECollisions", __FILE__, __LINE__);
     // check enemy collision bits for d0 set
     lda(ABSX(Enemy_CollisionBits));
     // or for being offscreen at all
@@ -18340,17 +19432,20 @@ void HandlePECollisions() {
 }
 
 void KSPts() {
+    _debug("KSPts", __FILE__, __LINE__);
     // set values for floatey number now
     JSR(SetupFloateyNumber);
     JMP(ExPEC);
 }
 
 void ExPEC() {
+    _debug("ExPEC", __FILE__, __LINE__);
     // leave!!!
     return;
 }
 
 void ChkForPlayerInjury() {
+    _debug("ChkForPlayerInjury", __FILE__, __LINE__);
     // check player's vertical speed
     lda(ABS(Player_Y_Speed));
     // perform procedure below if player moving upwards
@@ -18361,6 +19456,7 @@ void ChkForPlayerInjury() {
 }
 
 void ChkInj() {
+    _debug("ChkInj", __FILE__, __LINE__);
     // branch if enemy object < $07
     lda(ABSX(Enemy_ID));
     cmp(IMM(Bloober));
@@ -18377,6 +19473,7 @@ void ChkInj() {
 }
 
 void ChkETmrs() {
+    _debug("ChkETmrs", __FILE__, __LINE__);
     // check stomp timer
     lda(ABS(StompTimer));
     // branch if set
@@ -18396,6 +19493,7 @@ void ChkETmrs() {
 }
 
 void TInjE() {
+    _debug("TInjE", __FILE__, __LINE__);
     // if enemy moving towards the left,
     lda(ABSX(Enemy_MovingDir));
     // branch, otherwise do a jump here
@@ -18407,6 +19505,7 @@ void TInjE() {
 }
 
 void InjurePlayer() {
+    _debug("InjurePlayer", __FILE__, __LINE__);
     // check again to see if injured invincibility timer is
     lda(ABS(InjuryTimer));
     // at zero, and branch to leave if so
@@ -18415,6 +19514,7 @@ void InjurePlayer() {
 }
 
 void ForceInjury() {
+    _debug("ForceInjury", __FILE__, __LINE__);
     // check player's status
     ldx(ABS(PlayerStatus));
     // branch if small
@@ -18435,12 +19535,14 @@ void ForceInjury() {
 }
 
 void SetKRout() {
+    _debug("SetKRout", __FILE__, __LINE__);
     // set new player state
     ldy(IMM(0x1));
     JMP(SetPRout);
 }
 
 void SetPRout() {
+    _debug("SetPRout", __FILE__, __LINE__);
     // load new value to run subroutine on next frame
     sta(ABS(GameEngineSubroutine));
     // store new player state
@@ -18455,12 +19557,14 @@ void SetPRout() {
 }
 
 void ExInjColRoutines() {
+    _debug("ExInjColRoutines", __FILE__, __LINE__);
     // get enemy offset and leave
     ldx(ABS(ObjectOffset));
     return;
 }
 
 void KillPlayer() {
+    _debug("KillPlayer", __FILE__, __LINE__);
     // halt player's horizontal movement by initializing speed
     stx(ABS(Player_X_Speed));
     inx();
@@ -18477,6 +19581,7 @@ void KillPlayer() {
 }
 
 void EnemyStomped() {
+    _debug("EnemyStomped", __FILE__, __LINE__);
     // check for spiny, branch to hurt player
     lda(ABSX(Enemy_ID));
     // if found
@@ -18519,6 +19624,7 @@ void EnemyStomped() {
 }
 
 void EnemyStompedPts() {
+    _debug("EnemyStompedPts", __FILE__, __LINE__);
     // load points data using offset in Y
     lda(ABSY(0x8000+offsetof(G, StompedEnemyPtsData)));
     // run sub to set floatey number controls
@@ -18545,6 +19651,7 @@ void EnemyStompedPts() {
 }
 
 void ChkForDemoteKoopa() {
+    _debug("ChkForDemoteKoopa", __FILE__, __LINE__);
     // branch elsewhere if enemy object < $09
     cmp(IMM(0x9));
     BCC(HandleStompedShellE);
@@ -18570,6 +19677,7 @@ void ChkForDemoteKoopa() {
 }
 
 void HandleStompedShellE() {
+    _debug("HandleStompedShellE", __FILE__, __LINE__);
     // set defeated state for enemy
     lda(IMM(0x4));
     sta(ABSX(Enemy_State));
@@ -18594,6 +19702,7 @@ void HandleStompedShellE() {
 }
 
 void SBnce() {
+    _debug("SBnce", __FILE__, __LINE__);
     // set player's vertical speed for bounce
     lda(IMM(0xfc));
     // and then leave!!!
@@ -18602,6 +19711,7 @@ void SBnce() {
 }
 
 void ChkEnemyFaceRight() {
+    _debug("ChkEnemyFaceRight", __FILE__, __LINE__);
     // check to see if enemy is moving to the right
     lda(ABSX(Enemy_MovingDir));
     cmp(IMM(0x1));
@@ -18613,6 +19723,7 @@ void ChkEnemyFaceRight() {
 }
 
 void LInj() {
+    _debug("LInj", __FILE__, __LINE__);
     // turn the enemy around, if necessary
     JSR(EnemyTurnAround);
     // go back to hurt player
@@ -18621,6 +19732,7 @@ void LInj() {
 }
 
 void EnemyFacePlayer() {
+    _debug("EnemyFacePlayer", __FILE__, __LINE__);
     // set to move right by default
     ldy(IMM(0x1));
     // get horizontal difference between player and enemy
@@ -18633,6 +19745,7 @@ void EnemyFacePlayer() {
 }
 
 void SFcRt() {
+    _debug("SFcRt", __FILE__, __LINE__);
     // set moving direction here
     sty(ABSX(Enemy_MovingDir));
     // then decrement to use as a proper offset
@@ -18641,6 +19754,7 @@ void SFcRt() {
 }
 
 void SetupFloateyNumber() {
+    _debug("SetupFloateyNumber", __FILE__, __LINE__);
     // set number of points control for floatey numbers
     sta(ABSX(FloateyNum_Control));
     lda(IMM(0x30));
@@ -18656,10 +19770,12 @@ void SetupFloateyNumber() {
 }
 
 void ExSFN() {
+    _debug("ExSFN", __FILE__, __LINE__);
     return;
 }
 
 void EnemiesCollision() {
+    _debug("EnemiesCollision", __FILE__, __LINE__);
     // check counter for d0 set
     lda(ABS(FrameCounter));
     lsr();
@@ -18691,6 +19807,7 @@ void EnemiesCollision() {
 }
 
 void ECLoop() {
+    _debug("ECLoop", __FILE__, __LINE__);
     // save enemy object buffer offset for second enemy here
     stx(ABS(0x1));
     // save first enemy's bounding box offset to stack
@@ -18751,6 +19868,7 @@ void ECLoop() {
 }
 
 void YesEC() {
+    _debug("YesEC", __FILE__, __LINE__);
     // react according to the nature of collision
     JSR(ProcEnemyCollisions);
     // move onto next enemy slot
@@ -18759,6 +19877,7 @@ void YesEC() {
 }
 
 void NoEnemyCollision() {
+    _debug("NoEnemyCollision", __FILE__, __LINE__);
     // load first enemy's collision-related bits
     lda(ABSY(Enemy_CollisionBits));
     // clear bit connected to second enemy
@@ -18769,6 +19888,7 @@ void NoEnemyCollision() {
 }
 
 void ReadyNextEnemy() {
+    _debug("ReadyNextEnemy", __FILE__, __LINE__);
     // get first enemy's bounding box offset from the stack
     pla();
     // use as Y again
@@ -18782,6 +19902,7 @@ void ReadyNextEnemy() {
 }
 
 void ExitECRoutine() {
+    _debug("ExitECRoutine", __FILE__, __LINE__);
     // get enemy object buffer offset
     ldx(ABS(ObjectOffset));
     // leave
@@ -18789,6 +19910,7 @@ void ExitECRoutine() {
 }
 
 void ProcEnemyCollisions() {
+    _debug("ProcEnemyCollisions", __FILE__, __LINE__);
     // check both enemy states for d5 set
     lda(ABSY(Enemy_State));
     ora(ABSX(Enemy_State));
@@ -18821,6 +19943,7 @@ void ProcEnemyCollisions() {
 }
 
 void ShellCollisions() {
+    _debug("ShellCollisions", __FILE__, __LINE__);
     // move Y to X
     tya();
     tax();
@@ -18843,11 +19966,13 @@ void ShellCollisions() {
 }
 
 void ExitProcessEColl() {
+    _debug("ExitProcessEColl", __FILE__, __LINE__);
     // leave!!!
     return;
 }
 
 void ProcSecondEnemyColl() {
+    _debug("ProcSecondEnemyColl", __FILE__, __LINE__);
     // if first enemy state < $06, branch elsewhere
     lda(ABSY(Enemy_State));
     cmp(IMM(0x6));
@@ -18877,6 +20002,7 @@ void ProcSecondEnemyColl() {
 }
 
 void MoveEOfs() {
+    _debug("MoveEOfs", __FILE__, __LINE__);
     // move Y ($01) to X
     tya();
     tax();
@@ -18888,6 +20014,7 @@ void MoveEOfs() {
 }
 
 void EnemyTurnAround() {
+    _debug("EnemyTurnAround", __FILE__, __LINE__);
     // check for specific enemies
     lda(ABSX(Enemy_ID));
     cmp(IMM(PiranhaPlant));
@@ -18912,6 +20039,7 @@ void EnemyTurnAround() {
 }
 
 void RXSpd() {
+    _debug("RXSpd", __FILE__, __LINE__);
     // load horizontal speed
     lda(ABSX(Enemy_X_Speed));
     // get two's compliment for horizontal speed
@@ -18929,11 +20057,13 @@ void RXSpd() {
 }
 
 void ExTA() {
+    _debug("ExTA", __FILE__, __LINE__);
     // leave!!!
     return;
 }
 
 void LargePlatformCollision() {
+    _debug("LargePlatformCollision", __FILE__, __LINE__);
     // save value here
     lda(IMM(0xff));
     sta(ABSX(PlatformCollisionFlag));
@@ -18959,6 +20089,7 @@ void LargePlatformCollision() {
 }
 
 void ChkForPlayerC_LargeP() {
+    _debug("ChkForPlayerC_LargeP", __FILE__, __LINE__);
     // figure out if player is below a certain point
     JSR(CheckPlayerVertical);
     // or offscreen, branch to leave if true
@@ -18986,12 +20117,14 @@ void ChkForPlayerC_LargeP() {
 }
 
 void ExLPC() {
+    _debug("ExLPC", __FILE__, __LINE__);
     // get enemy object buffer offset and leave
     ldx(ABS(ObjectOffset));
     return;
 }
 
 void SmallPlatformCollision() {
+    _debug("SmallPlatformCollision", __FILE__, __LINE__);
     // if master timer control set,
     lda(ABS(TimerControl));
     // branch to leave
@@ -19009,6 +20142,7 @@ void SmallPlatformCollision() {
 }
 
 void ChkSmallPlatLoop() {
+    _debug("ChkSmallPlatLoop", __FILE__, __LINE__);
     // get enemy object offset
     ldx(ABS(ObjectOffset));
     // get bounding box offset in Y
@@ -19031,6 +20165,7 @@ void ChkSmallPlatLoop() {
 }
 
 void MoveBoundBox() {
+    _debug("MoveBoundBox", __FILE__, __LINE__);
     // move bounding box vertical coordinates
     lda(ABSY(BoundingBox_UL_YPos));
     // 128 pixels downwards
@@ -19049,18 +20184,21 @@ void MoveBoundBox() {
 }
 
 void ExSPC() {
+    _debug("ExSPC", __FILE__, __LINE__);
     // get enemy object buffer offset, then leave
     ldx(ABS(ObjectOffset));
     return;
 }
 
 void ProcSPlatCollisions() {
+    _debug("ProcSPlatCollisions", __FILE__, __LINE__);
     // return enemy object buffer offset to X, then continue
     ldx(ABS(ObjectOffset));
     JMP(ProcLPlatCollisions);
 }
 
 void ProcLPlatCollisions() {
+    _debug("ProcLPlatCollisions", __FILE__, __LINE__);
     // get difference by subtracting the top
     lda(ABSY(BoundingBox_DR_YPos));
     // of the player's bounding box from the bottom
@@ -19083,6 +20221,7 @@ void ProcLPlatCollisions() {
 }
 
 void ChkForTopCollision() {
+    _debug("ChkForTopCollision", __FILE__, __LINE__);
     // get difference by subtracting the top
     lda(ABS(BoundingBox_DR_YPos));
     // of the platform's bounding box from the bottom
@@ -19111,6 +20250,7 @@ void ChkForTopCollision() {
 }
 
 void SetCollisionFlag() {
+    _debug("SetCollisionFlag", __FILE__, __LINE__);
     // get enemy object buffer offset
     ldx(ABS(ObjectOffset));
     // save either bounding box counter or enemy offset here
@@ -19122,6 +20262,7 @@ void SetCollisionFlag() {
 }
 
 void PlatformSideCollisions() {
+    _debug("PlatformSideCollisions", __FILE__, __LINE__);
     // set value here to indicate possible horizontal
     lda(IMM(0x1));
     // collision on left side of platform
@@ -19149,18 +20290,21 @@ void PlatformSideCollisions() {
 }
 
 void SideC() {
+    _debug("SideC", __FILE__, __LINE__);
     // deal with horizontal collision
     JSR(ImpedePlayerMove);
     JMP(NoSideC);
 }
 
 void NoSideC() {
+    _debug("NoSideC", __FILE__, __LINE__);
     // return with enemy object buffer offset
     ldx(ABS(ObjectOffset));
     return;
 }
 
 void PositionPlayerOnS_Plat() {
+    _debug("PositionPlayerOnS_Plat", __FILE__, __LINE__);
     // use bounding box counter saved in collision flag
     tay();
     // for offset
@@ -19173,6 +20317,7 @@ void PositionPlayerOnS_Plat() {
 }
 
 void PositionPlayerOnVPlat() {
+    _debug("PositionPlayerOnVPlat", __FILE__, __LINE__);
     // get vertical coordinate
     lda(ABSX(Enemy_Y_Position));
     ldy(ABS(GameEngineSubroutine));
@@ -19204,10 +20349,12 @@ void PositionPlayerOnVPlat() {
 }
 
 void ExPlPos() {
+    _debug("ExPlPos", __FILE__, __LINE__);
     return;
 }
 
 void CheckPlayerVertical() {
+    _debug("CheckPlayerVertical", __FILE__, __LINE__);
     // if player object is completely offscreen
     lda(ABS(Player_OffscreenBits));
     // vertically, leave this routine
@@ -19226,16 +20373,19 @@ void CheckPlayerVertical() {
 }
 
 void ExCPV() {
+    _debug("ExCPV", __FILE__, __LINE__);
     return;
 }
 
 void GetEnemyBoundBoxOfs() {
+    _debug("GetEnemyBoundBoxOfs", __FILE__, __LINE__);
     // get enemy object buffer offset
     lda(ABS(ObjectOffset));
     JMP(GetEnemyBoundBoxOfsArg);
 }
 
 void GetEnemyBoundBoxOfsArg() {
+    _debug("GetEnemyBoundBoxOfsArg", __FILE__, __LINE__);
     // multiply A by four, then add four
     asl();
     // to skip player's bounding box
@@ -19254,6 +20404,7 @@ void GetEnemyBoundBoxOfsArg() {
 }
 
 void PlayerBGCollision() {
+    _debug("PlayerBGCollision", __FILE__, __LINE__);
     // if collision detection disabled flag set,
     lda(ABS(DisableCollisionDet));
     // branch to leave
@@ -19283,18 +20434,21 @@ void PlayerBGCollision() {
 }
 
 void SetFallS() {
+    _debug("SetFallS", __FILE__, __LINE__);
     // load default player state for falling
     lda(IMM(0x2));
     JMP(SetPSte);
 }
 
 void SetPSte() {
+    _debug("SetPSte", __FILE__, __LINE__);
     // set whatever player state is appropriate
     sta(ABS(Player_State));
     JMP(ChkOnScr);
 }
 
 void ChkOnScr() {
+    _debug("ChkOnScr", __FILE__, __LINE__);
     lda(ABS(Player_Y_HighPos));
     // check player's vertical high byte for still on the screen
     cmp(IMM(0x1));
@@ -19312,11 +20466,13 @@ void ChkOnScr() {
 }
 
 void ExPBGCol() {
+    _debug("ExPBGCol", __FILE__, __LINE__);
     // otherwise leave
     return;
 }
 
 void ChkCollSize() {
+    _debug("ChkCollSize", __FILE__, __LINE__);
     // load default offset
     ldy(IMM(0x2));
     lda(ABS(CrouchingFlag));
@@ -19336,6 +20492,7 @@ void ChkCollSize() {
 }
 
 void GBBAdr() {
+    _debug("GBBAdr", __FILE__, __LINE__);
     // get value using offset
     lda(ABSY(0x8000+offsetof(G, BlockBufferAdderData)));
     // store value here
@@ -19353,6 +20510,7 @@ void GBBAdr() {
 }
 
 void HeadChk() {
+    _debug("HeadChk", __FILE__, __LINE__);
     // get player's vertical coordinate
     lda(ABS(Player_Y_Position));
     // compare with upper extent value based on offset
@@ -19397,6 +20555,7 @@ void HeadChk() {
 }
 
 void SolidOrClimb() {
+    _debug("SolidOrClimb", __FILE__, __LINE__);
     // if climbing metatile,
     cmp(IMM(0x26));
     // branch ahead and do not play sound
@@ -19408,6 +20567,7 @@ void SolidOrClimb() {
 }
 
 void NYSpd() {
+    _debug("NYSpd", __FILE__, __LINE__);
     // set player's vertical speed to nullify
     lda(IMM(0x1));
     // jump or swim
@@ -19416,6 +20576,7 @@ void NYSpd() {
 }
 
 void DoFootCheck() {
+    _debug("DoFootCheck", __FILE__, __LINE__);
     // get block buffer adder offset
     ldy(ABS(0xeb));
     lda(ABS(Player_Y_Position));
@@ -19452,12 +20613,14 @@ void DoFootCheck() {
 }
 
 void AwardTouchedCoin() {
+    _debug("AwardTouchedCoin", __FILE__, __LINE__);
     // follow the code to erase coin and award to player 1 coin
     JMP(HandleCoinMetatile);
     JMP(ChkFootMTile);
 }
 
 void ChkFootMTile() {
+    _debug("ChkFootMTile", __FILE__, __LINE__);
     // check to see if player landed on climbable metatiles
     JSR(CheckForClimbMTiles);
     // if so, branch
@@ -19475,6 +20638,7 @@ void ChkFootMTile() {
 }
 
 void ContChk() {
+    _debug("ContChk", __FILE__, __LINE__);
     // do sub to check for hidden coin or 1-up blocks
     JSR(ChkInvisibleMTiles);
     // if either found, branch
@@ -19498,6 +20662,7 @@ void ContChk() {
 }
 
 void LandPlyr() {
+    _debug("LandPlyr", __FILE__, __LINE__);
     // do sub to check for jumpspring metatiles and deal with it
     JSR(ChkForLandJumpSpring);
     lda(IMM(0xf0));
@@ -19518,6 +20683,7 @@ void LandPlyr() {
 }
 
 void InitSteP() {
+    _debug("InitSteP", __FILE__, __LINE__);
     lda(IMM(0x0));
     // set player's state to normal
     sta(ABS(Player_State));
@@ -19525,6 +20691,7 @@ void InitSteP() {
 }
 
 void DoPlayerSideCheck() {
+    _debug("DoPlayerSideCheck", __FILE__, __LINE__);
     // get block buffer adder offset
     ldy(ABS(0xeb));
     iny();
@@ -19537,6 +20704,7 @@ void DoPlayerSideCheck() {
 }
 
 void SideCheckLoop() {
+    _debug("SideCheckLoop", __FILE__, __LINE__);
     // move onto the next one
     iny();
     // store it
@@ -19568,6 +20736,7 @@ void SideCheckLoop() {
 }
 
 void BHalf() {
+    _debug("BHalf", __FILE__, __LINE__);
     // load block adder offset
     ldy(ABS(0xeb));
     // increment it
@@ -19592,11 +20761,13 @@ void BHalf() {
 }
 
 void ExSCH() {
+    _debug("ExSCH", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void CheckSideMTiles() {
+    _debug("CheckSideMTiles", __FILE__, __LINE__);
     // check for hidden or coin 1-up blocks
     JSR(ChkInvisibleMTiles);
     // branch to leave if either found
@@ -19611,6 +20782,7 @@ void CheckSideMTiles() {
 }
 
 void ContSChk() {
+    _debug("ContSChk", __FILE__, __LINE__);
     // check to see if player touched coin
     JSR(CheckForCoinMTiles);
     // if so, execute code to erase coin and award to player 1 coin
@@ -19629,6 +20801,7 @@ void ContSChk() {
 }
 
 void ChkPBtm() {
+    _debug("ChkPBtm", __FILE__, __LINE__);
     // get player's state
     ldy(ABS(Player_State));
     // check for player's state set to normal
@@ -19652,6 +20825,7 @@ void ChkPBtm() {
 }
 
 void PipeDwnS() {
+    _debug("PipeDwnS", __FILE__, __LINE__);
     // check player's attributes
     lda(ABS(Player_SprAttrib));
     // if already set, branch, do not play sound again
@@ -19663,6 +20837,7 @@ void PipeDwnS() {
 }
 
 void PlyrPipe() {
+    _debug("PlyrPipe", __FILE__, __LINE__);
     ora(IMM(0b100000));
     // set background priority bit in player attributes
     sta(ABS(Player_SprAttrib));
@@ -19683,6 +20858,7 @@ void PlyrPipe() {
 }
 
 void SetCATmr() {
+    _debug("SetCATmr", __FILE__, __LINE__);
     // set timer for change of area as appropriate
     lda(ABSY(0x8000+offsetof(G, AreaChangeTimerData)));
     sta(ABS(ChangeAreaTimer));
@@ -19690,6 +20866,7 @@ void SetCATmr() {
 }
 
 void ChkGERtn() {
+    _debug("ChkGERtn", __FILE__, __LINE__);
     // get number of game engine routine running
     lda(ABS(GameEngineSubroutine));
     cmp(IMM(0x7));
@@ -19706,17 +20883,20 @@ void ChkGERtn() {
 }
 
 void StopPlayerMove() {
+    _debug("StopPlayerMove", __FILE__, __LINE__);
     // stop player's movement
     JSR(ImpedePlayerMove);
     JMP(ExCSM);
 }
 
 void ExCSM() {
+    _debug("ExCSM", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void HandleCoinMetatile() {
+    _debug("HandleCoinMetatile", __FILE__, __LINE__);
     // do sub to erase coin metatile from block buffer
     JSR(ErACM);
     // increment coin tally used for 1-up blocks
@@ -19727,6 +20907,7 @@ void HandleCoinMetatile() {
 }
 
 void HandleAxeMetatile() {
+    _debug("HandleAxeMetatile", __FILE__, __LINE__);
     lda(IMM(0x0));
     // reset secondary mode
     sta(ABS(OperMode_Task));
@@ -19740,6 +20921,7 @@ void HandleAxeMetatile() {
 }
 
 void ErACM() {
+    _debug("ErACM", __FILE__, __LINE__);
     // load vertical high nybble offset for block buffer
     ldy(ABS(0x2));
     // load blank metatile
@@ -19752,6 +20934,7 @@ void ErACM() {
 }
 
 void HandleClimbing() {
+    _debug("HandleClimbing", __FILE__, __LINE__);
     // check low nybble of horizontal coordinate returned from
     ldy(ABS(0x4));
     // collision detection routine against certain values, this
@@ -19765,11 +20948,13 @@ void HandleClimbing() {
 }
 
 void ExHC() {
+    _debug("ExHC", __FILE__, __LINE__);
     // leave if too far left or too far right
     return;
 }
 
 void ChkForFlagpole() {
+    _debug("ChkForFlagpole", __FILE__, __LINE__);
     // check climbing metatiles
     cmp(IMM(0x24));
     // branch if flagpole ball found
@@ -19781,6 +20966,7 @@ void ChkForFlagpole() {
 }
 
 void FlagpoleCollision() {
+    _debug("FlagpoleCollision", __FILE__, __LINE__);
     lda(ABS(GameEngineSubroutine));
     // check for end-of-level routine running
     cmp(IMM(0x5));
@@ -19815,6 +21001,7 @@ void FlagpoleCollision() {
 }
 
 void ChkFlagpoleYPosLoop() {
+    _debug("ChkFlagpoleYPosLoop", __FILE__, __LINE__);
     // compare with current vertical coordinate data
     cmp(ABSX(0x8000+offsetof(G, FlagpoleYPosData)));
     // if player's => current, branch to use current offset
@@ -19827,12 +21014,14 @@ void ChkFlagpoleYPosLoop() {
 }
 
 void MtchF() {
+    _debug("MtchF", __FILE__, __LINE__);
     // store offset here to be used later
     stx(ABS(FlagpoleScore));
     JMP(RunFR);
 }
 
 void RunFR() {
+    _debug("RunFR", __FILE__, __LINE__);
     lda(IMM(0x4));
     // set value to run flagpole slide routine
     sta(ABS(GameEngineSubroutine));
@@ -19842,6 +21031,7 @@ void RunFR() {
 }
 
 void VineCollision() {
+    _debug("VineCollision", __FILE__, __LINE__);
     // check for climbing metatile used on vines
     cmp(IMM(0x26));
     BNE(PutPlayerOnVine);
@@ -19858,6 +21048,7 @@ void VineCollision() {
 }
 
 void PutPlayerOnVine() {
+    _debug("PutPlayerOnVine", __FILE__, __LINE__);
     // set player state to climbing
     lda(IMM(0x3));
     sta(ABS(Player_State));
@@ -19881,6 +21072,7 @@ void PutPlayerOnVine() {
 }
 
 void SetVXPl() {
+    _debug("SetVXPl", __FILE__, __LINE__);
     // get current facing direction, use as offset
     ldy(ABS(PlayerFacingDir));
     // get low byte of block buffer address
@@ -19910,11 +21102,13 @@ void SetVXPl() {
 }
 
 void ExPVne() {
+    _debug("ExPVne", __FILE__, __LINE__);
     // finally, we're done!
     return;
 }
 
 void ChkInvisibleMTiles() {
+    _debug("ChkInvisibleMTiles", __FILE__, __LINE__);
     // check for hidden coin block
     cmp(IMM(0x5f));
     // branch to leave if found
@@ -19925,11 +21119,13 @@ void ChkInvisibleMTiles() {
 }
 
 void ExCInvT() {
+    _debug("ExCInvT", __FILE__, __LINE__);
     // leave with zero flag set if either found
     return;
 }
 
 void ChkForLandJumpSpring() {
+    _debug("ChkForLandJumpSpring", __FILE__, __LINE__);
     // do sub to check if player landed on jumpspring
     JSR(ChkJumpspringMetatiles);
     // if carry not set, jumpspring not found, therefore leave
@@ -19950,11 +21146,13 @@ void ChkForLandJumpSpring() {
 }
 
 void ExCJSp() {
+    _debug("ExCJSp", __FILE__, __LINE__);
     // and leave
     return;
 }
 
 void ChkJumpspringMetatiles() {
+    _debug("ChkJumpspringMetatiles", __FILE__, __LINE__);
     // check for top jumpspring metatile
     cmp(IMM(0x67));
     // branch to set carry if found
@@ -19969,17 +21167,20 @@ void ChkJumpspringMetatiles() {
 }
 
 void JSFnd() {
+    _debug("JSFnd", __FILE__, __LINE__);
     // set carry if found
     sec();
     JMP(NoJSFnd);
 }
 
 void NoJSFnd() {
+    _debug("NoJSFnd", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void HandlePipeEntry() {
+    _debug("HandlePipeEntry", __FILE__, __LINE__);
     // check saved controller bits from earlier
     lda(ABS(Up_Down_Buttons));
     // for pressing down
@@ -20035,6 +21236,7 @@ void HandlePipeEntry() {
 }
 
 void GetWNum() {
+    _debug("GetWNum", __FILE__, __LINE__);
     // get warp zone numbers
     ldy(ABSX(0x8000+offsetof(G, WarpZoneNumbers)));
     // decrement for use as world number
@@ -20067,11 +21269,13 @@ void GetWNum() {
 }
 
 void ExPipeE() {
+    _debug("ExPipeE", __FILE__, __LINE__);
     // leave!!!
     return;
 }
 
 void ImpedePlayerMove() {
+    _debug("ImpedePlayerMove", __FILE__, __LINE__);
     // initialize value here
     lda(IMM(0x0));
     // get player's horizontal speed
@@ -20096,6 +21300,7 @@ void ImpedePlayerMove() {
 }
 
 void RImpd() {
+    _debug("RImpd", __FILE__, __LINE__);
     // return $02 to X
     ldx(IMM(0x2));
     // if player moving to the right,
@@ -20108,6 +21313,7 @@ void RImpd() {
 }
 
 void NXSpd() {
+    _debug("NXSpd", __FILE__, __LINE__);
     ldy(IMM(0x10));
     // set timer of some sort
     sty(ABS(SideCollisionTimer));
@@ -20124,6 +21330,7 @@ void NXSpd() {
 }
 
 void PlatF() {
+    _debug("PlatF", __FILE__, __LINE__);
     // store Y as high bits of horizontal adder
     sty(ABS(0x0));
     clc();
@@ -20140,6 +21347,7 @@ void PlatF() {
 }
 
 void ExIPM() {
+    _debug("ExIPM", __FILE__, __LINE__);
     // invert contents of X
     txa();
     eor(IMM(0xff));
@@ -20151,6 +21359,7 @@ void ExIPM() {
 }
 
 void CheckForSolidMTiles() {
+    _debug("CheckForSolidMTiles", __FILE__, __LINE__);
     // find appropriate offset based on metatile's 2 MSB
     JSR(GetMTileAttrib);
     // compare current metatile with solid metatiles
@@ -20159,6 +21368,7 @@ void CheckForSolidMTiles() {
 }
 
 void CheckForClimbMTiles() {
+    _debug("CheckForClimbMTiles", __FILE__, __LINE__);
     // find appropriate offset based on metatile's 2 MSB
     JSR(GetMTileAttrib);
     // compare current metatile with climbable metatiles
@@ -20167,6 +21377,7 @@ void CheckForClimbMTiles() {
 }
 
 void CheckForCoinMTiles() {
+    _debug("CheckForCoinMTiles", __FILE__, __LINE__);
     // check for regular coin
     cmp(IMM(0xc2));
     // branch if found
@@ -20181,6 +21392,7 @@ void CheckForCoinMTiles() {
 }
 
 void CoinSd() {
+    _debug("CoinSd", __FILE__, __LINE__);
     lda(IMM(Sfx_CoinGrab));
     // load coin grab sound and leave
     sta(ABS(Square2SoundQueue));
@@ -20188,6 +21400,7 @@ void CoinSd() {
 }
 
 void GetMTileAttrib() {
+    _debug("GetMTileAttrib", __FILE__, __LINE__);
     // save metatile value into Y
     tay();
     // mask out all but 2 MSB
@@ -20204,11 +21417,13 @@ void GetMTileAttrib() {
 }
 
 void ExEBG() {
+    _debug("ExEBG", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void EnemyToBGCollisionDet() {
+    _debug("EnemyToBGCollisionDet", __FILE__, __LINE__);
     // check enemy state for d6 set
     lda(ABSX(Enemy_State));
     anda(IMM(0b100000));
@@ -20230,6 +21445,7 @@ void EnemyToBGCollisionDet() {
 }
 
 void DoIDCheckBGColl() {
+    _debug("DoIDCheckBGColl", __FILE__, __LINE__);
     // check for some other enemy object
     cpy(IMM(GreenParatroopaJump));
     // branch if not found
@@ -20240,6 +21456,7 @@ void DoIDCheckBGColl() {
 }
 
 void HBChk() {
+    _debug("HBChk", __FILE__, __LINE__);
     // check for hammer bro
     cpy(IMM(HammerBro));
     // branch if not found
@@ -20250,6 +21467,7 @@ void HBChk() {
 }
 
 void CInvu() {
+    _debug("CInvu", __FILE__, __LINE__);
     // if enemy object is spiny, branch
     cpy(IMM(Spiny));
     BEQ(YesIn);
@@ -20263,6 +21481,7 @@ void CInvu() {
 }
 
 void YesIn() {
+    _debug("YesIn", __FILE__, __LINE__);
     // if enemy object < $07, or = $12 or $2e, do this sub
     JSR(ChkUnderEnemy);
     // if block underneath enemy, branch
@@ -20271,12 +21490,14 @@ void YesIn() {
 }
 
 void NoEToBGCollision() {
+    _debug("NoEToBGCollision", __FILE__, __LINE__);
     // otherwise skip and do something else
     JMP(ChkForRedKoopa);
     JMP(HandleEToBGCollision);
 }
 
 void HandleEToBGCollision() {
+    _debug("HandleEToBGCollision", __FILE__, __LINE__);
     // if something is underneath enemy, find out what
     JSR(ChkForNonSolids);
     // if blank $26, coins, or hidden blocks, jump, enemy falls through
@@ -20303,6 +21524,7 @@ void HandleEToBGCollision() {
 }
 
 void GiveOEPoints() {
+    _debug("GiveOEPoints", __FILE__, __LINE__);
     // award 100 points for hitting block beneath enemy
     lda(IMM(0x1));
     JSR(SetupFloateyNumber);
@@ -20310,6 +21532,7 @@ void GiveOEPoints() {
 }
 
 void ChkToStunEnemies() {
+    _debug("ChkToStunEnemies", __FILE__, __LINE__);
     // perform many comparisons on enemy object identifier
     cmp(IMM(0x9));
     BCC(SetStun);
@@ -20329,6 +21552,7 @@ void ChkToStunEnemies() {
 }
 
 void Demote() {
+    _debug("Demote", __FILE__, __LINE__);
     // erase all but LSB, essentially turning enemy object
     anda(IMM(0b1));
     // into green or red koopa troopa to demote them
@@ -20337,6 +21561,7 @@ void Demote() {
 }
 
 void SetStun() {
+    _debug("SetStun", __FILE__, __LINE__);
     // load enemy state
     lda(ABSX(Enemy_State));
     // save high nybble
@@ -20360,12 +21585,14 @@ void SetStun() {
 }
 
 void SetWYSpd() {
+    _debug("SetWYSpd", __FILE__, __LINE__);
     // change the vertical speed
     lda(IMM(0xff));
     JMP(SetNotW);
 }
 
 void SetNotW() {
+    _debug("SetNotW", __FILE__, __LINE__);
     // set vertical speed now
     sta(ABSX(Enemy_Y_Speed));
     ldy(IMM(0x1));
@@ -20379,6 +21606,7 @@ void SetNotW() {
 }
 
 void ChkBBill() {
+    _debug("ChkBBill", __FILE__, __LINE__);
     lda(ABSX(Enemy_ID));
     // check for bullet bill (cannon variant)
     cmp(IMM(BulletBill_CannonVar));
@@ -20393,6 +21621,7 @@ void ChkBBill() {
 }
 
 void NoCDirF() {
+    _debug("NoCDirF", __FILE__, __LINE__);
     // decrement and use as offset
     dey();
     // get proper horizontal speed
@@ -20403,10 +21632,12 @@ void NoCDirF() {
 }
 
 void ExEBGChk() {
+    _debug("ExEBGChk", __FILE__, __LINE__);
     return;
 }
 
 void LandEnemyProperly() {
+    _debug("LandEnemyProperly", __FILE__, __LINE__);
     // check lower nybble of vertical coordinate saved earlier
     lda(ABS(0x4));
     sec();
@@ -20428,12 +21659,14 @@ void LandEnemyProperly() {
 }
 
 void SChkA() {
+    _debug("SChkA", __FILE__, __LINE__);
     // if lower nybble < $0d, d7 set but d6 not set, jump here
     JMP(DoEnemySideCheck);
     JMP(ChkLandedEnemyState);
 }
 
 void ChkLandedEnemyState() {
+    _debug("ChkLandedEnemyState", __FILE__, __LINE__);
     // if enemy in normal state, branch back to jump here
     lda(ABSX(Enemy_State));
     BEQ(SChkA);
@@ -20464,6 +21697,7 @@ void ChkLandedEnemyState() {
 }
 
 void SetForStn() {
+    _debug("SetForStn", __FILE__, __LINE__);
     // set timer here
     sta(ABSX(EnemyIntervalTimer));
     // set state here, apparently used to render
@@ -20476,11 +21710,13 @@ void SetForStn() {
 }
 
 void ExSteChk() {
+    _debug("ExSteChk", __FILE__, __LINE__);
     // then leave
     return;
 }
 
 void ProcEnemyDirection() {
+    _debug("ProcEnemyDirection", __FILE__, __LINE__);
     // check enemy identifier for goomba
     lda(ABSX(Enemy_ID));
     // branch if found
@@ -20505,6 +21741,7 @@ void ProcEnemyDirection() {
 }
 
 void InvtD() {
+    _debug("InvtD", __FILE__, __LINE__);
     // load 1 for enemy to face the left (inverted here)
     ldy(IMM(0x1));
     // get horizontal difference between player and enemy
@@ -20517,6 +21754,7 @@ void InvtD() {
 }
 
 void CNwCDir() {
+    _debug("CNwCDir", __FILE__, __LINE__);
     tya();
     // compare direction in A with current direction in memory
     cmp(ABSX(Enemy_MovingDir));
@@ -20527,6 +21765,7 @@ void CNwCDir() {
 }
 
 void LandEnemyInitState() {
+    _debug("LandEnemyInitState", __FILE__, __LINE__);
     // land enemy properly
     JSR(EnemyLanding);
     lda(ABSX(Enemy_State));
@@ -20541,6 +21780,7 @@ void LandEnemyInitState() {
 }
 
 void NMovShellFallBit() {
+    _debug("NMovShellFallBit", __FILE__, __LINE__);
     // nullify d6 of enemy state, save other bits
     lda(ABSX(Enemy_State));
     // and store, then leave
@@ -20550,6 +21790,7 @@ void NMovShellFallBit() {
 }
 
 void ChkForRedKoopa() {
+    _debug("ChkForRedKoopa", __FILE__, __LINE__);
     // check for red koopa troopa $03
     lda(ABSX(Enemy_ID));
     cmp(IMM(RedKoopa));
@@ -20562,6 +21803,7 @@ void ChkForRedKoopa() {
 }
 
 void Chk2MSBSt() {
+    _debug("Chk2MSBSt", __FILE__, __LINE__);
     // save enemy state into Y
     lda(ABSX(Enemy_State));
     tay();
@@ -20578,18 +21820,21 @@ void Chk2MSBSt() {
 }
 
 void GetSteFromD() {
+    _debug("GetSteFromD", __FILE__, __LINE__);
     // load new enemy state with old as offset
     lda(ABSY(0x8000+offsetof(G, EnemyBGCStateData)));
     JMP(SetD6Ste);
 }
 
 void SetD6Ste() {
+    _debug("SetD6Ste", __FILE__, __LINE__);
     // set as new state
     sta(ABSX(Enemy_State));
     JMP(DoEnemySideCheck);
 }
 
 void DoEnemySideCheck() {
+    _debug("DoEnemySideCheck", __FILE__, __LINE__);
     // if enemy within status bar, branch to leave
     lda(ABSX(Enemy_Y_Position));
     // because there's nothing there that impedes movement
@@ -20605,6 +21850,7 @@ void DoEnemySideCheck() {
 }
 
 void SdeCLoop() {
+    _debug("SdeCLoop", __FILE__, __LINE__);
     // check value
     lda(ABS(0xeb));
     // compare value against moving direction
@@ -20625,6 +21871,7 @@ void SdeCLoop() {
 }
 
 void NextSdeC() {
+    _debug("NextSdeC", __FILE__, __LINE__);
     // move to the next direction
     dec(ABS(0xeb));
     iny();
@@ -20636,10 +21883,12 @@ void NextSdeC() {
 }
 
 void ExESdeC() {
+    _debug("ExESdeC", __FILE__, __LINE__);
     return;
 }
 
 void ChkForBump_HammerBroJ() {
+    _debug("ChkForBump_HammerBroJ", __FILE__, __LINE__);
     // check if we're on the special use slot
     cpx(IMM(0x5));
     // and if so, branch ahead and do not play sound
@@ -20657,6 +21906,7 @@ void ChkForBump_HammerBroJ() {
 }
 
 void NoBump() {
+    _debug("NoBump", __FILE__, __LINE__);
     // check for hammer bro
     lda(ABSX(Enemy_ID));
     cmp(IMM(0x5));
@@ -20673,12 +21923,14 @@ void NoBump() {
 }
 
 void InvEnemyDir() {
+    _debug("InvEnemyDir", __FILE__, __LINE__);
     // jump to turn the enemy around
     JMP(RXSpd);
     JMP(PlayerEnemyDiff);
 }
 
 void PlayerEnemyDiff() {
+    _debug("PlayerEnemyDiff", __FILE__, __LINE__);
     // get distance between enemy object's
     lda(ABSX(Enemy_X_Position));
     // horizontal coordinate and the player's
@@ -20694,6 +21946,7 @@ void PlayerEnemyDiff() {
 }
 
 void EnemyLanding() {
+    _debug("EnemyLanding", __FILE__, __LINE__);
     // do something here to vertical speed and something else
     JSR(InitVStf);
     lda(ABSX(Enemy_Y_Position));
@@ -20707,6 +21960,7 @@ void EnemyLanding() {
 }
 
 void SubtEnemyYPos() {
+    _debug("SubtEnemyYPos", __FILE__, __LINE__);
     // add 62 pixels to enemy object's
     lda(ABSX(Enemy_Y_Position));
     // vertical coordinate
@@ -20719,6 +21973,7 @@ void SubtEnemyYPos() {
 }
 
 void EnemyJump() {
+    _debug("EnemyJump", __FILE__, __LINE__);
     // do a sub here
     JSR(SubtEnemyYPos);
     // if enemy vertical coord + 62 < 68, branch to leave
@@ -20747,12 +22002,14 @@ void EnemyJump() {
 }
 
 void DoSide() {
+    _debug("DoSide", __FILE__, __LINE__);
     // check for horizontal blockage, then leave
     JMP(DoEnemySideCheck);
     JMP(HammerBroBGColl);
 }
 
 void HammerBroBGColl() {
+    _debug("HammerBroBGColl", __FILE__, __LINE__);
     // check to see if hammer bro is standing on anything
     JSR(ChkUnderEnemy);
     BEQ(NoUnderHammerBro);
@@ -20763,6 +22020,7 @@ void HammerBroBGColl() {
 }
 
 void KillEnemyAboveBlock() {
+    _debug("KillEnemyAboveBlock", __FILE__, __LINE__);
     // do this sub to kill enemy
     JSR(ShellOrBlockDefeat);
     // alter vertical speed of enemy and leave
@@ -20772,6 +22030,7 @@ void KillEnemyAboveBlock() {
 }
 
 void UnderHammerBro() {
+    _debug("UnderHammerBro", __FILE__, __LINE__);
     // check timer used by hammer bro
     lda(ABSX(EnemyFrameTimer));
     // branch if not expired
@@ -20789,6 +22048,7 @@ void UnderHammerBro() {
 }
 
 void NoUnderHammerBro() {
+    _debug("NoUnderHammerBro", __FILE__, __LINE__);
     // if hammer bro is not standing on anything, set d0
     lda(ABSX(Enemy_State));
     // in the enemy state to indicate jumping or falling, then leave
@@ -20798,6 +22058,7 @@ void NoUnderHammerBro() {
 }
 
 void ChkUnderEnemy() {
+    _debug("ChkUnderEnemy", __FILE__, __LINE__);
     // set flag in A for save vertical coordinate
     lda(IMM(0x0));
     // set Y to check the bottom middle (8,18) of enemy object
@@ -20808,6 +22069,7 @@ void ChkUnderEnemy() {
 }
 
 void ChkForNonSolids() {
+    _debug("ChkForNonSolids", __FILE__, __LINE__);
     // blank metatile used for vines?
     cmp(IMM(0x26));
     BEQ(NSFnd);
@@ -20826,10 +22088,12 @@ void ChkForNonSolids() {
 }
 
 void NSFnd() {
+    _debug("NSFnd", __FILE__, __LINE__);
     return;
 }
 
 void FireballBGCollision() {
+    _debug("FireballBGCollision", __FILE__, __LINE__);
     // check fireball's vertical coordinate
     lda(ABSX(Fireball_Y_Position));
     cmp(IMM(0x18));
@@ -20867,6 +22131,7 @@ void FireballBGCollision() {
 }
 
 void ClearBounceFlag() {
+    _debug("ClearBounceFlag", __FILE__, __LINE__);
     lda(IMM(0x0));
     // clear bouncing flag by default
     sta(ABSX(FireballBouncingFlag));
@@ -20875,6 +22140,7 @@ void ClearBounceFlag() {
 }
 
 void InitFireballExplode() {
+    _debug("InitFireballExplode", __FILE__, __LINE__);
     lda(IMM(0x80));
     // set exploding flag in fireball's state
     sta(ABSX(Fireball_State));
@@ -20886,6 +22152,7 @@ void InitFireballExplode() {
 }
 
 void GetFireballBoundBox() {
+    _debug("GetFireballBoundBox", __FILE__, __LINE__);
     // add seven bytes to offset
     txa();
     // to use in routines as offset for fireball
@@ -20900,6 +22167,7 @@ void GetFireballBoundBox() {
 }
 
 void GetMiscBoundBox() {
+    _debug("GetMiscBoundBox", __FILE__, __LINE__);
     // add nine bytes to offset
     txa();
     // to use in routines as offset for misc object
@@ -20912,6 +22180,7 @@ void GetMiscBoundBox() {
 }
 
 void FBallB() {
+    _debug("FBallB", __FILE__, __LINE__);
     // get bounding box coordinates
     JSR(BoundingBoxCore);
     // jump to handle any offscreen coordinates
@@ -20920,6 +22189,7 @@ void FBallB() {
 }
 
 void GetEnemyBoundBox() {
+    _debug("GetEnemyBoundBox", __FILE__, __LINE__);
     // store bitmask here for now
     ldy(IMM(0x48));
     sty(ABS(0x0));
@@ -20930,6 +22200,7 @@ void GetEnemyBoundBox() {
 }
 
 void SmallPlatformBoundBox() {
+    _debug("SmallPlatformBoundBox", __FILE__, __LINE__);
     // store bitmask here for now
     ldy(IMM(0x8));
     sty(ABS(0x0));
@@ -20939,6 +22210,7 @@ void SmallPlatformBoundBox() {
 }
 
 void GetMaskedOffScrBits() {
+    _debug("GetMaskedOffScrBits", __FILE__, __LINE__);
     // get enemy object position relative
     lda(ABSX(Enemy_X_Position));
     // to the left side of the screen
@@ -20961,6 +22233,7 @@ void GetMaskedOffScrBits() {
 }
 
 void CMBits() {
+    _debug("CMBits", __FILE__, __LINE__);
     // otherwise use contents of Y
     tya();
     // preserve bitwise whatever's in here
@@ -20975,6 +22248,7 @@ void CMBits() {
 }
 
 void LargePlatformBoundBox() {
+    _debug("LargePlatformBoundBox", __FILE__, __LINE__);
     // increment X to get the proper offset
     inx();
     // then jump directly to the sub for horizontal offscreen bits
@@ -20989,6 +22263,7 @@ void LargePlatformBoundBox() {
 }
 
 void SetupEOffsetFBBox() {
+    _debug("SetupEOffsetFBBox", __FILE__, __LINE__);
     // add 1 to offset to properly address
     txa();
     // the enemy object memory locations
@@ -21005,6 +22280,7 @@ void SetupEOffsetFBBox() {
 }
 
 void MoveBoundBoxOffscreen() {
+    _debug("MoveBoundBoxOffscreen", __FILE__, __LINE__);
     // multiply offset by 4
     txa();
     asl();
@@ -21021,6 +22297,7 @@ void MoveBoundBoxOffscreen() {
 }
 
 void BoundingBoxCore() {
+    _debug("BoundingBoxCore", __FILE__, __LINE__);
     // save offset here
     stx(ABS(0x0));
     // store object coordinates relative to screen
@@ -21082,6 +22359,7 @@ void BoundingBoxCore() {
 }
 
 void CheckRightScreenBBox() {
+    _debug("CheckRightScreenBBox", __FILE__, __LINE__);
     // add 128 pixels to left side of screen
     lda(ABS(ScreenLeft_X_Pos));
     // and store as horizontal coordinate of middle
@@ -21119,18 +22397,21 @@ void CheckRightScreenBBox() {
 }
 
 void SORte() {
+    _debug("SORte", __FILE__, __LINE__);
     // store offscreen value for right side
     sta(ABSY(BoundingBox_DR_XPos));
     JMP(NoOfs);
 }
 
 void NoOfs() {
+    _debug("NoOfs", __FILE__, __LINE__);
     // get object offset and leave
     ldx(ABS(ObjectOffset));
     return;
 }
 
 void CheckLeftScreenBBox() {
+    _debug("CheckLeftScreenBBox", __FILE__, __LINE__);
     // check left-side edge of bounding box for offscreen
     lda(ABSY(BoundingBox_UL_XPos));
     // coordinates, and branch if still on the screen
@@ -21150,24 +22431,28 @@ void CheckLeftScreenBBox() {
 }
 
 void SOLft() {
+    _debug("SOLft", __FILE__, __LINE__);
     // store offscreen value for left side
     sta(ABSY(BoundingBox_UL_XPos));
     JMP(NoOfs2);
 }
 
 void NoOfs2() {
+    _debug("NoOfs2", __FILE__, __LINE__);
     // get object offset and leave
     ldx(ABS(ObjectOffset));
     return;
 }
 
 void PlayerCollisionCore() {
+    _debug("PlayerCollisionCore", __FILE__, __LINE__);
     // initialize X to use player's bounding box for comparison
     ldx(IMM(0x0));
     JMP(SprObjectCollisionCore);
 }
 
 void SprObjectCollisionCore() {
+    _debug("SprObjectCollisionCore", __FILE__, __LINE__);
     // save contents of Y here
     sty(ABS(0x6));
     lda(IMM(0x1));
@@ -21177,6 +22462,7 @@ void SprObjectCollisionCore() {
 }
 
 void CollisionCoreLoop() {
+    _debug("CollisionCoreLoop", __FILE__, __LINE__);
     // compare left/top coordinates
     lda(ABSY(BoundingBox_UL_Corner));
     // of first and second objects' bounding boxes
@@ -21206,6 +22492,7 @@ void CollisionCoreLoop() {
 }
 
 void SecondBoxVerticalChk() {
+    _debug("SecondBoxVerticalChk", __FILE__, __LINE__);
     // check to see if the vertical bottom of the box
     lda(ABSX(BoundingBox_LR_Corner));
     // is greater than the vertical top
@@ -21224,6 +22511,7 @@ void SecondBoxVerticalChk() {
 }
 
 void FirstBoxGreater() {
+    _debug("FirstBoxGreater", __FILE__, __LINE__);
     // compare first and second box horizontal left/vertical top again
     cmp(ABSX(BoundingBox_UL_Corner));
     // if first coordinate = second, collision, thus branch
@@ -21249,6 +22537,7 @@ void FirstBoxGreater() {
 }
 
 void NoCollisionFound() {
+    _debug("NoCollisionFound", __FILE__, __LINE__);
     // clear carry, then load value set earlier, then leave
     clc();
     // like previous ones, if horizontal coordinates do not collide, we do
@@ -21258,6 +22547,7 @@ void NoCollisionFound() {
 }
 
 void CollisionFound() {
+    _debug("CollisionFound", __FILE__, __LINE__);
     // increment offsets on both objects to check
     inx();
     // the vertical coordinates
@@ -21274,6 +22564,7 @@ void CollisionFound() {
 }
 
 void BlockBufferChk_Enemy() {
+    _debug("BlockBufferChk_Enemy", __FILE__, __LINE__);
     // save contents of A to stack
     pha();
     txa();
@@ -21288,6 +22579,7 @@ void BlockBufferChk_Enemy() {
 }
 
 void ResidualMiscObjectCode() {
+    _debug("ResidualMiscObjectCode", __FILE__, __LINE__);
     txa();
     // supposedly used once to set offset for
     clc();
@@ -21302,6 +22594,7 @@ void ResidualMiscObjectCode() {
 }
 
 void BlockBufferChk_FBall() {
+    _debug("BlockBufferChk_FBall", __FILE__, __LINE__);
     // set offset for block buffer adder data
     ldy(IMM(0x1a));
     txa();
@@ -21313,12 +22606,14 @@ void BlockBufferChk_FBall() {
 }
 
 void ResJmpM() {
+    _debug("ResJmpM", __FILE__, __LINE__);
     // set A to return vertical coordinate
     lda(IMM(0x0));
     JMP(BBChk_E);
 }
 
 void BBChk_E() {
+    _debug("BBChk_E", __FILE__, __LINE__);
     // do collision detection subroutine for sprite object
     JSR(BlockBufferCollision);
     // get object offset
@@ -21329,18 +22624,21 @@ void BBChk_E() {
 }
 
 void BlockBufferColli_Feet() {
+    _debug("BlockBufferColli_Feet", __FILE__, __LINE__);
     // if branched here, increment to next set of adders
     iny();
     JMP(BlockBufferColli_Head);
 }
 
 void BlockBufferColli_Head() {
+    _debug("BlockBufferColli_Head", __FILE__, __LINE__);
     // set flag to return vertical coordinate
     lda(IMM(0x0));
     JMP(BlockBufferColli_Side);
 }
 
 void BlockBufferColli_Side() {
+    _debug("BlockBufferColli_Side", __FILE__, __LINE__);
     // set flag to return horizontal coordinate
     lda(IMM(0x1));
     // set offset for player object
@@ -21349,6 +22647,7 @@ void BlockBufferColli_Side() {
 }
 
 void BlockBufferCollision() {
+    _debug("BlockBufferCollision", __FILE__, __LINE__);
     // save contents of A to stack
     pha();
     // save contents of Y here
@@ -21413,12 +22712,14 @@ void BlockBufferCollision() {
 }
 
 void RetXC() {
+    _debug("RetXC", __FILE__, __LINE__);
     // otherwise load horizontal coordinate
     lda(ABSX(SprObject_X_Position));
     JMP(RetYC);
 }
 
 void RetYC() {
+    _debug("RetYC", __FILE__, __LINE__);
     // and mask out high nybble
     anda(IMM(0b1111));
     // store masked out result here
@@ -21430,6 +22731,7 @@ void RetYC() {
 }
 
 void DrawVine() {
+    _debug("DrawVine", __FILE__, __LINE__);
     // save offset here
     sty(ABS(0x0));
     // get relative vertical coordinate
@@ -21477,6 +22779,7 @@ void DrawVine() {
 }
 
 void VineTL() {
+    _debug("VineTL", __FILE__, __LINE__);
     // set tile number for sprite
     lda(IMM(0xe1));
     sta(ABSY(Sprite_Tilenumber));
@@ -21502,12 +22805,14 @@ void VineTL() {
 }
 
 void SkpVTop() {
+    _debug("SkpVTop", __FILE__, __LINE__);
     // start with the first sprite again
     ldx(IMM(0x0));
     JMP(ChkFTop);
 }
 
 void ChkFTop() {
+    _debug("ChkFTop", __FILE__, __LINE__);
     // get original starting vertical coordinate
     lda(ABS(VineStart_Y_Position));
     sec();
@@ -21524,6 +22829,7 @@ void ChkFTop() {
 }
 
 void NextVSp() {
+    _debug("NextVSp", __FILE__, __LINE__);
     // move offset to next OAM data
     iny();
     iny();
@@ -21540,12 +22846,14 @@ void NextVSp() {
 }
 
 void SixSpriteStacker() {
+    _debug("SixSpriteStacker", __FILE__, __LINE__);
     // do six sprites
     ldx(IMM(0x6));
     JMP(StkLp);
 }
 
 void StkLp() {
+    _debug("StkLp", __FILE__, __LINE__);
     // store X or Y coordinate into OAM data
     sta(ABSY(Sprite_Data));
     clc();
@@ -21566,6 +22874,7 @@ void StkLp() {
 }
 
 void DrawHammer() {
+    _debug("DrawHammer", __FILE__, __LINE__);
     // get misc object OAM data offset
     ldy(ABSX(Misc_SprDataOffset));
     lda(ABS(TimerControl));
@@ -21583,6 +22892,7 @@ void DrawHammer() {
 }
 
 void ForceHPose() {
+    _debug("ForceHPose", __FILE__, __LINE__);
     // reset offset here
     ldx(IMM(0x0));
     // do unconditional branch to rendering part
@@ -21591,6 +22901,7 @@ void ForceHPose() {
 }
 
 void GetHPose() {
+    _debug("GetHPose", __FILE__, __LINE__);
     // get frame counter
     lda(ABS(FrameCounter));
     // move d3-d2 to d1-d0
@@ -21604,6 +22915,7 @@ void GetHPose() {
 }
 
 void RenderH() {
+    _debug("RenderH", __FILE__, __LINE__);
     // get relative vertical coordinate
     lda(ABS(Misc_Rel_YPos));
     clc();
@@ -21656,11 +22968,13 @@ void RenderH() {
 }
 
 void NoHOffscr() {
+    _debug("NoHOffscr", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void FlagpoleGfxHandler() {
+    _debug("FlagpoleGfxHandler", __FILE__, __LINE__);
     // get sprite data offset for flagpole flag
     ldy(ABSX(Enemy_SprDataOffset));
     // get relative horizontal coordinate
@@ -21732,6 +23046,7 @@ void FlagpoleGfxHandler() {
 }
 
 void ChkFlagOffscreen() {
+    _debug("ChkFlagOffscreen", __FILE__, __LINE__);
     // get object offset for flag
     ldx(ABS(ObjectOffset));
     // get OAM data offset
@@ -21746,12 +23061,14 @@ void ChkFlagOffscreen() {
 }
 
 void MoveSixSpritesOffscreen() {
+    _debug("MoveSixSpritesOffscreen", __FILE__, __LINE__);
     // set offscreen coordinate if jumping here
     lda(IMM(0xf8));
     JMP(DumpSixSpr);
 }
 
 void DumpSixSpr() {
+    _debug("DumpSixSpr", __FILE__, __LINE__);
     // dump A contents
     sta(ABSY(((Sprite_Data) + (20))));
     // into third row sprites
@@ -21760,17 +23077,20 @@ void DumpSixSpr() {
 }
 
 void DumpFourSpr() {
+    _debug("DumpFourSpr", __FILE__, __LINE__);
     // into second row sprites
     sta(ABSY(((Sprite_Data) + (12))));
     JMP(DumpThreeSpr);
 }
 
 void DumpThreeSpr() {
+    _debug("DumpThreeSpr", __FILE__, __LINE__);
     sta(ABSY(((Sprite_Data) + (8))));
     JMP(DumpTwoSpr);
 }
 
 void DumpTwoSpr() {
+    _debug("DumpTwoSpr", __FILE__, __LINE__);
     // and into first row sprites
     sta(ABSY(((Sprite_Data) + (4))));
     sta(ABSY(Sprite_Data));
@@ -21778,10 +23098,12 @@ void DumpTwoSpr() {
 }
 
 void ExitDumpSpr() {
+    _debug("ExitDumpSpr", __FILE__, __LINE__);
     return;
 }
 
 void DrawLargePlatform() {
+    _debug("DrawLargePlatform", __FILE__, __LINE__);
     // get OAM data offset
     ldy(ABSX(Enemy_SprDataOffset));
     // store here
@@ -21812,12 +23134,14 @@ void DrawLargePlatform() {
 }
 
 void ShrinkPlatform() {
+    _debug("ShrinkPlatform", __FILE__, __LINE__);
     // load offscreen coordinate if flag set or castle-type level
     lda(IMM(0xf8));
     JMP(SetLast2Platform);
 }
 
 void SetLast2Platform() {
+    _debug("SetLast2Platform", __FILE__, __LINE__);
     // get OAM data offset
     ldy(ABSX(Enemy_SprDataOffset));
     // store vertical coordinate or offscreen
@@ -21835,6 +23159,7 @@ void SetLast2Platform() {
 }
 
 void SetPlatformTilenum() {
+    _debug("SetPlatformTilenum", __FILE__, __LINE__);
     // get enemy object buffer offset
     ldx(ABS(ObjectOffset));
     // increment Y for tile offset
@@ -21866,6 +23191,7 @@ void SetPlatformTilenum() {
 }
 
 void SChk2() {
+    _debug("SChk2", __FILE__, __LINE__);
     // get bits from stack
     pla();
     // rotate d6 into carry
@@ -21880,6 +23206,7 @@ void SChk2() {
 }
 
 void SChk3() {
+    _debug("SChk3", __FILE__, __LINE__);
     // get bits from stack
     pla();
     // rotate d5 into carry
@@ -21894,6 +23221,7 @@ void SChk3() {
 }
 
 void SChk4() {
+    _debug("SChk4", __FILE__, __LINE__);
     // get bits from stack
     pla();
     // rotate d4 into carry
@@ -21908,6 +23236,7 @@ void SChk4() {
 }
 
 void SChk5() {
+    _debug("SChk5", __FILE__, __LINE__);
     // get bits from stack
     pla();
     // rotate d3 into carry
@@ -21922,6 +23251,7 @@ void SChk5() {
 }
 
 void SChk6() {
+    _debug("SChk6", __FILE__, __LINE__);
     // get bits from stack
     pla();
     // rotate d2 into carry
@@ -21935,6 +23265,7 @@ void SChk6() {
 }
 
 void SLChk() {
+    _debug("SLChk", __FILE__, __LINE__);
     // check d7 of offscreen bits
     lda(ABS(Enemy_OffscreenBits));
     // and if d7 is not set, skip sub
@@ -21946,10 +23277,12 @@ void SLChk() {
 }
 
 void ExDLPl() {
+    _debug("ExDLPl", __FILE__, __LINE__);
     return;
 }
 
 void DrawFloateyNumber_Coin() {
+    _debug("DrawFloateyNumber_Coin", __FILE__, __LINE__);
     // get frame counter
     lda(ABS(FrameCounter));
     // divide by 2
@@ -21962,6 +23295,7 @@ void DrawFloateyNumber_Coin() {
 }
 
 void NotRsNum() {
+    _debug("NotRsNum", __FILE__, __LINE__);
     // get vertical coordinate
     lda(ABSX(Misc_Y_Position));
     // dump into both sprites
@@ -21991,6 +23325,7 @@ void NotRsNum() {
 }
 
 void JCoinGfxHandler() {
+    _debug("JCoinGfxHandler", __FILE__, __LINE__);
     // get coin/floatey number's OAM data offset
     ldy(ABSX(Misc_SprDataOffset));
     // get state of misc object
@@ -22041,11 +23376,13 @@ void JCoinGfxHandler() {
 }
 
 void ExJCGfx() {
+    _debug("ExJCGfx", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void DrawPowerUp() {
+    _debug("DrawPowerUp", __FILE__, __LINE__);
     // get power-up's sprite data offset
     ldy(ABS(((Enemy_SprDataOffset) + (5))));
     // get relative vertical coordinate
@@ -22084,6 +23421,7 @@ void DrawPowerUp() {
 }
 
 void PUpDrawLoop() {
+    _debug("PUpDrawLoop", __FILE__, __LINE__);
     // load left tile of power-up object
     lda(ABSX(0x8000+offsetof(G, PowerUpGfxTable)));
     sta(ABS(0x0));
@@ -22131,6 +23469,7 @@ void PUpDrawLoop() {
 }
 
 void FlipPUpRightSide() {
+    _debug("FlipPUpRightSide", __FILE__, __LINE__);
     lda(ABSY(((Sprite_Attributes) + (4))));
     // set horizontal flip bit for top right sprite
     ora(IMM(0b1000000));
@@ -22144,12 +23483,14 @@ void FlipPUpRightSide() {
 }
 
 void PUpOfs() {
+    _debug("PUpOfs", __FILE__, __LINE__);
     // jump to check to see if power-up is offscreen at all, then leave
     JMP(SprObjectOffscrChk);
     JMP(EnemyGfxHandler);
 }
 
 void EnemyGfxHandler() {
+    _debug("EnemyGfxHandler", __FILE__, __LINE__);
     // get enemy object vertical position
     lda(ABSX(Enemy_Y_Position));
     sta(ABS(0x2));
@@ -22185,6 +23526,7 @@ void EnemyGfxHandler() {
 }
 
 void CheckForRetainerObj() {
+    _debug("CheckForRetainerObj", __FILE__, __LINE__);
     // store enemy state
     lda(ABSX(Enemy_State));
     sta(ABS(0xed));
@@ -22207,6 +23549,7 @@ void CheckForRetainerObj() {
 }
 
 void CheckForBulletBillCV() {
+    _debug("CheckForBulletBillCV", __FILE__, __LINE__);
     // otherwise check for bullet bill object
     cmp(IMM(BulletBill_CannonVar));
     // if not found, branch again
@@ -22224,6 +23567,7 @@ void CheckForBulletBillCV() {
 }
 
 void SBBAt() {
+    _debug("SBBAt", __FILE__, __LINE__);
     // set new sprite attributes
     sta(ABS(0x4));
     // nullify saved enemy state both in Y and in
@@ -22236,6 +23580,7 @@ void SBBAt() {
 }
 
 void CheckForJumpspring() {
+    _debug("CheckForJumpspring", __FILE__, __LINE__);
     // check for jumpspring object
     cmp(IMM(JumpspringObject));
     BNE(CheckForPodoboo);
@@ -22249,6 +23594,7 @@ void CheckForJumpspring() {
 }
 
 void CheckForPodoboo() {
+    _debug("CheckForPodoboo", __FILE__, __LINE__);
     // store saved enemy object value here
     sta(ABS(0xef));
     // and Y here (enemy state -2 MSB if not changed)
@@ -22268,6 +23614,7 @@ void CheckForPodoboo() {
 }
 
 void CheckBowserGfxFlag() {
+    _debug("CheckBowserGfxFlag", __FILE__, __LINE__);
     // if not drawing bowser at all, skip to something else
     lda(ABS(BowserGfxFlag));
     BEQ(CheckForGoomba);
@@ -22281,11 +23628,13 @@ void CheckBowserGfxFlag() {
 }
 
 void SBwsrGfxOfs() {
+    _debug("SBwsrGfxOfs", __FILE__, __LINE__);
     sty(ABS(0xef));
     JMP(CheckForGoomba);
 }
 
 void CheckForGoomba() {
+    _debug("CheckForGoomba", __FILE__, __LINE__);
     // check value for goomba object
     ldy(ABS(0xef));
     cpy(IMM(Goomba));
@@ -22303,6 +23652,7 @@ void CheckForGoomba() {
 }
 
 void GmbaAnim() {
+    _debug("GmbaAnim", __FILE__, __LINE__);
     // check for d5 set in enemy object state
     anda(IMM(0b100000));
     // or timer disable flag set
@@ -22322,6 +23672,7 @@ void GmbaAnim() {
 }
 
 void CheckBowserFront() {
+    _debug("CheckBowserFront", __FILE__, __LINE__);
     // load sprite attribute using enemy object
     lda(ABSY(0x8000+offsetof(G, EnemyAttributeData)));
     // as offset, and add to bits already loaded
@@ -22349,6 +23700,7 @@ void CheckBowserFront() {
 }
 
 void ChkFrontSte() {
+    _debug("ChkFrontSte", __FILE__, __LINE__);
     // check saved enemy state
     lda(ABS(0xed));
     // if bowser not defeated, do not set flag
@@ -22358,18 +23710,21 @@ void ChkFrontSte() {
 }
 
 void FlipBowserOver() {
+    _debug("FlipBowserOver", __FILE__, __LINE__);
     // set vertical flip flag to nonzero
     stx(ABS(VerticalFlipFlag));
     JMP(DrawBowser);
 }
 
 void DrawBowser() {
+    _debug("DrawBowser", __FILE__, __LINE__);
     // draw bowser's graphics now
     JMP(DrawEnemyObject);
     JMP(CheckBowserRear);
 }
 
 void CheckBowserRear() {
+    _debug("CheckBowserRear", __FILE__, __LINE__);
     // check bowser's body control bits
     lda(ABS(BowserBodyControls));
     anda(IMM(0x1));
@@ -22381,6 +23736,7 @@ void CheckBowserRear() {
 }
 
 void ChkRearSte() {
+    _debug("ChkRearSte", __FILE__, __LINE__);
     // check saved enemy state
     lda(ABS(0xed));
     // if bowser not defeated, do not set flag
@@ -22398,6 +23754,7 @@ void ChkRearSte() {
 }
 
 void CheckForSpiny() {
+    _debug("CheckForSpiny", __FILE__, __LINE__);
     // check if value loaded is for spiny
     cpx(IMM(0x24));
     // if not found, branch
@@ -22418,12 +23775,14 @@ void CheckForSpiny() {
 }
 
 void NotEgg() {
+    _debug("NotEgg", __FILE__, __LINE__);
     // skip a big chunk of this if we found spiny but not in egg
     JMP(CheckForHammerBro);
     JMP(CheckForLakitu);
 }
 
 void CheckForLakitu() {
+    _debug("CheckForLakitu", __FILE__, __LINE__);
     // check value for lakitu's offset loaded
     cpx(IMM(0x90));
     // branch if not loaded
@@ -22444,12 +23803,14 @@ void CheckForLakitu() {
 }
 
 void NoLAFr() {
+    _debug("NoLAFr", __FILE__, __LINE__);
     // skip this next part if we found lakitu but alt frame not needed
     JMP(CheckDefeatedState);
     JMP(CheckUpsideDownShell);
 }
 
 void CheckUpsideDownShell() {
+    _debug("CheckUpsideDownShell", __FILE__, __LINE__);
     // check for enemy object => $04
     lda(ABS(0xef));
     cmp(IMM(0x4));
@@ -22472,6 +23833,7 @@ void CheckUpsideDownShell() {
 }
 
 void CheckRightSideUpShell() {
+    _debug("CheckRightSideUpShell", __FILE__, __LINE__);
     // check for value set here
     lda(ABS(0xec));
     // if enemy state < $02, do not change to shell, if
@@ -22495,6 +23857,7 @@ void CheckRightSideUpShell() {
 }
 
 void CheckForDefdGoomba() {
+    _debug("CheckForDefdGoomba", __FILE__, __LINE__);
     // check for goomba object (necessary if previously
     cpy(IMM(Goomba));
     // failed buzzy beetle object test)
@@ -22515,6 +23878,7 @@ void CheckForDefdGoomba() {
 }
 
 void CheckForHammerBro() {
+    _debug("CheckForHammerBro", __FILE__, __LINE__);
     ldy(ABS(ObjectOffset));
     // check for hammer bro object
     lda(ABS(0xef));
@@ -22535,6 +23899,7 @@ void CheckForHammerBro() {
 }
 
 void CheckForBloober() {
+    _debug("CheckForBloober", __FILE__, __LINE__);
     // check for cheep-cheep offset loaded
     cpx(IMM(0x48));
     // branch if found
@@ -22560,6 +23925,7 @@ void CheckForBloober() {
 }
 
 void CheckToAnimateEnemy() {
+    _debug("CheckToAnimateEnemy", __FILE__, __LINE__);
     // check for specific enemy objects
     lda(ABS(0xef));
     cmp(IMM(Goomba));
@@ -22597,6 +23963,7 @@ void CheckToAnimateEnemy() {
 }
 
 void CheckForSecondFrame() {
+    _debug("CheckForSecondFrame", __FILE__, __LINE__);
     // load frame counter
     lda(ABS(FrameCounter));
     // mask it (partly residual, one byte not ever used)
@@ -22607,6 +23974,7 @@ void CheckForSecondFrame() {
 }
 
 void CheckAnimationStop() {
+    _debug("CheckAnimationStop", __FILE__, __LINE__);
     // check saved enemy state
     lda(ABS(0xed));
     // for d7 or d5, or check for timers stopped
@@ -22624,6 +23992,7 @@ void CheckAnimationStop() {
 }
 
 void CheckDefeatedState() {
+    _debug("CheckDefeatedState", __FILE__, __LINE__);
     // check saved enemy state
     lda(ABS(0xed));
     // for d5 set
@@ -22645,6 +24014,7 @@ void CheckDefeatedState() {
 }
 
 void DrawEnemyObject() {
+    _debug("DrawEnemyObject", __FILE__, __LINE__);
     // load sprite data offset
     ldy(ABS(0xeb));
     // draw six tiles of data
@@ -22665,12 +24035,14 @@ void DrawEnemyObject() {
 }
 
 void SkipToOffScrChk() {
+    _debug("SkipToOffScrChk", __FILE__, __LINE__);
     // jump if found
     JMP(SprObjectOffscrChk);
     JMP(CheckForVerticalFlip);
 }
 
 void CheckForVerticalFlip() {
+    _debug("CheckForVerticalFlip", __FILE__, __LINE__);
     // check if vertical flip flag is set here
     lda(ABS(VerticalFlipFlag));
     // branch if not
@@ -22711,6 +24083,7 @@ void CheckForVerticalFlip() {
 }
 
 void FlipEnemyVertically() {
+    _debug("FlipEnemyVertically", __FILE__, __LINE__);
     // load first or second row tiles
     lda(ABSX(Sprite_Tilenumber));
     // and save tiles to the stack
@@ -22733,6 +24106,7 @@ void FlipEnemyVertically() {
 }
 
 void CheckForESymmetry() {
+    _debug("CheckForESymmetry", __FILE__, __LINE__);
     // are we drawing bowser at all?
     lda(ABS(BowserGfxFlag));
     // branch if so
@@ -22749,6 +24123,7 @@ void CheckForESymmetry() {
 }
 
 void ContES() {
+    _debug("ContES", __FILE__, __LINE__);
     // check for bloober object
     cmp(IMM(Bloober));
     BEQ(MirrorEnemyGfx);
@@ -22771,6 +24146,7 @@ void ContES() {
 }
 
 void ESRtnr() {
+    _debug("ESRtnr", __FILE__, __LINE__);
     // check for princess/mushroom retainer object
     cmp(IMM(0x15));
     BNE(SpnySC);
@@ -22782,6 +24158,7 @@ void ESRtnr() {
 }
 
 void SpnySC() {
+    _debug("SpnySC", __FILE__, __LINE__);
     // if alternate enemy state set to 1 or 0, branch
     cpx(IMM(0x2));
     BCC(CheckToMirrorLakitu);
@@ -22789,6 +24166,7 @@ void SpnySC() {
 }
 
 void MirrorEnemyGfx() {
+    _debug("MirrorEnemyGfx", __FILE__, __LINE__);
     // if enemy object is bowser, skip all of this
     lda(ABS(BowserGfxFlag));
     BNE(CheckToMirrorLakitu);
@@ -22812,6 +24190,7 @@ void MirrorEnemyGfx() {
 }
 
 void EggExc() {
+    _debug("EggExc", __FILE__, __LINE__);
     // set bits of right sprite column
     sta(ABSY(((Sprite_Attributes) + (4))));
     // of enemy object sprite data
@@ -22837,6 +24216,7 @@ void EggExc() {
 }
 
 void CheckToMirrorLakitu() {
+    _debug("CheckToMirrorLakitu", __FILE__, __LINE__);
     // check for lakitu enemy object
     lda(ABS(0xef));
     cmp(IMM(Lakitu));
@@ -22871,6 +24251,7 @@ void CheckToMirrorLakitu() {
 }
 
 void NVFLak() {
+    _debug("NVFLak", __FILE__, __LINE__);
     // get first row left sprite attributes
     lda(ABSY(Sprite_Attributes));
     anda(IMM(0b10000001));
@@ -22886,6 +24267,7 @@ void NVFLak() {
 }
 
 void CheckToMirrorJSpring() {
+    _debug("CheckToMirrorJSpring", __FILE__, __LINE__);
     // check for jumpspring object (any frame)
     lda(ABS(0xef));
     cmp(IMM(0x18));
@@ -22905,6 +24287,7 @@ void CheckToMirrorJSpring() {
 }
 
 void SprObjectOffscrChk() {
+    _debug("SprObjectOffscrChk", __FILE__, __LINE__);
     // get enemy buffer offset
     ldx(ABS(ObjectOffset));
     // check offscreen information
@@ -22926,6 +24309,7 @@ void SprObjectOffscrChk() {
 }
 
 void LcChk() {
+    _debug("LcChk", __FILE__, __LINE__);
     // get from stack
     pla();
     // move d3 to carry
@@ -22942,6 +24326,7 @@ void LcChk() {
 }
 
 void Row3C() {
+    _debug("Row3C", __FILE__, __LINE__);
     // get from stack again
     pla();
     // move d5 to carry this time
@@ -22959,6 +24344,7 @@ void Row3C() {
 }
 
 void Row23C() {
+    _debug("Row23C", __FILE__, __LINE__);
     // get from stack
     pla();
     // move d6 into carry
@@ -22974,6 +24360,7 @@ void Row23C() {
 }
 
 void AllRowC() {
+    _debug("AllRowC", __FILE__, __LINE__);
     // get from stack once more
     pla();
     // move d7 into carry
@@ -22997,10 +24384,12 @@ void AllRowC() {
 }
 
 void ExEGHandler() {
+    _debug("ExEGHandler", __FILE__, __LINE__);
     return;
 }
 
 void DrawEnemyObjRow() {
+    _debug("DrawEnemyObjRow", __FILE__, __LINE__);
     // load two tiles of enemy graphics
     lda(ABSX(0x8000+offsetof(G, EnemyGraphicsTable)));
     sta(ABS(0x0));
@@ -23009,6 +24398,7 @@ void DrawEnemyObjRow() {
 }
 
 void DrawOneSpriteRow() {
+    _debug("DrawOneSpriteRow", __FILE__, __LINE__);
     sta(ABS(0x1));
     // draw them
     JMP(DrawSpriteObject);
@@ -23016,6 +24406,7 @@ void DrawOneSpriteRow() {
 }
 
 void MoveESprRowOffscreen() {
+    _debug("MoveESprRowOffscreen", __FILE__, __LINE__);
     // add A to enemy object OAM data offset
     clc();
     adc(ABSX(Enemy_SprDataOffset));
@@ -23028,6 +24419,7 @@ void MoveESprRowOffscreen() {
 }
 
 void MoveESprColOffscreen() {
+    _debug("MoveESprColOffscreen", __FILE__, __LINE__);
     // add A to enemy object OAM data offset
     clc();
     adc(ABSX(Enemy_SprDataOffset));
@@ -23041,6 +24433,7 @@ void MoveESprColOffscreen() {
 }
 
 void DrawBlock() {
+    _debug("DrawBlock", __FILE__, __LINE__);
     // get relative vertical coordinate of block object
     lda(ABS(Block_Rel_YPos));
     // store here
@@ -23063,6 +24456,7 @@ void DrawBlock() {
 }
 
 void DBlkLoop() {
+    _debug("DBlkLoop", __FILE__, __LINE__);
     // get left tile number
     lda(ABSX(0x8000+offsetof(G, DefaultBlockObjTiles)));
     // set here
@@ -23093,6 +24487,7 @@ void DBlkLoop() {
 }
 
 void ChkRep() {
+    _debug("ChkRep", __FILE__, __LINE__);
     // check replacement metatile
     lda(ABSX(Block_Metatile));
     // if not used block metatile, then
@@ -23120,6 +24515,7 @@ void ChkRep() {
 }
 
 void SetBFlip() {
+    _debug("SetBFlip", __FILE__, __LINE__);
     // put block object offset back in X
     ldx(ABS(ObjectOffset));
     // store attribute byte as-is in first sprite
@@ -23137,6 +24533,7 @@ void SetBFlip() {
 }
 
 void BlkOffscr() {
+    _debug("BlkOffscr", __FILE__, __LINE__);
     // get offscreen bits for block object
     lda(ABS(Block_OffscreenBits));
     // save to stack
@@ -23154,12 +24551,14 @@ void BlkOffscr() {
 }
 
 void PullOfsB() {
+    _debug("PullOfsB", __FILE__, __LINE__);
     // pull offscreen bits from stack
     pla();
     JMP(ChkLeftCo);
 }
 
 void ChkLeftCo() {
+    _debug("ChkLeftCo", __FILE__, __LINE__);
     // check to see if d3 in offscreen bits are set
     anda(IMM(0b1000));
     // if not set, branch, otherwise move sprites offscreen
@@ -23168,6 +24567,7 @@ void ChkLeftCo() {
 }
 
 void MoveColOffscreen() {
+    _debug("MoveColOffscreen", __FILE__, __LINE__);
     // move offscreen two OAMs
     lda(IMM(0xf8));
     // on the left side (or two rows of enemy on either side
@@ -23178,10 +24578,12 @@ void MoveColOffscreen() {
 }
 
 void ExDBlk() {
+    _debug("ExDBlk", __FILE__, __LINE__);
     return;
 }
 
 void DrawBrickChunks() {
+    _debug("DrawBrickChunks", __FILE__, __LINE__);
     // set palette bits here
     lda(IMM(0x2));
     sta(ABS(0x0));
@@ -23201,6 +24603,7 @@ void DrawBrickChunks() {
 }
 
 void DChunks() {
+    _debug("DChunks", __FILE__, __LINE__);
     // get OAM data offset
     ldy(ABSX(Block_SprDataOffset));
     // increment to start with tile bytes in OAM
@@ -23286,6 +24689,7 @@ void DChunks() {
 }
 
 void ChnkOfs() {
+    _debug("ChnkOfs", __FILE__, __LINE__);
     // if relative position on left side of screen,
     lda(ABS(0x0));
     // go ahead and leave
@@ -23304,11 +24708,13 @@ void ChnkOfs() {
 }
 
 void ExBCDr() {
+    _debug("ExBCDr", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void DrawFireball() {
+    _debug("DrawFireball", __FILE__, __LINE__);
     // get fireball's sprite data offset
     ldy(ABSX(FBall_SprDataOffset));
     // get relative vertical coordinate
@@ -23323,6 +24729,7 @@ void DrawFireball() {
 }
 
 void DrawFirebar() {
+    _debug("DrawFirebar", __FILE__, __LINE__);
     // get frame counter
     lda(ABS(FrameCounter));
     // divide by four
@@ -23351,12 +24758,14 @@ void DrawFirebar() {
 }
 
 void FireA() {
+    _debug("FireA", __FILE__, __LINE__);
     // store attribute byte and leave
     sta(ABSY(Sprite_Attributes));
     return;
 }
 
 void DrawExplosion_Fireball() {
+    _debug("DrawExplosion_Fireball", __FILE__, __LINE__);
     // get OAM data offset of alternate sort for fireball's explosion
     ldy(ABSX(Alt_SprDataOffset));
     // load fireball state
@@ -23375,6 +24784,7 @@ void DrawExplosion_Fireball() {
 }
 
 void DrawExplosion_Fireworks() {
+    _debug("DrawExplosion_Fireworks", __FILE__, __LINE__);
     // use whatever's in A for offset
     tax();
     // get tile number using offset
@@ -23433,6 +24843,7 @@ void DrawExplosion_Fireworks() {
 }
 
 void KillFireBall() {
+    _debug("KillFireBall", __FILE__, __LINE__);
     // clear fireball state to kill it
     lda(IMM(0x0));
     sta(ABSX(Fireball_State));
@@ -23440,6 +24851,7 @@ void KillFireBall() {
 }
 
 void DrawSmallPlatform() {
+    _debug("DrawSmallPlatform", __FILE__, __LINE__);
     // get OAM data offset
     ldy(ABSX(Enemy_SprDataOffset));
     // load tile number for small platforms
@@ -23489,6 +24901,7 @@ void DrawSmallPlatform() {
 }
 
 void TopSP() {
+    _debug("TopSP", __FILE__, __LINE__);
     // dump vertical coordinate into Y coordinates
     JSR(DumpThreeSpr);
     // pull from stack
@@ -23507,6 +24920,7 @@ void TopSP() {
 }
 
 void BotSP() {
+    _debug("BotSP", __FILE__, __LINE__);
     // dump vertical coordinate + 128 pixels
     sta(ABSY(((Sprite_Y_Position) + (12))));
     // into Y coordinates
@@ -23528,6 +24942,7 @@ void BotSP() {
 }
 
 void SOfs() {
+    _debug("SOfs", __FILE__, __LINE__);
     // move out and back into stack
     pla();
     pha();
@@ -23543,6 +24958,7 @@ void SOfs() {
 }
 
 void SOfs2() {
+    _debug("SOfs2", __FILE__, __LINE__);
     // get from stack
     pla();
     // check d1
@@ -23557,12 +24973,14 @@ void SOfs2() {
 }
 
 void ExSPl() {
+    _debug("ExSPl", __FILE__, __LINE__);
     // get enemy object offset and leave
     ldx(ABS(ObjectOffset));
     return;
 }
 
 void DrawBubble() {
+    _debug("DrawBubble", __FILE__, __LINE__);
     // if player's vertical high position
     ldy(ABS(Player_Y_HighPos));
     // not within screen, skip all of this
@@ -23593,11 +25011,13 @@ void DrawBubble() {
 }
 
 void ExDBub() {
+    _debug("ExDBub", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void PlayerGfxHandler() {
+    _debug("PlayerGfxHandler", __FILE__, __LINE__);
     // if player's injured invincibility timer
     lda(ABS(InjuryTimer));
     // not set, skip checkpoint and continue code
@@ -23611,6 +25031,7 @@ void PlayerGfxHandler() {
 }
 
 void CntPl() {
+    _debug("CntPl", __FILE__, __LINE__);
     // if executing specific game engine routine,
     lda(ABS(GameEngineSubroutine));
     // branch ahead to some other part
@@ -23654,6 +25075,7 @@ void CntPl() {
 }
 
 void SwimKT() {
+    _debug("SwimKT", __FILE__, __LINE__);
     // check player's size
     lda(ABS(PlayerSize));
     // if big, use first tile
@@ -23670,6 +25092,7 @@ void SwimKT() {
 }
 
 void BigKTS() {
+    _debug("BigKTS", __FILE__, __LINE__);
     // overwrite tile number in sprite 7/8
     lda(ABSX(0x8000+offsetof(G, SwimKickTileNum)));
     // to animate player's feet when swimming
@@ -23678,11 +25101,13 @@ void BigKTS() {
 }
 
 void ExPGH() {
+    _debug("ExPGH", __FILE__, __LINE__);
     // then leave
     return;
 }
 
 void FindPlayerAction() {
+    _debug("FindPlayerAction", __FILE__, __LINE__);
     // find proper offset to graphics table by player's actions
     JSR(ProcessPlayerAction);
     // draw player, then process for fireball throwing
@@ -23691,6 +25116,7 @@ void FindPlayerAction() {
 }
 
 void DoChangeSize() {
+    _debug("DoChangeSize", __FILE__, __LINE__);
     // find proper offset to graphics table for grow/shrink
     JSR(HandleChangeSize);
     // draw player, then process for fireball throwing
@@ -23699,6 +25125,7 @@ void DoChangeSize() {
 }
 
 void PlayerKilled() {
+    _debug("PlayerKilled", __FILE__, __LINE__);
     // load offset for player killed
     ldy(IMM(0xe));
     // get offset to graphics table
@@ -23707,6 +25134,7 @@ void PlayerKilled() {
 }
 
 void PlayerGfxProcessing() {
+    _debug("PlayerGfxProcessing", __FILE__, __LINE__);
     // store offset to graphics table here
     sta(ABS(PlayerGfxOffset));
     lda(IMM(0x4));
@@ -23748,6 +25176,7 @@ void PlayerGfxProcessing() {
 }
 
 void SUpdR() {
+    _debug("SUpdR", __FILE__, __LINE__);
     // save in A for use
     tya();
     // in sub, draw player object again
@@ -23756,6 +25185,7 @@ void SUpdR() {
 }
 
 void PlayerOffscreenChk() {
+    _debug("PlayerOffscreenChk", __FILE__, __LINE__);
     // get player's offscreen bits
     lda(ABS(Player_OffscreenBits));
     lsr();
@@ -23778,6 +25208,7 @@ void PlayerOffscreenChk() {
 }
 
 void PROfsLoop() {
+    _debug("PROfsLoop", __FILE__, __LINE__);
     // load offscreen Y coordinate just in case
     lda(IMM(0xf8));
     // shift bit into carry
@@ -23790,6 +25221,7 @@ void PROfsLoop() {
 }
 
 void NPROffscr() {
+    _debug("NPROffscr", __FILE__, __LINE__);
     tya();
     // subtract eight bytes to do
     sec();
@@ -23805,12 +25237,14 @@ void NPROffscr() {
 }
 
 void DrawPlayer_Intermediate() {
+    _debug("DrawPlayer_Intermediate", __FILE__, __LINE__);
     // store data into zero page memory
     ldx(IMM(0x5));
     JMP(PIntLoop);
 }
 
 void PIntLoop() {
+    _debug("PIntLoop", __FILE__, __LINE__);
     // load data to display player as he always
     lda(ABSX(0x8000+offsetof(G, IntermediatePlayerData)));
     // appears on world/lives display
@@ -23834,6 +25268,7 @@ void PIntLoop() {
 }
 
 void RenderPlayerSub() {
+    _debug("RenderPlayerSub", __FILE__, __LINE__);
     // store number of rows of sprites to draw
     sta(ABS(0x7));
     lda(ABS(Player_Rel_XPos));
@@ -23858,6 +25293,7 @@ void RenderPlayerSub() {
 }
 
 void DrawPlayerLoop() {
+    _debug("DrawPlayerLoop", __FILE__, __LINE__);
     // load player's left side
     lda(ABSX(0x8000+offsetof(G, PlayerGraphicsTable)));
     sta(ABS(0x0));
@@ -23872,6 +25308,7 @@ void DrawPlayerLoop() {
 }
 
 void ProcessPlayerAction() {
+    _debug("ProcessPlayerAction", __FILE__, __LINE__);
     // get player's state
     lda(ABS(Player_State));
     cmp(IMM(0x3));
@@ -23900,6 +25337,7 @@ void ProcessPlayerAction() {
 }
 
 void ProcOnGroundActs() {
+    _debug("ProcOnGroundActs", __FILE__, __LINE__);
     // load offset for crouching
     ldy(IMM(0x6));
     // get crouching flag
@@ -23931,6 +25369,7 @@ void ProcOnGroundActs() {
 }
 
 void NonAnimatedActs() {
+    _debug("NonAnimatedActs", __FILE__, __LINE__);
     // do a sub here to get offset adder for graphics table
     JSR(GetGfxOffsetAdder);
     lda(IMM(0x0));
@@ -23942,6 +25381,7 @@ void NonAnimatedActs() {
 }
 
 void ActionFalling() {
+    _debug("ActionFalling", __FILE__, __LINE__);
     // load offset for walking/running
     ldy(IMM(0x4));
     // get offset to graphics table
@@ -23952,6 +25392,7 @@ void ActionFalling() {
 }
 
 void ActionWalkRun() {
+    _debug("ActionWalkRun", __FILE__, __LINE__);
     // load offset for walking/running
     ldy(IMM(0x4));
     // get offset to graphics table
@@ -23962,6 +25403,7 @@ void ActionWalkRun() {
 }
 
 void ActionClimbing() {
+    _debug("ActionClimbing", __FILE__, __LINE__);
     // load offset for climbing
     ldy(IMM(0x5));
     // check player's vertical speed
@@ -23976,6 +25418,7 @@ void ActionClimbing() {
 }
 
 void ActionSwimming() {
+    _debug("ActionSwimming", __FILE__, __LINE__);
     // load offset for swimming
     ldy(IMM(0x1));
     JSR(GetGfxOffsetAdder);
@@ -23994,6 +25437,7 @@ void ActionSwimming() {
 }
 
 void GetCurrentAnimOffset() {
+    _debug("GetCurrentAnimOffset", __FILE__, __LINE__);
     // get animation frame control
     lda(ABS(PlayerAnimCtrl));
     // jump to get proper offset to graphics table
@@ -24002,6 +25446,7 @@ void GetCurrentAnimOffset() {
 }
 
 void FourFrameExtent() {
+    _debug("FourFrameExtent", __FILE__, __LINE__);
     // load upper extent for frame control
     lda(IMM(0x3));
     // jump to get offset and animate player object
@@ -24010,12 +25455,14 @@ void FourFrameExtent() {
 }
 
 void ThreeFrameExtent() {
+    _debug("ThreeFrameExtent", __FILE__, __LINE__);
     // load upper extent for frame control for climbing
     lda(IMM(0x2));
     JMP(AnimationControl);
 }
 
 void AnimationControl() {
+    _debug("AnimationControl", __FILE__, __LINE__);
     // store upper extent here
     sta(ABS(0x0));
     // get proper offset to graphics table
@@ -24044,18 +25491,21 @@ void AnimationControl() {
 }
 
 void SetAnimC() {
+    _debug("SetAnimC", __FILE__, __LINE__);
     // store as new animation frame control
     sta(ABS(PlayerAnimCtrl));
     JMP(ExAnimC);
 }
 
 void ExAnimC() {
+    _debug("ExAnimC", __FILE__, __LINE__);
     // get offset to graphics table from stack and leave
     pla();
     return;
 }
 
 void GetGfxOffsetAdder() {
+    _debug("GetGfxOffsetAdder", __FILE__, __LINE__);
     // get player's size
     lda(ABS(PlayerSize));
     // if player big, use current offset as-is
@@ -24071,11 +25521,13 @@ void GetGfxOffsetAdder() {
 }
 
 void SzOfs() {
+    _debug("SzOfs", __FILE__, __LINE__);
     // go back
     return;
 }
 
 void HandleChangeSize() {
+    _debug("HandleChangeSize", __FILE__, __LINE__);
     // get animation frame control
     ldy(ABS(PlayerAnimCtrl));
     lda(ABS(FrameCounter));
@@ -24097,12 +25549,14 @@ void HandleChangeSize() {
 }
 
 void CSzNext() {
+    _debug("CSzNext", __FILE__, __LINE__);
     // store proper frame control
     sty(ABS(PlayerAnimCtrl));
     JMP(GorSLog);
 }
 
 void GorSLog() {
+    _debug("GorSLog", __FILE__, __LINE__);
     // get player's size
     lda(ABS(PlayerSize));
     // if player small, skip ahead to next part
@@ -24115,6 +25569,7 @@ void GorSLog() {
 }
 
 void GetOffsetFromAnimCtrl() {
+    _debug("GetOffsetFromAnimCtrl", __FILE__, __LINE__);
     // multiply animation frame control
     asl();
     // by eight to get proper amount
@@ -24128,6 +25583,7 @@ void GetOffsetFromAnimCtrl() {
 }
 
 void ShrinkPlayer() {
+    _debug("ShrinkPlayer", __FILE__, __LINE__);
     // add ten bytes to frame control as offset
     tya();
     clc();
@@ -24147,6 +25603,7 @@ void ShrinkPlayer() {
 }
 
 void ShrPlF() {
+    _debug("ShrPlF", __FILE__, __LINE__);
     // get offset to graphics table based on offset loaded
     lda(ABSY(0x8000+offsetof(G, PlayerGfxTblOffsets)));
     // and leave
@@ -24154,6 +25611,7 @@ void ShrPlF() {
 }
 
 void ChkForPlayerAttrib() {
+    _debug("ChkForPlayerAttrib", __FILE__, __LINE__);
     // get sprite data offset
     ldy(ABS(Player_SprDataOffset));
     lda(ABS(GameEngineSubroutine));
@@ -24180,6 +25638,7 @@ void ChkForPlayerAttrib() {
 }
 
 void KilledAtt() {
+    _debug("KilledAtt", __FILE__, __LINE__);
     lda(ABSY(((Sprite_Attributes) + (16))));
     // mask out horizontal and vertical flip bits
     anda(IMM(0b111111));
@@ -24195,6 +25654,7 @@ void KilledAtt() {
 }
 
 void C_S_IGAtt() {
+    _debug("C_S_IGAtt", __FILE__, __LINE__);
     lda(ABSY(((Sprite_Attributes) + (24))));
     // mask out horizontal and vertical flip bits
     anda(IMM(0b111111));
@@ -24210,11 +25670,13 @@ void C_S_IGAtt() {
 }
 
 void ExPlyrAt() {
+    _debug("ExPlyrAt", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void RelativePlayerPosition() {
+    _debug("RelativePlayerPosition", __FILE__, __LINE__);
     // set offsets for relative cooordinates
     ldx(IMM(0x0));
     // routine to correspond to player object
@@ -24225,6 +25687,7 @@ void RelativePlayerPosition() {
 }
 
 void RelativeBubblePosition() {
+    _debug("RelativeBubblePosition", __FILE__, __LINE__);
     // set for air bubble offsets
     ldy(IMM(0x1));
     // modify X to get proper air bubble offset
@@ -24236,6 +25699,7 @@ void RelativeBubblePosition() {
 }
 
 void RelativeFireballPosition() {
+    _debug("RelativeFireballPosition", __FILE__, __LINE__);
     // set for fireball offsets
     ldy(IMM(0x0));
     // modify X to get proper fireball offset
@@ -24245,6 +25709,7 @@ void RelativeFireballPosition() {
 }
 
 void RelWOfs() {
+    _debug("RelWOfs", __FILE__, __LINE__);
     // get the coordinates
     JSR(GetObjRelativePosition);
     // return original offset
@@ -24254,6 +25719,7 @@ void RelWOfs() {
 }
 
 void RelativeMiscPosition() {
+    _debug("RelativeMiscPosition", __FILE__, __LINE__);
     // set for misc object offsets
     ldy(IMM(0x2));
     // modify X to get proper misc object offset
@@ -24265,6 +25731,7 @@ void RelativeMiscPosition() {
 }
 
 void RelativeEnemyPosition() {
+    _debug("RelativeEnemyPosition", __FILE__, __LINE__);
     // get coordinates of enemy object
     lda(IMM(0x1));
     // relative to the screen
@@ -24274,6 +25741,7 @@ void RelativeEnemyPosition() {
 }
 
 void RelativeBlockPosition() {
+    _debug("RelativeBlockPosition", __FILE__, __LINE__);
     // get coordinates of one block object
     lda(IMM(0x9));
     // relative to the screen
@@ -24289,6 +25757,7 @@ void RelativeBlockPosition() {
 }
 
 void VariableObjOfsRelPos() {
+    _debug("VariableObjOfsRelPos", __FILE__, __LINE__);
     // store value to add to A here
     stx(ABS(0x0));
     clc();
@@ -24303,6 +25772,7 @@ void VariableObjOfsRelPos() {
 }
 
 void GetObjRelativePosition() {
+    _debug("GetObjRelativePosition", __FILE__, __LINE__);
     // load vertical coordinate low
     lda(ABSX(SprObject_Y_Position));
     // store here
@@ -24318,6 +25788,7 @@ void GetObjRelativePosition() {
 }
 
 void GetPlayerOffscreenBits() {
+    _debug("GetPlayerOffscreenBits", __FILE__, __LINE__);
     // set offsets for player-specific variables
     ldx(IMM(0x0));
     // and get offscreen information about player
@@ -24327,6 +25798,7 @@ void GetPlayerOffscreenBits() {
 }
 
 void GetFireballOffscreenBits() {
+    _debug("GetFireballOffscreenBits", __FILE__, __LINE__);
     // set for fireball offsets
     ldy(IMM(0x0));
     // modify X to get proper fireball offset
@@ -24339,6 +25811,7 @@ void GetFireballOffscreenBits() {
 }
 
 void GetBubbleOffscreenBits() {
+    _debug("GetBubbleOffscreenBits", __FILE__, __LINE__);
     // set for air bubble offsets
     ldy(IMM(0x1));
     // modify X to get proper air bubble offset
@@ -24351,6 +25824,7 @@ void GetBubbleOffscreenBits() {
 }
 
 void GetMiscOffscreenBits() {
+    _debug("GetMiscOffscreenBits", __FILE__, __LINE__);
     // set for misc object offsets
     ldy(IMM(0x2));
     // modify X to get proper misc object offset
@@ -24363,6 +25837,7 @@ void GetMiscOffscreenBits() {
 }
 
 void GetProperObjOffset() {
+    _debug("GetProperObjOffset", __FILE__, __LINE__);
     // move offset to A
     txa();
     clc();
@@ -24374,6 +25849,7 @@ void GetProperObjOffset() {
 }
 
 void GetEnemyOffscreenBits() {
+    _debug("GetEnemyOffscreenBits", __FILE__, __LINE__);
     // set A to add 1 byte in order to get enemy offset
     lda(IMM(0x1));
     // set Y to put offscreen bits in Enemy_OffscreenBits
@@ -24383,6 +25859,7 @@ void GetEnemyOffscreenBits() {
 }
 
 void GetBlockOffscreenBits() {
+    _debug("GetBlockOffscreenBits", __FILE__, __LINE__);
     // set A to add 9 bytes in order to get block obj offset
     lda(IMM(0x9));
     // set Y to put offscreen bits in Block_OffscreenBits
@@ -24391,6 +25868,7 @@ void GetBlockOffscreenBits() {
 }
 
 void SetOffscrBitsOffset() {
+    _debug("SetOffscrBitsOffset", __FILE__, __LINE__);
     stx(ABS(0x0));
     // add contents of X to A to get
     clc();
@@ -24401,6 +25879,7 @@ void SetOffscrBitsOffset() {
 }
 
 void GetOffScreenBitsSet() {
+    _debug("GetOffScreenBitsSet", __FILE__, __LINE__);
     // save offscreen bits offset to stack for now
     tya();
     pha();
@@ -24425,6 +25904,7 @@ void GetOffScreenBitsSet() {
 }
 
 void RunOffscrBitsSubs() {
+    _debug("RunOffscrBitsSubs", __FILE__, __LINE__);
     // do subroutine here
     JSR(GetXOffscreenBits);
     // move high nybble to low
@@ -24439,6 +25919,7 @@ void RunOffscrBitsSubs() {
 }
 
 void GetXOffscreenBits() {
+    _debug("GetXOffscreenBits", __FILE__, __LINE__);
     // save position in buffer to here
     stx(ABS(0x4));
     // start with right side of screen
@@ -24447,6 +25928,7 @@ void GetXOffscreenBits() {
 }
 
 void XOfsLoop() {
+    _debug("XOfsLoop", __FILE__, __LINE__);
     // get pixel coordinate of edge
     lda(ABSY(ScreenEdge_X_Pos));
     // get difference between pixel coordinate of edge
@@ -24479,6 +25961,7 @@ void XOfsLoop() {
 }
 
 void XLdBData() {
+    _debug("XLdBData", __FILE__, __LINE__);
     // get bits here
     lda(ABSX(0x8000+offsetof(G, XOffscreenBitsData)));
     // reobtain position in buffer
@@ -24494,10 +25977,12 @@ void XLdBData() {
 }
 
 void ExXOfsBS() {
+    _debug("ExXOfsBS", __FILE__, __LINE__);
     return;
 }
 
 void GetYOffscreenBits() {
+    _debug("GetYOffscreenBits", __FILE__, __LINE__);
     // save position in buffer to here
     stx(ABS(0x4));
     // start with top of screen
@@ -24506,6 +25991,7 @@ void GetYOffscreenBits() {
 }
 
 void YOfsLoop() {
+    _debug("YOfsLoop", __FILE__, __LINE__);
     // load coordinate for edge of vertical unit
     lda(ABSY(0x8000+offsetof(G, HighPosUnitData)));
     sec();
@@ -24536,6 +26022,7 @@ void YOfsLoop() {
 }
 
 void YLdBData() {
+    _debug("YLdBData", __FILE__, __LINE__);
     // get offscreen data bits using offset
     lda(ABSX(0x8000+offsetof(G, YOffscreenBitsData)));
     // reobtain position in buffer
@@ -24550,10 +26037,12 @@ void YLdBData() {
 }
 
 void ExYOfsBS() {
+    _debug("ExYOfsBS", __FILE__, __LINE__);
     return;
 }
 
 void DividePDiff() {
+    _debug("DividePDiff", __FILE__, __LINE__);
     // store current value in A here
     sta(ABS(0x5));
     // get pixel difference
@@ -24578,17 +26067,20 @@ void DividePDiff() {
 }
 
 void SetOscrO() {
+    _debug("SetOscrO", __FILE__, __LINE__);
     // use as offset
     tax();
     JMP(ExDivPD);
 }
 
 void ExDivPD() {
+    _debug("ExDivPD", __FILE__, __LINE__);
     // leave
     return;
 }
 
 void DrawSpriteObject() {
+    _debug("DrawSpriteObject", __FILE__, __LINE__);
     // get saved flip control bits
     lda(ABS(0x3));
     lsr();
@@ -24610,6 +26102,7 @@ void DrawSpriteObject() {
 }
 
 void NoHFlip() {
+    _debug("NoHFlip", __FILE__, __LINE__);
     // store first tile into first sprite
     sta(ABSY(Sprite_Tilenumber));
     // and second into second sprite
@@ -24621,6 +26114,7 @@ void NoHFlip() {
 }
 
 void SetHFAt() {
+    _debug("SetHFAt", __FILE__, __LINE__);
     // add other OAM attributes if necessary
     ora(ABS(0x4));
     // store sprite attributes
@@ -24660,6 +26154,7 @@ void SetHFAt() {
 }
 
 void SoundEngine() {
+    _debug("SoundEngine", __FILE__, __LINE__);
     // are we in title screen mode?
     lda(ABS(OperMode));
     BNE(SndOn);
@@ -24669,6 +26164,7 @@ void SoundEngine() {
 }
 
 void SndOn() {
+    _debug("SndOn", __FILE__, __LINE__);
     lda(IMM(0xff));
     // disable irqs and set frame counter mode???
     sta(ABS(JOYPAD_PORT2));
@@ -24687,6 +26183,7 @@ void SndOn() {
 }
 
 void InPause() {
+    _debug("InPause", __FILE__, __LINE__);
     // check pause sfx buffer
     lda(ABS(PauseSoundBuffer));
     BNE(ContPau);
@@ -24713,6 +26210,7 @@ void InPause() {
 }
 
 void PTone1F() {
+    _debug("PTone1F", __FILE__, __LINE__);
     // play first tone
     lda(IMM(0x44));
     // unconditional branch
@@ -24721,6 +26219,7 @@ void PTone1F() {
 }
 
 void ContPau() {
+    _debug("ContPau", __FILE__, __LINE__);
     // check pause length left
     lda(ABS(Squ1_SfxLenCounter));
     // time to play second?
@@ -24737,12 +26236,14 @@ void ContPau() {
 }
 
 void PTone2F() {
+    _debug("PTone2F", __FILE__, __LINE__);
     // store reg contents and play the pause sfx
     lda(IMM(0x64));
     JMP(PTRegC);
 }
 
 void PTRegC() {
+    _debug("PTRegC", __FILE__, __LINE__);
     ldx(IMM(0x84));
     ldy(IMM(0x7f));
     JSR(PlaySqu1Sfx);
@@ -24750,6 +26251,7 @@ void PTRegC() {
 }
 
 void DecPauC() {
+    _debug("DecPauC", __FILE__, __LINE__);
     // decrement pause sfx counter
     dec(ABS(Squ1_SfxLenCounter));
     BNE(SkipSoundSubroutines);
@@ -24769,6 +26271,7 @@ void DecPauC() {
 }
 
 void SkipPIn() {
+    _debug("SkipPIn", __FILE__, __LINE__);
     // clear pause sfx buffer
     lda(IMM(0x0));
     sta(ABS(PauseSoundBuffer));
@@ -24777,6 +26280,7 @@ void SkipPIn() {
 }
 
 void RunSoundSubroutines() {
+    _debug("RunSoundSubroutines", __FILE__, __LINE__);
     // play sfx on square channel 1
     JSR(Square1SfxHandler);
     // ''  ''  '' square channel 2
@@ -24793,6 +26297,7 @@ void RunSoundSubroutines() {
 }
 
 void SkipSoundSubroutines() {
+    _debug("SkipSoundSubroutines", __FILE__, __LINE__);
     // clear the sound effects queues
     lda(IMM(0x0));
     sta(ABS(Square1SoundQueue));
@@ -24814,6 +26319,7 @@ void SkipSoundSubroutines() {
 }
 
 void NoIncDAC() {
+    _debug("NoIncDAC", __FILE__, __LINE__);
     tya();
     // if we are at zero, do not decrement
     BEQ(StrWave);
@@ -24823,6 +26329,7 @@ void NoIncDAC() {
 }
 
 void StrWave() {
+    _debug("StrWave", __FILE__, __LINE__);
     // store into DMC load register (??)
     sty(ABS(((SND_DELTA_REG) + (1))));
     // we are done here
@@ -24830,6 +26337,7 @@ void StrWave() {
 }
 
 void Dump_Squ1_Regs() {
+    _debug("Dump_Squ1_Regs", __FILE__, __LINE__);
     // dump the contents of X and Y into square 1's control regs
     sty(ABS(((SND_SQUARE1_REG) + (1))));
     stx(ABS(SND_SQUARE1_REG));
@@ -24837,18 +26345,21 @@ void Dump_Squ1_Regs() {
 }
 
 void PlaySqu1Sfx() {
+    _debug("PlaySqu1Sfx", __FILE__, __LINE__);
     // do sub to set ctrl regs for square 1, then set frequency regs
     JSR(Dump_Squ1_Regs);
     JMP(SetFreq_Squ1);
 }
 
 void SetFreq_Squ1() {
+    _debug("SetFreq_Squ1", __FILE__, __LINE__);
     // set frequency reg offset for square 1 sound channel
     ldx(IMM(0x0));
     JMP(Dump_Freq_Regs);
 }
 
 void Dump_Freq_Regs() {
+    _debug("Dump_Freq_Regs", __FILE__, __LINE__);
     tay();
     // use previous contents of A for sound reg offset
     lda(ABSY(((0x8000+offsetof(G, FreqRegLookupTbl)) + (1))));
@@ -24865,10 +26376,12 @@ void Dump_Freq_Regs() {
 }
 
 void NoTone() {
+    _debug("NoTone", __FILE__, __LINE__);
     return;
 }
 
 void Dump_Sq2_Regs() {
+    _debug("Dump_Sq2_Regs", __FILE__, __LINE__);
     // dump the contents of X and Y into square 2's control regs
     stx(ABS(SND_SQUARE2_REG));
     sty(ABS(((SND_SQUARE2_REG) + (1))));
@@ -24876,12 +26389,14 @@ void Dump_Sq2_Regs() {
 }
 
 void PlaySqu2Sfx() {
+    _debug("PlaySqu2Sfx", __FILE__, __LINE__);
     // do sub to set ctrl regs for square 2, then set frequency regs
     JSR(Dump_Sq2_Regs);
     JMP(SetFreq_Squ2);
 }
 
 void SetFreq_Squ2() {
+    _debug("SetFreq_Squ2", __FILE__, __LINE__);
     // set frequency reg offset for square 2 sound channel
     ldx(IMM(0x4));
     // unconditional branch
@@ -24890,6 +26405,7 @@ void SetFreq_Squ2() {
 }
 
 void SetFreq_Tri() {
+    _debug("SetFreq_Tri", __FILE__, __LINE__);
     // set frequency reg offset for triangle sound channel
     ldx(IMM(0x8));
     // unconditional branch
@@ -24898,6 +26414,7 @@ void SetFreq_Tri() {
 }
 
 void PlayFlagpoleSlide() {
+    _debug("PlayFlagpoleSlide", __FILE__, __LINE__);
     // store length of flagpole sound
     lda(IMM(0x40));
     sta(ABS(Squ1_SfxLenCounter));
@@ -24911,6 +26428,7 @@ void PlayFlagpoleSlide() {
 }
 
 void PlaySmallJump() {
+    _debug("PlaySmallJump", __FILE__, __LINE__);
     // branch here for small mario jumping sound
     lda(IMM(0x26));
     BNE(JumpRegContents);
@@ -24918,12 +26436,14 @@ void PlaySmallJump() {
 }
 
 void PlayBigJump() {
+    _debug("PlayBigJump", __FILE__, __LINE__);
     // branch here for big mario jumping sound
     lda(IMM(0x18));
     JMP(JumpRegContents);
 }
 
 void JumpRegContents() {
+    _debug("JumpRegContents", __FILE__, __LINE__);
     // note that small and big jump borrow each others' reg contents
     ldx(IMM(0x82));
     // anyway, this loads the first part of mario's jumping sound
@@ -24937,6 +26457,7 @@ void JumpRegContents() {
 }
 
 void ContinueSndJump() {
+    _debug("ContinueSndJump", __FILE__, __LINE__);
     // jumping sounds seem to be composed of three parts
     lda(ABS(Squ1_SfxLenCounter));
     // check for time to play second part yet
@@ -24951,6 +26472,7 @@ void ContinueSndJump() {
 }
 
 void N2Prt() {
+    _debug("N2Prt", __FILE__, __LINE__);
     // check for third part
     cmp(IMM(0x20));
     BNE(DecJpFPS);
@@ -24960,12 +26482,14 @@ void N2Prt() {
 }
 
 void FPS2nd() {
+    _debug("FPS2nd", __FILE__, __LINE__);
     // the flagpole slide sound shares part of third part
     ldy(IMM(0xbc));
     JMP(DmpJpFPS);
 }
 
 void DmpJpFPS() {
+    _debug("DmpJpFPS", __FILE__, __LINE__);
     JSR(Dump_Squ1_Regs);
     // unconditional branch outta here
     BNE(DecJpFPS);
@@ -24973,6 +26497,7 @@ void DmpJpFPS() {
 }
 
 void PlayFireballThrow() {
+    _debug("PlayFireballThrow", __FILE__, __LINE__);
     lda(IMM(0x5));
     // load reg contents for fireball throw sound
     ldy(IMM(0x99));
@@ -24982,6 +26507,7 @@ void PlayFireballThrow() {
 }
 
 void PlayBump() {
+    _debug("PlayBump", __FILE__, __LINE__);
     // load length of sfx and reg contents for bump sound
     lda(IMM(0xa));
     ldy(IMM(0x93));
@@ -24989,6 +26515,7 @@ void PlayBump() {
 }
 
 void Fthrow() {
+    _debug("Fthrow", __FILE__, __LINE__);
     // the fireball sound shares reg contents with the bump sound
     ldx(IMM(0x9e));
     sta(ABS(Squ1_SfxLenCounter));
@@ -24999,6 +26526,7 @@ void Fthrow() {
 }
 
 void ContinueBumpThrow() {
+    _debug("ContinueBumpThrow", __FILE__, __LINE__);
     // check for second part of bump sound
     lda(ABS(Squ1_SfxLenCounter));
     cmp(IMM(0x6));
@@ -25010,12 +26538,14 @@ void ContinueBumpThrow() {
 }
 
 void DecJpFPS() {
+    _debug("DecJpFPS", __FILE__, __LINE__);
     // unconditional branch
     BNE(BranchToDecLength1);
     JMP(Square1SfxHandler);
 }
 
 void Square1SfxHandler() {
+    _debug("Square1SfxHandler", __FILE__, __LINE__);
     // check for sfx in queue
     ldy(ABS(Square1SoundQueue));
     BEQ(CheckSfx1Buffer);
@@ -25048,6 +26578,7 @@ void Square1SfxHandler() {
 }
 
 void CheckSfx1Buffer() {
+    _debug("CheckSfx1Buffer", __FILE__, __LINE__);
     // check for sfx in buffer
     lda(ABS(Square1SoundBuffer));
     // if not found, exit sub
@@ -25079,10 +26610,12 @@ void CheckSfx1Buffer() {
 }
 
 void ExS1H() {
+    _debug("ExS1H", __FILE__, __LINE__);
     return;
 }
 
 void PlaySwimStomp() {
+    _debug("PlaySwimStomp", __FILE__, __LINE__);
     // store length of swim/stomp sound
     lda(IMM(0xe));
     sta(ABS(Squ1_SfxLenCounter));
@@ -25095,6 +26628,7 @@ void PlaySwimStomp() {
 }
 
 void ContinueSwimStomp() {
+    _debug("ContinueSwimStomp", __FILE__, __LINE__);
     // look up reg contents in data section based on
     ldy(ABS(Squ1_SfxLenCounter));
     // length of sound left, used to control sound's
@@ -25111,12 +26645,14 @@ void ContinueSwimStomp() {
 }
 
 void BranchToDecLength1() {
+    _debug("BranchToDecLength1", __FILE__, __LINE__);
     // unconditional branch (regardless of how we got here)
     BNE(DecrementSfx1Length);
     JMP(PlaySmackEnemy);
 }
 
 void PlaySmackEnemy() {
+    _debug("PlaySmackEnemy", __FILE__, __LINE__);
     // store length of smack enemy sound
     lda(IMM(0xe));
     ldy(IMM(0xcb));
@@ -25131,6 +26667,7 @@ void PlaySmackEnemy() {
 }
 
 void ContinueSmackEnemy() {
+    _debug("ContinueSmackEnemy", __FILE__, __LINE__);
     // check about halfway through
     ldy(ABS(Squ1_SfxLenCounter));
     cpy(IMM(0x8));
@@ -25145,17 +26682,20 @@ void ContinueSmackEnemy() {
 }
 
 void SmSpc() {
+    _debug("SmSpc", __FILE__, __LINE__);
     // this creates spaces in the sound, giving it its distinct noise
     lda(IMM(0x90));
     JMP(SmTick);
 }
 
 void SmTick() {
+    _debug("SmTick", __FILE__, __LINE__);
     sta(ABS(SND_SQUARE1_REG));
     JMP(DecrementSfx1Length);
 }
 
 void DecrementSfx1Length() {
+    _debug("DecrementSfx1Length", __FILE__, __LINE__);
     // decrement length of sfx
     dec(ABS(Squ1_SfxLenCounter));
     BNE(ExSfx1);
@@ -25163,6 +26703,7 @@ void DecrementSfx1Length() {
 }
 
 void StopSquare1Sfx() {
+    _debug("StopSquare1Sfx", __FILE__, __LINE__);
     // if end of sfx reached, clear buffer
     ldx(IMM(0x0));
     // and stop making the sfx
@@ -25175,10 +26716,12 @@ void StopSquare1Sfx() {
 }
 
 void ExSfx1() {
+    _debug("ExSfx1", __FILE__, __LINE__);
     return;
 }
 
 void PlayPipeDownInj() {
+    _debug("PlayPipeDownInj", __FILE__, __LINE__);
     // load length of pipedown sound
     lda(IMM(0x2f));
     sta(ABS(Squ1_SfxLenCounter));
@@ -25186,6 +26729,7 @@ void PlayPipeDownInj() {
 }
 
 void ContinuePipeDownInj() {
+    _debug("ContinuePipeDownInj", __FILE__, __LINE__);
     // some bitwise logic, forces the regs
     lda(ABS(Squ1_SfxLenCounter));
     // to be written to only during six specific times
@@ -25205,11 +26749,13 @@ void ContinuePipeDownInj() {
 }
 
 void NoPDwnL() {
+    _debug("NoPDwnL", __FILE__, __LINE__);
     JMP(DecrementSfx1Length);
     JMP(PlayCoinGrab);
 }
 
 void PlayCoinGrab() {
+    _debug("PlayCoinGrab", __FILE__, __LINE__);
     // load length of coin grab sound
     lda(IMM(0x35));
     // and part of reg contents
@@ -25219,6 +26765,7 @@ void PlayCoinGrab() {
 }
 
 void PlayTimerTick() {
+    _debug("PlayTimerTick", __FILE__, __LINE__);
     // load length of timer tick sound
     lda(IMM(0x6));
     // and part of reg contents
@@ -25227,6 +26774,7 @@ void PlayTimerTick() {
 }
 
 void CGrab_TTickRegL() {
+    _debug("CGrab_TTickRegL", __FILE__, __LINE__);
     sta(ABS(Squ2_SfxLenCounter));
     // load the rest of reg contents
     ldy(IMM(0x7f));
@@ -25237,6 +26785,7 @@ void CGrab_TTickRegL() {
 }
 
 void ContinueCGrabTTick() {
+    _debug("ContinueCGrabTTick", __FILE__, __LINE__);
     // check for time to play second tone yet
     lda(ABS(Squ2_SfxLenCounter));
     // timer tick sound also executes this, not sure why
@@ -25249,11 +26798,13 @@ void ContinueCGrabTTick() {
 }
 
 void N2Tone() {
+    _debug("N2Tone", __FILE__, __LINE__);
     BNE(DecrementSfx2Length);
     JMP(PlayBlast);
 }
 
 void PlayBlast() {
+    _debug("PlayBlast", __FILE__, __LINE__);
     // load length of fireworks/gunfire sound
     lda(IMM(0x20));
     sta(ABS(Squ2_SfxLenCounter));
@@ -25265,6 +26816,7 @@ void PlayBlast() {
 }
 
 void ContinueBlast() {
+    _debug("ContinueBlast", __FILE__, __LINE__);
     // check for time to play second part
     lda(ABS(Squ2_SfxLenCounter));
     cmp(IMM(0x18));
@@ -25276,12 +26828,14 @@ void ContinueBlast() {
 }
 
 void SBlasJ() {
+    _debug("SBlasJ", __FILE__, __LINE__);
     // unconditional branch to load rest of reg contents
     BNE(BlstSJp);
     JMP(PlayPowerUpGrab);
 }
 
 void PlayPowerUpGrab() {
+    _debug("PlayPowerUpGrab", __FILE__, __LINE__);
     // load length of power-up grab sound
     lda(IMM(0x36));
     sta(ABS(Squ2_SfxLenCounter));
@@ -25289,6 +26843,7 @@ void PlayPowerUpGrab() {
 }
 
 void ContinuePowerUpGrab() {
+    _debug("ContinuePowerUpGrab", __FILE__, __LINE__);
     // load frequency reg based on length left over
     lda(ABS(Squ2_SfxLenCounter));
     // divide by 2
@@ -25305,11 +26860,13 @@ void ContinuePowerUpGrab() {
 }
 
 void LoadSqu2Regs() {
+    _debug("LoadSqu2Regs", __FILE__, __LINE__);
     JSR(PlaySqu2Sfx);
     JMP(DecrementSfx2Length);
 }
 
 void DecrementSfx2Length() {
+    _debug("DecrementSfx2Length", __FILE__, __LINE__);
     // decrement length of sfx
     dec(ABS(Squ2_SfxLenCounter));
     BNE(ExSfx2);
@@ -25317,6 +26874,7 @@ void DecrementSfx2Length() {
 }
 
 void EmptySfx2Buffer() {
+    _debug("EmptySfx2Buffer", __FILE__, __LINE__);
     // initialize square 2's sound effects buffer
     ldx(IMM(0x0));
     stx(ABS(Square2SoundBuffer));
@@ -25324,6 +26882,7 @@ void EmptySfx2Buffer() {
 }
 
 void StopSquare2Sfx() {
+    _debug("StopSquare2Sfx", __FILE__, __LINE__);
     // stop playing the sfx
     ldx(IMM(0xd));
     stx(ABS(SND_MASTERCTRL_REG));
@@ -25333,10 +26892,12 @@ void StopSquare2Sfx() {
 }
 
 void ExSfx2() {
+    _debug("ExSfx2", __FILE__, __LINE__);
     return;
 }
 
 void Square2SfxHandler() {
+    _debug("Square2SfxHandler", __FILE__, __LINE__);
     // special handling for the 1-up sound to keep it
     lda(ABS(Square2SoundBuffer));
     // from being interrupted by other sounds on square 2
@@ -25374,6 +26935,7 @@ void Square2SfxHandler() {
 }
 
 void CheckSfx2Buffer() {
+    _debug("CheckSfx2Buffer", __FILE__, __LINE__);
     // check for sfx in buffer
     lda(ABS(Square2SoundBuffer));
     // if not found, exit sub
@@ -25405,20 +26967,24 @@ void CheckSfx2Buffer() {
 }
 
 void ExS2H() {
+    _debug("ExS2H", __FILE__, __LINE__);
     return;
 }
 
 void Cont_CGrab_TTick() {
+    _debug("Cont_CGrab_TTick", __FILE__, __LINE__);
     JMP(ContinueCGrabTTick);
     JMP(JumpToDecLength2);
 }
 
 void JumpToDecLength2() {
+    _debug("JumpToDecLength2", __FILE__, __LINE__);
     JMP(DecrementSfx2Length);
     JMP(PlayBowserFall);
 }
 
 void PlayBowserFall() {
+    _debug("PlayBowserFall", __FILE__, __LINE__);
     // load length of bowser defeat sound
     lda(IMM(0x38));
     sta(ABS(Squ2_SfxLenCounter));
@@ -25429,11 +26995,13 @@ void PlayBowserFall() {
 }
 
 void BlstSJp() {
+    _debug("BlstSJp", __FILE__, __LINE__);
     BNE(PBFRegs);
     JMP(ContinueBowserFall);
 }
 
 void ContinueBowserFall() {
+    _debug("ContinueBowserFall", __FILE__, __LINE__);
     // check for almost near the end
     lda(ABS(Squ2_SfxLenCounter));
     cmp(IMM(0x8));
@@ -25445,18 +27013,21 @@ void ContinueBowserFall() {
 }
 
 void PBFRegs() {
+    _debug("PBFRegs", __FILE__, __LINE__);
     // the fireworks/gunfire sound shares part of reg contents here
     ldx(IMM(0x9f));
     JMP(EL_LRegs);
 }
 
 void EL_LRegs() {
+    _debug("EL_LRegs", __FILE__, __LINE__);
     // this is an unconditional branch outta here
     BNE(LoadSqu2Regs);
     JMP(PlayExtraLife);
 }
 
 void PlayExtraLife() {
+    _debug("PlayExtraLife", __FILE__, __LINE__);
     // load length of 1-up sound
     lda(IMM(0x30));
     sta(ABS(Squ2_SfxLenCounter));
@@ -25464,6 +27035,7 @@ void PlayExtraLife() {
 }
 
 void ContinueExtraLife() {
+    _debug("ContinueExtraLife", __FILE__, __LINE__);
     lda(ABS(Squ2_SfxLenCounter));
     // load new tones only every eight frames
     ldx(IMM(0x3));
@@ -25471,6 +27043,7 @@ void ContinueExtraLife() {
 }
 
 void DivLLoop() {
+    _debug("DivLLoop", __FILE__, __LINE__);
     lsr();
     // if any bits set here, branch to dec the length
     BCS(JumpToDecLength2);
@@ -25488,6 +27061,7 @@ void DivLLoop() {
 }
 
 void PlayGrowPowerUp() {
+    _debug("PlayGrowPowerUp", __FILE__, __LINE__);
     // load length of power-up reveal sound
     lda(IMM(0x10));
     BNE(GrowItemRegs);
@@ -25495,12 +27069,14 @@ void PlayGrowPowerUp() {
 }
 
 void PlayGrowVine() {
+    _debug("PlayGrowVine", __FILE__, __LINE__);
     // load length of vine grow sound
     lda(IMM(0x20));
     JMP(GrowItemRegs);
 }
 
 void GrowItemRegs() {
+    _debug("GrowItemRegs", __FILE__, __LINE__);
     sta(ABS(Squ2_SfxLenCounter));
     // load contents of reg for both sounds directly
     lda(IMM(0x7f));
@@ -25512,6 +27088,7 @@ void GrowItemRegs() {
 }
 
 void ContinueGrowItems() {
+    _debug("ContinueGrowItems", __FILE__, __LINE__);
     // increment secondary counter for both sounds
     inc(ABS(Sfx_SecondaryCounter));
     // this sound doesn't decrement the usual counter
@@ -25533,12 +27110,14 @@ void ContinueGrowItems() {
 }
 
 void StopGrowItems() {
+    _debug("StopGrowItems", __FILE__, __LINE__);
     // branch to stop playing sounds
     JMP(EmptySfx2Buffer);
     JMP(PlayBrickShatter);
 }
 
 void PlayBrickShatter() {
+    _debug("PlayBrickShatter", __FILE__, __LINE__);
     // load length of brick shatter sound
     lda(IMM(0x20));
     sta(ABS(Noise_SfxLenCounter));
@@ -25546,6 +27125,7 @@ void PlayBrickShatter() {
 }
 
 void ContinueBrickShatter() {
+    _debug("ContinueBrickShatter", __FILE__, __LINE__);
     lda(ABS(Noise_SfxLenCounter));
     // divide by 2 and check for bit set to use offset
     lsr();
@@ -25558,6 +27138,7 @@ void ContinueBrickShatter() {
 }
 
 void PlayNoiseSfx() {
+    _debug("PlayNoiseSfx", __FILE__, __LINE__);
     // play the sfx
     sta(ABS(SND_NOISE_REG));
     stx(ABS(((SND_NOISE_REG) + (2))));
@@ -25567,6 +27148,7 @@ void PlayNoiseSfx() {
 }
 
 void DecrementSfx3Length() {
+    _debug("DecrementSfx3Length", __FILE__, __LINE__);
     // decrement length of sfx
     dec(ABS(Noise_SfxLenCounter));
     BNE(ExSfx3);
@@ -25579,10 +27161,12 @@ void DecrementSfx3Length() {
 }
 
 void ExSfx3() {
+    _debug("ExSfx3", __FILE__, __LINE__);
     return;
 }
 
 void NoiseSfxHandler() {
+    _debug("NoiseSfxHandler", __FILE__, __LINE__);
     // check for sfx in queue
     ldy(ABS(NoiseSoundQueue));
     BEQ(CheckNoiseBuffer);
@@ -25598,6 +27182,7 @@ void NoiseSfxHandler() {
 }
 
 void CheckNoiseBuffer() {
+    _debug("CheckNoiseBuffer", __FILE__, __LINE__);
     // check for sfx in buffer
     lda(ABS(NoiseSoundBuffer));
     // if not found, exit sub
@@ -25612,10 +27197,12 @@ void CheckNoiseBuffer() {
 }
 
 void ExNH() {
+    _debug("ExNH", __FILE__, __LINE__);
     return;
 }
 
 void PlayBowserFlame() {
+    _debug("PlayBowserFlame", __FILE__, __LINE__);
     // load length of bowser flame sound
     lda(IMM(0x40));
     sta(ABS(Noise_SfxLenCounter));
@@ -25623,6 +27210,7 @@ void PlayBowserFlame() {
 }
 
 void ContinueBowserFlame() {
+    _debug("ContinueBowserFlame", __FILE__, __LINE__);
     lda(ABS(Noise_SfxLenCounter));
     lsr();
     tay();
@@ -25635,12 +27223,14 @@ void ContinueBowserFlame() {
 }
 
 void ContinueMusic() {
+    _debug("ContinueMusic", __FILE__, __LINE__);
     // if we have music, start with square 2 channel
     JMP(HandleSquare2Music);
     JMP(MusicHandler);
 }
 
 void MusicHandler() {
+    _debug("MusicHandler", __FILE__, __LINE__);
     // check event music queue
     lda(ABS(EventMusicQueue));
     BNE(LoadEventMusic);
@@ -25656,6 +27246,7 @@ void MusicHandler() {
 }
 
 void LoadEventMusic() {
+    _debug("LoadEventMusic", __FILE__, __LINE__);
     // copy event music queue contents to buffer
     sta(ABS(EventMusicBuffer));
     // is it death music?
@@ -25670,6 +27261,7 @@ void LoadEventMusic() {
 }
 
 void NoStopSfx() {
+    _debug("NoStopSfx", __FILE__, __LINE__);
     ldx(ABS(AreaMusicBuffer));
     // save current area music buffer to be re-obtained later
     stx(ABS(AreaMusicBuffer_Alt));
@@ -25690,6 +27282,7 @@ void NoStopSfx() {
 }
 
 void LoadAreaMusic() {
+    _debug("LoadAreaMusic", __FILE__, __LINE__);
     // is it underground music?
     cmp(IMM(0x4));
     // no, do not stop square 1 sfx
@@ -25699,17 +27292,20 @@ void LoadAreaMusic() {
 }
 
 void NoStop1() {
+    _debug("NoStop1", __FILE__, __LINE__);
     // start counter used only by ground level music
     ldy(IMM(0x10));
     JMP(GMLoopB);
 }
 
 void GMLoopB() {
+    _debug("GMLoopB", __FILE__, __LINE__);
     sty(ABS(GroundMusicHeaderOfs));
     JMP(HandleAreaMusicLoopB);
 }
 
 void HandleAreaMusicLoopB() {
+    _debug("HandleAreaMusicLoopB", __FILE__, __LINE__);
     // clear event music buffer
     ldy(IMM(0x0));
     sty(ABS(EventMusicBuffer));
@@ -25732,6 +27328,7 @@ void HandleAreaMusicLoopB() {
 }
 
 void FindAreaMusicHeader() {
+    _debug("FindAreaMusicHeader", __FILE__, __LINE__);
     // load Y for offset of area music
     ldy(IMM(0x8));
     // residual instruction here
@@ -25740,6 +27337,7 @@ void FindAreaMusicHeader() {
 }
 
 void FindEventMusicHeader() {
+    _debug("FindEventMusicHeader", __FILE__, __LINE__);
     // increment Y pointer based on previously loaded queue contents
     iny();
     // bit shift and increment until we find a set bit for music
@@ -25749,6 +27347,7 @@ void FindEventMusicHeader() {
 }
 
 void LoadHeader() {
+    _debug("LoadHeader", __FILE__, __LINE__);
     // load offset for header
     lda(ABSY(MusicHeaderOffsetData));
     tay();
@@ -25786,6 +27385,7 @@ void LoadHeader() {
 }
 
 void HandleSquare2Music() {
+    _debug("HandleSquare2Music", __FILE__, __LINE__);
     // decrement square 2 note length
     dec(ABS(Squ2_NoteLenCounter));
     // is it time for more data?  if not, branch to end tasks
@@ -25804,6 +27404,7 @@ void HandleSquare2Music() {
 }
 
 void EndOfMusicData() {
+    _debug("EndOfMusicData", __FILE__, __LINE__);
     // check secondary buffer for time running out music
     lda(ABS(EventMusicBuffer));
     cmp(IMM(TimeRunningOutMusic));
@@ -25816,6 +27417,7 @@ void EndOfMusicData() {
 }
 
 void NotTRO() {
+    _debug("NotTRO", __FILE__, __LINE__);
     // check for victory music (the only secondary that loops)
     anda(IMM(VictoryMusic));
     BNE(VictoryMLoopBack);
@@ -25837,16 +27439,19 @@ void NotTRO() {
 }
 
 void MusicLoopBack() {
+    _debug("MusicLoopBack", __FILE__, __LINE__);
     JMP(HandleAreaMusicLoopB);
     JMP(VictoryMLoopBack);
 }
 
 void VictoryMLoopBack() {
+    _debug("VictoryMLoopBack", __FILE__, __LINE__);
     JMP(LoadEventMusic);
     JMP(Squ2LengthHandler);
 }
 
 void Squ2LengthHandler() {
+    _debug("Squ2LengthHandler", __FILE__, __LINE__);
     // store length of note
     JSR(ProcessLengthData);
     sta(ABS(Squ2_NoteLenBuffer));
@@ -25858,6 +27463,7 @@ void Squ2LengthHandler() {
 }
 
 void Squ2NoteHandler() {
+    _debug("Squ2NoteHandler", __FILE__, __LINE__);
     // is there a sound playing on this channel?
     ldx(ABS(Square2SoundBuffer));
     BNE(SkipFqL1);
@@ -25871,6 +27477,7 @@ void Squ2NoteHandler() {
 }
 
 void Rest() {
+    _debug("Rest", __FILE__, __LINE__);
     // save contents of A
     sta(ABS(Squ2_EnvelopeDataCtrl));
     // dump X and Y into square 2 control regs
@@ -25879,6 +27486,7 @@ void Rest() {
 }
 
 void SkipFqL1() {
+    _debug("SkipFqL1", __FILE__, __LINE__);
     // save length in square 2 note counter
     lda(ABS(Squ2_NoteLenBuffer));
     sta(ABS(Squ2_NoteLenCounter));
@@ -25886,6 +27494,7 @@ void SkipFqL1() {
 }
 
 void MiscSqu2MusicTasks() {
+    _debug("MiscSqu2MusicTasks", __FILE__, __LINE__);
     // is there a sound playing on square 2?
     lda(ABS(Square2SoundBuffer));
     BNE(HandleSquare1Music);
@@ -25903,6 +27512,7 @@ void MiscSqu2MusicTasks() {
 }
 
 void NoDecEnv1() {
+    _debug("NoDecEnv1", __FILE__, __LINE__);
     // do a load of envelope data to replace default
     JSR(LoadEnvelopeData);
     // based on offset set by first load unless playing
@@ -25914,6 +27524,7 @@ void NoDecEnv1() {
 }
 
 void HandleSquare1Music() {
+    _debug("HandleSquare1Music", __FILE__, __LINE__);
     // is there a nonzero offset here?
     ldy(ABS(MusicOffset_Square1));
     // if not, skip ahead to the triangle channel
@@ -25926,6 +27537,7 @@ void HandleSquare1Music() {
 }
 
 void FetchSqu1MusicData() {
+    _debug("FetchSqu1MusicData", __FILE__, __LINE__);
     // increment square 1 music offset and fetch data
     ldy(ABS(MusicOffset_Square1));
     inc(ABS(MusicOffset_Square1));
@@ -25946,6 +27558,7 @@ void FetchSqu1MusicData() {
 }
 
 void Squ1NoteHandler() {
+    _debug("Squ1NoteHandler", __FILE__, __LINE__);
     JSR(AlternateLengthHandler);
     // save contents of A in square 1 note counter
     sta(ABS(Squ1_NoteLenCounter));
@@ -25963,6 +27576,7 @@ void Squ1NoteHandler() {
 }
 
 void SkipCtrlL() {
+    _debug("SkipCtrlL", __FILE__, __LINE__);
     // save envelope offset
     sta(ABS(Squ1_EnvelopeDataCtrl));
     JSR(Dump_Squ1_Regs);
@@ -25970,6 +27584,7 @@ void SkipCtrlL() {
 }
 
 void MiscSqu1MusicTasks() {
+    _debug("MiscSqu1MusicTasks", __FILE__, __LINE__);
     // is there a sound playing on square 1?
     lda(ABS(Square1SoundBuffer));
     BNE(HandleTriangleMusic);
@@ -25986,6 +27601,7 @@ void MiscSqu1MusicTasks() {
 }
 
 void NoDecEnv2() {
+    _debug("NoDecEnv2", __FILE__, __LINE__);
     // do a load of envelope data
     JSR(LoadEnvelopeData);
     // based on offset set by first load
@@ -25994,6 +27610,7 @@ void NoDecEnv2() {
 }
 
 void DeathMAltReg() {
+    _debug("DeathMAltReg", __FILE__, __LINE__);
     // check for alternate control reg data
     lda(ABS(AltRegContentFlag));
     BNE(DoAltLoad);
@@ -26003,12 +27620,14 @@ void DeathMAltReg() {
 }
 
 void DoAltLoad() {
+    _debug("DoAltLoad", __FILE__, __LINE__);
     // if nonzero, and let's move on
     sta(ABS(((SND_SQUARE1_REG) + (1))));
     JMP(HandleTriangleMusic);
 }
 
 void HandleTriangleMusic() {
+    _debug("HandleTriangleMusic", __FILE__, __LINE__);
     lda(ABS(MusicOffset_Triangle));
     // decrement triangle note length
     dec(ABS(Tri_NoteLenCounter));
@@ -26039,6 +27658,7 @@ void HandleTriangleMusic() {
 }
 
 void TriNoteHandler() {
+    _debug("TriNoteHandler", __FILE__, __LINE__);
     JSR(SetFreq_Tri);
     // save length in triangle note counter
     ldx(ABS(Tri_NoteLenBuffer));
@@ -26057,6 +27677,7 @@ void TriNoteHandler() {
 }
 
 void NotDOrD4() {
+    _debug("NotDOrD4", __FILE__, __LINE__);
     // if playing water or castle music or any secondary
     txa();
     // besides death music or d4 set, check length of note
@@ -26074,6 +27695,7 @@ void NotDOrD4() {
 }
 
 void MediN() {
+    _debug("MediN", __FILE__, __LINE__);
     // secondary besides death and d4 except win castle or win castle and playing
     lda(IMM(0x1f));
     // a short note, and load value $ff if playing a long note on water, castle
@@ -26082,18 +27704,21 @@ void MediN() {
 }
 
 void LongN() {
+    _debug("LongN", __FILE__, __LINE__);
     // or any secondary (including win castle) except death and d4
     lda(IMM(0xff));
     JMP(LoadTriCtrlReg);
 }
 
 void LoadTriCtrlReg() {
+    _debug("LoadTriCtrlReg", __FILE__, __LINE__);
     // save final contents of A into control reg for triangle
     sta(ABS(SND_TRIANGLE_REG));
     JMP(HandleNoiseMusic);
 }
 
 void HandleNoiseMusic() {
+    _debug("HandleNoiseMusic", __FILE__, __LINE__);
     // check if playing underground or castle music
     lda(ABS(AreaMusicBuffer));
     anda(IMM(0b11110011));
@@ -26107,6 +27732,7 @@ void HandleNoiseMusic() {
 }
 
 void FetchNoiseBeatData() {
+    _debug("FetchNoiseBeatData", __FILE__, __LINE__);
     // increment noise beat offset and fetch data
     ldy(ABS(MusicOffset_Noise));
     inc(ABS(MusicOffset_Noise));
@@ -26123,6 +27749,7 @@ void FetchNoiseBeatData() {
 }
 
 void NoiseBeatHandler() {
+    _debug("NoiseBeatHandler", __FILE__, __LINE__);
     JSR(AlternateLengthHandler);
     // store length in noise beat counter
     sta(ABS(Noise_BeatLenCounter));
@@ -26148,6 +27775,7 @@ void NoiseBeatHandler() {
 }
 
 void StrongBeat() {
+    _debug("StrongBeat", __FILE__, __LINE__);
     // strong beat data
     lda(IMM(0x1c));
     ldx(IMM(0xc));
@@ -26157,6 +27785,7 @@ void StrongBeat() {
 }
 
 void LongBeat() {
+    _debug("LongBeat", __FILE__, __LINE__);
     // long beat data
     lda(IMM(0x1c));
     ldx(IMM(0x3));
@@ -26166,12 +27795,14 @@ void LongBeat() {
 }
 
 void SilentBeat() {
+    _debug("SilentBeat", __FILE__, __LINE__);
     // silence
     lda(IMM(0x10));
     JMP(PlayBeat);
 }
 
 void PlayBeat() {
+    _debug("PlayBeat", __FILE__, __LINE__);
     // load beat data into noise regs
     sta(ABS(SND_NOISE_REG));
     stx(ABS(((SND_NOISE_REG) + (2))));
@@ -26180,10 +27811,12 @@ void PlayBeat() {
 }
 
 void ExitMusicHandler() {
+    _debug("ExitMusicHandler", __FILE__, __LINE__);
     return;
 }
 
 void AlternateLengthHandler() {
+    _debug("AlternateLengthHandler", __FILE__, __LINE__);
     // save a copy of original byte into X
     tax();
     // save LSB from original byte into carry
@@ -26199,6 +27832,7 @@ void AlternateLengthHandler() {
 }
 
 void ProcessLengthData() {
+    _debug("ProcessLengthData", __FILE__, __LINE__);
     // clear all but the three LSBs
     anda(IMM(0b111));
     clc();
@@ -26213,6 +27847,7 @@ void ProcessLengthData() {
 }
 
 void LoadControlRegs() {
+    _debug("LoadControlRegs", __FILE__, __LINE__);
     // check secondary buffer for win castle music
     lda(ABS(EventMusicBuffer));
     anda(IMM(EndOfCastleMusic));
@@ -26225,6 +27860,7 @@ void LoadControlRegs() {
 }
 
 void NotECstlM() {
+    _debug("NotECstlM", __FILE__, __LINE__);
     lda(ABS(AreaMusicBuffer));
     // check primary buffer for water music
     anda(IMM(0b1111101));
@@ -26236,12 +27872,14 @@ void NotECstlM() {
 }
 
 void WaterMus() {
+    _debug("WaterMus", __FILE__, __LINE__);
     // this value is used for water music and all other event music
     lda(IMM(0x28));
     JMP(AllMus);
 }
 
 void AllMus() {
+    _debug("AllMus", __FILE__, __LINE__);
     // load contents of other sound regs for square 2
     ldx(IMM(0x82));
     ldy(IMM(0x7f));
@@ -26249,6 +27887,7 @@ void AllMus() {
 }
 
 void LoadEnvelopeData() {
+    _debug("LoadEnvelopeData", __FILE__, __LINE__);
     // check secondary buffer for win castle music
     lda(ABS(EventMusicBuffer));
     anda(IMM(EndOfCastleMusic));
@@ -26259,6 +27898,7 @@ void LoadEnvelopeData() {
 }
 
 void LoadUsualEnvData() {
+    _debug("LoadUsualEnvData", __FILE__, __LINE__);
     // check primary buffer for water music
     lda(ABS(AreaMusicBuffer));
     anda(IMM(0b1111101));
@@ -26269,6 +27909,7 @@ void LoadUsualEnvData() {
 }
 
 void LoadWaterEventMusEnvData() {
+    _debug("LoadWaterEventMusEnvData", __FILE__, __LINE__);
     // load data from offset for water music and all other event music
     lda(ABSY(0x8000+offsetof(G, WaterEventMusEnvData)));
     return;

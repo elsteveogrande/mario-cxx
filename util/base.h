@@ -78,15 +78,14 @@ extern Y y;
 extern S s;
 extern bool n, z, c;
 
-inline byte nz(word result) {
-    result &= 0xff;
-    n = !!(result >> 7);
-    z = !(result);
+inline byte nz(byte result) {
+    n = (result & 0x80);
+    z = (result == 0);
     return byte(result);
 }
 
 inline byte nzc(word result) {
-    c = !!(result >> 8);
+    c = (result >> 8);
     return nz(result);
 }
 

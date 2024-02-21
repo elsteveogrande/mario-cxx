@@ -9,6 +9,9 @@ echo "
 -Wall
 -Wextra
 -UNDEBUG
+-Og
+-fno-inline
 -foptimize-sibling-calls
+-fsanitize=address
 "
 echo $(pkg-config --cflags sfml-graphics) | tr ' ' $'\n'
