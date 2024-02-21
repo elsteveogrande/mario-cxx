@@ -47,25 +47,20 @@ void dec(Mode& d, Mode& s) {
     ld(d, s.read() - 1);
 }
 
-void add(Mode& d, Mode& s1, Mode& s2, bool cc) {
+void adc(Mode& d, Mode& s1, Mode& s2, bool cc) {
     word tmp = word(s1.read()) + word(s2.read()) + word(cc);
     d.write(nzc(tmp));
 }
 
-void sub(Mode& d, Mode& s1, Mode& s2, bool cc) {
-    word tmp = word(s1.read()) - word(s2.read()) - word(cc);
-    // printf("sub: s1:%02x s2:%02x c:%1d tmp:%04x currNZC:%01d%01d%01d\n", s1.read(), s2.read(), c, tmp, n, z, c);
+void sbc(Mode& d, Mode& s1, Mode& s2, bool cc) {
+    // https://www.masswerk.at/6502/6502_instruction_set.html#arithmetic
+    word tmp = word(s1.read()) - word(s2.read()) - word(!cc);
     d.write(nzc(tmp));
     c = !c;
-    // printf("... n:%1d z:%1d c:%1d\n", n, z, c);
-}
-
-void sub(Mode& d, Mode& s, bool c) {
-    sub(d, s, s, c);
 }
 
 void cmp(Reg& s1, Mode& s2) {
-    sub(dummy, s1, s2, 0);
+    sbc(dummy, s1, s2, 1);
 }
 
 void and_(Mode& d, Mode& s1, Mode& s2) {

@@ -147,8 +147,8 @@ void ld(Mode& d, byte v);
 void st(Mode& d, Mode& s);
 void inc(Mode& d, Mode& s);
 void dec(Mode& d, Mode& s);
-void add(Mode& d, Mode& s1, Mode& s2, bool c);
-void sub(Mode& d, Mode& s1, Mode& s2, bool c);
+void adc(Mode& d, Mode& s1, Mode& s2, bool c);
+void sbc(Mode& d, Mode& s1, Mode& s2, bool c);
 void sub(Mode& d, Mode& s, bool c);
 void cmp(Reg& s1, Mode& s2);
 void and_(Mode& d, Mode& s1, Mode& s2);
@@ -223,5 +223,5 @@ inline void asl(Mode& s) { asl(s, s); }
 inline void rol(Mode& s) { rol(s, s); }
 inline void ror(Mode& s) { ror(s, s); }
 
-inline void adc(Mode& s) { add(a, a, s, c); }
-inline void sbc(Mode& s) { add(a, a, s, !c); }
+inline void adc(Mode& s) { adc(a, a, s, c); }
+inline void sbc(Mode& s) { sbc(a, a, s, c); }

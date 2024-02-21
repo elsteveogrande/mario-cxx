@@ -165,7 +165,7 @@ void PPU::draw() {
     for (int i = 0; i < 64; i++) {
         auto& s = sprites[i];
         if (s.y < 0xef) {
-            printf("@@@ sprite %2d : x=%02x y=%02x idx=%02x attrs=%02x\n", i, s.x, s.y, s.index, s.attrs);
+            // printf("@@@ sprite %2d : x=%02x y=%02x idx=%02x attrs=%02x\n", i, s.x, s.y, s.index, s.attrs);
             sprites[i].draw((Pixel*) fore, *this);
         }
     }
