@@ -134,7 +134,7 @@ PPU::PPU(sf::RenderWindow& window)
 
 CharacterROM::CharacterROM() {
     std::ifstream ifile;
-    ifile.open("misc/smb1-us.nes", std::ios::binary | std::ios::in);
+    ifile.open("/Users/steve/code/mario++/misc/smb1-us.nes", std::ios::binary | std::ios::in);
     ifile.seekg(32768 + 16, std::ios::beg);
     char buffer[8192];
     ifile.read(buffer, sizeof(buffer));

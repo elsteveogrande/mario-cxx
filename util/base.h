@@ -81,7 +81,7 @@ extern bool n, z, c;
 inline byte nz(byte result) {
     n = (result & 0x80);
     z = (result == 0);
-    return byte(result);
+    return result;
 }
 
 inline byte nzc(word result) {

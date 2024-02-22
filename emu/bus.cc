@@ -13,50 +13,6 @@ IORegs::IORegs(PPU& ppu) : ppu(ppu) {}
 
 byte IORegs::get(word index) {
     switch (index) {
-        case 0x00:
-            abort();
-        case 0x01:
-            abort();
-        case 0x02:
-            abort();
-        case 0x03:
-            abort();
-        case 0x04:
-            abort();
-        case 0x05:
-            abort();
-        case 0x06:
-            abort();
-        case 0x07:
-            abort();
-        case 0x08:
-            abort();
-        case 0x09:
-            abort();
-        case 0x0a:
-            abort();
-        case 0x0b:
-            abort();
-        case 0x0c:
-            abort();
-        case 0x0d:
-            abort();
-        case 0x0e:
-            abort();
-        case 0x0f:
-            abort();
-        case 0x10:
-            abort();
-        case 0x11:
-            abort();
-        case 0x12:
-            abort();
-        case 0x13:
-            abort();
-        case 0x14:
-            abort();
-        case 0x15:
-            abort();
 
         // https://www.nesdev.org/wiki/Controller_reading
  
@@ -72,23 +28,9 @@ byte IORegs::get(word index) {
             return ret;
         }
 
-        case 0x18:
-            abort();
-        case 0x19:
-            abort();
-        case 0x1a:
-            abort();
-        case 0x1b:
-            abort();
-        case 0x1c:
-            abort();
-        case 0x1d:
-            abort();
-        case 0x1e:
-            abort();
-        case 0x1f:
-            abort();
         default:
+            printf("!!! ioregs::get %04x\n", index);
+            fflush(stdout);
             abort();
     }
 }

@@ -156,6 +156,312 @@ namespace backward {
 backward::SignalHandling sh;
 }
 
+void TEST_HACKS() {
+    Reg u, v, w;
+
+    v.write(0x44);
+    w.write(0xaa);
+    adc(u, v, w, 0);
+    assert (u.read() == 0xee);
+    assert (n);
+    assert (!z);
+    assert (!c);
+
+    v.write(0x44);
+    w.write(0xaa);
+    adc(u, v, w, 1);
+    assert (u.read() == 0xef);
+    assert (n);
+    assert (!z);
+    assert (!c);
+
+    v.write(0x55);
+    w.write(0x11);
+    sbc(u, v, w, 1);
+    assert (u.read() == 0x44);
+    assert (!n);
+    assert (!z);
+    assert (c);
+
+    v.write(0x55);
+    w.write(0x11);
+    sbc(u, v, w, 0);
+    assert (u.read() == 0x43);
+    assert (!n);
+    assert (!z);
+    assert (c);
+
+    v.write(0x50);
+    w.write(0xe0);
+    sbc(u, v, w, 1);
+    assert (u.read() == 0x70);
+    assert (!n);
+    assert (!z);
+    assert (!c);
+
+    v.write(0x50);
+    w.write(0xe0);
+    cmp(v, w);
+    assert (!n);
+    assert (!z);
+    assert (!c);
+    
+    v.write(0xe0);
+    w.write(0x50);
+    cmp(v, w);
+    assert (n);
+    assert (!z);
+    assert (c);
+
+    m.set(0x0124, 0xdd);
+    m.set(0x0125, 0xee);
+    x.write(0x01);
+    lda(ABSX(0x0123));
+    assert(a.read() == 0xdd);
+    y.write(0x02);
+    lda(ABSY(0x0123));
+    assert(a.read() == 0xee);
+
+    m.set(0x0050, 0x23);
+    m.set(0x0051, 0x01);
+    lda(INDY(0x0050));
+    assert(a.read() == 0xee);
+}
+
+struct CPU {
+    PPU& ppu;
+    word pc;
+
+    explicit CPU(PPU& ppu) : ppu(ppu) {}
+
+    void nmi() {
+        php();
+        push16(pc);
+        pc = get16(0xfffa);
+    }
+
+    void push16(word z) {
+        push8((z >> 8) & 0xff);
+        push8(z & 0xff);
+    }
+
+    void push8(byte z) {
+        s--;
+        word sp = 0x0100 + s.read();
+        m.set(sp, z);
+        // printf("### %04x <- %02x\n", sp, z);
+    }
+
+    word pop16() {
+        word ret = word(pop8());
+        ret |= (word(pop8()) << 8);
+        return ret;
+    }
+
+    byte pop8() {
+        word sp = 0x0100 + s.read();
+        byte ret = m.get(sp);
+        ++s;
+        return ret;
+    }
+
+    void php() {
+        push8((byte(n) << 2) | (byte(z) << 1) | (byte(c) << 0));
+    }
+
+    void plp() {
+        byte b = pop8();
+        n = (b & 0x04);
+        z = (b & 0x02);
+        c = (b & 0x01);
+    }
+
+    byte get8(word z) { return m.get(z); }
+    void set8(word z, byte v) { return m.set(z, v); }
+    word get16(word z) { return word(get8(z)) | (word(get8(z + 1)) << 8); }
+    void set16(word z, word v) { set8(z, v); set8(z + 1, v >> 8); }
+
+    bool interp() {
+        static byte sizes[256] = {
+            1, 2, 0, 0, 0, 2, 2, 0,
+            1, 2, 1, 0, 0, 3, 3, 0,
+            2, 2, 0, 0, 0, 2, 2, 0,
+            1, 3, 0, 0, 0, 3, 3, 0,
+            3, 2, 0, 0, 2, 2, 2, 0,
+            1, 2, 1, 0, 3, 3, 3, 0,
+            2, 2, 0, 0, 0, 2, 2, 0,
+            1, 3, 0, 0, 0, 3, 3, 0,
+            1, 2, 0, 0, 0, 2, 2, 0,
+            1, 2, 1, 0, 3, 3, 3, 0,
+            2, 2, 0, 0, 0, 2, 2, 0,
+            1, 3, 0, 0, 0, 3, 3, 0,
+            1, 2, 0, 0, 0, 2, 2, 0,
+            1, 2, 1, 0, 3, 3, 3, 0,
+            2, 2, 0, 0, 0, 2, 2, 0,
+            1, 3, 0, 0, 0, 3, 3, 0,
+            0, 2, 0, 0, 2, 2, 2, 0,
+            1, 0, 1, 0, 3, 3, 3, 0,
+            2, 2, 0, 0, 2, 2, 2, 0,
+            1, 3, 1, 0, 0, 3, 0, 0,
+            2, 2, 2, 0, 2, 2, 2, 0,
+            1, 2, 1, 0, 3, 3, 3, 0,
+            2, 2, 0, 0, 2, 2, 2, 0,
+            1, 3, 1, 0, 3, 3, 3, 0,
+            2, 2, 0, 0, 2, 2, 2, 0,
+            1, 2, 1, 0, 3, 3, 3, 0,
+            2, 2, 0, 0, 0, 2, 2, 0,
+            1, 3, 0, 0, 0, 3, 3, 0,
+            2, 2, 0, 0, 2, 2, 2, 0,
+            1, 2, 1, 0, 3, 3, 3, 0,
+            2, 2, 0, 0, 0, 2, 2, 0,
+            1, 3, 0, 0, 0, 3, 3, 0
+        };
+        static std::string names[256] = {
+            "BRK","ORA(ind,X)","","","","ORAzpg","ASLzpg","",
+            "PHP","ORA#","ASLA","","","ORAabs","ASLabs","",
+            "BPLrel","ORA(ind),Y","","","","ORAzpg,X","ASLzpg,X","",
+            "CLC","ORAabs,Y","","","","ORAabs,X","ASLabs,X","",
+            "JSRabs","AND(ind,X)","","","BITzpg","ANDzpg","ROLzpg","",
+            "PLP","AND#","ROLA","","BITabs","ANDabs","ROLabs","",
+            "BMIrel","AND(ind),Y","","","","ANDzpg,X","ROLzpg,X","",
+            "SEC","ANDabs,Y","","","","ANDabs,X","ROLabs,X","",
+            "RTI","EOR(ind,X)","","","","EORzpg","LSRzpg","",
+            "PHA","EOR#","LSRA","","JMPabs","EORabs","LSRabs","",
+            "BVCrel","EOR(ind),Y","","","","EORzpg,X","LSRzpg,X","",
+            "CLI","EORabs,Y","","","","EORabs,X","LSRabs,X","",
+            "RTS","ADC(ind,X)","","","","ADCzpg","RORzpg","",
+            "PLA","ADC#","RORA","","JMP(ind)","ADCabs","RORabs","",
+            "BVSrel","ADC(ind),Y","","","","ADCzpg,X","RORzpg,X","",
+            "SEI","ADCabs,Y","","","","ADCabs,X","RORabs,X","",
+            "","STA(ind,X)","","","STYzpg","STAzpg","STXzpg","",
+            "DEY","","TXA","","STYabs","STAabs","STXabs","",
+            "BCCrel","STA(ind),Y","","","STYzpg,X","STAzpg,X","STXzpg,Y","",
+            "TYA","STAabs,Y","TXS","","","STAabs,X","","",
+            "LDY#","LDA(ind,X)","LDX#","","LDYzpg","LDAzpg","LDXzpg","",
+            "TAY","LDA#","TAX","","LDYabs","LDAabs","LDXabs","",
+            "BCSrel","LDA(ind),Y","","","LDYzpg,X","LDAzpg,X","LDXzpg,Y","",
+            "CLV","LDAabs,Y","TSX","","LDYabs,X","LDAabs,X","LDXabs,Y","",
+            "CPY#","CMP(ind,X)","","","CPYzpg","CMPzpg","DECzpg","",
+            "INY","CMP#","DEX","","CPYabs","CMPabs","DECabs","",
+            "BNErel","CMP(ind),Y","","","","CMPzpg,X","DECzpg,X","",
+            "CLD","CMPabs,Y","","","","CMPabs,X","DECabs,X","",
+            "CPX#","SBC(ind,X)","","","CPXzpg","SBCzpg","INCzpg","",
+            "INX","SBC#","NOP","","CPXabs","SBCabs","INCabs","",
+            "BEQrel","SBC(ind),Y","","","","SBCzpg,X","INCzpg,X","",
+            "SED","SBCabs,Y","","","","SBCabs,X","INCabs,X",""
+        };
+
+        byte opcode = m.get(pc);
+        byte size = sizes[opcode];
+        // auto& name = names[opcode];
+        word opd = 0;
+        switch (size) {
+            case 1: break;
+            case 2: opd = get8(pc + 1); break;
+            case 3: opd = get16(pc + 1); break;
+            default: {
+                printf("\n\n!!! opcode=%02x pc=%04x\n\n", m.get(pc), pc);
+                fflush(stdout);
+                abort();
+            }
+        }
+
+        // the "jmp infiniteLoop" instruction in `Start`
+        if (opcode == 0x4c && pc == opd) { return true; }
+
+        // printf("@@@ %04x : opcode=%02x [%20s] opd=%04x : n=%d z=%d c=%d : a=%02x x=%02x y=%02x s=1%02x :",
+        //     pc, opcode, name.data(), opd, n, z, c, a.read(), x.read(), y.read(), s.read());
+        // for (int z = (0x100 + s.read()); z < 0x200; z++) { printf(" %04x=%02x", z, m.get(z)); }
+        // printf("\n");
+        // fflush(stdout);
+
+        pc += size;
+
+        switch (opcode) {
+            case 0x05:       ora(ABS(opd));                         break;
+            case 0x09:       ora(IMM(opd));                         break;
+            case 0x0a:       asl();                                         break;
+
+            case 0x10:       if (!n) { pc += int16_t(int8_t(opd)); }        break;
+            case 0x18:       clc();                                         break;
+
+            case 0x20:       push16(pc); pc = opd;                       break;
+            case 0x29:       anda(IMM(opd));                        break;
+            case 0x2a:       rol();                                         break;
+            case 0x2c:       bit(ABS(opd));                         break;
+
+            case 0x38:       sec();                                        break;
+            case 0x3d:       anda(ABSX(opd));                      break;
+
+            case 0x40:       pc = pop16(); plp();                          break;
+            case 0x45:       eor(ABS(opd));                        break;
+            case 0x48:       pha();                                        break;
+            case 0x4a:       lsr();                                        break;
+            case 0x4c:       pc = opd;                                     break;
+
+            case 0x60:       pc = pop16();                                 break;
+            case 0x68:       pla();                                        break;
+            case 0x6c:       pc = get16(opd);                            break;
+
+            case 0x7e:       ror(ABSX(opd));                       break;
+
+            case 0x85:
+            case 0x8d:       sta(ABS(opd));                        break;
+            case 0x86:
+            case 0x8e:       stx(ABS(opd));                        break;
+            case 0x88:       dey();                                        break;
+            case 0x8a:       txa();                                        break;
+
+            case 0x90:       if (!c) { pc += int16_t(int8_t(opd)); }       break;
+            case 0x91:       sta(INDY(opd));                       break;
+            case 0x99:       sta(ABSY(opd));                       break;
+            case 0x9a:       txs();                                        break;
+            case 0x9d:       sta(ABSX(opd));                       break;
+
+            case 0xa0:       ldy(IMM(opd));                        break;
+            case 0xa2:       ldx(IMM(opd));                        break;
+            case 0xa5:       lda(ABS(opd));                        break;
+            case 0xa8:       tay();                                        break;
+            case 0xa9:       lda(IMM(opd));                        break;
+            case 0xaa:       tax();                                        break;
+            case 0xac:       ldy(ABS(opd));                        break;
+            case 0xad:       lda(ABS(opd));                        break;
+            case 0xae:       ldx(ABS(opd));                        break;
+
+            case 0xb0:       if (c) { pc += int16_t(int8_t(opd)); }        break;
+            case 0xb1:       lda(INDY(opd));                       break;
+            case 0xbd:       lda(ABSX(opd));                       break;
+            case 0xbe:       ldx(ABSY(opd));                       break;
+
+            case 0xc0:       cpy(IMM(opd));                        break;
+            case 0xc8:       iny();                                        break;
+            case 0xc9:       cmp(IMM(opd));                        break;
+            case 0xca:       dex();                                         break;
+            case 0xce:       dec(ABS(opd));                         break;
+
+            case 0xd0:       if (!z) { pc += int16_t(int8_t(opd)); }        break;
+
+            case 0xe0:       cpx(IMM(opd));                        break;
+            case 0xe6:       inc(ABS(opd));                        break;
+            case 0xe8:       inx();                                        break;
+            case 0xee:       inc(ABS(opd));                        break;
+
+            case 0xf0:       if (z) { pc += int16_t(int8_t(opd)); }        break;
+            case 0xf9:       sbc(ABSY(opd));                       break;
+
+            // ignored:
+            case 0x78:                // sei
+            case 0xd8:                // cld
+                break;
+
+            // not handled:
+            default:
+                abort();
+        }
+        return true;
+    }
+};
+
 int main() {
     byte ramBytes[0x0800];
     Memory::RAM ram(ramBytes);
@@ -172,12 +478,28 @@ int main() {
     IORegs ioRegs(ppu);
     m.addRegion(Memory::Region {ioRegs, 0x4000, 0x001f });
 
+    TEST_HACKS();
+
+    // std::ifstream ifile;
+    // ifile.open("/Users/steve/code/mario++/misc/smb1-us.nes", std::ios::binary | std::ios::in);
+    // ifile.seekg(16, std::ios::beg);
+    // byte romBytes[32768];
+    // ifile.read((char*) romBytes, sizeof(romBytes));
+    // Memory::RAM rom(romBytes);
+    // m.addRegion(Memory::Region {rom, 0x8000, 0x7fff });
+
+    // CPU cpu(ppu);
+    // cpu.pc = 0x8000;
+
     preStart();
     Start();
 
     window.setSize({256 * 3, 240 * 3});
 
+    // int frame = 0;
     while (window.isOpen()) {
+        // for (int i = 0; i < 100; i++) { cpu.interp(); }
+
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 window.close();
@@ -191,6 +513,13 @@ int main() {
             // if NMI is enabled, invoke it
             if (ppu.regs.ctrl & 0x80) {
                 NonMaskableInterrupt();
+                // cpu.nmi();
+                // printf("."); fflush(stdout);
+                // ++frame;
+                // if (frame == 60) {
+                //     frame = 0;
+                //     printf("\n"); fflush(stdout);
+                // }
             }
         } else {
             std::this_thread::yield();
