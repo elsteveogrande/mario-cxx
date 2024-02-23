@@ -108,8 +108,8 @@ void PPUTimer::run() {
 }
 
 void PPU::nextLine() {
-    line = (line == 261) ? 0: (line + 1);
-    if (line == 32) {
+    line = (line == 261) ? 0 : (line + 1);
+    if (line == 200) {
         auto& s0 = sprites[0];
         if (s0.y < 0xef && s0.index == 0xff) {
             regs.status.store(0x40 | regs.status.load());
@@ -230,10 +230,10 @@ byte PPURegs::get(word index) {
             ret = status;
             status &= 0x7f;  // clear vblank flag after read
             gotFirstByte = false;
-            return ret;
+            break;
 
         case 7: {
-            byte const ret = ppuData;
+            ret = ppuData;
             if (ppuAddr < 0x2000) {
                 ppuData = ppu.chrROM.readByte(ppuAddr);
             } else if (ppuAddr >= 0x2000 && ppuAddr < 0x3000) {
@@ -258,15 +258,19 @@ byte PPURegs::get(word index) {
                 abort();
             }
             ppuAddr += (ctrl & 0x04) ? 32 : 1;
-            return ret;
+            break;
         }
             
         default:
             abort();
     }
+
+    // printf("@@@ PPU %04x -> %02x\n", index, ret);
+    return ret;
 }
 
 void PPURegs::set(word index, byte value) {
+    // printf("@@@ PPU %04x <- %02x\n", index, value);
     switch (index) {
         case 0:
             ctrl = value;

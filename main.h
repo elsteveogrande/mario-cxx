@@ -902,6 +902,7 @@ extern G g;
 #define                         VictoryModeValue                    2
 #define                        GameOverModeValue                    3
 
+// DIRECTIVES
 void Start();
 void VBlank1();
 void VBlank2();
@@ -927,6 +928,7 @@ void ChkStart();
 void ClrPauseTimer();
 void SetPause();
 void ExitPause();
+// $00 - used for preset value
 void SpriteShuffler();
 void ShuffleLoop();
 void StrSprOffset();
@@ -1018,6 +1020,8 @@ void NoInter();
 void AreaParserTaskControl();
 void TaskLoop();
 void OutputCol();
+// $00 - vram buffer address table low
+// $01 - vram buffer address table high
 void DrawTitleScreen();
 void OutputTScr();
 void ChkHiByte();
@@ -1041,6 +1045,14 @@ void WarpNumLoop();
 void ResetSpritesAndScreenTimer();
 void ResetScreenTimer();
 void NoReset();
+// $00 - temp vram buffer offset
+// $01 - temp metatile buffer offset
+// $02 - temp metatile graphics table offset
+// $03 - used to store attribute bits
+// $04 - used to determine attribute table row
+// $05 - used to determine attribute table column
+// $06 - metatile graphics table address low
+// $07 - metatile graphics table address high
 void RenderAreaGraphics();
 void DrawMTLoop();
 void RightCheck();
@@ -1048,6 +1060,8 @@ void LLeft();
 void NextMTRow();
 void SetAttrib();
 void ExitDrawM();
+// $00 - temp attribute table address high (big endian order this time!)
+// $01 - temp attribute table address low
 void RenderAttributeTables();
 void SetATHigh();
 void AttribLoop();
@@ -1070,10 +1084,13 @@ void InitializeNameTables();
 void WriteNTAddr();
 void InitNTLoop();
 void InitATLoop();
+// $00 - temp joypad bit
 void ReadJoypads();
 void ReadPortBits();
 void PortLoop();
 void Save8Bits();
+// $00 - vram buffer address table low
+// $01 - vram buffer address table high
 void WriteBufferToScreen();
 void SetupWrites();
 void GetLength();
@@ -1113,6 +1130,8 @@ void SecondaryGameSetup();
 void ClearVRLoop();
 void ShufAmtLoop();
 void ISpr0Loop();
+// $06 - RAM address low
+// $07 - RAM address high
 void InitializeMemory();
 void InitPageLoop();
 void InitByteLoop();
@@ -1170,6 +1189,8 @@ void EndUChk();
 void RendBBuf();
 void ChkMTLow();
 void StrBlock();
+// $00 - used to store area object identifier
+// $07 - used as adder to find proper area object code
 void ProcessAreaData();
 void ProcADLoop();
 void Chk1Row13();
@@ -1199,18 +1220,23 @@ void LoopCmdE();
 void BackColC();
 void StrAObj();
 void RunAObj();
+// (these apply to all area object subroutines in this section unless otherwise stated)
+// $00 - used to store offset used to find object code
+// $07 - starts with adder from area parser, used to store row offset
 void AlterAreaAttributes();
 void Alter2();
 void SetFore();
 void ScrollLockObject_Warp();
 void WarpNum();
 void ScrollLockObject();
+// $00 - used to store enemy identifier in KillEnemies
 void KillEnemies();
 void KillELoop();
 void NoKillE();
 void AreaFrenzy();
 void FreCompLoop();
 void ExitAFrenzy();
+// $06 - used by MushroomLedge to store length
 void AreaStyleObject();
 void TreeLedge();
 void MidTreeL();
@@ -1229,6 +1255,9 @@ void NotTall();
 void PlayerStop();
 void ExitCastle();
 void WaterPipe();
+// $05 - used to store length of vertical shaft in RenderSidewaysPipe
+// $06 - used to store leftover horizontal length in RenderSidewaysPipe
+// and vertical length in VerticalPipe and GetPipeHeight
 void IntroPipe();
 void VPipeSectLoop();
 void NoBlankP();
@@ -1273,6 +1302,7 @@ void StrCOffset();
 void StaircaseObject();
 void NextStair();
 void Jumpspring();
+// $07 - used to save ID of brick object
 void Hidden1UpBlock();
 void QuestionBlock();
 void BrickWithCoins();
@@ -1301,6 +1331,8 @@ void FindAreaPointer();
 void GetAreaDataAddrs();
 void StoreFore();
 void StoreStyle();
+// indirect jump routine called when
+// $0770 is set to 1
 void GameMode();
 void GameCoreRoutine();
 void GameEngine();
@@ -1329,6 +1361,7 @@ void VineEntr();
 void OffVine();
 void PlayerRdy();
 void ExitEntr();
+// $07 - used to hold upper limit of high byte when player falls down hole
 void AutoControlPlayer();
 void PlayerCtrlRoutine();
 void DisJoyp();
@@ -1361,6 +1394,7 @@ void PlayerInjuryBlink();
 void ExitBlink();
 void InitChangeSize();
 void ExitBoth();
+// $00 - used in CyclePlayerPalette to store current palette to cycle
 void PlayerDeath();
 void DonePlayerTask();
 void PlayerFireFlower();
@@ -1382,6 +1416,7 @@ void SetCrouch();
 void ProcMove();
 void MoveSubs();
 void NoMoveSub();
+// $00 - used by ClimbingSub to store high vertical adder
 void OnGroundStateSub();
 void GndMove();
 void FallingSub();
@@ -1428,6 +1463,9 @@ void LeftFrict();
 void RghtFrict();
 void XSpdSign();
 void SetAbsSpd();
+// $00 - used to store downward movement force in FireballObjCore
+// $02 - used to store maximum vertical speed in FireballObjCore
+// $07 - used to store pseudorandom bit in BubbleCheck
 void ProcFireball_Bubble();
 void ProcFireballs();
 void ProcAirBubbles();
@@ -1449,6 +1487,12 @@ void ResGTCtrl();
 void TimeUpOn();
 void ExGTimer();
 void WarpZoneObject();
+// $00 - used in WhirlpoolActivate to store whirlpool length / 2, page location of center of whirlpool
+// and also to store movement force exerted on player
+// $01 - used in ProcessWhirlpools to store page location of right extent of whirlpool
+// and in WhirlpoolActivate to store center of whirlpool
+// $02 - used in ProcessWhirlpools to store right extent of whirlpool and in
+// WhirlpoolActivate to store maximum vertical speed
 void ProcessWhirlpools();
 void WhLoop();
 void NextWh();
@@ -1491,11 +1535,16 @@ void KillBB();
 void SpawnHammerObj();
 void SetMOfs();
 void NoHammer();
+// $00 - used to set downward force
+// $01 - used to set upward force (residual)
+// $02 - used to set maximum speed
 void ProcHammerObj();
 void SetHSpd();
 void SetHPos();
 void RunAllH();
 void RunHSubs();
+// $02 - used to store vertical high nybble offset from block buffer routine
+// $06 - used to store low byte of block buffer address
 void CoinBlock();
 void SetupJumpCoin();
 void JCoinC();
@@ -1504,6 +1553,9 @@ void FMiscLoop();
 void UseMiscS();
 void MiscObjectsCore();
 void MiscLoop();
+// $00 - used to set downward force
+// $01 - used to set upward force (residual)
+// $02 - used to set maximum speed
 void ProcJumpCoin();
 void JCoinRun();
 void RunJCSubs();
@@ -1555,15 +1607,23 @@ void ChkTop();
 void BouncingBlockHandler();
 void KillBlock();
 void UpdSte();
+// $02 - used to store offset to block buffer
+// $06-$07 - used to store block buffer address
 void BlockObjMT_Updater();
 void UpdateLoop();
 void NextBUpd();
+// $00 - used to store high nybble of horizontal speed as adder
+// $01 - used to store low nybble of horizontal speed
+// $02 - used to store adder to page location
 void MoveEnemyHorizontally();
 void MovePlayerHorizontally();
 void MoveObjectHorizontally();
 void SaveXSpd();
 void UseAdder();
 void ExXMove();
+// $00 - used for downward force
+// $01 - used for upward force
+// $02 - used for maximum vertical speed
 void MovePlayerVertically();
 void NoJSChk();
 void MoveD_EnemyVertically();
@@ -1585,6 +1645,9 @@ void MovePlatformDown();
 void MovePlatformUp();
 void SetDplSpd();
 void RedPTroopaGrav();
+// $00 - used for downward force
+// $01 - used for upward force
+// $07 - used as adder for vertical position
 void ImposeGravity();
 void AlterYP();
 void ChkUpM();
@@ -1602,6 +1665,8 @@ void DoLpBack();
 void InitMLp();
 void InitLCmd();
 void ChkEnemyFrenzy();
+// $06 - used to hold page location of extended right boundary
+// $07 - used to hold high nybble of position of extended right boundary
 void ProcessEnemyData();
 void CheckEndofBuffer();
 void CheckRightBounds();
@@ -1690,6 +1755,10 @@ void DoBulletBills();
 void BB_SLoop();
 void ExF17();
 void FireBulletBill();
+// $00 - used to store Y position of group enemies
+// $01 - used to store enemy ID
+// $02 - used to store page location of right side of screen
+// $03 - used to store X position of right side of screen
 void HandleGroupEnemies();
 void PullID();
 void SnglID();
@@ -1767,6 +1836,8 @@ void ProcMoveRedPTroopa();
 void NoIncPT();
 void MoveRedPTUpOrDown();
 void MovPTDwn();
+// $00 - used to store adder for movement, also used as adder for platform
+// $01 - used to store maximum value for secondary counter
 void MoveFlyGreenPTroopa();
 void YSway();
 void NoMGPT();
@@ -1905,14 +1976,19 @@ void DrawFlagSetTimer();
 void IncrementSFTask2();
 void DelayToAreaEnd();
 void StarFlagExit2();
+// $00 - used to store horizontal difference between player and piranha plant
 void MovePiranhaPlant();
 void ChkPlayerNearPipe();
 void ReversePlantSpeed();
 void SetupToMovePPlant();
 void RiseFallPiranhaPlant();
 void PutinPipe();
+// $07 - spinning speed
 void FirebarSpin();
 void SpinCounterClockwise();
+// $00 - used to hold collision flag, Y movement force + 5 or low byte of name table for rope
+// $01 - used to hold high byte of name table for rope
+// $02 - used to hold page location of rope
 void BalancePlatform();
 void DoBPl();
 void CheckBalPlatform();
@@ -1945,6 +2021,7 @@ void ChkYCenterPos();
 void YMDown();
 void ChkYPCollision();
 void ExYPl();
+// $00 - used as adder to position player hotizontally
 void XMovingPlatform();
 void PositionPlayerOnHPlat();
 void PPHSubt();
@@ -1952,6 +2029,7 @@ void SetPVar();
 void ExXMP();
 void DropPlatform();
 void ExDPl();
+// $00 - residual value from sub
 void RightPlatform();
 void ExRPl();
 void MoveLargeLiftPlat();
@@ -1959,11 +2037,16 @@ void MoveSmallPlatform();
 void MoveLiftPlatforms();
 void ChkSmallPlatCollision();
 void ExLiftP();
+// $00 - page location of extended left boundary
+// $01 - extended left boundary position
+// $02 - page location of extended right boundary
+// $03 - extended right boundary position
 void OffscreenBoundsCheck();
 void LimitB();
 void ExtendLB();
 void TooFar();
 void ExScrnBd();
+// $01 - enemy buffer offset
 void FireballEnemyCollision();
 void FireballEnemyCDLoop();
 void GoombaDie();
@@ -2031,9 +2114,11 @@ void MoveEOfs();
 void EnemyTurnAround();
 void RXSpd();
 void ExTA();
+// $00 - vertical position of platform
 void LargePlatformCollision();
 void ChkForPlayerC_LargeP();
 void ExLPC();
+// $00 - counter for bounding boxes
 void SmallPlatformCollision();
 void ChkSmallPlatLoop();
 void MoveBoundBox();
@@ -2079,6 +2164,9 @@ void PipeDwnS();
 void PlyrPipe();
 void SetCATmr();
 void ChkGERtn();
+// $02 - high nybble of vertical coordinate from block buffer
+// $04 - low nybble of horizontal coordinate from block buffer
+// $06-$07 - block buffer address
 void StopPlayerMove();
 void ExCSM();
 void HandleCoinMetatile();
@@ -2097,6 +2185,8 @@ void SetVXPl();
 void ExPVne();
 void ChkInvisibleMTiles();
 void ExCInvT();
+// $00-$01 - used to hold bottom right and bottom left metatiles (in that order)
+// $00 - used as flag by ImpedePlayerMove to restrict specific movement
 void ChkForLandJumpSpring();
 void ExCJSp();
 void ChkJumpspringMetatiles();
@@ -2122,6 +2212,7 @@ void HBChk();
 void CInvu();
 void YesIn();
 void NoEToBGCollision();
+// $02 - vertical coordinate from block buffer routine
 void HandleEToBGCollision();
 void GiveOEPoints();
 void ChkToStunEnemies();
@@ -2132,6 +2223,7 @@ void SetNotW();
 void ChkBBill();
 void NoCDirF();
 void ExEBGChk();
+// $04 - low nybble of vertical coordinate from block buffer routine
 void LandEnemyProperly();
 void SChkA();
 void ChkLandedEnemyState();
@@ -2146,6 +2238,8 @@ void ChkForRedKoopa();
 void Chk2MSBSt();
 void GetSteFromD();
 void SetD6Ste();
+// $00 - used to store bitmask (not used but initialized here)
+// $eb - used in DoEnemySideCheck as counter and to compare moving directions
 void DoEnemySideCheck();
 void SdeCLoop();
 void NextSdeC();
@@ -2153,6 +2247,7 @@ void ExESdeC();
 void ChkForBump_HammerBroJ();
 void NoBump();
 void InvEnemyDir();
+// $00 - used to hold horizontal difference between player and enemy
 void PlayerEnemyDiff();
 void EnemyLanding();
 void SubtEnemyYPos();
@@ -2185,6 +2280,8 @@ void NoOfs();
 void CheckLeftScreenBBox();
 void SOLft();
 void NoOfs2();
+// $06 - second object's offset
+// $07 - counter
 void PlayerCollisionCore();
 void SprObjectCollisionCore();
 void CollisionCoreLoop();
@@ -2192,6 +2289,11 @@ void SecondBoxVerticalChk();
 void FirstBoxGreater();
 void NoCollisionFound();
 void CollisionFound();
+// $02 - modified y coordinate
+// $03 - stores metatile involved in block buffer collisions
+// $04 - comes in with offset to block buffer adder data, goes out with low nybble x/y coordinate
+// $05 - modified x coordinate
+// $06-$07 - block buffer address
 void BlockBufferChk_Enemy();
 void ResidualMiscObjectCode();
 void BlockBufferChk_FBall();
@@ -2303,6 +2405,7 @@ void PullOfsB();
 void ChkLeftCo();
 void MoveColOffscreen();
 void ExDBlk();
+// $00 - used to hold palette bits for attribute byte or relative X position
 void DrawBrickChunks();
 void DChunks();
 void ChnkOfs();
@@ -2336,6 +2439,13 @@ void PROfsLoop();
 void NPROffscr();
 void DrawPlayer_Intermediate();
 void PIntLoop();
+// $00-$01 - used to hold tile numbers, $00 also used to hold upper extent of animation frames
+// $02 - vertical position
+// $03 - facing direction, used as horizontal flip control
+// $04 - attributes
+// $05 - horizontal position
+// $07 - number of rows to draw
+// these also used in IntermediatePlayerData
 void RenderPlayerSub();
 void DrawPlayerLoop();
 void ProcessPlayerAction();
@@ -2363,6 +2473,7 @@ void ChkForPlayerAttrib();
 void KilledAtt();
 void C_S_IGAtt();
 void ExPlyrAt();
+// $00 - used in adding to get proper offset
 void RelativePlayerPosition();
 void RelativeBubblePosition();
 void RelativeFireballPosition();
@@ -2372,6 +2483,7 @@ void RelativeEnemyPosition();
 void RelativeBlockPosition();
 void VariableObjOfsRelPos();
 void GetObjRelativePosition();
+// $00 - used as temp variable to hold offscreen bits
 void GetPlayerOffscreenBits();
 void GetFireballOffscreenBits();
 void GetBubbleOffscreenBits();
@@ -2393,6 +2505,11 @@ void ExYOfsBS();
 void DividePDiff();
 void SetOscrO();
 void ExDivPD();
+// $00-$01 - tile numbers
+// $02 - Y coordinate
+// $03 - flip control
+// $04 - sprite attributes
+// $05 - X coordinate
 void DrawSpriteObject();
 void NoHFlip();
 void SetHFAt();

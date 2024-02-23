@@ -1,5 +1,6 @@
 #include "base.h"
 #include <cstdio>
+#include <fstream>
 #include <memory>
 
 #include "../emu/ppu.h"
@@ -231,6 +232,7 @@ void TEST_HACKS() {
 struct CPU {
     PPU& ppu;
     word pc;
+    std::ostream* ofile = nullptr;
 
     explicit CPU(PPU& ppu) : ppu(ppu) {}
 
@@ -353,7 +355,7 @@ struct CPU {
 
         byte opcode = m.get(pc);
         byte size = sizes[opcode];
-        // auto& name = names[opcode];
+        auto& name = names[opcode];
         word opd = 0;
         switch (size) {
             case 1: break;
@@ -367,13 +369,23 @@ struct CPU {
         }
 
         // the "jmp infiniteLoop" instruction in `Start`
-        if (opcode == 0x4c && pc == opd) { return true; }
+        if (opcode == 0x4c && pc == opd) {
+            return false;
+        }
 
-        // printf("@@@ %04x : opcode=%02x [%20s] opd=%04x : n=%d z=%d c=%d : a=%02x x=%02x y=%02x s=1%02x :",
-        //     pc, opcode, name.data(), opd, n, z, c, a.read(), x.read(), y.read(), s.read());
-        // for (int z = (0x100 + s.read()); z < 0x200; z++) { printf(" %04x=%02x", z, m.get(z)); }
-        // printf("\n");
-        // fflush(stdout);
+        if (ofile) {
+            (*ofile) << "pc:" << std::hex << std::setw(4) << pc
+                    << " op:" << std::hex << std::setw(2) << word(opcode)
+                    << " opd:" << std::hex << std::setw(4) << opd
+                    << " " << std::setw(20) << name
+                    << " n:" << std::hex << std::setw(1) << n
+                    << " z:" << std::hex << std::setw(1) << z
+                    << " c:" << std::hex << std::setw(1) << c
+                    << " a:" << std::hex << std::setw(2) << word(a.read())
+                    << " x:" << std::hex << std::setw(2) << word(x.read())
+                    << " y:" << std::hex << std::setw(2) << word(y.read())
+                    << std::endl;
+        }
 
         pc += size;
 
@@ -393,7 +405,11 @@ struct CPU {
             case 0x38:       sec();                                        break;
             case 0x3d:       anda(ABSX(opd));                      break;
 
-            case 0x40:       pc = pop16(); plp();                          break;
+            case 0x40:
+                pc = pop16();
+                plp();
+                return false;
+
             case 0x45:       eor(ABS(opd));                        break;
             case 0x48:       pha();                                        break;
             case 0x4a:       lsr();                                        break;
@@ -481,7 +497,7 @@ int main() {
     TEST_HACKS();
 
     // std::ifstream ifile;
-    // ifile.open("/Users/steve/code/mario++/misc/smb1-us.nes", std::ios::binary | std::ios::in);
+    // ifile.open("misc/smb1-us.nes", std::ios::binary | std::ios::in);
     // ifile.seekg(16, std::ios::beg);
     // byte romBytes[32768];
     // ifile.read((char*) romBytes, sizeof(romBytes));
@@ -490,6 +506,7 @@ int main() {
 
     // CPU cpu(ppu);
     // cpu.pc = 0x8000;
+    // while (cpu.interp()) {}
 
     preStart();
     Start();
@@ -498,8 +515,6 @@ int main() {
 
     // int frame = 0;
     while (window.isOpen()) {
-        // for (int i = 0; i < 100; i++) { cpu.interp(); }
-
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
                 window.close();
@@ -513,13 +528,19 @@ int main() {
             // if NMI is enabled, invoke it
             if (ppu.regs.ctrl & 0x80) {
                 NonMaskableInterrupt();
-                // cpu.nmi();
-                // printf("."); fflush(stdout);
+
+                {
+                    // std::ofstream ofile;
+                    // char filename[100];
+                    // snprintf(filename, sizeof(filename), "traces/%06d", frame);
+                    // ofile.open(filename, std::ios::trunc);
+                    // cpu.ofile = &ofile;
+                    // cpu.nmi();
+                    // cpu.ofile = nullptr;
+                }
+
                 // ++frame;
-                // if (frame == 60) {
-                //     frame = 0;
-                //     printf("\n"); fflush(stdout);
-                // }
+                // if (frame == 90) { return 0; }
             }
         } else {
             std::this_thread::yield();

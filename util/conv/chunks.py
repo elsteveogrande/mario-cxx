@@ -291,7 +291,8 @@ class CodeBlock(Block):
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False):
         if (proto):
             return "void %s();" % (self.label.name)
-        ret = "void %s() {\n" % (self.label.name)
+        ret = ""
+        ret += "void %s() {\n" % (self.label.name)
         ret += "    _debug(\"%s\", __FILE__, __LINE__);\n" % (self.label.name)
         # ret += "    std::this_thread::yield();\n"
         for x in self.inner:

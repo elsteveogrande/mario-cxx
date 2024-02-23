@@ -166,6 +166,8 @@ while i < len(chunks):
     ch = chunks[i]
     if isinstance(ch, Label):
         chunks[i] = CodeBlock(label=ch)
+        chunks[i].comments = ch.comments
+        ch.comments = []
     i += 1
 
 # At this point, CodeBlocks are defined and added to their locations in the stream,
@@ -197,6 +199,15 @@ while i < len(chunks):
         continue
     cb.inner.append(cbnext)
     del chunks[i + 1]
+
+
+# ######################################
+# ######################################
+# ######################################
+# ######################################
+# ######################################
+# ######################################
+
 
 all_blocks: list[Block] = [c for c in chunks if isinstance(c, Block)]
 code_blocks: list[CodeBlock] = [b for b in all_blocks if isinstance(b, CodeBlock)]

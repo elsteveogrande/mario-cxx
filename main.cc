@@ -1654,6 +1654,7 @@ void preStart() {
             gROM, 0x8000, 0x7fff });
 }
 
+// DIRECTIVES
 void Start() {
     _debug("Start", __FILE__, __LINE__);
     // pretty standard 6502 type init here
@@ -2055,6 +2056,7 @@ void ExitPause() {
     return;
 }
 
+// $00 - used for preset value
 void SpriteShuffler() {
     _debug("SpriteShuffler", __FILE__, __LINE__);
     // load level type, likely residual code
@@ -3380,6 +3382,8 @@ void OutputCol() {
     return;
 }
 
+// $00 - vram buffer address table low
+// $01 - vram buffer address table high
 void DrawTitleScreen() {
     _debug("DrawTitleScreen", __FILE__, __LINE__);
     // are we in title screen mode?
@@ -3688,6 +3692,14 @@ void NoReset() {
     return;
 }
 
+// $00 - temp vram buffer offset
+// $01 - temp metatile buffer offset
+// $02 - temp metatile graphics table offset
+// $03 - used to store attribute bits
+// $04 - used to determine attribute table row
+// $05 - used to determine attribute table column
+// $06 - metatile graphics table address low
+// $07 - metatile graphics table address high
 void RenderAreaGraphics() {
     _debug("RenderAreaGraphics", __FILE__, __LINE__);
     // store LSB of where we're at
@@ -3869,6 +3881,8 @@ void ExitDrawM() {
     JMP(RenderAttributeTables);
 }
 
+// $00 - temp attribute table address high (big endian order this time!)
+// $01 - temp attribute table address low
 void RenderAttributeTables() {
     _debug("RenderAttributeTables", __FILE__, __LINE__);
     // get low byte of next name table address
@@ -4317,6 +4331,7 @@ void InitATLoop() {
     JMP(ReadJoypads);
 }
 
+// $00 - temp joypad bit
 void ReadJoypads() {
     _debug("ReadJoypads", __FILE__, __LINE__);
     // reset and clear strobe of joypad ports
@@ -4383,6 +4398,8 @@ void Save8Bits() {
     return;
 }
 
+// $00 - vram buffer address table low
+// $01 - vram buffer address table high
 void WriteBufferToScreen() {
     _debug("WriteBufferToScreen", __FILE__, __LINE__);
     // store high byte of vram address
@@ -4967,6 +4984,8 @@ void ISpr0Loop() {
     return;
 }
 
+// $06 - RAM address low
+// $07 - RAM address high
 void InitializeMemory() {
     _debug("InitializeMemory", __FILE__, __LINE__);
     // set initial high byte to $0700-$07ff
@@ -5824,6 +5843,8 @@ void StrBlock() {
     return;
 }
 
+// $00 - used to store area object identifier
+// $07 - used as adder to find proper area object code
 void ProcessAreaData() {
     _debug("ProcessAreaData", __FILE__, __LINE__);
     // start at the end of area object buffer
@@ -6290,6 +6311,9 @@ void RunAObj() {
     JMP(jumptable[a.read()]);
 }
 
+// (these apply to all area object subroutines in this section unless otherwise stated)
+// $00 - used to store offset used to find object code
+// $07 - starts with adder from area parser, used to store row offset
 void AlterAreaAttributes() {
     _debug("AlterAreaAttributes", __FILE__, __LINE__);
     // load offset for level object data saved in buffer
@@ -6385,6 +6409,7 @@ void ScrollLockObject() {
     return;
 }
 
+// $00 - used to store enemy identifier in KillEnemies
 void KillEnemies() {
     _debug("KillEnemies", __FILE__, __LINE__);
     // store identifier here
@@ -6445,6 +6470,7 @@ void ExitAFrenzy() {
     return;
 }
 
+// $06 - used by MushroomLedge to store length
 void AreaStyleObject() {
     _debug("AreaStyleObject", __FILE__, __LINE__);
     // load level object style and jump to the right sub
@@ -6725,6 +6751,9 @@ void WaterPipe() {
     return;
 }
 
+// $05 - used to store length of vertical shaft in RenderSidewaysPipe
+// $06 - used to store leftover horizontal length in RenderSidewaysPipe
+// and vertical length in VerticalPipe and GetPipeHeight
 void IntroPipe() {
     _debug("IntroPipe", __FILE__, __LINE__);
     // check if length set, if not set, set it
@@ -7356,6 +7385,7 @@ void Jumpspring() {
     return;
 }
 
+// $07 - used to save ID of brick object
 void Hidden1UpBlock() {
     _debug("Hidden1UpBlock", __FILE__, __LINE__);
     // if flag not set, do not render object
@@ -7826,6 +7856,8 @@ void StoreStyle() {
     return;
 }
 
+// indirect jump routine called when
+// $0770 is set to 1
 void GameMode() {
     _debug("GameMode", __FILE__, __LINE__);
     lda(ABS(OperMode_Task));
@@ -8356,6 +8388,7 @@ void ExitEntr() {
     return;
 }
 
+// $07 - used to hold upper limit of high byte when player falls down hole
 void AutoControlPlayer() {
     _debug("AutoControlPlayer", __FILE__, __LINE__);
     // override controller bits with contents of A if executing here
@@ -8813,6 +8846,7 @@ void ExitBoth() {
     return;
 }
 
+// $00 - used in CyclePlayerPalette to store current palette to cycle
 void PlayerDeath() {
     _debug("PlayerDeath", __FILE__, __LINE__);
     // check master timer control
@@ -9097,6 +9131,7 @@ void NoMoveSub() {
     return;
 }
 
+// $00 - used by ClimbingSub to store high vertical adder
 void OnGroundStateSub() {
     _debug("OnGroundStateSub", __FILE__, __LINE__);
     // do a sub to set animation frame timing
@@ -9838,6 +9873,9 @@ void SetAbsSpd() {
     return;
 }
 
+// $00 - used to store downward movement force in FireballObjCore
+// $02 - used to store maximum vertical speed in FireballObjCore
+// $07 - used to store pseudorandom bit in BubbleCheck
 void ProcFireball_Bubble() {
     _debug("ProcFireball_Bubble", __FILE__, __LINE__);
     // check player's status
@@ -10253,6 +10291,12 @@ void WarpZoneObject() {
     JMP(ProcessWhirlpools);
 }
 
+// $00 - used in WhirlpoolActivate to store whirlpool length / 2, page location of center of whirlpool
+// and also to store movement force exerted on player
+// $01 - used in ProcessWhirlpools to store page location of right extent of whirlpool
+// and in WhirlpoolActivate to store center of whirlpool
+// $02 - used in ProcessWhirlpools to store right extent of whirlpool and in
+// WhirlpoolActivate to store maximum vertical speed
 void ProcessWhirlpools() {
     _debug("ProcessWhirlpools", __FILE__, __LINE__);
     // check for water type level
@@ -11076,6 +11120,9 @@ void NoHammer() {
     return;
 }
 
+// $00 - used to set downward force
+// $01 - used to set upward force (residual)
+// $02 - used to set maximum speed
 void ProcHammerObj() {
     _debug("ProcHammerObj", __FILE__, __LINE__);
     // if master timer control set
@@ -11200,6 +11247,8 @@ void RunHSubs() {
     return;
 }
 
+// $02 - used to store vertical high nybble offset from block buffer routine
+// $06 - used to store low byte of block buffer address
 void CoinBlock() {
     _debug("CoinBlock", __FILE__, __LINE__);
     // set offset for empty or last misc object buffer slot
@@ -11331,6 +11380,9 @@ void MiscLoop() {
     JMP(ProcJumpCoin);
 }
 
+// $00 - used to set downward force
+// $01 - used to set upward force (residual)
+// $02 - used to set maximum speed
 void ProcJumpCoin() {
     _debug("ProcJumpCoin", __FILE__, __LINE__);
     // check misc object state
@@ -12239,6 +12291,8 @@ void UpdSte() {
     return;
 }
 
+// $02 - used to store offset to block buffer
+// $06-$07 - used to store block buffer address
 void BlockObjMT_Updater() {
     _debug("BlockObjMT_Updater", __FILE__, __LINE__);
     // set offset to start with second block object
@@ -12292,6 +12346,9 @@ void NextBUpd() {
     return;
 }
 
+// $00 - used to store high nybble of horizontal speed as adder
+// $01 - used to store low nybble of horizontal speed
+// $02 - used to store adder to page location
 void MoveEnemyHorizontally() {
     _debug("MoveEnemyHorizontally", __FILE__, __LINE__);
     // increment offset for enemy offset
@@ -12399,6 +12456,9 @@ void ExXMove() {
     return;
 }
 
+// $00 - used for downward force
+// $01 - used for upward force
+// $02 - used for maximum vertical speed
 void MovePlayerVertically() {
     _debug("MovePlayerVertically", __FILE__, __LINE__);
     // set X for player offset
@@ -12623,6 +12683,9 @@ void RedPTroopaGrav() {
     return;
 }
 
+// $00 - used for downward force
+// $01 - used for upward force
+// $07 - used as adder for vertical position
 void ImposeGravity() {
     _debug("ImposeGravity", __FILE__, __LINE__);
     // push value to stack
@@ -12952,6 +13015,8 @@ void ChkEnemyFrenzy() {
     JMP(ProcessEnemyData);
 }
 
+// $06 - used to hold page location of extended right boundary
+// $07 - used to hold high nybble of position of extended right boundary
 void ProcessEnemyData() {
     _debug("ProcessEnemyData", __FILE__, __LINE__);
     // get offset of enemy object data
@@ -14453,6 +14518,10 @@ void FireBulletBill() {
     JMP(HandleGroupEnemies);
 }
 
+// $00 - used to store Y position of group enemies
+// $01 - used to store enemy ID
+// $02 - used to store page location of right side of screen
+// $03 - used to store X position of right side of screen
 void HandleGroupEnemies() {
     _debug("HandleGroupEnemies", __FILE__, __LINE__);
     // load value for green koopa troopa
@@ -15561,6 +15630,8 @@ void MovPTDwn() {
     JMP(MoveFlyGreenPTroopa);
 }
 
+// $00 - used to store adder for movement, also used as adder for platform
+// $01 - used to store maximum value for secondary counter
 void MoveFlyGreenPTroopa() {
     _debug("MoveFlyGreenPTroopa", __FILE__, __LINE__);
     // do sub to increment primary and secondary counters
@@ -17908,6 +17979,7 @@ void StarFlagExit2() {
     return;
 }
 
+// $00 - used to store horizontal difference between player and piranha plant
 void MovePiranhaPlant() {
     _debug("MovePiranhaPlant", __FILE__, __LINE__);
     // check enemy state
@@ -18022,6 +18094,7 @@ void PutinPipe() {
     return;
 }
 
+// $07 - spinning speed
 void FirebarSpin() {
     _debug("FirebarSpin", __FILE__, __LINE__);
     // save spinning speed here
@@ -18060,6 +18133,9 @@ void SpinCounterClockwise() {
     return;
 }
 
+// $00 - used to hold collision flag, Y movement force + 5 or low byte of name table for rope
+// $01 - used to hold high byte of name table for rope
+// $02 - used to hold page location of rope
 void BalancePlatform() {
     _debug("BalancePlatform", __FILE__, __LINE__);
     // check high byte of vertical position
@@ -18599,6 +18675,7 @@ void ExYPl() {
     return;
 }
 
+// $00 - used as adder to position player hotizontally
 void XMovingPlatform() {
     _debug("XMovingPlatform", __FILE__, __LINE__);
     // load preset maximum value for secondary counter
@@ -18679,6 +18756,7 @@ void ExDPl() {
     return;
 }
 
+// $00 - residual value from sub
 void RightPlatform() {
     _debug("RightPlatform", __FILE__, __LINE__);
     // move platform with current horizontal speed, if any
@@ -18758,6 +18836,10 @@ void ExLiftP() {
     return;
 }
 
+// $00 - page location of extended left boundary
+// $01 - extended left boundary position
+// $02 - page location of extended right boundary
+// $03 - extended right boundary position
 void OffscreenBoundsCheck() {
     _debug("OffscreenBoundsCheck", __FILE__, __LINE__);
     // check for cheep-cheep object
@@ -18858,6 +18940,7 @@ void ExScrnBd() {
     return;
 }
 
+// $01 - enemy buffer offset
 void FireballEnemyCollision() {
     _debug("FireballEnemyCollision", __FILE__, __LINE__);
     // check to see if fireball state is set at all
@@ -20066,6 +20149,7 @@ void ExTA() {
     return;
 }
 
+// $00 - vertical position of platform
 void LargePlatformCollision() {
     _debug("LargePlatformCollision", __FILE__, __LINE__);
     // save value here
@@ -20127,6 +20211,7 @@ void ExLPC() {
     return;
 }
 
+// $00 - counter for bounding boxes
 void SmallPlatformCollision() {
     _debug("SmallPlatformCollision", __FILE__, __LINE__);
     // if master timer control set,
@@ -20886,6 +20971,9 @@ void ChkGERtn() {
     return;
 }
 
+// $02 - high nybble of vertical coordinate from block buffer
+// $04 - low nybble of horizontal coordinate from block buffer
+// $06-$07 - block buffer address
 void StopPlayerMove() {
     _debug("StopPlayerMove", __FILE__, __LINE__);
     // stop player's movement
@@ -21128,6 +21216,8 @@ void ExCInvT() {
     return;
 }
 
+// $00-$01 - used to hold bottom right and bottom left metatiles (in that order)
+// $00 - used as flag by ImpedePlayerMove to restrict specific movement
 void ChkForLandJumpSpring() {
     _debug("ChkForLandJumpSpring", __FILE__, __LINE__);
     // do sub to check if player landed on jumpspring
@@ -21500,6 +21590,7 @@ void NoEToBGCollision() {
     JMP(HandleEToBGCollision);
 }
 
+// $02 - vertical coordinate from block buffer routine
 void HandleEToBGCollision() {
     _debug("HandleEToBGCollision", __FILE__, __LINE__);
     // if something is underneath enemy, find out what
@@ -21640,6 +21731,7 @@ void ExEBGChk() {
     return;
 }
 
+// $04 - low nybble of vertical coordinate from block buffer routine
 void LandEnemyProperly() {
     _debug("LandEnemyProperly", __FILE__, __LINE__);
     // check lower nybble of vertical coordinate saved earlier
@@ -21837,6 +21929,8 @@ void SetD6Ste() {
     JMP(DoEnemySideCheck);
 }
 
+// $00 - used to store bitmask (not used but initialized here)
+// $eb - used in DoEnemySideCheck as counter and to compare moving directions
 void DoEnemySideCheck() {
     _debug("DoEnemySideCheck", __FILE__, __LINE__);
     // if enemy within status bar, branch to leave
@@ -21933,6 +22027,7 @@ void InvEnemyDir() {
     JMP(PlayerEnemyDiff);
 }
 
+// $00 - used to hold horizontal difference between player and enemy
 void PlayerEnemyDiff() {
     _debug("PlayerEnemyDiff", __FILE__, __LINE__);
     // get distance between enemy object's
@@ -22448,6 +22543,8 @@ void NoOfs2() {
     return;
 }
 
+// $06 - second object's offset
+// $07 - counter
 void PlayerCollisionCore() {
     _debug("PlayerCollisionCore", __FILE__, __LINE__);
     // initialize X to use player's bounding box for comparison
@@ -22567,6 +22664,11 @@ void CollisionFound() {
     return;
 }
 
+// $02 - modified y coordinate
+// $03 - stores metatile involved in block buffer collisions
+// $04 - comes in with offset to block buffer adder data, goes out with low nybble x/y coordinate
+// $05 - modified x coordinate
+// $06-$07 - block buffer address
 void BlockBufferChk_Enemy() {
     _debug("BlockBufferChk_Enemy", __FILE__, __LINE__);
     // save contents of A to stack
@@ -24586,6 +24688,7 @@ void ExDBlk() {
     return;
 }
 
+// $00 - used to hold palette bits for attribute byte or relative X position
 void DrawBrickChunks() {
     _debug("DrawBrickChunks", __FILE__, __LINE__);
     // set palette bits here
@@ -25271,6 +25374,13 @@ void PIntLoop() {
     return;
 }
 
+// $00-$01 - used to hold tile numbers, $00 also used to hold upper extent of animation frames
+// $02 - vertical position
+// $03 - facing direction, used as horizontal flip control
+// $04 - attributes
+// $05 - horizontal position
+// $07 - number of rows to draw
+// these also used in IntermediatePlayerData
 void RenderPlayerSub() {
     _debug("RenderPlayerSub", __FILE__, __LINE__);
     // store number of rows of sprites to draw
@@ -25679,6 +25789,7 @@ void ExPlyrAt() {
     return;
 }
 
+// $00 - used in adding to get proper offset
 void RelativePlayerPosition() {
     _debug("RelativePlayerPosition", __FILE__, __LINE__);
     // set offsets for relative cooordinates
@@ -25791,6 +25902,7 @@ void GetObjRelativePosition() {
     return;
 }
 
+// $00 - used as temp variable to hold offscreen bits
 void GetPlayerOffscreenBits() {
     _debug("GetPlayerOffscreenBits", __FILE__, __LINE__);
     // set offsets for player-specific variables
@@ -26083,6 +26195,11 @@ void ExDivPD() {
     return;
 }
 
+// $00-$01 - tile numbers
+// $02 - Y coordinate
+// $03 - flip control
+// $04 - sprite attributes
+// $05 - X coordinate
 void DrawSpriteObject() {
     _debug("DrawSpriteObject", __FILE__, __LINE__);
     // get saved flip control bits
