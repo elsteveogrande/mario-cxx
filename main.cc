@@ -77,7 +77,9 @@ G g {
     0x22, 0x30, 0x27, 0x19, 
     // fiery (used by both)
     0x22, 0x37, 0x27, 0x16, },
-    /* 80a1 (32929) */ .GameText = {0xee},
+
+    /* 80a1 (32929) */
+    .GameText = {},
 
     /* 80a2 (32930) */
     .TopStatusBarLine = {
@@ -652,7 +654,9 @@ G g {
 
     /* 866e (34414) */
     .WorldAddrOffsets = {((0x8000+offsetof(G, World1Areas)) - (0x8000+offsetof(G, AreaAddrOffsets))), ((0x8000+offsetof(G, World2Areas)) - (0x8000+offsetof(G, AreaAddrOffsets))), ((0x8000+offsetof(G, World3Areas)) - (0x8000+offsetof(G, AreaAddrOffsets))), ((0x8000+offsetof(G, World4Areas)) - (0x8000+offsetof(G, AreaAddrOffsets))), ((0x8000+offsetof(G, World5Areas)) - (0x8000+offsetof(G, AreaAddrOffsets))), ((0x8000+offsetof(G, World6Areas)) - (0x8000+offsetof(G, AreaAddrOffsets))), ((0x8000+offsetof(G, World7Areas)) - (0x8000+offsetof(G, AreaAddrOffsets))), ((0x8000+offsetof(G, World8Areas)) - (0x8000+offsetof(G, AreaAddrOffsets))), },
-    /* 8676 (34422) */ .AreaAddrOffsets = {0xee},
+
+    /* 8676 (34422) */
+    .AreaAddrOffsets = {},
 
     /* 8677 (34423) */
     .World1Areas = {0x2, 0x29, 0xc0, 0x26, 0x60, },

@@ -346,7 +346,7 @@ class DataBlock(Block):
             ret += "},"
             return ret
         else:
-            return ("    /* %04x (%5d) */ .%s = {0xee}," % (self.offset, self.offset, self.label.name))
+            return ("\n    /* %04x (%5d) */\n    .%s = {}," % (self.offset, self.offset, self.label.name))
     def __str__(self):  return "(datablock:%s)" % (self.label)
     def __repr__(self): return str(self)
 
