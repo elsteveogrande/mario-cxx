@@ -494,26 +494,26 @@ int main() {
     IORegs ioRegs(ppu);
     m.addRegion(Memory::Region {ioRegs, 0x4000, 0x001f });
 
-    TEST_HACKS();
+    // TEST_HACKS();
 
-    // std::ifstream ifile;
-    // ifile.open("misc/smb1-us.nes", std::ios::binary | std::ios::in);
-    // ifile.seekg(16, std::ios::beg);
-    // byte romBytes[32768];
-    // ifile.read((char*) romBytes, sizeof(romBytes));
-    // Memory::RAM rom(romBytes);
-    // m.addRegion(Memory::Region {rom, 0x8000, 0x7fff });
+    std::ifstream ifile;
+    ifile.open("misc/smb1-us.nes", std::ios::binary | std::ios::in);
+    ifile.seekg(16, std::ios::beg);
+    byte romBytes[32768];
+    ifile.read((char*) romBytes, sizeof(romBytes));
+    Memory::RAM rom(romBytes);
+    m.addRegion(Memory::Region {rom, 0x8000, 0x7fff });
 
-    // CPU cpu(ppu);
-    // cpu.pc = 0x8000;
-    // while (cpu.interp()) {}
+    CPU cpu(ppu);
+    cpu.pc = 0x8000;
+    while (cpu.interp()) {}
 
-    preStart();
-    Start();
+    // preStart();
+    // Start();
 
     window.setSize({256 * 3, 240 * 3});
 
-    // int frame = 0;
+    int frame = 0;
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
@@ -527,20 +527,21 @@ int main() {
         if (ppu.regs.status & 0x80) {
             // if NMI is enabled, invoke it
             if (ppu.regs.ctrl & 0x80) {
-                NonMaskableInterrupt();
+                // NonMaskableInterrupt();
 
                 {
-                    // std::ofstream ofile;
-                    // char filename[100];
-                    // snprintf(filename, sizeof(filename), "traces/%06d", frame);
-                    // ofile.open(filename, std::ios::trunc);
-                    // cpu.ofile = &ofile;
-                    // cpu.nmi();
-                    // cpu.ofile = nullptr;
+                    std::ofstream ofile;
+                    char filename[100];
+                    snprintf(filename, sizeof(filename), "traces/%06d", frame);
+                    ofile.open(filename, std::ios::trunc);
+                    cpu.ofile = &ofile;
+                    cpu.nmi();
+                    while (cpu.interp()) {}
+                    cpu.ofile = nullptr;
                 }
 
-                // ++frame;
-                // if (frame == 90) { return 0; }
+                ++frame;
+                if (frame == 90) { return 0; }
             }
         } else {
             std::this_thread::yield();

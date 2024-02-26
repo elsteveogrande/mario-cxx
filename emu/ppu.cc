@@ -109,7 +109,7 @@ void PPUTimer::run() {
 
 void PPU::nextLine() {
     line = (line == 261) ? 0 : (line + 1);
-    if (line == 200) {
+    if (line == 32) {
         auto& s0 = sprites[0];
         if (s0.y < 0xef && s0.index == 0xff) {
             regs.status.store(0x40 | regs.status.load());
