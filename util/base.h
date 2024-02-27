@@ -124,13 +124,31 @@ struct AbsY : Mem {
     virtual int addr() const { return abs_ + y.read(); }
 };
 
+struct Zpg : Mem {
+    byte const abs_;
+    constexpr explicit Zpg(byte abs) : abs_(abs) {}
+    virtual int addr() const { return abs_; }
+};
+
+struct ZpgX : Mem {
+    byte const abs_;
+    constexpr explicit ZpgX(byte abs) : abs_(abs) {}
+    virtual int addr() const { return byte(abs_ + x.read()); }
+};
+
+struct ZpgY : Mem {
+    byte const abs_;
+    constexpr explicit ZpgY(byte abs) : abs_(abs) {}
+    virtual int addr() const { return byte(abs_ + y.read()); }
+};
+
 struct IndY : Abs {
     explicit IndY(word abs) : Abs(abs) {}
     virtual int addr() const override {
         if (diag) {
             fflush(stdout);
         }
-        word tmp = m.get(abs_);
+        word tmp = 0xff & m.get(abs_);
         tmp |= word(m.get(abs_ + 1)) << 8;
         tmp += y.read();
         return tmp;
@@ -193,12 +211,18 @@ extern Imm imm_;
 extern Abs abs_;
 extern AbsX absX_;
 extern AbsY absY_;
+extern Zpg zpg_;
+extern ZpgX zpgX_;
+extern ZpgY zpgY_;
 extern IndY indY_;
 
 #define IMM(v)       (*(new (&imm_) Imm(v)))
 #define ABS(v)       (*(new (&abs_) Abs(v)))
 #define ABSX(v)      (*(new (&absX_) AbsX(v)))
 #define ABSY(v)      (*(new (&absY_) AbsY(v)))
+#define ZPG(v)       (*(new (&zpg_) Zpg(v)))
+#define ZPGX(v)      (*(new (&zpgX_) ZpgX(v)))
+#define ZPGY(v)      (*(new (&zpgY_) ZpgY(v)))
 #define INDY(v)      (*(new (&indY_) IndY(v)))
 
 inline void lda(Mode& s) { ld(a, s); }

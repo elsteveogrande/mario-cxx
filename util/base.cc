@@ -44,6 +44,9 @@ Imm imm_(0);
 Abs abs_(0);
 AbsX absX_(0);
 AbsY absY_(0);
+Zpg zpg_(0);
+ZpgX zpgX_(0);
+ZpgY zpgY_(0);
 IndY indY_(0);
 
 void ld(Mode& d, Mode& s) {
@@ -148,9 +151,8 @@ void bit(Mode& s) {
                                             M7	+	-	-	-	M6
     */
     word opd = s.read();
-    word tmp = a.read() & opd;
-    z = !!tmp;
-    n = !!(opd & 0x80);
+    n = opd >> 7;
+    z = !(a.read() & opd);
 }
 
 A a;
@@ -162,78 +164,6 @@ bool n, z, c;
 
 namespace backward {
 backward::SignalHandling sh;
-}
-
-void TEST_HACKS() {
-    Reg u, v, w;
-
-    v.write(0x44);
-    w.write(0xaa);
-    adc(u, v, w, 0);
-    assert (u.read() == 0xee);
-    assert (n);
-    assert (!z);
-    assert (!c);
-
-    v.write(0x44);
-    w.write(0xaa);
-    adc(u, v, w, 1);
-    assert (u.read() == 0xef);
-    assert (n);
-    assert (!z);
-    assert (!c);
-
-    v.write(0x55);
-    w.write(0x11);
-    sbc(u, v, w, 1);
-    assert (u.read() == 0x44);
-    assert (!n);
-    assert (!z);
-    assert (c);
-
-    v.write(0x55);
-    w.write(0x11);
-    sbc(u, v, w, 0);
-    assert (u.read() == 0x43);
-    assert (!n);
-    assert (!z);
-    assert (c);
-
-    v.write(0x50);
-    w.write(0xe0);
-    sbc(u, v, w, 1);
-    assert (u.read() == 0x70);
-    assert (!n);
-    assert (!z);
-    assert (!c);
-
-    v.write(0x50);
-    w.write(0xe0);
-    cmp(v, w);
-    assert (!n);
-    assert (!z);
-    assert (!c);
-    
-    v.write(0xe0);
-    w.write(0x50);
-    cmp(v, w);
-    assert (n);
-    assert (!z);
-    assert (c);
-
-    m.set(0x0124, 0xdd);
-    m.set(0x0125, 0xee);
-    x.write(0x01);
-    lda(ABSX(0x0123));
-    assert(a.read() == 0xdd);
-    y.write(0x02);
-    lda(ABSY(0x0123));
-    assert(a.read() == 0xee);
-
-    m.set(0x0050, 0x23);
-    m.set(0x0051, 0x01);
-    lda(INDY(0x0050));
-    assert(a.read() == 0xee);
 }
 
 struct CPU {
@@ -291,7 +221,7 @@ struct CPU {
     void set16(word z, word v) { set8(z, v); set8(z + 1, v >> 8); }
 
     void call(word addr) {
-        push16(pc);
+        push16(pc - 1);
         push16(0x5555);
         pc = addr;
     }
@@ -396,6 +326,7 @@ struct CPU {
                     << " a:" << std::hex << std::setw(2) << word(a.read())
                     << " x:" << std::hex << std::setw(2) << word(x.read())
                     << " y:" << std::hex << std::setw(2) << word(y.read())
+                    << " s:" << std::hex << std::setw(2) << word(s.read())
                     << std::endl;
         }
 
@@ -405,11 +336,13 @@ struct CPU {
         }
         // the "reti" instruction from `NonMaskableInterrupt`
         if (opcode == 0x40) {
+            s.write(3 + s.read());
             return false;
         }
         if (opcode == 0x60) {
             pc = pop16();
             if (pc == 0x5555) {
+                pc = pop16() + 1;
                 return false;
             }
             ++pc;
@@ -419,8 +352,8 @@ struct CPU {
         pc += size;
 
         switch (opcode) {
-            case 0x05:       ora(ABS(opd));                         break;
-            case 0x06:       asl(ABS(opd));                         break;
+            case 0x05:       ora(ZPG(opd));                         break;
+            case 0x06:       asl(ZPG(opd));                         break;
             case 0x09:       ora(IMM(opd));                         break;
             case 0x0a:       asl();                                         break;
             case 0x0d:       ora(ABS(opd));                         break;
@@ -430,8 +363,9 @@ struct CPU {
             case 0x18:       clc();                                         break;
 
             case 0x20:       push16(pc - 1); pc = opd;                   break;
-            case 0x24:       bit(ABS(opd));                         break;
-            case 0x26:       rol(ABS(opd));                         break;
+            case 0x24:       bit(ZPG(opd));                         break;
+            case 0x25:       bit(ZPG(opd));                         break;
+            case 0x26:       rol(ZPG(opd));                         break;
             case 0x29:       anda(IMM(opd));                        break;
             case 0x2a:       rol();                                         break;
             case 0x2c:       bit(ABS(opd));                         break;
@@ -443,29 +377,29 @@ struct CPU {
             case 0x39:       anda(ABSY(opd));                      break;
             case 0x3d:       anda(ABSX(opd));                      break;
 
-            case 0x45:       eor(ABS(opd));                        break;
-            case 0x46:       lsr(ABS(opd));                        break;
+            case 0x45:       eor(ZPG(opd));                        break;
+            case 0x46:       lsr(ZPG(opd));                        break;
             case 0x48:       pha();                                        break;
             case 0x49:       eor(IMM(opd));                        break;
             case 0x4a:       lsr();                                        break;
             case 0x4c:       pc = opd;                                     break;
             case 0x4e:       lsr(ABS(opd));                        break;
 
-            case 0x65:       adc(ABS(opd));                        break;
+            case 0x65:       adc(ZPG(opd));                        break;
             case 0x68:       pla();                                        break;
             case 0x69:       adc(IMM(opd));                        break;
             case 0x6a:       ror();                                        break;
             case 0x6c:       pc = get16(opd);                           break;
             case 0x6d:       adc(ABS(opd));                        break;
 
-            case 0x75:       adc(ABSX(opd));                       break;
+            case 0x75:       adc(ZPGX(opd));                       break;
             case 0x79:       adc(ABSY(opd));                       break;
             case 0x7d:       adc(ABSX(opd));                       break;
             case 0x7e:       ror(ABSX(opd));                       break;
 
-            case 0x84:       sty(ABS(opd));                        break;
-            case 0x85:       sta(ABS(opd));                        break;
-            case 0x86:       stx(ABS(opd));                        break;
+            case 0x84:       sty(ZPG(opd));                        break;
+            case 0x85:       sta(ZPG(opd));                        break;
+            case 0x86:       stx(ZPG(opd));                        break;
             case 0x8c:       sty(ABS(opd));                        break;
             case 0x8d:       sta(ABS(opd));                        break;
             case 0x8e:       stx(ABS(opd));                        break;
@@ -474,7 +408,7 @@ struct CPU {
 
             case 0x90:       if (!c) { pc += int16_t(int8_t(opd)); }       break;
             case 0x91:       sta(INDY(opd));                       break;
-            case 0x95:       sta(ABSX(opd));                       break;
+            case 0x95:       sta(ZPGX(opd));                       break;
             case 0x98:       tya();                                        break;
             case 0x99:       sta(ABSY(opd));                       break;
             case 0x9a:       txs();                                        break;
@@ -482,9 +416,9 @@ struct CPU {
 
             case 0xa0:       ldy(IMM(opd));                        break;
             case 0xa2:       ldx(IMM(opd));                        break;
-            case 0xa4:       ldy(ABS(opd));                        break;
-            case 0xa5:       lda(ABS(opd));                        break;
-            case 0xa6:       ldx(ABS(opd));                        break;
+            case 0xa4:       ldy(ZPG(opd));                        break;
+            case 0xa5:       lda(ZPG(opd));                        break;
+            case 0xa6:       ldx(ZPG(opd));                        break;
             case 0xa8:       tay();                                        break;
             case 0xa9:       lda(IMM(opd));                        break;
             case 0xaa:       tax();                                        break;
@@ -494,15 +428,15 @@ struct CPU {
 
             case 0xb0:       if (c) { pc += int16_t(int8_t(opd)); }        break;
             case 0xb1:       lda(INDY(opd));                       break;
-            case 0xb5:       lda(ABSX(opd));                       break;
+            case 0xb5:       lda(ZPGX(opd));                       break;
             case 0xb9:       lda(ABSY(opd));                       break;
             case 0xbc:       ldy(ABSX(opd));                       break;
             case 0xbd:       lda(ABSX(opd));                       break;
             case 0xbe:       ldx(ABSY(opd));                       break;
 
             case 0xc0:       cpy(IMM(opd));                        break;
-            case 0xc5:       cmp(ABS(opd));                        break;
-            case 0xc6:       dec(ABS(opd));                        break;
+            case 0xc5:       cmp(ZPG(opd));                        break;
+            case 0xc6:       dec(ZPG(opd));                        break;
             case 0xc8:       iny();                                        break;
             case 0xc9:       cmp(IMM(opd));                        break;
             case 0xca:       dex();                                         break;
@@ -510,13 +444,13 @@ struct CPU {
             case 0xce:       dec(ABS(opd));                         break;
 
             case 0xd0:       if (!z) { pc += int16_t(int8_t(opd)); }        break;
-            case 0xd5:       cmp(ABSX(opd));                        break;
+            case 0xd5:       cmp(ZPGX(opd));                        break;
             case 0xd9:       cmp(ABSY(opd));                        break;
             case 0xdd:       cmp(ABSX(opd));                        break;
             case 0xde:       dec(ABSX(opd));                        break;
 
             case 0xe0:       cpx(IMM(opd));                        break;
-            case 0xe6:       inc(ABS(opd));                        break;
+            case 0xe6:       inc(ZPG(opd));                        break;
             case 0xe8:       inx();                                        break;
             case 0xe9:       sbc(IMM(opd));                        break;
             case 0xec:       cpx(ABS(opd));                        break;
@@ -524,7 +458,7 @@ struct CPU {
             case 0xee:       inc(ABS(opd));                        break;
 
             case 0xf0:       if (z) { pc += int16_t(int8_t(opd)); }        break;
-            case 0xf5:       sbc(ABSX(opd));                       break;
+            case 0xf5:       sbc(ZPGX(opd));                       break;
             case 0xf9:       sbc(ABSY(opd));                       break;
             case 0xfd:       sbc(ABSX(opd));                       break;
 
@@ -559,10 +493,8 @@ int main() {
     IORegs ioRegs(ppu);
     m.addRegion(Memory::Region {ioRegs, 0x4000, 0x001f });
 
-    // TEST_HACKS();
-
-    // preStart();
-    // Start();
+    preStart();
+    Start();
 
     // ramBytes[WorldNumber] = 0;
     // ramBytes[AreaNumber] = 0;
@@ -581,30 +513,31 @@ int main() {
 
     // printf("@@@@@@@@@@@@@@@\n");
 
-    std::ifstream ifile;
-    ifile.open("misc/smb1-us.nes", std::ios::binary | std::ios::in);
-    ifile.seekg(16, std::ios::beg);
-    byte romBytes[32768];
-    ifile.read((char*) romBytes, sizeof(romBytes));
-    Memory::RAM rom(romBytes);
-    m.baseMap.erase(0x8000);
-    m.addRegion(Memory::Region {rom, 0x8000, 0x7fff });
+    // std::ifstream ifile;
+    // ifile.open("misc/smb1-us.nes", std::ios::binary | std::ios::in);
+    // ifile.seekg(16, std::ios::beg);
+    // byte romBytes[32768];
+    // ifile.read((char*) romBytes, sizeof(romBytes));
+    // Memory::RAM rom(romBytes);
+    // m.baseMap.erase(0x8000);
+    // m.addRegion(Memory::Region {rom, 0x8000, 0x7fff });
 
-    CPU cpu(ppu);
-    diag = false;
-    cpu.ofile = &std::cout;
-    cpu.pc = 0x8000;
-    while (cpu.interp()) {}
+    // CPU cpu(ppu);
+    // cpu.pc = 0x8000;
+    // while (cpu.interp()) {}
 
-    ramBytes[WorldNumber] = 0;
-    ramBytes[AreaNumber] = 0;
+    // diag = true;
+    // cpu.ofile = &std::cout;
+
+    // ramBytes[WorldNumber] = 0;
+    // ramBytes[AreaNumber] = 0;
 
     // //https://6502disassembly.com/nes-smb/SuperMarioBros.html
     // cpu.call(0x9c03);  // LoadAreaPointer
     // while (cpu.interp()) {}
     // cpu.call(0x8fe4);  // InitializeArea
     // while (cpu.interp()) {}
-    // for (int i = 0; i < 48; i++) {
+    // for (int i = 0; i < 1; i++) {
     //     cpu.call(0x93fc); //AreaParserCore();
     //     while (cpu.interp()) {}
     //     for (int i = 0; i < 13; i++) {
@@ -638,18 +571,18 @@ int main() {
             // if NMI is enabled, invoke it
             if (ppu.regs.ctrl & 0x80) {
 
-                // NonMaskableInterrupt();
+                NonMaskableInterrupt();
 
-                {
-                    // std::ofstream ofile;
-                    // char filename[100];
-                    // snprintf(filename, sizeof(filename), "traces/%06d", frame);
-                    // ofile.open(filename, std::ios::trunc);
-                    // cpu.ofile = &ofile;
-                    cpu.nmi();
-                    while (cpu.interp()) {}
-                    // cpu.ofile = nullptr;
-                }
+                // {
+                //     // std::ofstream ofile;
+                //     // char filename[100];
+                //     // snprintf(filename, sizeof(filename), "traces/%06d", frame);
+                //     // ofile.open(filename, std::ios::trunc);
+                //     // cpu.ofile = &ofile;
+                //     cpu.nmi();
+                //     while (cpu.interp()) {}
+                //     // cpu.ofile = nullptr;
+                // }
 
                 ++frame;
                 // if (frame == 90) { return 0; }
