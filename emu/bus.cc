@@ -37,38 +37,6 @@ byte IORegs::get(word index) {
 
 void IORegs::set(word index, byte value) {
     switch (index) {
-        case 0x00:
-            abort();
-        case 0x01:
-            abort();
-        case 0x02:
-            abort();
-        case 0x03:
-            abort();
-        case 0x04:
-            abort();
-        case 0x05:
-            abort();
-        case 0x06:
-            abort();
-        case 0x07:
-            abort();
-        case 0x08:
-            abort();
-        case 0x09:
-            abort();
-        case 0x0a:
-            abort();
-        case 0x0b:
-            abort();
-        case 0x0c:
-            abort();
-        case 0x0d:
-            abort();
-        case 0x0e:
-            abort();
-        case 0x0f:
-            abort();
 
         // https://www.nesdev.org/wiki/APU#DMC_($4010%E2%80%93$4013)
         case 0x10:
@@ -110,6 +78,11 @@ void IORegs::set(word index, byte value) {
         }
 
         default:
+            fflush(stderr);
+            fflush(stdout);
+            printf("\n\nbad io write: %04d <- %02x\n\n", index, value);
+            fflush(stderr);
+            fflush(stdout);
             abort();
     }
 }

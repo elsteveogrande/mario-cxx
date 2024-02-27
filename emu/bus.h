@@ -6,6 +6,7 @@
 
 using byte = unsigned char;
 using word = unsigned short;
+extern bool diag;
 
 struct Memory {
     struct Bytes {
@@ -59,6 +60,7 @@ struct Memory {
 
     struct Bus {
         std::map<word, Region> baseMap;
+
         void* addRegion(Region const& reg);
 
         Region& getRegion(word index) {
@@ -78,12 +80,16 @@ struct Memory {
 
         byte get(word index) {
             byte ret = getRegion(index).get(index);
-            // printf("get [%04x] -> %02x\n", index, ret);
+            if (diag) {
+                printf("get [%04x] -> %02x\n", index, ret);
+            }
             return ret;
         }
 
         void set(word index, byte val) {
-            // printf("set [%04x] <- %02x\n", index, val);
+            if (diag) {
+                printf("set [%04x] <- %02x\n", index, val);
+            }
             getRegion(index).set(index, val);
         }
     };

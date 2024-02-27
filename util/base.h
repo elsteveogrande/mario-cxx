@@ -11,6 +11,8 @@
 using byte = unsigned char;
 using word = unsigned short;
 
+extern bool diag;
+
 void _debug(char const* func, char const* filename, int line);
 
 // defined in main.cc
@@ -125,9 +127,11 @@ struct AbsY : Mem {
 struct IndY : Abs {
     explicit IndY(word abs) : Abs(abs) {}
     virtual int addr() const override {
-        word tmp;
-        tmp = int(m.get(abs_ + 1)) << 8;
-        tmp |= int(m.get(abs_));
+        if (diag) {
+            fflush(stdout);
+        }
+        word tmp = m.get(abs_);
+        tmp |= word(m.get(abs_ + 1)) << 8;
         tmp += y.read();
         return tmp;
     }

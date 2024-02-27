@@ -262,6 +262,8 @@ byte PPURegs::get(word index) {
         }
             
         default:
+            fprintf(stderr, "!!! index %02x (PPU address %04x)\n", index, ppuAddr);
+            fflush(stderr);
             abort();
     }
 
@@ -270,12 +272,14 @@ byte PPURegs::get(word index) {
 }
 
 void PPURegs::set(word index, byte value) {
-    // printf("@@@ PPU %04x <- %02x\n", index, value);
+    if (diag) {
+        printf("@@@ PPU %04x <- %02x\n", index, value);
+    }
     switch (index) {
         case 0:
             ctrl = value;
-            assert (!(ctrl & 0x40));  // EXT bkgd
-            assert (!(ctrl & 0x20));  // 8x16 sprites
+            // assert (!(ctrl & 0x40));  // EXT bkgd
+            // assert (!(ctrl & 0x20));  // 8x16 sprites
             assert (!(ctrl & 0x08));  // sprites use left table (8x8)
             assert (!(ctrl & 0x03));  // base nametable
             return;
