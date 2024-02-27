@@ -204,6 +204,6 @@ struct PPUTimer {
     std::thread loopThread;
 
     // approx 63.6µS
-    constexpr static std::chrono::nanoseconds const kLineInterval { 1000000000L / (262 * 60) };
+    constexpr static std::chrono::nanoseconds const kLineInterval { long(0.8 * (1000000000.0 / (262 * 60))) };
 };
 

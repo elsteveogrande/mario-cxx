@@ -79,7 +79,8 @@ struct Memory {
         }
 
         byte get(word index) {
-            byte ret = getRegion(index).get(index);
+            auto& reg = getRegion(index);
+            byte ret = reg.get(index & reg.mask);
             if (diag) {
                 printf("get [%04x] -> %02x\n", index, ret);
             }
@@ -90,7 +91,8 @@ struct Memory {
             if (diag) {
                 printf("set [%04x] <- %02x\n", index, val);
             }
-            getRegion(index).set(index, val);
+            auto& reg = getRegion(index);
+            reg.set(index & reg.mask, val);
         }
     };
 };
@@ -102,6 +104,8 @@ struct IORegs : Memory::Bytes {
     byte strobe {0};
     byte joy0 {0};
     byte joy1 {0};
+    byte joy0ShiftReg;
+    byte joy1ShiftReg;
 
     explicit IORegs(PPU& ppu);
 

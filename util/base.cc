@@ -7,6 +7,7 @@
 
 #include "../emu/ppu.h"
 
+#include "SFML/Window/Keyboard.hpp"
 #include "backward.hpp"
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
@@ -469,7 +470,7 @@ struct CPU {
 
             // not handled:
             default:
-                printf("!!! pc %04x: opcode %02x opd %04d\n", pc_, opcode, opd);
+                printf("!!! pc %04x: opcode %02x opd %04x\n", pc_, opcode, opd);
                 fflush(stdout);
                 abort();
         }
@@ -496,23 +497,6 @@ int main() {
     preStart();
     Start();
 
-    // ramBytes[WorldNumber] = 0;
-    // ramBytes[AreaNumber] = 0;
-    // LoadAreaPointer();
-    // InitializeArea();
-    // diag = true;
-    // for (int i = 0; i < 1; i++) {
-    //     AreaParserCore();
-    //     for (int i = 0; i < 13; i++) {
-    //         int p = 0x6a1 + i;
-    //         printf("%02x ", ramBytes[p]);
-    //     }
-    //     printf("\n");
-    //     IncrementColumnPos();
-    // }
-
-    // printf("@@@@@@@@@@@@@@@\n");
-
     // std::ifstream ifile;
     // ifile.open("misc/smb1-us.nes", std::ios::binary | std::ios::in);
     // ifile.seekg(16, std::ios::beg);
@@ -529,33 +513,9 @@ int main() {
     // diag = true;
     // cpu.ofile = &std::cout;
 
-    // ramBytes[WorldNumber] = 0;
-    // ramBytes[AreaNumber] = 0;
-
-    // //https://6502disassembly.com/nes-smb/SuperMarioBros.html
-    // cpu.call(0x9c03);  // LoadAreaPointer
-    // while (cpu.interp()) {}
-    // cpu.call(0x8fe4);  // InitializeArea
-    // while (cpu.interp()) {}
-    // for (int i = 0; i < 1; i++) {
-    //     cpu.call(0x93fc); //AreaParserCore();
-    //     while (cpu.interp()) {}
-    //     for (int i = 0; i < 13; i++) {
-    //         int p = 0x6a1 + i;
-    //         printf("%02x ", ramBytes[p]);
-    //     }
-    //     printf("\n");
-    //     cpu.call(0x92db); // IncrementColumnPos();
-    //     while (cpu.interp()) {}
-    // }
-
-    // fflush(stdout);
-    // return 0;
-
-
     window.setSize({256 * 3, 240 * 3});
 
-    int frame = 0;
+    // int frame = 0;
 
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
@@ -563,6 +523,32 @@ int main() {
                 window.close();
                 ppuTimer.stopped = true;
                 return 0;
+            }
+            if (event.type == sf::Event::KeyPressed) {
+                switch (event.key.code) {
+                    case sf::Keyboard::Key::D:          ioRegs.joy0 |= 0x80; break;
+                    case sf::Keyboard::Key::A:          ioRegs.joy0 |= 0x40; break;
+                    case sf::Keyboard::Key::S:          ioRegs.joy0 |= 0x20; break;
+                    case sf::Keyboard::Key::W:          ioRegs.joy0 |= 0x10; break;
+                    case sf::Keyboard::Key::RBracket:   ioRegs.joy0 |= 0x08; break;
+                    case sf::Keyboard::Key::LBracket:   ioRegs.joy0 |= 0x04; break;
+                    case sf::Keyboard::Key::Comma:      ioRegs.joy0 |= 0x02; break;
+                    case sf::Keyboard::Key::Period:     ioRegs.joy0 |= 0x01; break;
+                    default: /* ignore */
+                }
+            }
+            if (event.type == sf::Event::KeyReleased) {
+                switch (event.key.code) {
+                    case sf::Keyboard::Key::D:          ioRegs.joy0 &= ~0x80; break;
+                    case sf::Keyboard::Key::A:          ioRegs.joy0 &= ~0x40; break;
+                    case sf::Keyboard::Key::S:          ioRegs.joy0 &= ~0x20; break;
+                    case sf::Keyboard::Key::W:          ioRegs.joy0 &= ~0x10; break;
+                    case sf::Keyboard::Key::RBracket:   ioRegs.joy0 &= ~0x08; break;
+                    case sf::Keyboard::Key::LBracket:   ioRegs.joy0 &= ~0x04; break;
+                    case sf::Keyboard::Key::Comma:      ioRegs.joy0 &= ~0x02; break;
+                    case sf::Keyboard::Key::Period:     ioRegs.joy0 &= ~0x01; break;
+                    default: /* ignore */
+                }
             }
         }
 
@@ -573,18 +559,28 @@ int main() {
 
                 NonMaskableInterrupt();
 
+                for (int i = 0; i < 13; i++) {
+                    int p = MetatileBuffer + i;
+                    printf("%02x ", ramBytes[p]);
+                }
+                printf(
+                    ": pg=%02x col=%02x bbcol=%d\n",
+                    ramBytes[CurrentPageLoc],
+                    ramBytes[CurrentColumnPos],
+                    ramBytes[BlockBufferColumnPos]);
+
                 // {
                 //     // std::ofstream ofile;
                 //     // char filename[100];
                 //     // snprintf(filename, sizeof(filename), "traces/%06d", frame);
                 //     // ofile.open(filename, std::ios::trunc);
                 //     // cpu.ofile = &ofile;
-                //     cpu.nmi();
-                //     while (cpu.interp()) {}
+                // cpu.nmi();
+                // while (cpu.interp()) {}
                 //     // cpu.ofile = nullptr;
                 // }
 
-                ++frame;
+                // ++frame;
                 // if (frame == 90) { return 0; }
 
             }

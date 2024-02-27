@@ -17,14 +17,14 @@ byte IORegs::get(word index) {
         // https://www.nesdev.org/wiki/Controller_reading
  
         case 0x16: {
-            auto ret = (joy0 & 0x01);
-            joy0 >>= 1;
+            auto ret = (joy0ShiftReg & 0x01);
+            joy0ShiftReg >>= 1;
             return ret;
         }
  
         case 0x17: {
-            auto ret = (joy1 & 0x01);
-            joy1 >>= 1;
+            auto ret = (joy1ShiftReg & 0x01);
+            joy1ShiftReg >>= 1;
             return ret;
         }
 
@@ -35,18 +35,40 @@ byte IORegs::get(word index) {
     }
 }
 
+// https://www.nesdev.org/wiki/2A03
+
 void IORegs::set(word index, byte value) {
     switch (index) {
 
+        // audio pulse 1
+        case 0x00:            break;  // TODO
+        case 0x01:            break;  // TODO
+        case 0x02:            break;  // TODO
+        case 0x03:            break;  // TODO
+
+        // audio pulse 2
+        case 0x04:            break;  // TODO
+        case 0x05:            break;  // TODO
+        case 0x06:            break;  // TODO
+        case 0x07:            break;  // TODO
+
+        // triangle
+        case 0x08:            break;  // TODO
+        case 0x09:            break;  // TODO
+        case 0x0a:            break;  // TODO
+        case 0x0b:            break;  // TODO
+
+        // noise
+        case 0x0c:            break;  // TODO
+        case 0x0d:            break;  // TODO
+        case 0x0e:            break;  // TODO
+        case 0x0f:            break;  // TODO
+
         // https://www.nesdev.org/wiki/APU#DMC_($4010%E2%80%93$4013)
-        case 0x10:
-            break;  // TODO
-        case 0x11:
-            break;  // TODO
-        case 0x12:
-            break;  // TODO
-        case 0x13:
-            break;  // TODO
+        case 0x10:            break;  // TODO
+        case 0x11:            break;  // TODO
+        case 0x12:            break;  // TODO
+        case 0x13:            break;  // TODO
 
         // https://www.nesdev.org/wiki/PPU_registers#OAM_DMA_($4014)_%3E_write
         case 0x14: {
@@ -71,16 +93,22 @@ void IORegs::set(word index, byte value) {
             strobe = value;
             if ((prevStrobe & 0x1) && !(strobe & 0x01)) {
                 // TODO
-                joy0 = 0x00;
-                joy1 = 0x00;
+                joy0ShiftReg = joy0;
+                joy1ShiftReg = joy1;
             }
+            break;
+        }
+
+        case 0x17: {
+            // https://www.nesdev.org/wiki/APU_Frame_Counter
+            // TODO
             break;
         }
 
         default:
             fflush(stderr);
             fflush(stdout);
-            printf("\n\nbad io write: %04d <- %02x\n\n", index, value);
+            printf("\n\nbad io write: %04x <- %02x\n\n", index, value);
             fflush(stderr);
             fflush(stdout);
             abort();
