@@ -170,6 +170,35 @@ while i < len(chunks):
         ch.comments = []
     i += 1
 
+def resolve_all(c):
+    if isinstance(c, Unresolved):
+        return c.resolve(labels, defines)
+    if isinstance(c, Chunk):
+        for a in c.attrs:
+            u = c.__getattribute__(a)
+            c.__setattr__(a, resolve_all(u))
+        return c
+    if isinstance(c, list):
+        return [resolve_all(x) for x in c]
+    else:
+        return c
+
+for c in chunks:
+    resolve_all(c)
+
+labels["Start"].is_call_target = True
+labels["NonMaskableInterrupt"].is_call_target = True
+for c in chunks:
+    if isinstance(c, Insn):
+        if c.name in ("jmp", "bra", "bpl", "bmi", "bcs", "bcc", "beq", "bne"):
+            (target,) = c.opds
+            if isinstance(target, Ref):
+                labels[target.of.name].is_jump_target = True
+        elif c.name == "jsr":
+            (target,) = c.opds
+            assert isinstance(target, Ref)
+            labels[target.of.name].is_call_target = True
+
 # At this point, CodeBlocks are defined and added to their locations in the stream,
 # but they are still in-line with their instructions (i.e. their insns are not
 # grouped within the code blocks' `inner` lists).
@@ -236,19 +265,6 @@ while i < len(code_blocks):
 # print(jump_map.keys())
 # raise
 
-labels["Start"].is_call_target = True
-labels["NonMaskableInterrupt"].is_call_target = True
-for c in chunks:
-    if isinstance(c, Insn):
-        if c.name in ("jmp", "bra", "bpl", "bmi", "bcs", "bcc", "beq", "bne"):
-            (target,) = c.opds
-            if isinstance(target, Ref):
-                labels[target.of.name].is_jump_target = True
-        elif c.name == "jsr":
-            (target,) = c.opds
-            assert isinstance(target, Ref)
-            labels[target.of.name].is_call_target = True
-
 prev: Optional[CodeBlock] = None
 for c in code_blocks:
     if prev and not (isinstance(prev.inner[-1], DispatchBlock)
@@ -297,9 +313,10 @@ with open("main.h", "w") as h:
 
     p("")
     for c in code_blocks:
-        for cm in c.comments:
-            p(cm)
-        p(c, proto=True)
+        if c.label.is_call_target:
+            for cm in c.comments:
+                p(cm)
+            p(c, proto=True)
 
 
 with open("main.cc", "w") as cc:
@@ -325,6 +342,7 @@ with open("main.cc", "w") as cc:
 
     p("")
     for c in code_blocks:
-        for cm in c.comments:
-            p(cm)
-        p(c)
+        if c.label.is_call_target:
+            for cm in c.comments:
+                p(cm)
+            p(c)

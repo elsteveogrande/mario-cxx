@@ -233,6 +233,7 @@ byte PPURegs::get(word index) {
             break;
 
         case 7: {
+            assert (!gotFirstByte);
             ret = ppuData;
             if (ppuAddr < 0x2000) {
                 ppuData = ppu.chrROM.readByte(ppuAddr);
@@ -278,8 +279,8 @@ void PPURegs::set(word index, byte value) {
     switch (index) {
         case 0:
             ctrl = value;
-            // assert (!(ctrl & 0x40));  // EXT bkgd
-            // assert (!(ctrl & 0x20));  // 8x16 sprites
+            assert (!(ctrl & 0x40));  // EXT bkgd
+            assert (!(ctrl & 0x20));  // 8x16 sprites
             assert (!(ctrl & 0x08));  // sprites use left table (8x8)
             assert (!(ctrl & 0x03));  // base nametable
             return;
@@ -320,6 +321,7 @@ void PPURegs::set(word index, byte value) {
 
         // https://www.nesdev.org/wiki/PPU_registers#Data_($2007)_%3C%3E_read/write
         case 7: {
+            assert (!gotFirstByte);
             ppuData = value;
             // printf("ppuAddr %04x\n", ppuAddr); fflush(stdout);
             if (ppuAddr >= 0x2000 && ppuAddr < 0x3000) {

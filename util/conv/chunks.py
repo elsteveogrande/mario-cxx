@@ -4,8 +4,8 @@ from typing import *
 
 class Chunk:
     attrs = ["comments"]
-    def __init__(self) -> None:
-        self.comments: list["Comment"] = []
+    def __init__(self, comments: Optional[list["Comment"]] = None) -> None:
+        self.comments: list["Comment"] = comments or []
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         raise NotImplementedError(str(type(self)))
 
@@ -31,8 +31,8 @@ class Op(Expr):
 
 class Reg(Expr):
     attrs = Expr.attrs + ["name"]
-    def __init__(self, name: str) -> None:
-        super().__init__()
+    def __init__(self, name: str, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.name = name
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         return self.name
@@ -41,8 +41,8 @@ class Reg(Expr):
 
 class Paren(Op):
     attrs = Op.attrs + ["expr"]
-    def __init__(self, expr: Expr) -> None:
-        super().__init__()
+    def __init__(self, expr: Expr, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.expr = expr
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         return "(%s)" % (self.expr.render(labels, defines))
@@ -54,8 +54,8 @@ class Lit(Expr):
     <class 'conv.chunks.Lit'> comments:[] val:8192 base:16
     """
     attrs = Expr.attrs + ["val", "base"]
-    def __init__(self, val: int, base: int) -> None:
-        super().__init__()
+    def __init__(self, val: int, base: int, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.val = val
         self.base = base
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
@@ -70,8 +70,8 @@ class Lit(Expr):
     def __repr__(self): return str(self)
 
 class Imm(Expr):
-    def __init__(self, val: Expr) -> None:
-        super().__init__()
+    def __init__(self, val: Expr, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.val = val
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False):
         return "IMM(" + self.val.render(labels, defines) + ")"
@@ -80,8 +80,8 @@ class Imm(Expr):
 
 class Named(Chunk):
     attrs = Chunk.attrs + ["name"]
-    def __init__(self, name: str) -> None:
-        super().__init__()
+    def __init__(self, name: str, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.name = name
     def resolve(self, labels: dict[str, Any], defines: dict[str, Any]) -> Union["Define", "Label"]:
         raise
@@ -94,20 +94,15 @@ class Unresolved(Named):
         if self.name in labels:
             return labels[self.name]
         raise NameError(self.name)
-    def __init__(self, name: str) -> None:
-        super().__init__(name)
+    def __init__(self, name: str, **kwargs) -> None:
+        super().__init__(name, **kwargs)
     def __str__(self):  return "(unresolved:%s)" % (self.name)
     def __repr__(self): return str(self)
 
 class Define(Named):
-    """
-    <class 'conv.chunks.Define'> comments:[<conv.chunks.Comment object at 0x104c5e210>] name:PPU_CTRL_REG1
-    <class 'conv.chunks.Comment'> text:DEFINES
-    <class 'conv.chunks.Lit'> comments:[] val:8192 base:16
-    """
     attrs = Named.attrs + ["expr"]
-    def __init__(self, name: str, expr: Expr) -> None:
-        super().__init__(name)
+    def __init__(self, name: str, expr: Expr, **kwargs) -> None:
+        super().__init__(name, **kwargs)
         self.expr = expr
     def resolve(self, labels: dict[str, Any], defines: dict[str, Any]) -> Union["Define", "Label"]:
         return self
@@ -118,8 +113,8 @@ class Define(Named):
 
 class Label(Named):
     attrs = Named.attrs
-    def __init__(self, name: str) -> None:
-        super().__init__(name)
+    def __init__(self, name: str, **kwargs) -> None:
+        super().__init__(name, **kwargs)
         self.is_jump_target: bool = False
         self.is_call_target: bool = False
         self.code_block: Optional["CodeBlock"] = None
@@ -128,16 +123,14 @@ class Label(Named):
     def resolve(self, labels: dict[str, Any], defines: dict[str, Any]) -> Union["Define", "Label"]:
         return self
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
-        if self.is_jump_target or self.is_call_target:
-            return self.name
         return self.name
     def __str__(self):  return "(label:%s)" % (self.name)
     def __repr__(self): return str(self)
 
 class Plus(Op):
     attrs = Op.attrs + ["a", "b"]
-    def __init__(self, a: Expr, b: Expr) -> None:
-        super().__init__()
+    def __init__(self, a: Expr, b: Expr, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.a = a
         self.b = b
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
@@ -147,8 +140,8 @@ class Plus(Op):
 
 class Minus(Op):
     attrs = Op.attrs + ["a", "b"]
-    def __init__(self, a: Expr, b: Expr) -> None:
-        super().__init__()
+    def __init__(self, a: Expr, b: Expr, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.a = a
         self.b = b
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
@@ -158,8 +151,8 @@ class Minus(Op):
 
 class HiByte(Op):
     attrs = Op.attrs + ["of"]
-    def __init__(self, of: Expr) -> None:
-        super().__init__()
+    def __init__(self, of: Expr, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.of = of
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         return "HI8(%s)" % (self.of.render(labels, defines))
@@ -168,8 +161,8 @@ class HiByte(Op):
 
 class LoByte(Op):
     attrs = Op.attrs + ["of"]
-    def __init__(self, of: Expr) -> None:
-        super().__init__()
+    def __init__(self, of: Expr, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.of = of
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         return "LO8(%s)" % (self.of.render(labels, defines))
@@ -178,31 +171,33 @@ class LoByte(Op):
 
 class Directive(Chunk):
     attrs = Chunk.attrs + []
-    def __init__(self, name: str, parts: list[Expr]) -> None:
-        super().__init__()
+    def __init__(self, name: str, parts: list[Expr], **kwargs) -> None:
+        super().__init__(**kwargs)
         self.name = name
         self.parts = parts
+    def __str__(self):  return "(%s)" % ([self.name] + self.parts)
+    def __repr__(self): return str(self)
 
 class Byte(Chunk):
     attrs = Chunk.attrs + ["expr"]
-    def __init__(self, expr: Expr) -> None:
-        super().__init__()
+    def __init__(self, expr: Expr, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.expr = expr
     def __str__(self):  return "(byte:%s)" % (self.expr)
     def __repr__(self): return str(self)
 
 class Word(Chunk):
     attrs = Chunk.attrs + ["expr"]
-    def __init__(self, expr: Expr) -> None:
-        super().__init__()
+    def __init__(self, expr: Expr, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.expr = expr
     def __str__(self):  return "(word:%s)" % (self.expr)
     def __repr__(self): return str(self)
 
 class Insn(Chunk):
     attrs = Chunk.attrs + ["name", "opds"]
-    def __init__(self, name: str, opds: list[Expr]) -> None:
-        super().__init__()
+    def __init__(self, name: str, opds: list[Expr], **kwargs) -> None:
+        super().__init__(**kwargs)
         self.name = name
         self.opds = opds
     def is_terminal(self) -> bool:
@@ -261,14 +256,17 @@ class Insn(Chunk):
 
 class Block(Chunk):
     attrs = Chunk.attrs + ["inner"]
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.inner: list[Chunk] = []
+    def add(self, x: Chunk) -> "Block":
+        self.inner.append(x)
+        return self
 
 class Ref(Expr):
     attrs = Expr.attrs + ["of"]
-    def __init__(self, of: Union[Label, Define, Unresolved]) -> None:
-        super().__init__()        
+    def __init__(self, of: Union[Label, Define, Unresolved], **kwargs) -> None:
+        super().__init__(**kwargs)        
         self.of = of
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
         self.of = self.of.resolve(labels, defines)
@@ -282,17 +280,20 @@ class Ref(Expr):
 
 class CodeBlock(Block):
     attrs = Block.attrs + ["label"]
-    def __init__(self, label: Label) -> None:
-        super().__init__()
+    def __init__(self, label: Label, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.label = label
-        self.next = None
+        self.next: Optional[CodeBlock] = None
     def __hash__(self):   return hash(self.label)
     def __eq__(self, x):  return self.label == x.label
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False):
         if (proto):
             return "void %s();" % (self.label.name)
         ret = ""
-        ret += "void %s() {\n" % (self.label.name)
+        if self.label.is_call_target:
+            ret += "void %s() {\n" % (self.label.name)
+        else:
+            ret += "%s:\n" % (self.label.name)
         ret += "    _debug(\"%s\", __FILE__, __LINE__);\n" % (self.label.name)
         # ret += "    std::this_thread::yield();\n"
         for x in self.inner:
@@ -301,14 +302,23 @@ class CodeBlock(Block):
             ret += "    "
             ret += x.render(labels, defines)
             ret += ";\n"
-        ret += "}\n"
+        if self.label.is_call_target:
+            n = self.next
+            while n:
+                if n.label.is_call_target: break
+                ret += "\n"
+                ret += n.render(labels, defines)
+                n = n.next
+            ret += "}\n"
         return ret
     def __str__(self):  return "(codeblock:%s)" % (self.label)
     def __repr__(self): return str(self)
 
-class DispatchBlock(Block):
-    attrs = Block.attrs + ["inner"]
-    def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
+class DispatchBlock(Block, Insn):
+    attrs = list(set(Block.attrs + Insn.attrs + ["inner"]))
+    def __init__(self, **kwargs) -> None:
+        super().__init__(name="dispatch", opds=[])
+    def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False, **kwargs) -> str:
         ret = ""
         table_name = "jumptable"
         ret += "static JUMP_ENTRY %s[%d] = {\n" % (table_name, len(self.inner))
@@ -320,13 +330,13 @@ class DispatchBlock(Block):
         ret += "    };\n"
         ret += "    JMP(%s[a.read()])" % (table_name,)
         return ret
-    def __str__(self):  return "(dispatch:%s)" % (self.label)
+    def __str__(self):  return "(dispatch:%s)" % (list(str(x) for x in self.inner))
     def __repr__(self): return str(self)
 
 class DataBlock(Block):
     attrs = Block.attrs + ["label", "inner"]
-    def __init__(self, label: Label) -> None:
-        super().__init__()
+    def __init__(self, label: Label, **kwargs) -> None:
+        super().__init__(**kwargs)
         self.label = label
         self.offset = -1
     def render(self, labels: dict[str, Any], defines: dict[str, Any], proto=False) -> str:
@@ -348,7 +358,7 @@ class DataBlock(Block):
             return ret
         else:
             return ("\n    /* %04x (%5d) */\n    .%s = {}," % (self.offset, self.offset, self.label.name))
-    def __str__(self):  return "(datablock:%s)" % (self.label)
+    def __str__(self):  return "(datablock:%s [%d])" % (self.label, len(self.inner))
     def __repr__(self): return str(self)
 
 class DefsBlock(Block):
