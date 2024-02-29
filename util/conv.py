@@ -3,6 +3,7 @@
 import sys
 from typing import *
 from conv.chunks import *
+from conv.render import *
 
 Gen = Generator[Chunk, None, None]
 
@@ -191,6 +192,18 @@ class Parser:
                                cond=lambda a, b: b.name == "jmp" and (b.opds and (b.opds[0].of.name == a.name)),
                                func=lambda a, b: Insn(name="end", opds=[]))
 
+    def drop_vectors(self, gen: Gen) -> Gen:
+        for x in gen:
+            """
+            """
+            if isinstance(x, Word) and str(x) in set([
+                    "(word:(ref:(unresolved:NonMaskableInterrupt)))",
+                    "(word:(ref:(unresolved:Start)))",
+                    "(word:(lit:0xfff0))"]):
+                continue
+            else:
+                yield x
+
     def create_data_blocks(self, gen: Gen, dtype: Type) -> Gen:
         yield from self.munge2(gen, Label, dtype,
                                func=lambda a, b: DataBlock(a, comments=a.comments).add(b))
@@ -208,22 +221,9 @@ class Parser:
     def absorb_insns(self, gen: Gen) -> Gen:
         yield from self.absorb(gen, CodeBlock, Insn)
 
-    def resolve_rec(self, c: Chunk, names: dict[str, Named]) -> Chunk:
-        if isinstance(c, Unresolved):
-            return names[c.name]
-        if isinstance(c, Chunk):
-            for a in c.attrs:
-                u = c.__getattribute__(a)
-                c.__setattr__(a, self.resolve_rec(u, names))
-            return c
-        if isinstance(c, list):
-            return [self.resolve_rec(x, names) for x in c]
-        else:
-            return c
-
-    def resolve_defs(self, gen: Gen, names: dict[str, Named]) -> Gen:
+    def resolve_names(self, gen: Gen, names: dict[str, Named]) -> Gen:
         for c in gen:
-            yield self.resolve_rec(c, names)
+            yield c.resolve(names)
 
     def label_targets(self, gen: Gen) -> Gen:
         for c in gen:
@@ -270,6 +270,7 @@ class Parser:
         gen = self.replace_2c_bytes(gen)
         gen = self.add_jump_switch(gen)
         gen = self.drop_endless_loop(gen)
+        gen = self.drop_vectors(gen)
         gen = self.create_data_blocks(gen, Byte)
         gen = self.create_data_blocks(gen, Word)
         gen = self.absorb_data(gen, Byte)
@@ -277,7 +278,7 @@ class Parser:
         gen = self.absorb_into_switch(gen)
         gen = self.create_code_blocks(gen)
         gen = self.absorb_insns(gen)
-        gen = self.resolve_defs(gen, names)
+        gen = self.resolve_names(gen, names)
         gen = self.label_targets(gen)
         gen = self.make_functions(gen)
         gen = self.absorb_func_code(gen)
@@ -300,6 +301,8 @@ def main(args) -> None:
         elif isinstance(x, Directive):  pass
         else:                           raise Exception(str(x))
     print((len(code), len(data), len(defs)))
+    assert len(defs) == 1
+    Renderer(defs[0], data, code, names).render()
 
 if __name__ == "__main__":
     main(sys.argv)
