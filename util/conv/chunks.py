@@ -332,6 +332,7 @@ class DispatchBlock(Block, Insn):
         return ret
     def __str__(self):  return "(dispatch:%s)" % (list(str(x) for x in self.inner))
     def __repr__(self): return str(self)
+    def is_terminal(self) -> bool:  return True
 
 class DataBlock(Block):
     attrs = Block.attrs + ["label", "inner"]
@@ -363,3 +364,8 @@ class DataBlock(Block):
 
 class DefsBlock(Block):
     attrs = Block.attrs + ["inner"]
+
+class DataGroup(DataBlock):
+    attrs = DataBlock.attrs
+    def __str__(self):  return "(datagroup:%s [%d])" % (self.label, len(self.inner))
+    def __repr__(self): return str(self)

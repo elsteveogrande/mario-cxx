@@ -137,15 +137,36 @@ class Parser:
         yield from self.absorb(gen, DefsBlock, Define)
 
     def replace_2c_bytes(self, gen: Gen) -> Gen:
+        """
+        Patterns like:
+            (label:BlockBufferColli_Head)           BlockBufferColli_Head:
+            ['lda', (imm:(lit:0x0))]                    lda #$00       ;set flag to return vertical coordinate
+            (byte:(lit:0x2c))                           .db $2c        ;BIT instruction opcode
+            (label:BlockBufferColli_Side)           BlockBufferColli_Side:
+            ['lda', (imm:(lit:0x1))]                    lda #$01       ;set flag to return horizontal coordinate
+            ['ldx', (imm:(lit:0x0))]                    ldx #$00       ;set offset for player object
+
+        become:
+            (label:BlockBufferColli_Head)
+            ['lda', (imm:(lit:0x0))]
+            ['jmp', (ref:(label:BlockBufferColli_Side_Skip))]
+            (label:BlockBufferColli_Side)
+            ['lda', (imm:(lit:0x1))]
+            (label:BlockBufferColli_Side_Skip)
+            ['ldx', (imm:(lit:0x0))]
+       """
         a: Optional[Chunk] = next(gen, None)
         b: Optional[Chunk] = next(gen, None)
         c: Optional[Chunk] = next(gen, None)
         while a and b and c:
-            if isinstance(a, Byte) and (a.expr == Lit(0x2c, 16)) and isinstance(b, Label) and isinstance(c, Insn):
-                skip = Label(b.name + "Skip")
+            if isinstance(a, Byte) and str(a) == "(byte:(lit:0x2c))" and isinstance(b, Label) and isinstance(c, Insn):
+                skip = Label(b.name + "_Skip")
                 yield Insn(name="jmp", opds=[Ref(skip)])
-                a = b
-                b = skip
+                yield b
+                yield c
+                a = skip
+                b = next(gen, None)
+                c = next(gen, None)
             else:
                 yield a
                 a, b, c = b, c, next(gen, None)            
@@ -160,6 +181,15 @@ class Parser:
                 yield DispatchBlock()
             else:
                 yield c
+
+    def drop_endless_loop(self, gen: Gen) -> Gen:
+        """
+        (label:EndlessLoop)
+        ['jmp', (ref:(unresolved:EndlessLoop))]
+        """
+        yield from self.munge2(gen, Label, Insn,
+                               cond=lambda a, b: b.name == "jmp" and (b.opds and (b.opds[0].of.name == a.name)),
+                               func=lambda a, b: Insn(name="end", opds=[]))
 
     def create_data_blocks(self, gen: Gen, dtype: Type) -> Gen:
         yield from self.munge2(gen, Label, dtype,
@@ -207,8 +237,28 @@ class Parser:
         for c in gen:
             yield c
 
-    def parse(self) -> Gen:
-        names: dict[str, Named] = {}
+    def drop_ff_bytes(self, gen: Gen) -> Gen:
+        for c in gen:
+            if isinstance(c, Byte) and str(c) == "(byte:(lit:0xff))":
+                pass
+            else:
+                yield c
+
+    def create_data_groups(self, gen: Gen) -> Gen:
+        for c in gen:
+            if isinstance(c, Label):
+                yield DataGroup(label=c)
+            else:
+                yield c
+
+    def drop_jump_engine(self, gen: Gen) -> Gen:
+        for c in gen:
+            if isinstance(c, CodeBlock) and str(c) == "(codeblock:(label:JumpEngine))":
+                pass
+            else:
+                yield c
+
+    def parse(self, names: dict[str, Named]) -> Gen:
         gen = self.chunk_file()
         self.find_names(gen, names)
 
@@ -219,6 +269,7 @@ class Parser:
         gen = self.absorb_defs(gen)
         gen = self.replace_2c_bytes(gen)
         gen = self.add_jump_switch(gen)
+        gen = self.drop_endless_loop(gen)
         gen = self.create_data_blocks(gen, Byte)
         gen = self.create_data_blocks(gen, Word)
         gen = self.absorb_data(gen, Byte)
@@ -230,14 +281,25 @@ class Parser:
         gen = self.label_targets(gen)
         gen = self.make_functions(gen)
         gen = self.absorb_func_code(gen)
+        gen = self.drop_ff_bytes(gen)
+        gen = self.create_data_groups(gen)
+        gen = self.drop_jump_engine(gen)
         yield from gen
 
 
-def main(args):
+def main(args) -> None:
     p = Parser(args[1])
-    for x in p.parse():
-        print(x)
-
+    names: dict[str, Named] = {}
+    code: list[CodeBlock] = []
+    data: list[DataBlock] = []
+    defs: list[DefsBlock] = []
+    for x in p.parse(names):
+        if   isinstance(x, CodeBlock):  code.append(x)
+        elif isinstance(x, DataBlock):  data.append(x)
+        elif isinstance(x, DefsBlock):  defs.append(x)
+        elif isinstance(x, Directive):  pass
+        else:                           raise Exception(str(x))
+    print((len(code), len(data), len(defs)))
 
 if __name__ == "__main__":
     main(sys.argv)
