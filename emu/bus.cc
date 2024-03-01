@@ -1,6 +1,5 @@
 #include "bus.h"
 #include "ppu.h"
-#include <memory>
 
 Memory::Bus m;
 
@@ -29,6 +28,7 @@ byte IORegs::get(word index) {
         }
 
         default:
+            return 0; //////////////////////////////////////////////////////////
             printf("!!! ioregs::get %04x\n", index);
             fflush(stdout);
             abort();

@@ -147,8 +147,13 @@ CharacterROM::CharacterROM() {
 
 void PPU::draw() {
     Pixel bkgd[512][240];
-    nameTables[0].draw((Pixel*) bkgd, 0, 0, *this);
-    nameTables[1].draw((Pixel*) bkgd, 256, 0, *this);
+    if (regs.ctrl & 0x03) {
+        nameTables[1].draw((Pixel*) bkgd, 0, 0, *this);
+        nameTables[0].draw((Pixel*) bkgd, 256, 0, *this);
+    } else {
+        nameTables[0].draw((Pixel*) bkgd, 0, 0, *this);
+        nameTables[1].draw((Pixel*) bkgd, 256, 0, *this);
+    }
 
     window.clear(palettes.bkgdPalettes[0].ids[0].get().asColor());
     sf::Image bimg;
@@ -282,7 +287,6 @@ void PPURegs::set(word index, byte value) {
             assert (!(ctrl & 0x40));  // EXT bkgd
             assert (!(ctrl & 0x20));  // 8x16 sprites
             assert (!(ctrl & 0x08));  // sprites use left table (8x8)
-            assert (!(ctrl & 0x03));  // base nametable
             return;
 
         // https://www.nesdev.org/wiki/PPU_registers#Mask_($2001)_%3E_write
