@@ -9,7 +9,7 @@ echo "
 -Wall
 -Wextra
 -UNDEBUG
--O0
+-Os
 -fno-inline
 -foptimize-sibling-calls
 -fsanitize=address

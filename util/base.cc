@@ -1,9 +1,7 @@
 #include "base.h"
 #include <cstdio>
 #include <cstring>
-#include <fstream>
 #include <iostream>
-#include <memory>
 
 #include "../emu/ppu.h"
 
@@ -517,6 +515,10 @@ int main() {
 
     // int frame = 0;
 
+    byte prevPageLoc = 0xaa;
+    byte prevColPos = 0xaa;
+    byte prevBufColPos = 0xaa;
+
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
@@ -559,15 +561,31 @@ int main() {
 
                 NonMaskableInterrupt();
 
-                for (int i = 0; i < 13; i++) {
-                    int p = MetatileBuffer + i;
-                    printf("%02x ", ramBytes[p]);
+                byte currPageLoc = ramBytes[CurrentPageLoc];
+                byte currColPos = ramBytes[CurrentColumnPos];
+                byte currBufColPos = ramBytes[BlockBufferColumnPos];
+
+                if (currPageLoc != prevPageLoc ||
+                        currColPos != prevColPos ||
+                        currBufColPos != prevBufColPos) {
+
+                    for (int i = 0; i < 13; i++) {
+                        int p = MetatileBuffer + i;
+                        if (ramBytes[p]) {
+                            printf("%02x ", ramBytes[p]);
+                        } else {
+                            printf("   ");
+                        }
+                    }
+                    printf(
+                        ": pg=%02x col=%02x bbcol=%d\n",
+                        currPageLoc, currColPos, currBufColPos);
+
+                    prevPageLoc = currPageLoc;
+                    prevColPos = currColPos;
+                    prevBufColPos = currBufColPos;
                 }
-                printf(
-                    ": pg=%02x col=%02x bbcol=%d\n",
-                    ramBytes[CurrentPageLoc],
-                    ramBytes[CurrentColumnPos],
-                    ramBytes[BlockBufferColumnPos]);
+
 
                 // {
                 //     // std::ofstream ofile;

@@ -308,6 +308,7 @@ void PPURegs::set(word index, byte value) {
             } else {
                 scroll |= word(value);
                 gotFirstByte = false;
+                assert(!(value & 0xff));  // not expecting to deal with Y-scrolling
             }
             return;
 
