@@ -1,4 +1,5 @@
 #include "base.h"
+#include <condition_variable>
 #include <cstdio>
 #include <cstring>
 #include <iostream>
@@ -10,6 +11,8 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Window/Event.hpp>
+#include <mutex>
+#include <thread>
 
 #include "../main.h"
 
@@ -485,8 +488,10 @@ int main() {
     sf::RenderWindow window(sf::VideoMode(256, 240), "mario++");
     while (!window.isOpen()) { window.pollEvent(event); }
 
+    std::mutex lineMutex;
+    std::condition_variable lineCond;
     PPU ppu(window);
-    PPUTimer ppuTimer(ppu);
+    PPUTimer ppuTimer(ppu, lineMutex, lineCond);
     m.addRegion(Memory::Region {ppu.regs, 0x2000, 0x0007 });
 
     IORegs ioRegs(ppu);
@@ -495,29 +500,9 @@ int main() {
     preStart();
     Start();
 
-    // std::ifstream ifile;
-    // ifile.open("misc/smb1-us.nes", std::ios::binary | std::ios::in);
-    // ifile.seekg(16, std::ios::beg);
-    // byte romBytes[32768];
-    // ifile.read((char*) romBytes, sizeof(romBytes));
-    // Memory::RAM rom(romBytes);
-    // m.baseMap.erase(0x8000);
-    // m.addRegion(Memory::Region {rom, 0x8000, 0x7fff });
-
-    // CPU cpu(ppu);
-    // cpu.pc = 0x8000;
-    // while (cpu.interp()) {}
-
-    // diag = true;
-    // cpu.ofile = &std::cout;
-
     window.setSize({256 * 3, 240 * 3});
 
-    // int frame = 0;
-
-    byte prevPageLoc = 0xaa;
-    byte prevColPos = 0xaa;
-    byte prevBufColPos = 0xaa;
+    std::tuple<byte, byte, byte> prevLoc {0, 0, 0};
 
     while (window.isOpen()) {
         while (window.pollEvent(event)) {
@@ -555,20 +540,19 @@ int main() {
         }
 
         // we'll busy-wait for a vblank
+        std::this_thread::yield();
         if (ppu.regs.status & 0x80) {
             // if NMI is enabled, invoke it
             if (ppu.regs.ctrl & 0x80) {
 
                 NonMaskableInterrupt();
 
-                byte currPageLoc = ramBytes[CurrentPageLoc];
-                byte currColPos = ramBytes[CurrentColumnPos];
-                byte currBufColPos = ramBytes[BlockBufferColumnPos];
+                auto currLoc = std::tuple(
+                    ramBytes[CurrentPageLoc],
+                    ramBytes[CurrentColumnPos],
+                    ramBytes[BlockBufferColumnPos]);
 
-                if (currPageLoc != prevPageLoc ||
-                        currColPos != prevColPos ||
-                        currBufColPos != prevBufColPos) {
-
+                if (currLoc != prevLoc) {
                     for (int i = 0; i < 13; i++) {
                         int p = MetatileBuffer + i;
                         if (ramBytes[p]) {
@@ -579,34 +563,15 @@ int main() {
                     }
                     printf(
                         ": pg=%02x col=%02x bbcol=%d\n",
-                        currPageLoc, currColPos, currBufColPos);
+                        std::get<0>(currLoc),
+                        std::get<1>(currLoc),
+                        std::get<2>(currLoc));
 
-                    prevPageLoc = currPageLoc;
-                    prevColPos = currColPos;
-                    prevBufColPos = currBufColPos;
+                    prevLoc = currLoc;
                 }
-
-
-                // {
-                //     // std::ofstream ofile;
-                //     // char filename[100];
-                //     // snprintf(filename, sizeof(filename), "traces/%06d", frame);
-                //     // ofile.open(filename, std::ios::trunc);
-                //     // cpu.ofile = &ofile;
-                // cpu.nmi();
-                // while (cpu.interp()) {}
-                //     // cpu.ofile = nullptr;
-                // }
-
-                // ++frame;
-                // if (frame == 90) { return 0; }
-
             }
-        } else {
-            std::this_thread::yield();
         }
 
-        // printf("@@@ SCROLL %04x\n", ppu.regs.scroll);
         ppu.draw();
         ppu.window.display();
     }

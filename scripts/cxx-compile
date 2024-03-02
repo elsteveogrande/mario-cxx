@@ -1,12 +1,14 @@
 #!/bin/bash
 
-CC=$1
-if [[ ! -f "${CC}" ]]; then
-    echo "not found: ${CC}"
-    exit 1
-fi
+set -euo pipefail
 
-OBJ="${CC}.o"
+CC=$1
+stat $CC >/dev/null
+S=tmp/$(basename ${CC} .cc).s
+LL=tmp/$(basename ${CC} .cc).ll
+OBJ=tmp/$(basename ${CC} .cc).o
 
 COMP_FLAGS=$(cat compile_flags.txt)
-exec clang++ $COMP_FLAGS -o "${OBJ}" -c "${CC}"
+clang++ $COMP_FLAGS -xc++ -emit-llvm -S -o "${LL}" -c "${CC}"
+llc -filetype=asm "${LL}" -o "${S}"
+as -o "${OBJ}" "${S}"

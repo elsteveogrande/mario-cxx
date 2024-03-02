@@ -9,3 +9,4 @@ misc/smbdis.asm
 .vscode/
 compile_flags.txt
 traces/
+tmp/

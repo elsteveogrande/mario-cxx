@@ -90,18 +90,24 @@ void Palettes::writeByte(word offset, byte val) {
     }
 }
 
-PPUTimer::PPUTimer(PPU& ppu)
+PPUTimer::PPUTimer(PPU& ppu,
+                   std::mutex& lineMutex,
+                   std::condition_variable& lineCond)
         : ppu(ppu)
+        , lineMutex(lineMutex)
+        , lineCond(lineCond)
         , loopThread([this] {this->run();}) {
 }
 
 PPUTimer::~PPUTimer() {
     stopped = true;
+    // TODO: use mutex + notify cv
     loopThread.join();
 }
 
 void PPUTimer::run() {
     while (!stopped) {
+        // TODO: use mutex + cv
         std::this_thread::sleep_for(kLineInterval);
         ppu.nextLine();
     }

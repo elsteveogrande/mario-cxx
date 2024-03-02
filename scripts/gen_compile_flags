@@ -3,15 +3,21 @@
 pkg-config --exists --print-errors sfml-graphics    || exit 2
 
 echo "
--xc++
--std=c++2b
--g2
+-std=c++23
+-g1
 -Wall
 -Wextra
--UNDEBUG
--Os
--fno-inline
--foptimize-sibling-calls
--fsanitize=address
-"
+-Werror
+-Wno-unused-command-line-argument
+-O3
+-march=native
+-fno-rtti
+-fno-exceptions
+-fno-omit-frame-pointer
+-momit-leaf-frame-pointer
+-ffunction-sections
+-fdata-sections
+-UNDEBUG"
+# -fsanitize=address
 echo $(pkg-config --cflags sfml-graphics) | tr ' ' $'\n'
+

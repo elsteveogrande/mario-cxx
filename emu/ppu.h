@@ -1,8 +1,6 @@
 #pragma once
 
 #include <atomic>
-#include <cstring>
-#include <functional>
 #include <thread>
 
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -10,7 +8,6 @@
 #include <SFML/Graphics/Texture.hpp>
 
 #include "../util/base.h"
-#include "SFML/Graphics/RenderTarget.hpp"
 
 struct Pixel {
     byte r {0x00};
@@ -195,11 +192,15 @@ struct PPU {
 };
 
 struct PPUTimer {
-    explicit PPUTimer(PPU& ppu);
+    PPUTimer(PPU& ppu,
+             std::mutex& lineMutex,
+             std::condition_variable& lineCond);
     ~PPUTimer();
     void run();
 
     PPU& ppu;
+    std::mutex& lineMutex;
+    std::condition_variable& lineCond;
     std::atomic<bool> stopped {false};
     std::thread loopThread;
 

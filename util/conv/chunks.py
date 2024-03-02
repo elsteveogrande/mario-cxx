@@ -333,8 +333,9 @@ class CodeBlock(Block):
         if (proto):
             return "void %s();" % (self.label.name)
         ret = ""
+        ret += "__attribute__((__noinline__))\n"
         ret += "void %s() {\n" % (self.label.name)
-        ret += "    _debug(\"%s\", __FILE__, __LINE__);\n" % (self.label.name)
+        # ret += "    _debug(\"%s\", __FILE__, __LINE__);\n" % (self.label.name)
         for x in self.inner:
             for c in x.comments:
                 ret += "    %s\n" % (c.render())
