@@ -1,12 +1,7 @@
 #pragma once
 
 #include "../emu/bus.h"
-#include <map>
-#include <memory>
-#include <cassert>
-#include <chrono>
 #include <cstdio>
-#include <thread>
 
 using byte = unsigned char;
 using word = unsigned short;

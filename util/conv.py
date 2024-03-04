@@ -300,7 +300,6 @@ def main(args) -> None:
         elif isinstance(x, DefsBlock):  defs.append(x)
         elif isinstance(x, Directive):  pass
         else:                           raise Exception(str(x))
-    print((len(code), len(data), len(defs)))
     assert len(defs) == 1
     Renderer(defs[0], data, code, names).render()
 
