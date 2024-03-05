@@ -3,6 +3,7 @@
 pkg-config --exists --print-errors sfml-graphics    || exit 2
 
 echo "
+-xc++
 -std=c++23
 -g1
 -Wall
