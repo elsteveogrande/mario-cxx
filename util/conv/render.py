@@ -36,10 +36,11 @@ class Renderer:
                 raise Exception(str(type(c)))
             print(s, file=f)
 
-        with open("main.h", "w") as h:
+        with open("src/main.h", "w") as h:
             f = h
             p("#pragma once")
-            p("#include \"util/base.h\"")
+            p("#include \"base.h\"")
+            p("#include \"insns.h\"")
             p("")
 
             p("")
@@ -70,7 +71,7 @@ class Renderer:
                     p(cm)
                 p(c, proto=True)
 
-        with open("main.cc", "w") as cc:
+        with open("src/main.cc", "w") as cc:
             f = cc
             p("#include <cstddef>")
             p("#include \"main.h\"")

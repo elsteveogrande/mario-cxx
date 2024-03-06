@@ -1,13 +1,16 @@
 #pragma once
 
+#include "bus.h"
+
+#include "base.h"
+
 #include <atomic>
+#include <cassert>
 #include <thread>
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
-
-#include "../util/base.h"
 
 struct Pixel {
     byte r {0x00};

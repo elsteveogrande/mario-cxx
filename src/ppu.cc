@@ -1,4 +1,5 @@
 #include "ppu.h"
+
 #include "SFML/Graphics/Image.hpp"
 #include "SFML/Graphics/Rect.hpp"
 

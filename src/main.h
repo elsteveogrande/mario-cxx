@@ -1,5 +1,6 @@
 #pragma once
-#include "util/base.h"
+#include "base.h"
+#include "insns.h"
 
 
 struct G {

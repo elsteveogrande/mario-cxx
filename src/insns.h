@@ -1,23 +1,13 @@
 #pragma once
 
-#include "../emu/bus.h"
+#include "base.h"
+
+#include "bus.h"
+#include "debug.h"
+
 #include <cstdio>
 
-using byte = unsigned char;
-using word = unsigned short;
-
-extern bool diag;
-
-void _debug(char const* func, char const* filename, int line);
-
-// defined in main.cc
-// (stub code to hook the "rom" data to the memory bus)
-void preStart();
-
 using JUMP_ENTRY = void(*)();
-
-void Start();
-void NonMaskableInterrupt();
 
 constexpr byte LO8(word const v) { return (v) & 0xff; }
 constexpr byte HI8(word const v) { return (v >> 8) & 0xff; }
@@ -47,32 +37,20 @@ struct Imm : Mode {
     virtual void write(byte) { abort(); }
 };
 
-struct Reg : Mode {
+struct Reg final : Mode {
     byte val {0};
     virtual void write(byte v) { val = v; };
     virtual byte read() const { return val; };
-    void operator++() { write(read() + 1); }
-    void operator++(int) { write(read() + 1); }
-    void operator--() { write(read() - 1); }
-    void operator--(int) { write(read() - 1); }
+    void operator++()     { write(read() + 1); }
+    void operator++(int)  { write(read() + 1); }
+    void operator--()     { write(read() - 1); }
+    void operator--(int)  { write(read() - 1); }
 };
 
-struct A : virtual Reg {};
-struct X : virtual Reg {};
-struct Y : virtual Reg {};
-struct S : virtual Reg {};
-
-// dummy operations
-struct D : virtual Reg {
-    virtual void write(byte) {};
-    virtual byte read() const { return 0; };
-};
-extern D dummy;
-
-extern A a;
-extern X x;
-extern Y y;
-extern S s;
+extern Reg a;
+extern Reg x;
+extern Reg y;
+extern Reg s;
 extern bool n, z, c;
 
 inline byte nz(byte result) {
@@ -158,25 +136,25 @@ inline void cld() { /* IGNORED */}
 inline void clc() { c = 0; }
 inline void sec() { c = 1; }
 
-void ld(Mode& d, Mode& s);
-void ld(Mode& d, byte v);
-void st(Mode& d, Mode& s);
-void inc(Mode& d, Mode& s);
-void dec(Mode& d, Mode& s);
-void adc(Mode& d, Mode& s1, Mode& s2, bool c);
-void sbc(Mode& d, Mode& s1, Mode& s2, bool c);
-void sub(Mode& d, Mode& s, bool c);
+void ld(Mode& dm, Mode& sm);
+void ld(Mode& dm, byte v);
+void st(Mode& dm, Mode& sm);
+void inc(Mode& dm, Mode& sm);
+void dec(Mode& dm, Mode& sm);
+void adc(Mode& dm, Mode& s1, Mode& s2, bool c);
+void sbc(Mode& dm, Mode& s1, Mode& s2, bool c);
+void sub(Mode& dm, Mode& sm, bool c);
 void cmp(Reg& s1, Mode& s2);
-void and_(Mode& d, Mode& s1, Mode& s2);
-void ora(Mode& d, Mode& s1, Mode& s2);
-void eor(Mode& d, Mode& s1, Mode& s2);
+void and_(Mode& dm, Mode& s1, Mode& s2);
+void ora(Mode& dm, Mode& s1, Mode& s2);
+void eor(Mode& dm, Mode& s1, Mode& s2);
 void push(Reg& r);
 void pull(Reg& r);
-void bit(Mode& s);
-void lsr(Mode& d, Mode& s);
-void asl(Mode& d, Mode& s);
-void rol(Mode& d, Mode& s);
-void ror(Mode& d, Mode& s);
+void bit(Mode& sm);
+void lsr(Mode& dm, Mode& sm);
+void asl(Mode& dm, Mode& sm);
+void rol(Mode& dm, Mode& sm);
+void ror(Mode& dm, Mode& sm);
 
 inline void inc(Mode& s) { inc(s, s); }
 inline void inc()        { inc(a); }
@@ -220,30 +198,30 @@ extern IndY indY_;
 #define ZPGY(v)      (*(new (&zpgY_) ZpgY(v)))
 #define INDY(v)      (*(new (&indY_) IndY(v)))
 
-inline void lda(Mode& s) { ld(a, s); }
-inline void ldx(Mode& s) { ld(x, s); }
-inline void ldy(Mode& s) { ld(y, s); }
+inline void lda(Mode& sm) { ld(a, sm); }
+inline void ldx(Mode& sm) { ld(x, sm); }
+inline void ldy(Mode& sm) { ld(y, sm); }
 
-inline void sta(Mode& s) { st(s, a); }
-inline void stx(Mode& s) { st(s, x); }
-inline void sty(Mode& s) { st(s, y); }
+inline void sta(Mode& sm) { st(sm, a); }
+inline void stx(Mode& sm) { st(sm, x); }
+inline void sty(Mode& sm) { st(sm, y); }
 
-inline void cmp(Mode& s) { cmp(a, s); }
-inline void cpx(Mode& s) { cmp(x, s); }
-inline void cpy(Mode& s) { cmp(y, s); }
+inline void cmp(Mode& sm) { cmp(a, sm); }
+inline void cpx(Mode& sm) { cmp(x, sm); }
+inline void cpy(Mode& sm) { cmp(y, sm); }
 
-inline void anda(Mode& s) { and_(a, a, s); }
-inline void ora(Mode& s)  { ora(a, a, s); }
-inline void eor(Mode& s)  { eor(a, a, s); }
+inline void anda(Mode& sm) { and_(a, a, sm); }
+inline void ora(Mode& sm)  { ora(a, a, sm); }
+inline void eor(Mode& sm)  { eor(a, a, sm); }
 
 inline void lsr()       { lsr(a, a); }
 inline void asl()       { asl(a, a); }
 inline void rol()       { rol(a, a); }
 inline void ror()       { ror(a, a); }
-inline void lsr(Mode& s) { lsr(s, s); }
-inline void asl(Mode& s) { asl(s, s); }
-inline void rol(Mode& s) { rol(s, s); }
-inline void ror(Mode& s) { ror(s, s); }
+inline void lsr(Mode& sm) { lsr(sm, sm); }
+inline void asl(Mode& sm) { asl(sm, sm); }
+inline void rol(Mode& sm) { rol(sm, sm); }
+inline void ror(Mode& sm) { ror(sm, sm); }
 
-inline void adc(Mode& s) { adc(a, a, s, c); }
-inline void sbc(Mode& s) { sbc(a, a, s, c); }
+inline void adc(Mode& sm) { adc(a, a, sm, c); }
+inline void sbc(Mode& sm) { sbc(a, a, sm, c); }
