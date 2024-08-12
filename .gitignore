@@ -10,3 +10,4 @@ misc/smbdis.asm
 compile_flags.txt
 traces/
 tmp/
+build/
