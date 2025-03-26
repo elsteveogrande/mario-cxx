@@ -29,3 +29,11 @@ and just run `make`.
   ROM within `0x8000`-`0xffff`) which are used by only one function,
   and make them `static` within those functions (as opposed to the
   giant `G` structure in `main.h`/`.cc`)
+
+## Thanks
+
+Thanks to `doppelganger` who reverse engineered and commented the entire assembly listing of the game.
+https://gist.github.com/1wErt3r/4048722
+
+Also thanks to `bombela` for `backward.hpp`, which has been invaluable in debugging efforts.
+https://github.com/bombela/backward-cpp

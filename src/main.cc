@@ -6546,9 +6546,9 @@ void WarpNum() {
 __attribute__((__noinline__))
 void ScrollLockObject() {
     // invert scroll lock to turn it on
-    lda(ABS(ScrollLock));
+    lda(ABS(ScrollLock_));
     eor(IMM(0b1));
-    sta(ABS(ScrollLock));
+    sta(ABS(ScrollLock_));
     return;
 }
 // $00 - used to store enemy identifier in KillEnemies
@@ -8106,7 +8106,7 @@ void ScrollHandler() {
     // save as new value here to impose force on scroll
     sta(ABS(Player_X_Scroll));
     // check scroll lock flag
-    lda(ABS(ScrollLock));
+    lda(ABS(ScrollLock_));
     // skip a bunch of code here if set
     BNE(InitScrlAmt);
     lda(ABS(Player_Pos_ForScroll));
@@ -8575,7 +8575,7 @@ void PlayerHole() {
     BMI(ExitCtrl);
     ldx(IMM(0x1));
     // set scroll lock
-    stx(ABS(ScrollLock));
+    stx(ABS(ScrollLock_));
     ldy(IMM(0x4));
     // set value here
     sty(ABS(0x7));
@@ -8972,7 +8972,7 @@ void PlayerEndLevel() {
     // if player is not yet off the flagpole, skip this part
     BCC(ChkStop);
     // if scroll lock not set, branch ahead to next part
-    lda(ABS(ScrollLock));
+    lda(ABS(ScrollLock_));
     // because we only need to do this part once
     BEQ(ChkStop);
     lda(IMM(EndOfLevelMusic));
@@ -8980,7 +8980,7 @@ void PlayerEndLevel() {
     sta(ABS(EventMusicQueue));
     lda(IMM(0x0));
     // turn off scroll lock to skip this part later
-    sta(ABS(ScrollLock));
+    sta(ABS(ScrollLock_));
     JMP(ChkStop);
 }
 __attribute__((__noinline__))
@@ -10186,7 +10186,7 @@ void ExGTimer() {
 __attribute__((__noinline__))
 void WarpZoneObject() {
     // check for scroll lock flag
-    lda(ABS(ScrollLock));
+    lda(ABS(ScrollLock_));
     // branch if not set to leave
     BEQ(ExGTimer);
     // check to see if player's vertical coordinate has
@@ -10196,7 +10196,7 @@ void WarpZoneObject() {
     // if so, branch to leave
     BNE(ExGTimer);
     // otherwise nullify scroll lock flag
-    sta(ABS(ScrollLock));
+    sta(ABS(ScrollLock_));
     // increment warp zone flag to make warp pipes for warp zone
     inc(ABS(WarpZoneControl));
     // kill this object
@@ -20365,7 +20365,7 @@ void FlagpoleCollision() {
     // set player's facing direction to right
     sta(ABS(PlayerFacingDir));
     // set scroll lock flag
-    inc(ABS(ScrollLock));
+    inc(ABS(ScrollLock_));
     lda(ABS(GameEngineSubroutine));
     // check for flagpole slide routine running
     cmp(IMM(0x4));

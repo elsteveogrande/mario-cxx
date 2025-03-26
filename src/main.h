@@ -662,7 +662,8 @@ extern G g;
 #define                      SecondaryMsgCounter                0x749
 #define                         HorizontalScroll                0x73f
 #define                           VerticalScroll                0x740
-#define                               ScrollLock                0x723
+// NOTE: manually renamed due to clash with SFML's keyboard-key constant
+#define                              ScrollLock_                0x723
 #define                          ScrollThirtyTwo                0x73d
 #define                          Player_X_Scroll                0x6ff
 #define                     Player_Pos_ForScroll                0x755
