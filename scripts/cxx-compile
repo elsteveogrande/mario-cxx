@@ -8,7 +8,6 @@ S=tmp/$(basename ${CC} .cc).s
 LL=tmp/$(basename ${CC} .cc).ll
 OBJ=tmp/$(basename ${CC} .cc).o
 
-COMP_FLAGS=$(cat compile_flags.txt)
-clang++ $COMP_FLAGS -xc++ -emit-llvm -S -o "${LL}" -c "${CC}"
+clang++ @compile_flags.txt -xc++ -emit-llvm -S -o "${LL}" -c "${CC}"
 llc -filetype=asm "${LL}" -o "${S}"
 as -o "${OBJ}" "${S}"

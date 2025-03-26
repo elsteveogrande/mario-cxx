@@ -5,11 +5,16 @@
 
 ## Requirements
 
-* LLVM w/ Clang; a new enough version supporting `-std=c++2b`
+* LLVM w/ Clang; a new enough version supporting `-std=c++23`
+* `sfml` graphics library: on OSX, run `brew install sfml`
+* and finally `make`.
 
 ## Getting started
 
-## TODO
+Make sure you have a new-ish LLVM/Clang and SFML,
+and just run `make`.
+
+## TODOs
 
 ### Emulation TODOs
 
