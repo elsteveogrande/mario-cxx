@@ -3,6 +3,23 @@
 
 ## About
 
+This is an almost-100% mechanical conversion of Super Mario Bros.'s 6502 instructions
+to C++ operations, along with some emulation glue, so we can display it and receive controller presses.
+
+It's clearly not perfect; obvious PPU emulation bugs exist:
+
+[!mario++.clip1.mp4](https://elsteveogrande.github.io/misc/mario++.clip1.mp4)
+
+But it's a start toward having something working that will be refactored.
+My plan is to gradually migrate the "raw" 6502 operations into **pure** C++ logic,
+including structures, classes, and so on.  Ultimately I want to have a play area
+larger than 256 pixels wide; to have enemies and other objects and their behaviors encapsulated
+into proper classes; and so on.
+
+Each conversion step will be a documented PR doing such encapsulation, with the project
+being "completed" when there are no remaining (or, at least, no more *interesting*) original 6502 instructions, and when I hit the targets set for myself (wider screen, left-scroll, new enemies, new levels).  Or until I get tired of this.  :)
+
+
 ## Requirements
 
 * LLVM w/ Clang; a new enough version supporting `-std=c++23`
