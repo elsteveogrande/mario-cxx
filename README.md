@@ -8,7 +8,7 @@ to C++ operations, along with some emulation glue, so we can display it and rece
 
 It's clearly not perfect; obvious PPU emulation bugs exist:
 
-[!mario++.clip1.mp4](https://elsteveogrande.github.io/misc/mario++.clip1.mp4)
+[![mario++.clip1.mp4](https://github.com/elsteveogrande/mario-cxx/raw/refs/heads/main/misc/mario++.clip1.png)](https://github.com/elsteveogrande/mario-cxx/raw/refs/heads/main/misc/mario++.clip1.mp4)
 
 But it's a start toward having something working that will be refactored.
 My plan is to gradually migrate the "raw" 6502 operations into **pure** C++ logic,
