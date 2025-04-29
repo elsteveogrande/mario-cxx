@@ -21,8 +21,7 @@ being "completed" when there are no remaining (or, at least, no more *interestin
 
 I thought it would be fun to see what happens when you go to the "minus world" at the end of 1-2.  Perhaps someday when this is refactored and data are better organized into proper `structs` and so on, this would trigger an ASAN or MSAN error, i.e., detect the condition when an errant read occurs like the game does when trying to access the "blank" world (which is actually "world 36").
 
-[![mario++.minusworld.mp4](https://github.com/elsteveogrande/mario-cxx/raw/refs/heads/main/misc/mario++.minusworld.png)](https://github.com/elsteveogrande/mario-cxx/raw/refs/heads/main/misc/mario++.minusworld.mp4)
-
+https://github.com/user-attachments/assets/536bdd4e-14cd-4703-be51-b63622c6314a
 
 
 ## Requirements
